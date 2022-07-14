@@ -1,0 +1,63 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'community.mingle'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+	//추가
+	implementation 'org.springframework.boot:spring-boot-devtools'
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0'
+	//이메일
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.2'
+
+
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.h2database:h2'
+//	runtimeOnly 'mysql:mysql-connector-java' //h2 바꿀때 해제
+	annotationProcessor 'org.projectlombok:lombok'
+	//Springboot starter
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	//JUnit4 추가
+	testImplementation("org.junit.vintage:junit-vintage-engine") {
+		exclude group: "org.hamcrest", module: "hamcrest-core"
+	}
+
+
+	// Security, Authentication : 추가
+//	implementation('org.springframework.boot:spring-boot-starter-security')
+//	compile(group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0')
+//	compile('io.jsonwebtoken:jjwt:0.9.0')
+//
+//	implementation('org.springframework.boot:spring-boot-starter')
+//	compile('org.springframework.boot:spring-boot-starter-web')
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
