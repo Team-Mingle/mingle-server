@@ -5,10 +5,17 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.PostCodeRequest;
 import community.mingle.app.src.auth.authModel.PostEmailRequest;
 import community.mingle.app.src.auth.authModel.PostPwdRequest;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
@@ -85,4 +92,93 @@ public class AuthController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
+    /**
+     * 1.6.1 Alternative 약관만 스트링으로 반환
+     */
+    @GetMapping("terms/1")
+    public String getTermsString() {
+
+        try {
+            String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
+            FileInputStream fileStream = null;
+
+            fileStream = new FileInputStream(filePath);
+            byte[] readBuffer = new byte[fileStream.available()];
+            while (fileStream.read( readBuffer ) != -1){}
+            fileStream.close();
+            return (new String(readBuffer));
+
+        } catch (IOException e) {
+            return "약관을 불러오는데 실패하였습니다.";
+        }
+    }
+
+
+    /**
+     * 1.6 서비스이용약관
+     * @return
+     */
+    @GetMapping("terms")
+    public String getServiceTerms() {
+        try {
+            String filePath = "src/main/java/community/mingle/app/config/serviceUsageTerms";
+            FileInputStream fileStream = null;
+
+            fileStream = new FileInputStream(filePath);
+            byte[] readBuffer = new byte[fileStream.available()];
+            while (fileStream.read( readBuffer ) != -1){}
+            fileStream.close();
+            return (new String(readBuffer));
+
+        } catch (IOException e) {
+            return "약관을 불러오는데 실패하였습니다.";
+        }
+    }
+
+    /**
+     * 1.6.2 개인정보 처리방침
+     * isSucceess, code, message, result 가 \n 과 같이 나옴
+     */
+    @GetMapping("terms/2")
+    public BaseResponse<String> getPersonalTerms() {
+
+        try {
+            String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
+            FileInputStream fileStream = null;
+
+            fileStream = new FileInputStream(filePath);
+            byte[] readBuffer = new byte[fileStream.available()];
+            while (fileStream.read( readBuffer ) != -1){}
+            fileStream.close(); //스트림 닫기
+            return new BaseResponse<>(new String(readBuffer));
+        } catch (IOException e) {
+            return new BaseResponse<>("약관을 불러오는데 실패하였습니다.");
+        }
+
+        /**
+         * 통으로나옴
+         */
+//        File file = new File("src/main/java/community/mingle/app/config/personalinfoterms");
+//        StringBuilder sb = new StringBuilder();
+//        Scanner scan = new Scanner(file);
+//        while(scan.hasNextLine()){
+//            sb.append(scan.nextLine());
+//        }
+//        String result = sb.toString();
+//        return new BaseResponse<>(result);
+
+
+        /**
+         * \n 나오는방법
+         */
+//        String str = Files.readString(Paths.get("src/main/java/community/mingle/app/config/personalinfoterms"));
+//        return new BaseResponse<>(str);
+
+    }
+
+
 }
+
+
