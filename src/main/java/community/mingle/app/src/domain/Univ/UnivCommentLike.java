@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="univ_comment_like")
 
 public class UnivCommentLike {
 
@@ -18,13 +19,17 @@ public class UnivCommentLike {
     @Column(name = "univcomment_like_id")
     private Long id;
 
+    /**
+     * 포스트가 아니라 커멘트랑 조인해야지 정신나간 현우야
+     */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "univpost_id")
-    private UnivPost univPost;
+    @JoinColumn(name = "univcomment_id")
+    private UnivComment comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

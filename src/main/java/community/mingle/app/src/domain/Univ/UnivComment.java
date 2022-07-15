@@ -1,7 +1,7 @@
 package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostCommentStatus;
+import community.mingle.app.src.domain.PostStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="univ_comment")
 
 public class UnivComment {
 
@@ -29,18 +30,24 @@ public class UnivComment {
 
     private String content;
 
-    @Column(name="parent_comment_id")
+    @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
     /** 익명방법? */
+    @Column(name = "is_anonymouse")
     private boolean isAnonymous;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
-    private PostCommentStatus status;
+    private PostStatus status;
 
 
 

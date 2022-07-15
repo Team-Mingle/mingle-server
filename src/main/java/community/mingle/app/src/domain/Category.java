@@ -12,17 +12,14 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="univ_name")
+@Table(name="category")
 
-public class UnivName {
+public class Category {
 
     @Id
-    @Column(name ="univ_id")
+    @Column(name = "category_id")
     private String id;
 
+    @Column(name = "category_name")
     private String name;
-
-    /*private List<User> members */
-    //단방향?
-
 }

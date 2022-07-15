@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="total_comment_like")
 
 public class TotalCommentLike {
 
@@ -20,11 +21,12 @@ public class TotalCommentLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "totalpost_id")
-    private TotalPost totalPost;
+    private TotalPost post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

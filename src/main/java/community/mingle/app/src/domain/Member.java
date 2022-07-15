@@ -22,6 +22,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="member")
 
 public class Member {
 
@@ -31,45 +32,45 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "univ_id")
-    private UnivName univCategory;
+    private UnivName univ;
 
-    private String nickName;
+    private String nickname;
     private String email; //regex 추가
     private String pwd; //regex 추가
 
     /** 학교게시판*/
     @OneToMany(mappedBy = "member")
-    private List<UnivPost> userUnivPosts = new ArrayList<>();
+    private List<UnivPost> univPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<UnivPostLike> userUnivPostLikes = new ArrayList<>();
+    private List<UnivPostLike> univPostLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<UnivPostScrap> userUnivPostScraps = new ArrayList<>();
+    private List<UnivPostScrap> univPostScraps = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<UnivComment> userUnivComments = new ArrayList<>();
+    private List<UnivComment> univComments = new ArrayList<>();
 
 //    private List<UnivCommentLike> univCommentLikes
 
 
     /** 전체게시판*/
     @OneToMany(mappedBy = "member")
-    private List<TotalPost> userTotalPosts = new ArrayList<>();
+    private List<TotalPost> total_posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TotalPostLike> userTotalPostLikes = new ArrayList<>();
+    private List<TotalPostLike> total_post_likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TotalPostScrap> userTotalPostScraps = new ArrayList<>();
+    private List<TotalPostScrap> total_post_scraps = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TotalComment> userTotalComments = new ArrayList<>();
+    private List<TotalComment> total_comments = new ArrayList<>();
 
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
+    private LocalDateTime created_at;
+    private LocalDateTime updated_at;
+    private LocalDateTime deleted_at;
 
     @Enumerated(EnumType.STRING)
     private Userstatus status;
