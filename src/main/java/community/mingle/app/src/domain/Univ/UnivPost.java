@@ -2,7 +2,6 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostCategory;
 import community.mingle.app.src.domain.PostStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,7 +19,7 @@ import java.util.List;
 
 public class UnivPost {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "univpost_id")
     private Long id;
 
@@ -51,6 +50,7 @@ public class UnivPost {
     private boolean isAnonymous;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum")
     private PostStatus status;
 
 

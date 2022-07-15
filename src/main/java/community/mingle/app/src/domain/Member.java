@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Member {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -73,6 +73,8 @@ public class Member {
     private LocalDateTime deleted_at;
 
     @Enumerated(EnumType.STRING)
+//    @Column(name = "status",columnDefinition = "ENUM('ACTIVE','INACTIVE','REPORTED','ADMIN", nullable = false)
+    @Column(columnDefinition = "enum")
     private Userstatus status;
 
 }

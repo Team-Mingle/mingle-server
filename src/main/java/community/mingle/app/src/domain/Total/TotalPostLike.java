@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 public class TotalPostLike {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "totalpost_like_id")
     private Long id;
 

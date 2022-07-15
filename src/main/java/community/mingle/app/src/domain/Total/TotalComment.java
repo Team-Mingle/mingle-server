@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 public class TotalComment {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "totalcomment_id")
     private Long id;
 
@@ -29,6 +29,7 @@ public class TotalComment {
     private Member member;
 
     private String content;
+
 
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
@@ -47,6 +48,7 @@ public class TotalComment {
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum")
     private PostStatus status;
 
 

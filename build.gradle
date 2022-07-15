@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -36,8 +36,11 @@ dependencies {
 
 
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
-//	runtimeOnly 'mysql:mysql-connector-java' //h2 바꿀때 해제
+//	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'mysql:mysql-connector-java' //h2 바꿀때 해제
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	//rds
+
 	annotationProcessor 'org.projectlombok:lombok'
 	//Springboot starter
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -61,3 +64,4 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+

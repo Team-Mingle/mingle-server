@@ -18,8 +18,9 @@ public class UnivName {
 
     @Id
     @Column(name ="univ_id")
-    private String id;
+    private int id;
 
+    @Column(name = "univ_name")
     private String name;
 
     /*private List<User> members */

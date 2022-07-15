@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 public class UnivPostScrap {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "univpost_scrap_id")
     private Long id;
 

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 public class UnivCommentLike {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "univcomment_like_id")
     private Long id;
 

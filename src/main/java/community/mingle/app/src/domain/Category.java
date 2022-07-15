@@ -18,7 +18,7 @@ public class Category {
 
     @Id
     @Column(name = "category_id")
-    private String id;
+    private int id;
 
     @Column(name = "category_name")
     private String name;

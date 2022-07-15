@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 public class TotalPostScrap {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "totalpost_scrap_id")
     private Long id;
 

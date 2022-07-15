@@ -2,7 +2,6 @@ package community.mingle.app.src.domain.Total;
 
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostCategory;
 import community.mingle.app.src.domain.PostStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +18,7 @@ import java.util.List;
 @Table(name="total_post")
 public class TotalPost {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "totalpost_id")
     private Long id;
 
@@ -54,6 +53,7 @@ public class TotalPost {
     private boolean isAnonymous;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum")
     private PostStatus status;
 
 

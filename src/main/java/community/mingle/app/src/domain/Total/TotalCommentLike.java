@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 
 public class TotalCommentLike {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "totalcomment_like_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "totalpost_id")
-    private TotalPost post;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "totalpost_id")
+//    private TotalPost post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

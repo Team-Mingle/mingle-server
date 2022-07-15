@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 public class UnivComment {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "univcomment_id")
     private Long id;
 
@@ -34,7 +34,7 @@ public class UnivComment {
     private Long parentCommentId;
 
     /** 익명방법? */
-    @Column(name = "is_anonymouse")
+    @Column(name = "is_anonymous")
     private boolean isAnonymous;
 
     @Column(name = "created_at")
@@ -47,6 +47,7 @@ public class UnivComment {
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum")
     private PostStatus status;
 
 
