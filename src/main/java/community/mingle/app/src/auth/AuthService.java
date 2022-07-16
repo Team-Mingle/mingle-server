@@ -3,6 +3,7 @@ package community.mingle.app.src.auth;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.authModel.PostEmailRequest;
 import community.mingle.app.src.auth.authModel.PostPwdRequest;
+import community.mingle.app.src.auth.authModel.PostSignupRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -96,6 +97,10 @@ public class AuthService {
         } else {
             throw new BaseException(SERVER_ERROR); //DB 접근을 안하니 디비에러는 아니고 그냥 서버에러로?
         }
+    }
+
+    public void verifyNickname(PostSignupRequest postSignupRequest) {
+
     }
 
 
