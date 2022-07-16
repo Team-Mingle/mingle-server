@@ -1,6 +1,7 @@
 package community.mingle.app.src.auth;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.PostEmailRequest;
 import community.mingle.app.src.auth.authModel.PostPwdRequest;
 import community.mingle.app.src.auth.authModel.PostSignupRequest;
@@ -133,9 +134,10 @@ public class AuthService {
 
         try {
             //암호화
-            UnivName univName = authRepository.findOne(postSignupRequest.getUnivId());
+            UnivName univName = authRepository.findUniv(postSignupRequest.getUnivId());
             Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
-            authRepository.save(member);
+            Long id = authRepository.save(member);
+            return new PostSignupResponse(id);
 
             //        return member.getId();
 //            return new PostSignupResponse(jwt, memberId);
@@ -143,9 +145,6 @@ public class AuthService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-
-
-
 
 
 

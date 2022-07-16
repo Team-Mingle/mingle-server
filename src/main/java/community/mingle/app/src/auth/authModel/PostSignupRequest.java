@@ -8,5 +8,5 @@ public class PostSignupRequest {
     private String email;
     private String pwd;
     private String nickname;
-    private String isAgreed;
+//    private String isAgreed;
 }
