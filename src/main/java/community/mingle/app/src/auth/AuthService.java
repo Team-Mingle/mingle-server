@@ -2,10 +2,7 @@ package community.mingle.app.src.auth;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.auth.authModel.PostEmailRequest;
-import community.mingle.app.src.auth.authModel.PostPwdRequest;
-import community.mingle.app.src.auth.authModel.PostSignupRequest;
-import community.mingle.app.src.auth.authModel.PostSignupResponse;
+import community.mingle.app.src.auth.authModel.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
@@ -139,7 +136,34 @@ public class AuthService {
 
     }
 
+    /**
+     * 1.9 로그인 api
+     */
+    @Transactional
+    public PostLoginResponse logIn (PostLoginRequest postLoginRequest) throws BaseException {
 
+        if((authRepository.findEmail(postLoginRequest.getEmail())==false)){
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
+
+        Member member = authRepository.findMember(postLoginRequest.getEmail());
+        if (!member.getPwd().equals(postLoginRequest.getPwd())) {
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
+        return new PostLoginResponse(member.getEmail());
+
+       /*
+        try {
+            Member member = authRepository.findMember(postLoginRequest.getEmail());
+            if (member.getPwd().equals(postLoginRequest.getPwd())) {
+                return new PostLoginResponse(member.getEmail());
+            }
+            //String nickname = member.getNickname();
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        } */
+
+    }
 
 //    /**
 //     * 1.5 비밀번호 검사

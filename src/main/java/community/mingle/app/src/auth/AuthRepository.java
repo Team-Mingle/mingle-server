@@ -25,6 +25,13 @@ public class AuthRepository {
         return em.find(UnivName.class, id);
     }
 
+
+    public Member findMember(String email) {
+        return em.createQuery("select m from Member m where m.email = :email", Member.class)
+                .setParameter("email", email)
+                .getSingleResult();
+    }
+
     public boolean findNickname (String nickname) {
         List<Member> duplicatedNickname= em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)
                 .setParameter("nickname", nickname)
@@ -50,6 +57,7 @@ public class AuthRepository {
         }
         else return false;
     }
+
 
 //    public List<Member> findByName(String nickname) {
 //        return em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)

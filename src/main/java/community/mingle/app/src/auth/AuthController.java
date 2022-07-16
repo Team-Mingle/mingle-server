@@ -208,6 +208,32 @@ public class AuthController {
 
     }
 
+    /**
+     * 1.9 로그인 api
+     */
+    @PostMapping("login")
+    public BaseResponse<PostLoginResponse> logIn (@RequestBody @Valid PostLoginRequest postLoginRequest) {
+        try {
+            if (!isRegexEmail(postLoginRequest.getEmail())) { //이메일 정규표현
+                return new BaseResponse<>(EMAIL_FORMAT_ERROR);
+            }
+
+            if (!isRegexPassword(postLoginRequest.getPwd())) { //비밀번호 정규표현
+                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
+            }
+
+
+            //return ResponseEntity.ok().build();
+
+            PostLoginResponse postloginResponse = authService.logIn(postLoginRequest);
+            return new BaseResponse<>(postloginResponse);
+
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 
 }
 
