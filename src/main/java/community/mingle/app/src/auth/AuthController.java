@@ -5,15 +5,8 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
-
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Scanner;
-
-
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
@@ -180,23 +173,34 @@ public class AuthController {
      */
     @ResponseBody
     @PostMapping("signup")
-    public BaseResponse<PostSignupResponse>createUser(@RequestBody PostSignupRequest postSignupRequest){
+    public BaseResponse<PostSignupResponse> createMember (@RequestBody PostSignupRequest postSignupRequest){
+        //이메일 빔
+        if (postSignupRequest.getEmail() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+        }
+        //이메일 형식(정규식) 검증 (new)
+        if (!isRegexEmail(postSignupRequest.getEmail())) {
+            return new BaseResponse<>(EMAIL_FORMAT_ERROR);
+        }
+        // 비밀번호 빔
+        if (postSignupRequest.getPwd().length() == 0) {
+            return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
+        }
+        //비밀번호 길이
+        if (postSignupRequest.getPwd().length() < 8) {
+            return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
+        }
+        //비밀번호 정규표현
+        if (!isRegexPassword(postSignupRequest.getPwd())) {
+            return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
+        }
+
         try {
 
-            authService.verifyNickname(postSignupRequest);
+            Long memberId = authService.createMember(postSignupRequest);
 
-            if (!isRegexEmail(postSignupRequest.getEmail())) { //이메일 형식(정규식) 검증
-                return new BaseResponse<>(EMAIL_FORMAT_ERROR);
-            }
-            if (postSignupRequest.getPwd().length() == 0) {
-                return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
-            }
-            if (postSignupRequest.getPwd().length() < 8) {
-                return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
-            }
-            if (!isRegexPassword(postSignupRequest.getPwd())) {
-                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
-            }
+            return new PostSignupResponse(jwt, memberId);
+
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }

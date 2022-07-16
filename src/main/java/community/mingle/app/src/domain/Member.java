@@ -77,4 +77,17 @@ public class Member {
     @Column(columnDefinition = "enum")
     private Userstatus status;
 
+
+
+    //== 생성 메서드 ==//
+    public static Member createMember(UnivName univName, String nickname, String email, String pwd) {
+        Member member = new Member();
+        member.setUniv(univName);
+        member.setNickname(nickname);
+        member.setEmail(email);
+        member.setPwd(pwd);
+
+        return member; //왜?
+    }
+
 }

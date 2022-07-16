@@ -4,6 +4,8 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.authModel.PostEmailRequest;
 import community.mingle.app.src.auth.authModel.PostPwdRequest;
 import community.mingle.app.src.auth.authModel.PostSignupRequest;
+import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,6 +25,10 @@ public class AuthService {
 
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
+
+    private final AuthRepository authRepository;
+
+
 
     @Value("${spring.mail.username}")
     private  String from;
@@ -99,9 +105,32 @@ public class AuthService {
         }
     }
 
+
+    /**
+     * 1.8 회원가입 api
+     */
+    public Long createMember(PostSignupRequest postSignupRequest) {
+
+        UnivName univName = authRepository.findOne(postSignupRequest.getUnivId());
+
+        Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
+
+        authRepository.save(member);
+
+        return member.getId();
+
+    }
+
+
+
+
     public void verifyNickname(PostSignupRequest postSignupRequest) {
 
     }
+
+
+
+
 
 
 //    /**
