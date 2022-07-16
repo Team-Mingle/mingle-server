@@ -21,6 +21,7 @@ public class AuthRepository {
         return member.getId();
     }
 
+
     public UnivName findUniv(int id) {
         return em.find(UnivName.class, id);
     }

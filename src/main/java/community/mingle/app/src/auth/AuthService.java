@@ -139,7 +139,7 @@ public class AuthService {
     /**
      * 1.9 로그인 api
      */
-    @Transactional
+
     public PostLoginResponse logIn (PostLoginRequest postLoginRequest) throws BaseException {
 
         if((authRepository.findEmail(postLoginRequest.getEmail())==false)){
@@ -155,13 +155,22 @@ public class AuthService {
        /*
         try {
             Member member = authRepository.findMember(postLoginRequest.getEmail());
-            if (member.getPwd().equals(postLoginRequest.getPwd())) {
-                return new PostLoginResponse(member.getEmail());
-            }
+            //to be added
             //String nickname = member.getNickname();
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         } */
+
+    }
+
+    /**
+     * 1.10 비밀번호 재설정 api
+     */
+    @Transactional
+    public void updatePwd (UpdatePwdRequest updatePwdRequest) throws BaseException{
+        Member member = authRepository.findMember(updatePwdRequest.getEmail());
+        member.setPwd(updatePwdRequest.getPwd());
+        Long id = authRepository.save(member);
 
     }
 

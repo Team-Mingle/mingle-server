@@ -232,8 +232,23 @@ public class AuthController {
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
+
     }
 
+    /**
+     * 1.10 비밀번호 변경 api
+     */
+    @PatchMapping("userinfo")
+    public BaseResponse<String> updatePwd(@RequestBody @Valid UpdatePwdRequest updatePwdRequest) {
+        try {
+            authService.updatePwd(updatePwdRequest);
+            String result = "비밀번호 변경에 성공하였습니다.";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 }
 
