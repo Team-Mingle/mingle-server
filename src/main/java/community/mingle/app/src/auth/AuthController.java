@@ -18,7 +18,6 @@ import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 @RequestMapping("/emails")
 @RequiredArgsConstructor
 public class AuthController {
-
 //    @Autowired
     private final AuthService authService;
 
@@ -29,7 +28,7 @@ public class AuthController {
     @PostMapping("")
     public BaseResponse<String> sendCode(@RequestBody @Valid PostEmailRequest req) {
         try {
-            if(!isRegexEmail(req.getEmail())){ //이메일 형식(정규식) 검증
+            if (!isRegexEmail(req.getEmail())) { //이메일 형식(정규식) 검증
                 return new BaseResponse<>(EMAIL_FORMAT_ERROR);
             }
             authService.sendCode(req);
