@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -36,6 +38,7 @@ public class Member {
     private String nickName;
     private String email; //regex 추가
     private String pwd; //regex 추가
+
 
     /** 학교게시판*/
     @OneToMany(mappedBy = "member")
