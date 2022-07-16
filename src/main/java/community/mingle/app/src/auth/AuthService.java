@@ -13,24 +13,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.transaction.Transactional;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Random;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 
-@Component
+//@Component
 @RequiredArgsConstructor
+@Service
+//@Transactional(readOnly = true)
 public class AuthService {
 
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
-
     private final AuthRepository authRepository;
-
 
 
     @Value("${spring.mail.username}")
@@ -41,12 +41,6 @@ public class AuthService {
      */
     @Transactional
     public void sendCode(PostEmailRequest request) throws BaseException {
-
-
-//        if (emailDao.getEmail(request.getEmail().equals(request.getEmail()))) {
-//            throw new BaseException()
-//        }
-
         try {
             Random random = new Random();
             String authKey = String.valueOf(random.nextInt(888888) + 111111);
@@ -93,8 +87,6 @@ public class AuthService {
         }
     }
 
-
-
     /**
      * 1.5 비밀번호 검사
      */
@@ -109,13 +101,11 @@ public class AuthService {
     }
 
 
-
-
-
     /**
      * 1.8 회원가입 api
-     * 암호화 보류
+     * 암호화, jwt 보류
      */
+    @Transactional //Transaction silently rolled back because it has been marked as rollback-only
     public PostSignupResponse createMember(PostSignupRequest postSignupRequest) throws BaseException {
 
         //중복검사
@@ -123,42 +113,31 @@ public class AuthService {
             //암호화 전 or 후 ?
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
-
         if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
             throw new BaseException(POSTS_USERS_EXISTS_NICKNAME);
         }
 
 //        String EncryptedEmail = postSignupRequest.getEmail();
-
-        String pwd = postSignupRequest.getPwd();
+//        String pwd = postSignupRequest.getPwd();
 
         try {
-            //암호화
+            //암호화하기
             UnivName univName = authRepository.findUniv(postSignupRequest.getUnivId());
             Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
+            System.out.println("====1. createMember====="); //실행됨
+
             Long id = authRepository.save(member);
+            System.out.println("====2. save====="); //실행안됨
+//            authRepository.save(member);
             return new PostSignupResponse(id);
 
-            //        return member.getId();
 //            return new PostSignupResponse(jwt, memberId);
 
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
 
-
-
     }
-
-
-
-
-    public void verifyNickname(PostSignupRequest postSignupRequest) {
-
-    }
-
-
-
 
 
 

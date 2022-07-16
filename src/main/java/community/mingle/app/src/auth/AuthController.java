@@ -5,6 +5,7 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivName;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -15,10 +16,11 @@ import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
 @RestController
 @RequestMapping("/emails")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+//    @Autowired
+    private final AuthService authService;
 
     /**
      * 1.4.1 인증코드 전송 API
@@ -175,7 +177,7 @@ public class AuthController {
      */
     @ResponseBody
     @PostMapping("signup")
-    public BaseResponse<PostSignupResponse> createMember (@RequestBody PostSignupRequest postSignupRequest){
+    public BaseResponse<PostSignupResponse> createMember (@RequestBody @Valid PostSignupRequest postSignupRequest){
         //이메일 빔
         if (postSignupRequest.getEmail() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);

@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.bytebuddy.asm.Advice;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -68,6 +69,7 @@ public class Member {
     private List<TotalComment> total_comments = new ArrayList<>();
 
 
+    private LocalDateTime agreed_at;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private LocalDateTime deleted_at;
@@ -79,15 +81,19 @@ public class Member {
 
 
 
-    //== 생성 메서드 ==//
+    //== 생성 메서드 ==// -> constructor 역할.
     public static Member createMember(UnivName univName, String nickname, String email, String pwd) {
         Member member = new Member();
         member.setUniv(univName);
         member.setNickname(nickname);
         member.setEmail(email);
         member.setPwd(pwd);
+        member.agreed_at = LocalDateTime.now();
+        member.created_at = LocalDateTime.now();
+        member.updated_at = LocalDateTime.now();
+        member.status = Userstatus.ACTIVE;
 
-        return member; //왜?
+        return member;
     }
 
 }
