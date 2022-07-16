@@ -1,5 +1,5 @@
 package community.mingle.app.src.domain;
 
-public enum PostCommentStatus {
+public enum PostStatus {
     ACTIVE, INACTIVE, REPORTED
 }

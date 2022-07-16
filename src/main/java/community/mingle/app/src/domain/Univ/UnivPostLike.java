@@ -11,10 +11,11 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name="univ_post_like")
 
 public class UnivPostLike {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "univpost_like_id")
     private Long id;
 
@@ -26,5 +27,6 @@ public class UnivPostLike {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }
