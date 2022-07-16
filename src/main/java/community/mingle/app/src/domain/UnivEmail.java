@@ -1,5 +1,6 @@
 package community.mingle.app.src.domain;
 
+import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,21 +12,22 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="univ_name")
+@Table(name="univ_email")
 
-public class UnivName {
+public class UnivEmail {
 
     @Id
-    @Column(name ="univ_id")
+    @Column(name ="univ_email_id")
     private int id;
 
-    @Column(name = "univ_name")
-    private String univName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "univ_id")
+    private UnivName univName;
+
+    @Column(name = "univ_domain")
+    private String domain;
 
     /*private List<User> members */
     //단방향?
-
-    @OneToMany(mappedBy = "univName")
-    private List<UnivEmail> univEmailList = new ArrayList<>();
 
 }
