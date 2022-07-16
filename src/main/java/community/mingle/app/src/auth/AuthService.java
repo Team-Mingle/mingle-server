@@ -111,7 +111,7 @@ public class AuthService {
      */
     public Long createMember(PostSignupRequest postSignupRequest) {
 
-        UnivName univName = authRepository.findOne(postSignupRequest.getUnivId());
+        UnivName univName = authRepository.findUniv(postSignupRequest.getUnivId());
 
         Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
 
