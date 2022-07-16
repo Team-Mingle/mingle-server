@@ -4,6 +4,7 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.authModel.PostEmailRequest;
 import community.mingle.app.src.auth.authModel.PostPwdRequest;
 import community.mingle.app.src.auth.authModel.PostSignupRequest;
+import community.mingle.app.src.auth.authModel.PostSignupResponse;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Random;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -106,18 +108,46 @@ public class AuthService {
     }
 
 
+
+
+
     /**
      * 1.8 회원가입 api
+     * 암호화 보류
      */
-    public Long createMember(PostSignupRequest postSignupRequest) {
+    public PostSignupResponse createMember(PostSignupRequest postSignupRequest) throws BaseException {
 
-        UnivName univName = authRepository.findOne(postSignupRequest.getUnivId());
+        //중복검사
+        if ((authRepository.findEmail(postSignupRequest.getEmail()) == true)) {
+            //암호화 전 or 후 ?
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        }
 
-        Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
+        if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
+            throw new BaseException(POSTS_USERS_EXISTS_NICKNAME);
+        }
 
-        authRepository.save(member);
+//        String EncryptedEmail = postSignupRequest.getEmail();
 
-        return member.getId();
+        String pwd = postSignupRequest.getPwd();
+
+        try {
+            //암호화
+            UnivName univName = authRepository.findOne(postSignupRequest.getUnivId());
+            Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
+            authRepository.save(member);
+
+            //        return member.getId();
+//            return new PostSignupResponse(jwt, memberId);
+
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+
+
+
+
 
     }
 

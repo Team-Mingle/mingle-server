@@ -82,9 +82,10 @@ public enum BaseResponseStatus {
     PASSWORD_EMPTY_ERROR(false, 5020, "비밀번호를 입력해주세요."),
     PASSWORD_LENGTH_ERROR(false, 5021, "비밀번호가 너무 짧습니다."),
     PASSWORD_FORMAT_ERROR(false, 5022, "비밀번호는 영문,숫자,특수문자를 포함해야 합니다."),
-    PASSWORD_MATCH_ERROR(false, 5023, "비밀번호가 일치하지 않습니다. ");
+    PASSWORD_MATCH_ERROR(false, 5023, "비밀번호가 일치하지 않습니다. "),
 
 
+    POSTS_USERS_EXISTS_NICKNAME(false, 5030, "닉네임 중복");
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요

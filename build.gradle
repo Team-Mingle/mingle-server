@@ -46,17 +46,23 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
-	//JUnit4 추가
-	testImplementation("org.junit.vintage:junit-vintage-engine") {
-		exclude group: "org.hamcrest", module: "hamcrest-core"
-	}
+
+
+
 
 
 	// Security, Authentication : 추가
 //	implementation('org.springframework.boot:spring-boot-starter-security')
 //	compile(group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0')
 //	compile('io.jsonwebtoken:jjwt:0.9.0')
-//
+
+
+	//JUnit4 추가
+	testImplementation("org.junit.vintage:junit-vintage-engine") {
+		exclude group: "org.hamcrest", module: "hamcrest-core"
+	}
+
+
 //	implementation('org.springframework.boot:spring-boot-starter')
 //	compile('org.springframework.boot:spring-boot-starter-web')
 }

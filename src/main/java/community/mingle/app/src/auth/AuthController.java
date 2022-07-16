@@ -3,6 +3,8 @@ package community.mingle.app.src.auth;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.*;
+import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.UnivName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -196,10 +198,8 @@ public class AuthController {
         }
 
         try {
-
-            Long memberId = authService.createMember(postSignupRequest);
-
-            return new PostSignupResponse(jwt, memberId);
+            PostSignupResponse postSignupResponse = authService.createMember(postSignupRequest);
+            return new BaseResponse<>(postSignupResponse);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
