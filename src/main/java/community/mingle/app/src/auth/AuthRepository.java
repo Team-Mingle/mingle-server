@@ -1,10 +1,11 @@
 package community.mingle.app.src.auth;
 
+
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -50,6 +51,20 @@ public class AuthRepository {
         }
         else return false;
     }
+
+
+    public List<UnivName> findAll() {
+        return em.createQuery("select u from UnivName u", UnivName.class)
+                .getResultList();
+    }
+
+    public List<UnivEmail>  findByUniv(int univIdx) {
+        return em.createQuery("select u from UnivEmail u where u.univIdx= :univIdx", UnivEmail.class)
+                .setParameter("univIdx", univIdx)
+               .getResultList();
+    }
+
+
 
 //    public List<Member> findByName(String nickname) {
 //        return em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)

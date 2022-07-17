@@ -3,13 +3,16 @@ package community.mingle.app.src.auth;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.*;
-import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
+
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
@@ -22,10 +25,67 @@ public class AuthController {
 //    @Autowired
     private final AuthService authService;
 
+
+    /**
+     * 학교 리스트 보내주기 (idx, name)
+     */
+    @GetMapping("/univList")
+    public BaseResponse<List<UnivName>> univName() {
+        try {
+            List<UnivName> getUnivListResponse = authService.findUniv();
+            return new BaseResponse<>(getUnivListResponse);
+
+        }catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
+     * 학교 univIdx 받고 이메일 리스트 보내주기
+     */
+    @ResponseBody
+    @GetMapping("/univDomain")
+    public BaseResponse<List<UnivEmail>> getDomain(@RequestParam int univIdx) {
+        try{
+
+            List<UnivEmail> getUnivDomainResponses = authService.findDomain(univIdx);
+            return new BaseResponse<>(getUnivDomainResponses);
+        } catch(BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
+     * 이메일 입력 받기
+     */
+    @ResponseBody
+    @PostMapping("getemail") // (POST) 127.0.0.1:9000/users
+    public BaseResponse<PostUserEmailResponse> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
+
+        if (postUserEmailRequest.getEmail() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+        }
+        // 이메일 정규표현
+        if (!isRegexEmail(postUserEmailRequest.getEmail())) {
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        }
+        try {
+            PostUserEmailResponse postUserEmailResponse = authService.verifyEmail(postUserEmailRequest);
+            return new BaseResponse<>(postUserEmailResponse);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
     /**
      * 1.4.1 인증코드 전송 API
      * @return
      */
+
     @PostMapping("")
     public BaseResponse<String> sendCode(@RequestBody @Valid PostEmailRequest req) {
         try {
