@@ -1,23 +1,21 @@
 package community.mingle.app.src.auth;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.auth.authModel.PostEmailRequest;
-import community.mingle.app.src.auth.authModel.PostPwdRequest;
-import community.mingle.app.src.auth.authModel.PostSignupRequest;
-import community.mingle.app.src.auth.authModel.PostSignupResponse;
+import community.mingle.app.src.auth.authModel.*;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.Random;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -35,6 +33,56 @@ public class AuthService {
 
     @Value("${spring.mail.username}")
     private  String from;
+
+
+    /**
+     * 학교 리스트 보내주기
+     *
+     * @return
+     */
+    public List<UnivName> findUniv() throws BaseException{
+        try{
+            List<UnivName> univName = authRepository.findAll();
+
+            return univName;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+
+        }
+    }
+
+
+
+    /**
+     * 학교 univIdx 받고 이메일 리스트 보내주기
+     */
+    public List<UnivEmail> findDomain(int univId) throws BaseException {
+        try {
+            List<UnivEmail> getDomain = authRepository.findByUniv(univId);
+            return getDomain;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+
+    /**
+     * 이메일 받기
+     */
+    @Transactional
+    public PostUserEmailResponse verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
+
+        if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        }
+        try {
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+        return null;
+    }
+
 
     /**
      * 1.4.1 인증번호 생성
@@ -139,7 +187,54 @@ public class AuthService {
 
     }
 
+    /**
+     * 1.9 로그인 api
+     */
 
+    public PostLoginResponse logIn (PostLoginRequest postLoginRequest) throws BaseException {
+
+        if((authRepository.findEmail(postLoginRequest.getEmail())==false)){
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
+
+        Member member = authRepository.findMember(postLoginRequest.getEmail());
+        if (!member.getPwd().equals(postLoginRequest.getPwd())) {
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
+        return new PostLoginResponse(member.getEmail());
+
+       /*
+        try {
+            Member member = authRepository.findMember(postLoginRequest.getEmail());
+            //to be added
+            //String nickname = member.getNickname();
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        } */
+
+    }
+
+    /**
+     * 1.10 비밀번호 재설정 api
+     */
+    @Transactional
+    public void updatePwd (PatchUpdatePwdRequest patchUpdatePwdRequest) throws BaseException{
+        //여기서 JWT로 해당 유저인지 확인 필요
+        //임시 방편으로 중복확인 메소드 넣어둠
+        if ((authRepository.findEmail(patchUpdatePwdRequest.getEmail()) == false)) {
+            //암호화 전 or 후 ?
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        }
+        if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) == 0) {
+            Member member = authRepository.findMember(patchUpdatePwdRequest.getEmail());
+            member.setPwd(patchUpdatePwdRequest.getPwd());
+            Long id = authRepository.save(member);
+        } else if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) != 0) {
+            throw new BaseException(PASSWORD_MATCH_ERROR);
+        }
+
+
+    }
 
 //    /**
 //     * 1.5 비밀번호 검사
