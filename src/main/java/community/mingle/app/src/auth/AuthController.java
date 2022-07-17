@@ -3,29 +3,92 @@ package community.mingle.app.src.auth;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.*;
-import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
 @RestController
-@RequestMapping("/emails")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 //    @Autowired
     private final AuthService authService;
 
     /**
+     * 1.1 학교 리스트 전송 API
+     */
+    @GetMapping("/univList")
+    public BaseResponse<List<GetUnivListResponse>> univName() {
+        try {
+            List<UnivName> findUnivNames = authService.findUniv();
+            List<GetUnivListResponse> result = findUnivNames.stream()
+                    .map(m -> new GetUnivListResponse(m))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        }catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
+     * 1.2 학교별 도메인 리스트 전송 API
+     */
+    @ResponseBody
+    @GetMapping("/univDomain")
+    public BaseResponse<List<GetUnivDomainResponse>> getDomain(@RequestParam int univId) {
+        try{
+
+            List<UnivEmail> findUnivDomains = authService.findDomain(univId);
+            List<GetUnivDomainResponse> result = findUnivDomains.stream()
+                    .map(m -> new GetUnivDomainResponse(m.getId(), m.getDomain()))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch(BaseException exception){
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
+     * 1.3 이메일 입력 & 중복검사 API
+     */
+    @ResponseBody
+    @PostMapping("checkEmail") // (POST) 127.0.0.1:9000/users
+    public BaseResponse<PostUserEmailResponse> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
+
+        if (postUserEmailRequest.getEmail() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+        }
+        // 이메일 정규표현
+        if (!isRegexEmail(postUserEmailRequest.getEmail())) {
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        }
+        try {
+            PostUserEmailResponse postUserEmailResponse = authService.verifyEmail(postUserEmailRequest);
+            return new BaseResponse<>(postUserEmailResponse);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+    /**
      * 1.4.1 인증코드 전송 API
      * @return
      */
-    @PostMapping("")
+    @PostMapping("sendCode")
     public BaseResponse<String> sendCode(@RequestBody @Valid PostEmailRequest req) {
         try {
             if (!isRegexEmail(req.getEmail())) { //이메일 형식(정규식) 검증
@@ -44,8 +107,10 @@ public class AuthController {
     /**
      * 1.4.2 인증 코드 검사 API
      */
+    //프론트 실수로 이메일 잘못 받았을 때 validation
+
     @ResponseBody
-    @PostMapping("code")
+    @PostMapping("checkCode")
     public BaseResponse<String> verifyCode(@RequestBody @Valid PostCodeRequest code) {
         try {
             if(!isRegexEmail(code.getEmail())){ //이메일 형식(정규식) 검증
@@ -62,7 +127,7 @@ public class AuthController {
     }
 
     /**
-     * 1.5 비밀번호 검증 api
+     * 1.5 비밀번호 검증 API
      */
     @ResponseBody
     @PostMapping("pwd") //Get 인데 Body 로 받을수 있나?
@@ -172,7 +237,7 @@ public class AuthController {
     }
 
     /**
-     * 1.8 회원가입 api
+     * 1.8 회원가입 API
      */
     @ResponseBody
     @PostMapping("signup")
@@ -209,7 +274,7 @@ public class AuthController {
     }
 
     /**
-     * 1.9 로그인 api
+     * 1.9 로그인 API
      */
     @PostMapping("login")
     public BaseResponse<PostLoginResponse> logIn (@RequestBody @Valid PostLoginRequest postLoginRequest) {
@@ -236,12 +301,24 @@ public class AuthController {
     }
 
     /**
-     * 1.10 비밀번호 변경 api
+     * 1.10 비밀번호 변경 API
      */
+
+    //재입력 비밀번호 validation 추가
     @PatchMapping("userinfo")
-    public BaseResponse<String> updatePwd(@RequestBody @Valid UpdatePwdRequest updatePwdRequest) {
+    public BaseResponse<String> updatePwd(@RequestBody @Valid PatchUpdatePwdRequest patchUpdatePwdRequest) {
+        if (patchUpdatePwdRequest.getPwd().length() == 0) {
+            return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
+        }
+        if (patchUpdatePwdRequest.getPwd().length() < 8) {
+            return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
+        }
+        if (!isRegexPassword(patchUpdatePwdRequest.getPwd())) {
+            return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
+        }
+
         try {
-            authService.updatePwd(updatePwdRequest);
+            authService.updatePwd(patchUpdatePwdRequest);
             String result = "비밀번호 변경에 성공하였습니다.";
             return new BaseResponse<>(result);
 
