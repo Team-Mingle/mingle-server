@@ -53,16 +53,7 @@ public class AuthRepository {
     }
 
 
-    public List<UnivName> findAll() {
-        return em.createQuery("select u from UnivName u", UnivName.class)
-                .getResultList();
-    }
 
-    public List<UnivEmail>  findByUniv(int univIdx) {
-        return em.createQuery("select u from UnivEmail u where u.univIdx= :univIdx", UnivEmail.class)
-                .setParameter("univIdx", univIdx)
-               .getResultList();
-    }
 
 
 

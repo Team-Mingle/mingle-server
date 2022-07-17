@@ -4,10 +4,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +21,9 @@ public class UnivName {
 
     @Column(name = "univ_name")
     private String name;
+
+    @OneToMany(mappedBy = "univName")
+    private List<UnivEmail> univEmailList = new ArrayList<>();
 
     /*private List<User> members */
     //단방향?

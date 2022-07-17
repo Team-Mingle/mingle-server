@@ -1,9 +1,11 @@
 package community.mingle.app.src.auth;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.src.auth.authModel.*;
+import community.mingle.app.src.auth.authModel.PostEmailRequest;
+import community.mingle.app.src.auth.authModel.PostPwdRequest;
+import community.mingle.app.src.auth.authModel.PostSignupRequest;
+import community.mingle.app.src.auth.authModel.PostSignupResponse;
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.List;
 import java.util.Random;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -34,53 +35,7 @@ public class AuthService {
     private  String from;
 
 
-    /**
-     * 학교 리스트 보내주기
-     *
-     * @return
-     */
-    public List<UnivName> findUniv() throws BaseException{
-        try{
-            List<UnivName> univName = authRepository.findAll();
 
-            return univName;
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-
-        }
-    }
-
-
-
-    /**
-     * 학교 univIdx 받고 이메일 리스트 보내주기
-     */
-    public List<UnivEmail> findDomain(int univIdx) throws BaseException {
-        try {
-            List<UnivEmail> getDomain = authRepository.findByUniv(univIdx);
-            return getDomain;
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-
-    }
-
-
-    /**
-     * 이메일 받기
-     */
-    @Transactional
-    public PostUserEmailResponse verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
-
-        if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
-        }
-        try {
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-        return null;
-    }
 
     /**
          * 1.4.1 인증번호 생성

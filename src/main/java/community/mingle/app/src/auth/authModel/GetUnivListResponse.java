@@ -1,6 +1,5 @@
 package community.mingle.app.src.auth.authModel;
 
-import community.mingle.app.src.domain.UnivName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,6 +9,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class GetUnivListResponse {
-    private int univIdx;
-    private UnivName univ;
+    private int id;
+    private String name;
 }

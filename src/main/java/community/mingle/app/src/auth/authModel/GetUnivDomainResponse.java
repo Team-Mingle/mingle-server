@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class GetUnivDomainResponse {
-    private int emailIdx;
+    private int id;
     private String domain;
+    //private List<UnivEmail> univEmailList ;
 }

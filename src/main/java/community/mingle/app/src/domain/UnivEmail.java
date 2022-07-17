@@ -4,10 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -18,14 +15,16 @@ public class UnivEmail {
 
     @Id
     @Column(name ="univ_email_id")
-    private int emailIdx;
+    private int id;
 
-    @Column(name ="univ_id")
-    private int univIdx;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "univ_id")
+    private UnivName univName;
 
     @Column(name = "univ_domain")
     private String domain;
 
-
+    /*private List<User> members */
+    //단방향?
 
 }
