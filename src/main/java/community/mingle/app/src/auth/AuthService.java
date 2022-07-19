@@ -168,8 +168,13 @@ public class AuthService {
 //        String EncryptedEmail = postSignupRequest.getEmail();
 //        String pwd = postSignupRequest.getPwd();
 
+        //암호화
+//        try {
+//            pwd =
+//        }
+
+        //로직
         try {
-            //암호화하기
             UnivName univName = authRepository.findUniv(postSignupRequest.getUnivId());
             Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
             System.out.println("====1. createMember====="); //실행됨
