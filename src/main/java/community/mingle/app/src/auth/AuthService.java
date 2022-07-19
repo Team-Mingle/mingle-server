@@ -136,20 +136,6 @@ public class AuthService {
         }
     }
 
-//    /**
-//     * 1.5 비밀번호 검사
-//     */
-//    public void verifyPwd(PostPwdRequest postPwdRequest) throws BaseException {
-//        if ((postPwdRequest.getPwd().compareTo(postPwdRequest.getRePwd())) == 0) {
-//            return;
-//        } else if ((postPwdRequest.getPwd().compareTo(postPwdRequest.getRePwd())) != 0) {
-//            throw new BaseException(PASSWORD_MATCH_ERROR);
-//        } else {
-//            throw new BaseException(SERVER_ERROR); //DB 접근을 안하니 디비에러는 아니고 그냥 서버에러로?
-//        }
-//    }
-
-
     /**
      * 1.8 회원가입 api
      */
@@ -187,7 +173,6 @@ public class AuthService {
 
         //로직
         try {
-
             UnivName univName = authRepository.findUniv(postSignupRequest.getUnivId());
             Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
             System.out.println("====1. createMember====="); //실행됨
@@ -210,7 +195,6 @@ public class AuthService {
      */
     @Transactional
     public PostLoginResponse logIn (PostLoginRequest postLoginRequest) throws BaseException {
-
         //이메일 암호화
         String email;
         try {
@@ -228,18 +212,22 @@ public class AuthService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
-//        try {
-            Member member = authRepository.findMember(postLoginRequest.getEmail());
-            if (member.equals(null)) {
-                throw new BaseException(FAILED_TO_LOGIN);
+        Member member; //try 안에있으면 인식안됨
+        try {
+            member = authRepository.findMemberByEmail(postLoginRequest.getEmail());
+            if (member == null) {
+                throw new BaseException(EMAIL_CODE_FAIL);
             }
+        } catch (Exception e) {
+            System.out.println("======2=======");
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
 
         //JWT 로 찾은 user_id 랑 email 로 찾은 user_id 랑 같은지 검증 (할필요 없음, 로그인은 header 안 씀)
         int userIdxByJwt = jwtService.getUserIdx();
         if (member.getId() != userIdxByJwt) {
             throw new BaseException(INVALID_USER_JWT);
         }
-
 
         try {
             //비밀번호 비교
@@ -248,31 +236,14 @@ public class AuthService {
                 String jwt = jwtService.createJwt(userIdx);
                 return new PostLoginResponse(userIdx, jwt); //비교해서 이상이 없다면 jwt를 발급
             }
+            /** else 없으면 missing return statement */
             else {
                 throw new BaseException(FAILED_TO_LOGIN);
             }
 
-
-
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_LOGIN);
         }
-
-//
-//        if (!member.getPwd().equals(postLoginRequest.getPwd())) {
-//            throw new BaseException(FAILED_TO_LOGIN);
-//        }
-//        return new PostLoginResponse(member.getEmail());
-
-       /*
-        try {
-            Member member = authRepository.findMember(postLoginRequest.getEmail());
-            //to be added
-            //String nickname = member.getNickname();
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        } */
-
     }
 
     /**
@@ -301,56 +272,32 @@ public class AuthService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
-
         //이메일로 멤버 찾기 멤버 찾기
-//        try {
-            Member member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
+        Member member;
+        try {
+            member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
             if (member == null) { // .equals(null) : always false?
                 //return; // No entity found for query; nested exception is javax.persistence.NoResultException: No entity found for query
                 throw new BaseException(FAILED_TO_LOGIN);
             }
+        } catch (Exception e) {
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
 
-            //여기서 이메일로 JWT로 해당 유저인지 확인 필요
+        //여기서 이메일로 JWT로 해당 유저인지 확인 필요
         /**
          * 이메일로 찾은 member 의 id 가 JWT 로 찾은 id 랑 같은지 비교
          */
-            int userIdxByJwt = jwtService.getUserIdx();
-            if (member.getId() != userIdxByJwt) {
-                throw new BaseException(INVALID_USER_JWT);
-            }
-            if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) == 0) {
-                member.setPwd(patchUpdatePwdRequest.getPwd()); //Setter 로 바로 해도 될까?
-                Long id = authRepository.save(member);
-            } else if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) != 0) {
-                throw new BaseException(PASSWORD_MATCH_ERROR);
-            }
-//        } catch (Exception e) {
-//            throw new BaseException(FAILED_TO_LOGIN);
-//        }
-
-//        //인증코드 대신 임시 방편으로 중복확인 메소드 넣어둠
-//        if ((authRepository.findEmail(patchUpdatePwdRequest.getEmail()) == false)) {
-//            //암호화 전 or 후 ?
-//            throw new BaseException(POST_USERS_EXISTS_EMAIL);
-//        }
-
-        //비밀번호 암호화
-//        String encryptPwd;
-//        String encryptRePwd;
-//        try {
-//            encryptPwd = new SHA256().encrypt(patchUpdatePwdRequest.getPwd());
-//            encryptRePwd = new SHA256().encrypt(patchUpdatePwdRequest.getRePwd());
-//            patchUpdatePwdRequest.setPwd(encryptPwd);
-//        } catch (Exception exception) {
-//            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
-//        }
-
-//        if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) == 0) {
-//            member.setPwd(patchUpdatePwdRequest.getPwd()); //Setter 로 바로 해도 될까?
-//            Long id = authRepository.save(member);
-//        } else if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) != 0) {
-//            throw new BaseException(PASSWORD_MATCH_ERROR);
-//        }
+        int userIdxByJwt = jwtService.getUserIdx();
+        if (member.getId() != userIdxByJwt) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+        if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) == 0) {
+            member.setPwd(patchUpdatePwdRequest.getPwd()); //Setter 로 바로 해도 될까?
+            Long id = authRepository.save(member);
+        } else if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) != 0) {
+            throw new BaseException(PASSWORD_MATCH_ERROR);
+        }
     }
 
 //    /**
