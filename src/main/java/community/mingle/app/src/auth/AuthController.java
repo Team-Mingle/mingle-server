@@ -5,6 +5,7 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.*;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -16,6 +17,7 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
+@Api(tags = {"API 정보를 제공하는 Controller"})
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -23,9 +25,11 @@ public class AuthController {
 //    @Autowired
     private final AuthService authService;
 
+
     /**
      * 1.1 학교 리스트 전송 API
      */
+
     @GetMapping("/univList")
     public BaseResponse<List<GetUnivListResponse>> univName() {
         try {
@@ -35,7 +39,7 @@ public class AuthController {
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 
-        }catch (BaseException exception) {
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -65,7 +69,7 @@ public class AuthController {
      * 1.3 이메일 입력 & 중복검사 API
      */
     @ResponseBody
-    @PostMapping("checkEmail") // (POST) 127.0.0.1:9000/users
+    @GetMapping("checkEmail") // (POST) 127.0.0.1:9000/users
     public BaseResponse<PostUserEmailResponse> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
 
         if (postUserEmailRequest.getEmail() == null) {
@@ -85,7 +89,7 @@ public class AuthController {
 
 
     /**
-     * 1.4.1 인증코드 전송 API
+     * 1.4 인증코드 전송 API
      * @return
      */
     @PostMapping("sendCode")
@@ -105,7 +109,7 @@ public class AuthController {
     }
 
     /**
-     * 1.4.2 인증 코드 검사 API
+     * 1.5 인증 코드 검사 API
      */
     //프론트 실수로 이메일 잘못 받았을 때 validation
 
@@ -126,62 +130,39 @@ public class AuthController {
         }
     }
 
+//    /**
+//     * 1.5 비밀번호 검증 API
+//     */
+//    @ResponseBody
+//    @PostMapping("pwd") //Get 인데 Body 로 받을수 있나?
+//    public BaseResponse<String> verifyPwd(@RequestBody PostPwdRequest postPwdRequest) {
+//        try {
+//            if (postPwdRequest.getPwd().length() == 0) {
+//                return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
+//            }
+//            if (postPwdRequest.getPwd().length() < 8) {
+//                return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
+//            }
+//            if (!isRegexPassword(postPwdRequest.getPwd())) {
+//                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
+//            }
+//            authService.verifyPwd(postPwdRequest);
+//            String result = "비밀번호 인증에 성공하였습니다.";
+//            return new BaseResponse<>(result);
+//
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
+
+
     /**
-     * 1.5 비밀번호 검증 API
+     * 1.6.1 개인정보 처리방침- Alternative 스트링으로 반환
      */
-    @ResponseBody
-    @PostMapping("pwd") //Get 인데 Body 로 받을수 있나?
-    public BaseResponse<String> verifyPwd(@RequestBody PostPwdRequest postPwdRequest) {
-        try {
-            if (postPwdRequest.getPwd().length() == 0) {
-                return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
-            }
-            if (postPwdRequest.getPwd().length() < 8) {
-                return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
-            }
-            if (!isRegexPassword(postPwdRequest.getPwd())) {
-                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
-            }
-            authService.verifyPwd(postPwdRequest);
-            String result = "비밀번호 인증에 성공하였습니다.";
-            return new BaseResponse<>(result);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
-
-
-    /**
-     * 1.6.1 Alternative 약관만 스트링으로 반환
-     */
-    @GetMapping("terms/1")
-    public String getTermsString() {
-
+    @GetMapping("terms/privacy/1")
+    public String getPrivacyTerms1() {
         try {
             String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
-            FileInputStream fileStream = null;
-
-            fileStream = new FileInputStream(filePath);
-            byte[] readBuffer = new byte[fileStream.available()];
-            while (fileStream.read( readBuffer ) != -1){}
-            fileStream.close();
-            return (new String(readBuffer));
-
-        } catch (IOException e) {
-            return "약관을 불러오는데 실패하였습니다.";
-        }
-    }
-
-
-    /**
-     * 1.6 서비스이용약관
-     * @return
-     */
-    @GetMapping("terms")
-    public String getServiceTerms() {
-        try {
-            String filePath = "src/main/java/community/mingle/app/config/serviceUsageTerms";
             FileInputStream fileStream = null;
 
             fileStream = new FileInputStream(filePath);
@@ -199,9 +180,8 @@ public class AuthController {
      * 1.6.2 개인정보 처리방침
      * isSucceess, code, message, result 가 \n 과 같이 나옴
      */
-    @GetMapping("terms/2")
-    public BaseResponse<String> getPersonalTerms() {
-
+    @GetMapping("terms/privacy/2")
+    public BaseResponse<String> getPrivacyTerms2() {
         try {
             String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
             FileInputStream fileStream = null;
@@ -228,13 +208,35 @@ public class AuthController {
 //        String result = sb.toString();
 //        return new BaseResponse<>(result);
 
-
         /**
          * \n 나오는방법
          */
 //        String str = Files.readString(Paths.get("src/main/java/community/mingle/app/config/personalinfoterms"));
 //        return new BaseResponse<>(str);
     }
+
+
+
+    /**
+     * 1.7 서비스이용약관
+     */
+    @GetMapping("terms/service")
+    public String getServiceTerms() {
+        try {
+            String filePath = "src/main/java/community/mingle/app/config/serviceUsageTerms";
+            FileInputStream fileStream = null;
+
+            fileStream = new FileInputStream(filePath);
+            byte[] readBuffer = new byte[fileStream.available()];
+            while (fileStream.read( readBuffer ) != -1){}
+            fileStream.close();
+            return (new String(readBuffer));
+
+        } catch (IOException e) {
+            return "약관을 불러오는데 실패하였습니다.";
+        }
+    }
+
 
     /**
      * 1.8 회원가입 API
@@ -270,13 +272,12 @@ public class AuthController {
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-
     }
 
     /**
      * 1.9 로그인 API
      */
-    @PostMapping("login")
+    @GetMapping("login")
     public BaseResponse<PostLoginResponse> logIn (@RequestBody @Valid PostLoginRequest postLoginRequest) {
         try {
             if (!isRegexEmail(postLoginRequest.getEmail())) { //이메일 정규표현
@@ -286,8 +287,6 @@ public class AuthController {
             if (!isRegexPassword(postLoginRequest.getPwd())) { //비밀번호 정규표현
                 return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
             }
-
-
             //return ResponseEntity.ok().build();
 
             PostLoginResponse postloginResponse = authService.logIn(postLoginRequest);
@@ -301,11 +300,11 @@ public class AuthController {
     }
 
     /**
-     * 1.10 비밀번호 변경 API
+     * 1.10 비밀번호 초기화 API
      */
 
     //재입력 비밀번호 validation 추가
-    @PatchMapping("userinfo")
+    @PatchMapping("pwd")
     public BaseResponse<String> updatePwd(@RequestBody @Valid PatchUpdatePwdRequest patchUpdatePwdRequest) {
         if (patchUpdatePwdRequest.getPwd().length() == 0) {
             return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
