@@ -11,6 +11,7 @@ import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+/** Setter 주의 */
 import lombok.Setter;
 import net.bytebuddy.asm.Advice;
 

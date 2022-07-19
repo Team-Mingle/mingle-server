@@ -8,5 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Data
 public class PostLoginResponse {
-    private String email;
+//    private String email;
+    private Long userIdx;
+    private String jwt;
 }

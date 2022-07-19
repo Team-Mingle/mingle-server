@@ -5,7 +5,9 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.authModel.*;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
-import io.swagger.annotations.Api;
+import community.mingle.app.utils.JwtService;
+import io.jsonwebtoken.Jwts;
+//import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -17,13 +19,14 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
-@Api(tags = {"API 정보를 제공하는 Controller"})
+//@Api(tags = {"API 정보를 제공하는 Controller"})
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 //    @Autowired
     private final AuthService authService;
+    private final JwtService jwtService;
 
 
     /**
@@ -239,7 +242,7 @@ public class AuthController {
 
 
     /**
-     * 1.8 회원가입 API
+     * 1.8 회원가입 API + JWT
      */
     @ResponseBody
     @PostMapping("signup")
@@ -275,23 +278,26 @@ public class AuthController {
     }
 
     /**
-     * 1.9 로그인 API
+     * 1.9 로그인 API + JWT
      */
     @GetMapping("login")
     public BaseResponse<PostLoginResponse> logIn (@RequestBody @Valid PostLoginRequest postLoginRequest) {
         try {
+            if(postLoginRequest.getEmail() == null){
+                return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+            }
+            if(postLoginRequest.getPwd() == null){
+                return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
+            }
             if (!isRegexEmail(postLoginRequest.getEmail())) { //이메일 정규표현
                 return new BaseResponse<>(EMAIL_FORMAT_ERROR);
             }
-
             if (!isRegexPassword(postLoginRequest.getPwd())) { //비밀번호 정규표현
                 return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
             }
             //return ResponseEntity.ok().build();
-
             PostLoginResponse postloginResponse = authService.logIn(postLoginRequest);
             return new BaseResponse<>(postloginResponse);
-
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -300,30 +306,32 @@ public class AuthController {
     }
 
     /**
-     * 1.10 비밀번호 초기화 API
+     * 1.10 비밀번호 초기화 API + JWT
      */
 
     //재입력 비밀번호 validation 추가
     @PatchMapping("pwd")
     public BaseResponse<String> updatePwd(@RequestBody @Valid PatchUpdatePwdRequest patchUpdatePwdRequest) {
-        if (patchUpdatePwdRequest.getPwd().length() == 0) {
-            return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
-        }
-        if (patchUpdatePwdRequest.getPwd().length() < 8) {
-            return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
-        }
-        if (!isRegexPassword(patchUpdatePwdRequest.getPwd())) {
-            return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
-        }
+        try { //JWT로 해당 유저인지 확인 필요
 
-        try {
+            //형식적 validation
+            if (patchUpdatePwdRequest.getPwd().length() == 0) {
+                return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
+            }
+            if (patchUpdatePwdRequest.getPwd().length() < 8) {
+                return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
+            }
+            if (!isRegexPassword(patchUpdatePwdRequest.getPwd())) {
+                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
+            }
+
             authService.updatePwd(patchUpdatePwdRequest);
             String result = "비밀번호 변경에 성공하였습니다.";
             return new BaseResponse<>(result);
 
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
+            } catch (BaseException exception) {
+                return new BaseResponse<>(exception.getStatus());
+            }
     }
 
 }

@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Data
 public class PostSignupResponse {
-//    private String jwt;
     private Long member_id;
+    private String jwt;
 
 
 }
