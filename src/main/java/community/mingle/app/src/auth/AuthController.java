@@ -281,7 +281,7 @@ public class AuthController {
     /**
      * 1.8 회원가입 API + JWT
      */
-    @Operation(summary = "1.8 sign up API", description = "1.회원가입 API")
+    @Operation(summary = "1.8 sign up API", description = "1.8 회원가입 API")
 
     @Parameters({
             @Parameter(name = "univId", description = "대학교 식별자", example = "1"),
@@ -326,6 +326,13 @@ public class AuthController {
     /**
      * 1.9 로그인 API + JWT
      */
+    @Operation(summary = "1.9 login API", description = "1.9 로그인 API")
+
+    @Parameters({
+            @Parameter(name = "email", description = "회원가입에서 등록한 이메일", example = "example@mingle.com"),
+            @Parameter(name = "pwd", description = "유저가 설정한 비밀번호", example = "example12*!"),
+    })
+
     @GetMapping("login")
     public BaseResponse<PostLoginResponse> logIn (@RequestBody @Valid PostLoginRequest postLoginRequest) {
         try {
@@ -355,6 +362,13 @@ public class AuthController {
      * 1.10 비밀번호 초기화 API + JWT
      */
 
+    @Operation(summary = "1.10 Password Reset API", description = "1.10 비밀번호 초기화 API")
+
+    @Parameters({
+            @Parameter(name = "email", description = "회원가입에서 등록한 이메일", example = "example@mingle.com"),
+            @Parameter(name = "pwd", description = "바꾸고 싶은 비밀번호", example = "resetexample12*!"),
+            @Parameter(name = "rePwd", description = "바꾸고 싶은 비밀번호 재입력", example = "resetexample12*!")
+    })
     //재입력 비밀번호 validation 추가
     @PatchMapping("pwd")
     public BaseResponse<String> updatePwd(@RequestBody @Valid PatchUpdatePwdRequest patchUpdatePwdRequest) {
