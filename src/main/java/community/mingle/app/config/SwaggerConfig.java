@@ -13,7 +13,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("mingle")
-                .pathsToMatch("/api/**")
+                .pathsToMatch("/auth/**")
                 .build();
     }
     @Bean
