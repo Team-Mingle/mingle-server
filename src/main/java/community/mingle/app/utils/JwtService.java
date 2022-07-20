@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -17,6 +18,7 @@ import java.util.Date;
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     /*
@@ -24,7 +26,7 @@ public class JwtService {
     @param userIdx
     @return String
      */
-    public String createJwt(int userIdx){
+    public String createJwt(Long userIdx){
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam("type","jwt")

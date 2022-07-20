@@ -60,8 +60,20 @@ public class AuthRepository {
     public Member findMember(String email) {
         return em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
-                .getSingleResult();
+                .getSingleResult(); //에러남
     }
+
+    public Member findMemberByEmail(String email) {
+        List<Member> m = em.createQuery("select m from Member m where m.email = :email", Member.class)
+                .setParameter("email", email)
+                .getResultList();
+        if (m.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
+            return m.get(0);
+        } else { //없으면 null 반환
+            return null;
+        }
+    }
+
 
     public boolean findNickname (String nickname) {
         List<Member> duplicatedNickname= em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)
