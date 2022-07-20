@@ -224,7 +224,7 @@ public class AuthService {
         }
 
         //JWT 로 찾은 user_id 랑 email 로 찾은 user_id 랑 같은지 검증 (할필요 없음, 로그인은 header 안 씀)
-        int userIdxByJwt = jwtService.getUserIdx();
+        Long userIdxByJwt = jwtService.getUserIdx();
         if (member.getId() != userIdxByJwt) {
             throw new BaseException(INVALID_USER_JWT);
         }
@@ -288,7 +288,7 @@ public class AuthService {
         /**
          * 이메일로 찾은 member 의 id 가 JWT 로 찾은 id 랑 같은지 비교
          */
-        int userIdxByJwt = jwtService.getUserIdx();
+        Long userIdxByJwt = jwtService.getUserIdx();
         if (member.getId() != userIdxByJwt) {
             throw new BaseException(INVALID_USER_JWT);
         }
