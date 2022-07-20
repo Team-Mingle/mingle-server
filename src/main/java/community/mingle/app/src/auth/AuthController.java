@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
-
+//memo
 //<<<<<<< HEAD
 @Tag(name = "auth", description = "회원가입 API")
 //=======
