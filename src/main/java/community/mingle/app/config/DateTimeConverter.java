@@ -2,7 +2,6 @@ package community.mingle.app.config;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import static java.util.Calendar.*;
 
 public class DateTimeConverter {
     public static String convertLocaldatetimeToTime(LocalDateTime localDateTime) {
@@ -30,14 +29,9 @@ public class DateTimeConverter {
         if (diffTime < 12) {
             return diffTime + "개월 전";
         }
+
         diffTime = diffTime / 12;
         return diffTime + "년 전";
     }
 
-    public static long timeDifference (LocalDateTime localDateTime) {
-        LocalDateTime now = LocalDateTime.now();
-
-        long diffTime = localDateTime.until(now, ChronoUnit.DAYS);
-        return diffTime;
-    }
 }

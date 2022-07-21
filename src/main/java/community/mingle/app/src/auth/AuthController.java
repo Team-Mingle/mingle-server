@@ -2,18 +2,14 @@ package community.mingle.app.src.auth;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.auth.authModel.*;
+import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 //<<<<<<< HEAD
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 //=======
 import community.mingle.app.utils.JwtService;
-import io.jsonwebtoken.Jwts;
 //import io.swagger.annotations.Api;
 //>>>>>>> 2d2c252c23b3820543db375698b79b1fccd7751e
 import lombok.RequiredArgsConstructor;

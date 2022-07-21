@@ -26,7 +26,7 @@ public class JwtService {
     @param userIdx
     @return String
      */
-    public String createJwt(Long userIdx){
+    public String createJwt(Long userIdx) {
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam("type","jwt")
@@ -54,7 +54,7 @@ public class JwtService {
     public Long getUserIdx() throws BaseException{
         //1. JWT 추출
         String accessToken = getJwt();
-        if(accessToken == null || accessToken.length() == 0){
+        if(accessToken == null || accessToken.length() == 0) {
             throw new BaseException(EMPTY_JWT);
         }
 

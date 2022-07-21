@@ -1,8 +1,7 @@
 package community.mingle.app.src.auth;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.auth.authModel.*;
+import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;

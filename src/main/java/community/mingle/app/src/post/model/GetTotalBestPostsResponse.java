@@ -1,9 +1,9 @@
 package community.mingle.app.src.post.model;
 
+import java.time.LocalDateTime;
+
 import community.mingle.app.src.domain.Total.TotalPost;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
@@ -23,8 +23,9 @@ public class GetTotalBestPostsResponse {
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
         this.nickname = totalPost.getMember().getNickname();
-        this.likeCount = totalPost.getComments().size();
-        this.commentCount = totalPost.getPostLikes().size();
+        this.likeCount = totalPost.getTotalPostLikes().size();
+        this.commentCount = totalPost.getTotalPostComments().size();
         this.createdTime = convertLocaldatetimeToTime(totalPost.getCreatedAt());
     }
+
 }

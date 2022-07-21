@@ -28,4 +28,7 @@ public class UnivName {
     @OneToMany(mappedBy = "univName")
     private List<UnivEmail> univEmailList = new ArrayList<>();
 
+    /** 추가 */
+
+
 }
