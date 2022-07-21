@@ -29,6 +29,9 @@ public class TotalPost {
     @OneToMany(mappedBy = "totalPost")
     private List<TotalComment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalPostLike> postLikes = new ArrayList<>();
+
 //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum
     @ManyToOne(fetch = FetchType.LAZY)
