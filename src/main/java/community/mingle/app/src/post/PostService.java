@@ -42,12 +42,18 @@ public class PostService {
      * 2.3 학교 베스트 게시판 API
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
+        Long memberIdByJwt;
         try {
-            Long memberIdByJwt = jwtService.getUserIdx();
+            memberIdByJwt = jwtService.getUserIdx();
+        } catch (Exception e) {
+            throw new BaseException(EMPTY_JWT);
+        }
+
+        try {
             Member member = postRepository.findMemberbyId(memberIdByJwt);
             List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member);
             return univPosts;
-        } catch (BaseException e) {
+        } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
