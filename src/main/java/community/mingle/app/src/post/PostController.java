@@ -6,6 +6,9 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
 import community.mingle.app.utils.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +36,8 @@ public class PostController {
     /**
      * 2.2 홍콩 배스트 게시판 API
      */
-
+    @Operation(summary = "2.2 getTotalBest Posts API", description = "2.2 광장 베스트 게시물 리스트 API")
+//    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
     @GetMapping("/total/best")
     public BaseResponse<List<GetTotalBestPostsResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
