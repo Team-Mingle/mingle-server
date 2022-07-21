@@ -2,14 +2,6 @@ package community.mingle.app.config;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-//import java.util.Calendar;
-//
-//import static java.util.Calendar.*;
-//import static java.util.Calendar.HOUR;
-//import static java.util.Calendar.MONTH;
-//import static java.util.Calendar.SECOND;
-//import static jdk.nashorn.internal.parser.DateParser.DAY;
-
 
 public class DateTimeConverter {
     public static String convertLocaldatetimeToTime(LocalDateTime localDateTime) {
@@ -41,4 +33,5 @@ public class DateTimeConverter {
         diffTime = diffTime / 12;
         return diffTime + "년 전";
     }
+
 }

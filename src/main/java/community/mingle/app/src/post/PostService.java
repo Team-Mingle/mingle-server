@@ -4,15 +4,11 @@ package community.mingle.app.src.post;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.utils.JwtService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
@@ -23,7 +19,6 @@ public class PostService {
     private final PostRepository postRepository;
 
 
-
     /**
      * 2.1 광고 배너 API
      */
@@ -32,6 +27,15 @@ public class PostService {
     /**
      * 2.2 홍콩 배스트 게시판 API
      */
+    public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException{
+        try{
+            List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
+            return totalPosts;
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     /**

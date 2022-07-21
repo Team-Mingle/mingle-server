@@ -28,7 +28,7 @@ public class TotalPost {
     private Member member;
 
     @OneToMany(mappedBy = "totalPost")
-    private List<TotalComment> comments = new ArrayList<>();
+    private List<TotalComment> totalPostComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "totalPost")
     private List<TotalPostLike> totalPostLikes = new ArrayList<>();
