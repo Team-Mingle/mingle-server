@@ -36,7 +36,7 @@ public class UnivPost {
     @OneToMany(mappedBy = "univPost")
     private List<UnivPostLike> univPostLikes = new ArrayList<>();
 
-    /** 2.3 추가 */
+    /** 2.3 추가  - 단방향 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "univ_id")
     private UnivName univName;

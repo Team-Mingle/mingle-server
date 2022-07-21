@@ -27,7 +27,6 @@ public class GetUnivBestResponse {
         nickname = p.getMember().getNickname();
         likeCount = p.getUnivPostLikes().size();
         commentCount = p.getComments().size();
-//        createdAt = p.getCreatedAt().format(DateTimeFormatter.ofPattern("MM.dd"));
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
     }
 

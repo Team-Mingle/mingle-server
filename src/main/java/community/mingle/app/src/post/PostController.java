@@ -6,6 +6,9 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
 import community.mingle.app.utils.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +56,8 @@ public class PostController {
     /**
      * 2.3 학교 베스트 게시판 API
      */
+     @Operation(summary = "2.3 getUnivBest Posts API", description = "1.3 이메일 입력 & 중복검사 API")
+     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
      @GetMapping("/univ/best")
      public BaseResponse<List<GetUnivBestResponse>> getUnivBest() {
         try {

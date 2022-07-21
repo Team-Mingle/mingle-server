@@ -88,8 +88,6 @@ public class AuthController {
 
     @Operation(summary = "1.3 email duplicate check API", description = "1.3 이메일 입력 & 중복검사 API")
 //    @Parameter(name = "email", description = "회원가입 때 사용하는 이메일", example = "example@mingle.com")
-
-
     @ResponseBody
     @PostMapping("checkEmail") // (POST) 127.0.0.1:9000/users
     public BaseResponse<PostUserEmailResponse> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
