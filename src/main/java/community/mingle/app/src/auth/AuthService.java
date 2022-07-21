@@ -179,8 +179,8 @@ public class AuthService {
             Long id = authRepository.save(member);
             System.out.println("====2. save====="); //실행안됨
 //            authRepository.save(member);
-            String jwt = jwtService.createJwt(id);
-            return new PostSignupResponse(id, jwt);
+//            String jwt = jwtService.createJwt(id);
+            return new PostSignupResponse(id);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -223,10 +223,10 @@ public class AuthService {
         }
 
         //JWT 로 찾은 user_id 랑 email 로 찾은 user_id 랑 같은지 검증 (할필요 없음, 로그인은 header 안 씀)
-        Long userIdxByJwt = jwtService.getUserIdx();
-        if (member.getId() != userIdxByJwt) {
-            throw new BaseException(INVALID_USER_JWT);
-        }
+//        Long userIdxByJwt = jwtService.getUserIdx();
+//        if (member.getId() != userIdxByJwt) {
+//            throw new BaseException(INVALID_USER_JWT);
+//        }
 
         try {
             //비밀번호 비교
