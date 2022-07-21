@@ -57,7 +57,7 @@ public class PostController {
     /**
      * 2.3 학교 베스트 게시판 API
      */
-     @Operation(summary = "2.3 getUnivBest Posts API", description = "1.3 이메일 입력 & 중복검사 API")
+     @Operation(summary = "2.3 getUnivBest Posts API", description = "2.3 학교 베스트 게시물 리스트 API")
      @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
      @GetMapping("/univ/best")
      public BaseResponse<List<GetUnivBestResponse>> getUnivBest() {
