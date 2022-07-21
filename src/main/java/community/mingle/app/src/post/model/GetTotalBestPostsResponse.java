@@ -1,4 +1,4 @@
-package community.mingle.app.src.post.postModel;
+package community.mingle.app.src.post.model;
 
 import java.time.LocalDateTime;
 import java.util.List;

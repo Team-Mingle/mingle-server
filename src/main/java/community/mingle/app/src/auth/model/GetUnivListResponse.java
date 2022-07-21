@@ -1,7 +1,6 @@
-package community.mingle.app.src.auth.authModel;
+package community.mingle.app.src.auth.model;
 
 import community.mingle.app.src.domain.UnivName;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**

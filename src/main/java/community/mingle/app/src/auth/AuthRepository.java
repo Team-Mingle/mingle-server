@@ -1,12 +1,10 @@
 package community.mingle.app.src.auth;
 
-import community.mingle.app.src.auth.authModel.GetUnivDomainResponse;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
 import java.util.List;

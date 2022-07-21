@@ -15,10 +15,11 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="total_post")
+@Table(name = "total_post")
 public class TotalPost {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "totalpost_id")
     private Long id;
 
@@ -28,6 +29,10 @@ public class TotalPost {
 
     @OneToMany(mappedBy = "totalPost")
     private List<TotalComment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalPostLike> totalPostLikes = new ArrayList<>();
+
 
 //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum
