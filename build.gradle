@@ -66,6 +66,7 @@ dependencies {
 	//명세서
 //	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 
+	//지연로딩 추가?
 
 }
 
