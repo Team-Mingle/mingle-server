@@ -30,6 +30,9 @@ public class UnivPost {
     @OneToMany(mappedBy = "univPost")
     private List<UnivComment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "univPost")
+    private List<UnivPostLike> univPostLikes = new ArrayList<>();
+
     //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum
     @ManyToOne(fetch = FetchType.LAZY)
