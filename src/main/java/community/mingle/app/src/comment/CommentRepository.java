@@ -87,10 +87,19 @@ public class CommentRepository {
         //구글
         TotalComment totalCommentWithMaxAnonymousId = null;
         try {
-            Comparator<TotalComment> comparatorByAnonymousId = Comparator.comparingLong(TotalComment::getAnonymousId);
+//            Comparator<TotalComment> comparatorByAnonymousId = Comparator.comparingLong(TotalComment::getAnonymousId);
+//            totalCommentWithMaxAnonymousId = totalComments.stream()
+//                    .max(comparatorByAnonymousId)
+//                    .orElseThrow(NoSuchElementException::new); //max 를 못찾음
+
+//            carList.stream()
+//                    .max(Comparator.comparingInt(Car::getPosition))
+//                    .get();
+//            newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
+//            return newAnonymousId;
             totalCommentWithMaxAnonymousId = totalComments.stream()
-                    .max(comparatorByAnonymousId)
-                    .orElseThrow(NoSuchElementException::new); //max 를 못찾음
+                    .max(Comparator.comparingLong(TotalComment::getAnonymousId))
+                    .get();
             newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
             return newAnonymousId;
 
