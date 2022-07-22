@@ -13,6 +13,7 @@ import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class CommentService {
      * 전체게시판 댓글 작성 api
      * @return commentId
      */
+    @Transactional
     public Long createComment(PostTotalCommentRequest postTotalCommentRequest) throws BaseException {
 
         //jwt userIdx 추출 ^^
@@ -51,7 +53,9 @@ public class CommentService {
 
 
             if (postTotalCommentRequest.isAnonymous() == true) {
+                System.out.println("true");
                 anonymousId = commentRepository.findAnonymousId(post, member);
+                System.out.println("found");
             }
             else {
                 anonymousId = null;
