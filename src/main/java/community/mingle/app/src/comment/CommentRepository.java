@@ -65,26 +65,41 @@ public class CommentRepository {
 
         // 1번
         for (TotalComment total_comment : member.getTotal_comments()) {
+            System.out.println("total_comment = " + total_comment.toString());
             if (total_comment.isAnonymous() == true && total_comment.getTotalPost().getId().equals(post.getId())) {
+                System.out.println("내가 쓰려는 글에 익명 댓글을 단 이력이 있을때 ");
                 anonymousId = total_comment.getAnonymousId();
+                System.out.println("찾았나?  ");
+
                 newAnonymousId = anonymousId;
                 return newAnonymousId;
 
-            } else {
-                List<TotalComment> totalComments = post.getTotalPostComments();
-
-                //구글
-                Comparator<TotalComment> comparatorByAnonymousId = Comparator.comparingLong(TotalComment::getAnonymousId);
-                TotalComment totalCommentWithMaxAnonymousId = totalComments.stream()
-                        .max(comparatorByAnonymousId)
-                        .orElseThrow(NoSuchElementException::new);
-
-                System.out.println("totalCommentWithMaxAnonymousId = " + totalCommentWithMaxAnonymousId.getAnonymousId());
-
-                newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
-                return newAnonymousId;
+//            } else { //여기 안에 들어가면 안됨
+//                continue;
             }
         }
+
+        System.out.println("이력이 없을때 익명댓글 달고싶을때 anonymousId 부여받음 ");
+        List<TotalComment> totalComments = post.getTotalPostComments();
+
+        //기존 익명id 확인 전 아예 없을때 (1번 부여)
+
+        //구글
+        TotalComment totalCommentWithMaxAnonymousId = null;
+        try {
+            Comparator<TotalComment> comparatorByAnonymousId = Comparator.comparingLong(TotalComment::getAnonymousId);
+            totalCommentWithMaxAnonymousId = totalComments.stream()
+                    .max(comparatorByAnonymousId)
+                    .orElseThrow(NoSuchElementException::new); //max 를 못찾음
+            newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
+            return newAnonymousId;
+
+        } catch (NoSuchElementException e) {
+            newAnonymousId = Long.valueOf(1);
+        } finally {
+            System.out.println("totalCommentWithMaxAnonymousId = " + newAnonymousId);
+        }
+
         return newAnonymousId;
     }
 
