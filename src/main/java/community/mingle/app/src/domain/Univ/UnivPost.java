@@ -3,6 +3,7 @@ package community.mingle.app.src.domain.Univ;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.UnivName;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,17 @@ public class UnivPost {
 
     @OneToMany(mappedBy = "univPost")
     private List<UnivComment> comments = new ArrayList<>();
+
+
+    /** 2.3 추가 */
+    @OneToMany(mappedBy = "univPost")
+    private List<UnivPostLike> univPostLikes = new ArrayList<>();
+
+    /** 2.3 추가  - 단방향 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "univ_id")
+    private UnivName univName;
+
 
     //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum

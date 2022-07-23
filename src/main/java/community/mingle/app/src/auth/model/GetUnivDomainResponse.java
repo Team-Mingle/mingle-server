@@ -1,4 +1,4 @@
-package community.mingle.app.src.auth.authModel;
+package community.mingle.app.src.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class GetUnivDomainResponse {
-    private int id;
+    private int emailIdx;
     private String domain;
-    //private List<UnivEmail> univEmailList ;
+
 }
+
+
+
+
+

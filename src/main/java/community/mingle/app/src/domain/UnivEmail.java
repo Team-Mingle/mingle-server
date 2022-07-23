@@ -1,10 +1,13 @@
 package community.mingle.app.src.domain;
 
+import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter

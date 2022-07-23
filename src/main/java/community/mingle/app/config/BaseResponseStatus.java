@@ -46,7 +46,7 @@ public enum BaseResponseStatus {
 
     // [POST] /users
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
-    FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false,3014,"존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
 
     //9주차 3.3 게시물수정
     MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
@@ -71,6 +71,10 @@ public enum BaseResponseStatus {
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
+    //1.8 회원가입 추가
+    EMAIL_ENCRYPTION_ERROR(false, 4020, "이메일 암호화에 실패하였습니다."),
+    EMAIL_DECRYPTION_ERROR(false, 4021, "이메일 복호화에 실패하였습니다."),
+
 
     /**
      * 1. auth
@@ -86,7 +90,6 @@ public enum BaseResponseStatus {
 
 
     POSTS_USERS_EXISTS_NICKNAME(false, 5030, "닉네임 중복");
-
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요
 

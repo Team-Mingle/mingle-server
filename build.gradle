@@ -23,7 +23,7 @@ dependencies {
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 
 	//추가
@@ -48,13 +48,10 @@ dependencies {
 
 
 
-
-
-
-	// Security, Authentication : 추가
-//	implementation('org.springframework.boot:spring-boot-starter-security')
-//	compile(group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0')
-//	compile('io.jsonwebtoken:jjwt:0.9.0')
+//	 Security, Authentication : 추가
+	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation(group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0')
+	implementation('io.jsonwebtoken:jjwt:0.9.0')
 
 
 	//JUnit4 추가
@@ -63,8 +60,15 @@ dependencies {
 	}
 
 
-//	implementation('org.springframework.boot:spring-boot-starter')
-//	compile('org.springframework.boot:spring-boot-starter-web')
+	implementation('org.springframework.boot:spring-boot-starter')
+	implementation('org.springframework.boot:spring-boot-starter-web')
+
+	//명세서
+//	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+
+
+
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
 }
 
 tasks.named('test') {

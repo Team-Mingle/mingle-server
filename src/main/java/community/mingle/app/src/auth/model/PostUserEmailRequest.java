@@ -1,8 +1,6 @@
-package community.mingle.app.src.auth.authModel;
+package community.mingle.app.src.auth.model;
 
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 이메일 받기
