@@ -61,6 +61,15 @@ public class PostService {
     /**
      * 2.4 광장 게시판 리스트 API
      */
+    public List<TotalPost> findTotalPost(int category) throws BaseException{
+        try{
+            List<TotalPost> getAll = postRepository.findTotalPost(category);
+            return getAll;
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     /**

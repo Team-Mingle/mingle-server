@@ -23,9 +23,6 @@ public class UnivName {
     @Column(name = "univ_name")
     private String univName;
 
-    @OneToMany(mappedBy = "univName")
-    private List<UnivEmail> univEmailList = new ArrayList<>();
-
     /*private List<User> members */
     //단방향?
 
