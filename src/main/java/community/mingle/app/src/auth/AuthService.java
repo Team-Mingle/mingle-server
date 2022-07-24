@@ -1,8 +1,7 @@
 package community.mingle.app.src.auth;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.auth.authModel.*;
+import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
@@ -38,9 +37,7 @@ public class AuthService {
     private  String from;
 
     /**
-     * 학교 리스트 보내주기
-     *
-     * @return
+     * 1.1 학교 리스트 전송 API
      */
     public List<UnivName> findUniv() throws BaseException{
         try{
@@ -55,7 +52,7 @@ public class AuthService {
 
 
     /**
-     * 학교 univIdx 받고 이메일 리스트 보내주기
+     * 1.2 학교별 도메인 리스트 전송 API
      */
     public List<UnivEmail> findDomain(int univId) throws BaseException {
         try {
@@ -69,15 +66,24 @@ public class AuthService {
 
 
     /**
-     * 이메일 받기
+     * 1.3 이메일 입력 & 중복검사 API
      */
     @Transactional
-    public PostUserEmailResponse verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
+    public String verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
+
+        try {
+            String email = new SHA256().encrypt(postUserEmailRequest.getEmail());
+            postUserEmailRequest.setEmail(email);
+        } catch (Exception ignored) {
+            throw new BaseException(EMAIL_ENCRYPTION_ERROR);
+        }
 
         if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
+
         try {
+
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -180,8 +186,8 @@ public class AuthService {
             Long id = authRepository.save(member);
             System.out.println("====2. save====="); //실행안됨
 //            authRepository.save(member);
-            String jwt = jwtService.createJwt(id);
-            return new PostSignupResponse(id, jwt);
+//            String jwt = jwtService.createJwt(id);
+            return new PostSignupResponse(id);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -224,10 +230,10 @@ public class AuthService {
         }
 
         //JWT 로 찾은 user_id 랑 email 로 찾은 user_id 랑 같은지 검증 (할필요 없음, 로그인은 header 안 씀)
-        int userIdxByJwt = jwtService.getUserIdx();
-        if (member.getId() != userIdxByJwt) {
-            throw new BaseException(INVALID_USER_JWT);
-        }
+//        Long userIdxByJwt = jwtService.getUserIdx();
+//        if (member.getId() != userIdxByJwt) {
+//            throw new BaseException(INVALID_USER_JWT);
+//        }
 
         try {
             //비밀번호 비교
@@ -288,7 +294,7 @@ public class AuthService {
         /**
          * 이메일로 찾은 member 의 id 가 JWT 로 찾은 id 랑 같은지 비교
          */
-        int userIdxByJwt = jwtService.getUserIdx();
+        Long userIdxByJwt = jwtService.getUserIdx();
         if (member.getId() != userIdxByJwt) {
             throw new BaseException(INVALID_USER_JWT);
         }

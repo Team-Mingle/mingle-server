@@ -21,7 +21,7 @@ public class TotalPostLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "totalpost_id")
-    private TotalPost post;
+    private TotalPost totalPost;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

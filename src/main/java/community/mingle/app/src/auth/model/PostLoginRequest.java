@@ -1,4 +1,4 @@
-package community.mingle.app.src.auth.authModel;
+package community.mingle.app.src.auth.model;
 
 import lombok.Getter;
 import lombok.Setter;

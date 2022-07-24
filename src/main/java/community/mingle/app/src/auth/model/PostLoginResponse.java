@@ -1,4 +1,4 @@
-package community.mingle.app.src.auth.authModel;
+package community.mingle.app.src.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Data
-public class PostSignupResponse {
-    private Long member_id;
+public class PostLoginResponse {
+//    private String email;
+    private Long userIdx;
     private String jwt;
-
-
 }
