@@ -90,7 +90,7 @@ public class AuthController {
 //    @Parameter(name = "email", description = "회원가입 때 사용하는 이메일", example = "example@mingle.com")
     @ResponseBody
     @PostMapping("checkEmail") // (POST) 127.0.0.1:9000/users
-    public BaseResponse<PostUserEmailResponse> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
+    public BaseResponse<String> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
 
         if (postUserEmailRequest.getEmail() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
@@ -100,8 +100,8 @@ public class AuthController {
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
         try {
-            PostUserEmailResponse postUserEmailResponse = authService.verifyEmail(postUserEmailRequest);
-            return new BaseResponse<>(postUserEmailResponse);
+            String result = authService.verifyEmail(postUserEmailRequest);
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
