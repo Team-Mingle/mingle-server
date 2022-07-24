@@ -1,6 +1,7 @@
 package community.mingle.app.src.post;
 
 
+import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -15,7 +16,14 @@ import java.util.List;
 public class PostRepository {
 
     private final EntityManager em;
+    /**
+     * 2.1 광고 배너 API
+     */
+    public List<Banner> findBanner(){
+        return em.createQuery("select b from Banner b", Banner.class)
+                .getResultList();
 
+    }
 
     /**
      * 2.2 전체 베스트 게시판 api

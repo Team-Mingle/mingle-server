@@ -1,6 +1,7 @@
 package community.mingle.app.src.post;
 
 
+import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,14 @@ public class PostService {
     /**
      * 2.1 광고 배너 API
      */
-
+    public List<Banner> findBanner() throws BaseException{
+        try{
+            List<Banner> banner = postRepository.findBanner();
+            return banner;
+        }catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     /**
      * 2.2 홍콩 배스트 게시판 API
