@@ -55,99 +55,56 @@ public class CommentRepository {
     }
 
     /**
-     * 익명 몇 인지 찾기
+     * 익명 몇 인지 찾기 (anonymousId)
      * @return
      */
-    public Long findAnonymousId(TotalPost post, Member member) {
+    public Long findAnonymousId(TotalPost post, Long memberIdByJwt ) {
         Long anonymousId;
         Long newAnonymousId = null;
-//        member.getTotal_comments().stream().findAny(member.)
 
-        // 1번
-        for (TotalComment total_comment : member.getTotal_comments()) {
-            System.out.println("total_comment = " + total_comment.toString());
-            if (total_comment.isAnonymous() == true && total_comment.getTotalPost().getId().equals(post.getId())) {
-                System.out.println("내가 쓰려는 글에 익명 댓글을 단 이력이 있을때 ");
-                anonymousId = total_comment.getAnonymousId();
-                System.out.println("찾았나?  ");
+        // case 1: 내가 쓰려는 글에 익명 댓글을 단 이력이 있을때: 이미 anonymousId 가 있는지 찾기
+//        for (TotalComment total_comment : member.getTotal_comments()) {
+//            if (total_comment.isAnonymous() == true && total_comment.getTotalPost().getId().equals(post.getId())) {
+//                anonymousId = total_comment.getAnonymousId();
+//                newAnonymousId = anonymousId;
+//                return newAnonymousId;
+//            }
+//        }
 
-                newAnonymousId = anonymousId;
-                return newAnonymousId;
-
-//            } else { //여기 안에 들어가면 안됨
-//                continue;
-            }
+        // case 1 Alternative postId
+        //해당 게시글 커멘츠가 멤버가 있는지 없는지만
+        List<TotalComment> totalCommentsByMember = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :postId and tc.member.id = :memberId and tc.isAnonymous = true", TotalComment.class)
+                .setParameter("postId", post.getId())
+                .setParameter("memberId", memberIdByJwt)
+                .getResultList();
+        if (totalCommentsByMember.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
+             return totalCommentsByMember.get(0).getAnonymousId();
         }
 
-        System.out.println("이력이 없을때 익명댓글 달고싶을때 anonymousId 부여받음 ");
+
+        System.out.println("case 2: 댓글 단 이력이 없고 익명 댓글을 달고싶을때: anonymousId 부여받음 ");
         List<TotalComment> totalComments = post.getTotalPostComments();
 
-        //기존 익명id 확인 전 아예 없을때 (1번 부여)
-
-        //구글
         TotalComment totalCommentWithMaxAnonymousId = null;
-        try {
-//            Comparator<TotalComment> comparatorByAnonymousId = Comparator.comparingLong(TotalComment::getAnonymousId);
-//            totalCommentWithMaxAnonymousId = totalComments.stream()
-//                    .max(comparatorByAnonymousId)
-//                    .orElseThrow(NoSuchElementException::new); //max 를 못찾음
-
-//            carList.stream()
-//                    .max(Comparator.comparingInt(Car::getPosition))
-//                    .get();
-//            newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
-//            return newAnonymousId;
+        try {  //게시물에서 제일 큰 id를 찾은 후 +1 한 id 를 내 댓글에 새로운 anonymousId 로 부여
             totalCommentWithMaxAnonymousId = totalComments.stream()
                     .max(Comparator.comparingLong(TotalComment::getAnonymousId))
                     .get();
             newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
             return newAnonymousId;
 
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {  //게시물에 기존 익명id 가 아예 없을때: id 로 1 부여
             newAnonymousId = Long.valueOf(1);
         } finally {
             System.out.println("totalCommentWithMaxAnonymousId = " + newAnonymousId);
         }
-
         return newAnonymousId;
     }
-
-
-//            ArrayList<TotalComment> totalComments = new ArrayList<>();
-
-//            Collections.max(totalComments);
-//            Collections.max(post.getTotalPostComments());
-//
-//
-//            for (TotalComment totalComment : post.getTotalPostComments()) {
-//
-//            }
-//        }
-//        else {
-//
-//        }
-
-
-
-
-
-
-        /*
-        if (이미있음): post 중에 memberIdByJwt 로 쓴 댓글이있냐, 그거중에 isAnonymous = true {
-            find()
-        }
-        else {
-
-        }
-        em.createQuery(select ... :anonymousId)
-        .setParameter(anonymousId);
-        */
 
 
 
     public TotalComment save(TotalComment comment) {
         em.persist(comment);
         return comment;
-
     }
 }

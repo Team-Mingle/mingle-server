@@ -34,7 +34,7 @@ public class CommentService {
     @Transactional
     public Long createComment(PostTotalCommentRequest postTotalCommentRequest) throws BaseException {
 
-        //jwt userIdx 추출 ^^
+        //jwt userIdx 추출
         Long memberIdByJwt;
         try {
             memberIdByJwt = jwtService.getUserIdx();
@@ -43,24 +43,19 @@ public class CommentService {
         }
 
         try {
-
-//            TotalPost totalPost, Member member, String content, Long parentCommentId, boolean isAnonymous, Long anonymousId
-
             TotalPost post = commentRepository.findTotalPostbyId(postTotalCommentRequest.getPostId());
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
             Long anonymousId;
 
-
             if (postTotalCommentRequest.isAnonymous() == true) {
-                System.out.println("true");
-                anonymousId = commentRepository.findAnonymousId(post, member);
-                System.out.println("found");
+                anonymousId = commentRepository.findAnonymousId(post, memberIdByJwt);
             }
             else {
                 anonymousId = null;
             }
 
+            //댓글 생성
             TotalComment comment = TotalComment.createComment(post, member, postTotalCommentRequest.getContent(), postTotalCommentRequest.getParentCommentId(), postTotalCommentRequest.isAnonymous(), anonymousId);
 
             TotalComment savedComment = commentRepository.save(comment);
@@ -73,6 +68,5 @@ public class CommentService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
 
 }
