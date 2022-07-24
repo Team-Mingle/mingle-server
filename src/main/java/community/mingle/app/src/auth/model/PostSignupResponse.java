@@ -9,7 +9,7 @@ import lombok.Getter;
 @Data
 public class PostSignupResponse {
     private Long member_id;
-    private String jwt;
+//    private String jwt;
 
 
 }
