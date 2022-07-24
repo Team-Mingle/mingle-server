@@ -1,16 +1,12 @@
 package community.mingle.app.src.comment;
 
-
-import community.mingle.app.src.comment.model.PostTotalCommentRequest;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -59,20 +55,11 @@ public class CommentRepository {
      * @return
      */
     public Long findAnonymousId(TotalPost post, Long memberIdByJwt ) {
-        Long anonymousId;
-        Long newAnonymousId = null;
+        Long newAnonymousId;
 
-        // case 1: 내가 쓰려는 글에 익명 댓글을 단 이력이 있을때: 이미 anonymousId 가 있는지 찾기
-//        for (TotalComment total_comment : member.getTotal_comments()) {
-//            if (total_comment.isAnonymous() == true && total_comment.getTotalPost().getId().equals(post.getId())) {
-//                anonymousId = total_comment.getAnonymousId();
-//                newAnonymousId = anonymousId;
-//                return newAnonymousId;
-//            }
-//        }
-
-        // case 1 Alternative postId
-        //해당 게시글 커멘츠가 멤버가 있는지 없는지만
+        /**
+         * case 1: 해당 게시글 커멘츠가 멤버가 있는지 없는지 확인하고 있으면 그 전 id 부여
+         */
         List<TotalComment> totalCommentsByMember = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :postId and tc.member.id = :memberId and tc.isAnonymous = true", TotalComment.class)
                 .setParameter("postId", post.getId())
                 .setParameter("memberId", memberIdByJwt)
@@ -81,8 +68,9 @@ public class CommentRepository {
              return totalCommentsByMember.get(0).getAnonymousId();
         }
 
-
-        System.out.println("case 2: 댓글 단 이력이 없고 익명 댓글을 달고싶을때: anonymousId 부여받음 ");
+        /**
+         * case 2: 댓글 단 이력이 없고 익명 댓글을 달고싶을때: anonymousId 부여받음
+         */
         List<TotalComment> totalComments = post.getTotalPostComments();
 
         TotalComment totalCommentWithMaxAnonymousId = null;
@@ -93,14 +81,11 @@ public class CommentRepository {
             newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
             return newAnonymousId;
 
-        } catch (NoSuchElementException e) {  //게시물에 기존 익명id 가 아예 없을때: id 로 1 부여
+        } catch (NoSuchElementException e) {  //게시물에 기존 익명 id 가 아예 없을때: id 로 1 부여
             newAnonymousId = Long.valueOf(1);
-        } finally {
-            System.out.println("totalCommentWithMaxAnonymousId = " + newAnonymousId);
         }
         return newAnonymousId;
     }
-
 
 
     public TotalComment save(TotalComment comment) {
