@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import community.mingle.app.src.post.model.*;
 
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,8 +42,8 @@ public class PostController {
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
         }
 
     }
@@ -93,10 +94,6 @@ public class PostController {
 //    멤버의 univId 찾기
 //    쿼리문: 동적쿼리? select * from Post fetch join Member,
 //    Response: Post- title, content, createdAt, likeCount, commentCount,
-    }
-
-
-
     /**
      * 2.4 광장 게시판 리스트 API
      */
@@ -105,5 +102,19 @@ public class PostController {
     /**
      * 2.5 게시물 작성 API
      */
+    @PostMapping("/board")
+    public BaseResponse<PostCreateResponse> createPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+        try{
+            return new BaseResponse<>(postService.createPost(postCreateRequest));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+}
+
+
+
 
 

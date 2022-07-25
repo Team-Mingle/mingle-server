@@ -2,6 +2,7 @@ package community.mingle.app.src.post;
 
 
 import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -69,5 +70,17 @@ public class PostRepository {
         } else { //없으면 null 반환
             return null;
         }
+    }
+
+    public Long save(UnivPost univPost) {
+        em.persist(univPost);
+        return univPost.getId();
+    }
+
+    public Category findCategoryById(int id) {
+        Category category = em.createQuery("select c from Category c where c.id = :id", Category.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return category;
     }
 }

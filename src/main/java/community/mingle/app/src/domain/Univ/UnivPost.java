@@ -1,12 +1,8 @@
 package community.mingle.app.src.domain.Univ;
 
-import community.mingle.app.src.domain.Category;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.UnivName;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import community.mingle.app.src.domain.*;
+import community.mingle.app.src.post.model.PostCreateRequest;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="univ_post")
@@ -64,6 +61,22 @@ public class UnivPost {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
+
+
+    public static UnivPost createPost (Member member, Category category, PostCreateRequest req){
+        UnivPost univPost = new UnivPost();
+        univPost.setMember(member);
+        univPost.setUnivName(member.getUniv());
+        univPost.setCategory(category);
+        univPost.setTitle(req.getTitle());
+        univPost.setContent(req.getContent());
+        univPost.createdAt = LocalDateTime.now();
+        univPost.updatedAt = LocalDateTime.now();
+        univPost.setAnonymous(req.isAnonymous());
+        univPost.status = PostStatus.ACTIVE;
+        return univPost;
+
+    }
 
 
 }
