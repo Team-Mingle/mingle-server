@@ -1,4 +1,4 @@
-package community.mingle.app.src;
+package community.mingle.app.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
