@@ -389,5 +389,3 @@ public class AuthController {
     }
 
 }
-
-
