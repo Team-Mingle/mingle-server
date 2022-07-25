@@ -55,6 +55,20 @@ public class PostRepository {
                 .getResultList();
     }
 
+    /**
+     * 2.4 광장 게시판 api
+     */
+    public List<TotalPost> findTotalPost(int category) {
+        return em.createQuery("select p from TotalPost p where p.category.id = :category ", TotalPost.class)
+                .setParameter("category", category)
+                .getResultList();
+    }
+
+
+
+
+
+
 
     /**
      * memberId 로 Member 반환

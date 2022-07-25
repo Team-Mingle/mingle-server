@@ -37,9 +37,7 @@ public class AuthService {
     private  String from;
 
     /**
-     * 학교 리스트 보내주기
-     *
-     * @return
+     * 1.1 학교 리스트 전송 API
      */
     public List<UnivName> findUniv() throws BaseException{
         try{
@@ -54,7 +52,7 @@ public class AuthService {
 
 
     /**
-     * 학교 univIdx 받고 이메일 리스트 보내주기
+     * 1.2 학교별 도메인 리스트 전송 API
      */
     public List<UnivEmail> findDomain(int univId) throws BaseException {
         try {
@@ -68,15 +66,24 @@ public class AuthService {
 
 
     /**
-     * 이메일 받기
+     * 1.3 이메일 입력 & 중복검사 API
      */
     @Transactional
-    public PostUserEmailResponse verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
+    public String verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
+
+        try {
+            String email = new SHA256().encrypt(postUserEmailRequest.getEmail());
+            postUserEmailRequest.setEmail(email);
+        } catch (Exception ignored) {
+            throw new BaseException(EMAIL_ENCRYPTION_ERROR);
+        }
 
         if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
+
         try {
+
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -314,4 +321,3 @@ public class AuthService {
 //        }
 //    }
 }
-

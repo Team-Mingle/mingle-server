@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 /** Setter 주의 */
 import lombok.Setter;
-import net.bytebuddy.asm.Advice;
+
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -39,6 +39,7 @@ public class Member {
     private String nickname;
     private String email; //regex 추가
     private String pwd; //regex 추가
+
 
     /** 학교게시판*/
     @OneToMany(mappedBy = "member")
