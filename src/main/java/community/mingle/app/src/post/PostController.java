@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 //@Tag(name = "posts", description = "게시판/게시물관련 API")
+@CrossOrigin(origins = "")
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
