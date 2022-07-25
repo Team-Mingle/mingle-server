@@ -1,6 +1,8 @@
 package community.mingle.app.src.post;
 
 
+import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -15,7 +17,14 @@ import java.util.List;
 public class PostRepository {
 
     private final EntityManager em;
+    /**
+     * 2.1 광고 배너 API
+     */
+    public List<Banner> findBanner(){
+        return em.createQuery("select b from Banner b", Banner.class)
+                .getResultList();
 
+    }
 
     /**
      * 2.2 전체 베스트 게시판 api
@@ -75,5 +84,17 @@ public class PostRepository {
         } else { //없으면 null 반환
             return null;
         }
+    }
+
+    public Long save(UnivPost univPost) {
+        em.persist(univPost);
+        return univPost.getId();
+    }
+
+    public Category findCategoryById(int id) {
+        Category category = em.createQuery("select c from Category c where c.id = :id", Category.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return category;
     }
 }

@@ -2,6 +2,7 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
@@ -9,16 +10,16 @@ import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import community.mingle.app.src.post.model.*;
 
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Tag(name = "posts", description = "게시판/게시물관련 API")
+//@Tag(name = "posts", description = "게시판/게시물관련 API")
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
@@ -31,12 +32,26 @@ public class PostController {
     /**
      * 2.1 광고 배너 API
      */
+    @GetMapping("/banner")
+    public BaseResponse<List<GetBannerResponse>> getBanner(){
+        try {
+            List<Banner> banner = postService.findBanner();
+            List<GetBannerResponse> result = banner.stream()
+                    .map(m -> new GetBannerResponse(m))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
+    }
 
 
     /**
      * 2.2 홍콩 배스트 게시판 API
      */
-    @Operation(summary = "2.2 getTotalBest Posts API", description = "2.2 광장 베스트 게시물 리스트 API")
+    //@Operation(summary = "2.2 getTotalBest Posts API", description = "2.2 광장 베스트 게시물 리스트 API")
 //    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
     @GetMapping("/total/best")
     public BaseResponse<List<GetTotalBestPostsResponse>> getTotalBest() {
@@ -57,10 +72,12 @@ public class PostController {
     /**
      * 2.3 학교 베스트 게시판 API
      */
+
     @Operation(summary = "2.3 getUnivBest Posts API", description = "2.3 학교 베스트 게시물 리스트 API")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @GetMapping("/univ/best")
     public BaseResponse<List<GetUnivBestResponse>> getUnivBest() {
+
         try {
             List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount();
             List<GetUnivBestResponse> result = univPosts.stream()
@@ -78,7 +95,6 @@ public class PostController {
 //    멤버의 univId 찾기
 //    쿼리문: 동적쿼리? select * from Post fetch join Member,
 //    Response: Post- title, content, createdAt, likeCount, commentCount,
-
 
     /**
      * 2.4 광장 게시판 리스트 API
@@ -99,9 +115,19 @@ public class PostController {
     }
 
 
-/**
- * 2.5 게시물 작성 API
- */
+
+    /**
+     * 2.5 게시물 작성 API
+     */
+    @PostMapping("/board")
+    public BaseResponse<PostCreateResponse> createPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+        try{
+            return new BaseResponse<>(postService.createPost(postCreateRequest));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 
 
 }
