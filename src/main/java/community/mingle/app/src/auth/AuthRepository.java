@@ -22,7 +22,7 @@ public class AuthRepository {
                 .getResultList();
     }
 
-    public List<UnivEmail>  findByUniv(int univId) {
+    public List<UnivEmail> findDomainByUnivId(int univId) {
         return em.createQuery("select e from UnivEmail e " +
 //                        "join fetch e.univName u" +
                         "WHERE e.univName.id = :univId", UnivEmail.class)
@@ -30,7 +30,7 @@ public class AuthRepository {
                 .getResultList();
     }
 
-//    public List<GetUnivDomainResponse> findByUniv2(int univId){
+//    public List<GetUnivDomainResponse> findDomainByUnivId2(int univId){
 //        return em.createQuery(
 //                "select new community.mingle.app.src.auth.authModel.GetUnivDomainResponse(e.emailIdx, e.domain)" +
 //                        "from UnivEmail e" +
@@ -98,6 +98,8 @@ public class AuthRepository {
         }
         else return false;
     }
+
+
 
 
 //    public List<Member> findByName(String nickname) {
