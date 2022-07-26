@@ -12,6 +12,8 @@ import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,8 +43,8 @@ public class PostController {
     @GetMapping("/banner")
     @Operation(summary = "3.1 getBanner API", description = "3.1 홈 화면 배너 리스트 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     public BaseResponse<List<GetBannerResponse>> getBanner(){
         try {
@@ -64,9 +66,8 @@ public class PostController {
     @GetMapping("/total/best")
     @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<List<GetTotalBestPostsResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
@@ -90,10 +91,11 @@ public class PostController {
     @Operation(summary = "3.3 getUnivBest Posts API", description = "3.3 학교 베스트 게시물 리스트 API")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요."),
-            @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     public BaseResponse<List<GetUnivBestResponse>> getUnivBest() {
 
@@ -116,8 +118,8 @@ public class PostController {
     @GetMapping("/total")
     @Operation(summary = "3.4 getTotal Posts API", description = "3.4 광장 게시판 게시물 리스트 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3032", description = "해당 카테고리에 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     public BaseResponse<List<GetTotalPostsResponse>> getAll(@RequestParam int category) {
         try {
@@ -138,11 +140,13 @@ public class PostController {
      * 3.5 전체 게시물 작성 API
      */
     @PostMapping("/univ")
-    @Operation(summary = "3.4 getTotal Posts API", description = "3.4 광장 게시판 게시물 리스트 API")
+    @Operation(summary = "3.5 createTotalPosts API", description = "3.5 광장 게시물 생성 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<PostCreateResponse> createPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
         try{
@@ -151,6 +155,5 @@ public class PostController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
 }
