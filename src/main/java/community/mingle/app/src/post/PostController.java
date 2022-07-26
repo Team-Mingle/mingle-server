@@ -10,6 +10,7 @@ import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import community.mingle.app.src.post.model.*;
@@ -19,8 +20,8 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//@Tag(name = "posts", description = "게시판/게시물관련 API")
-@CrossOrigin(origins = "")
+@Tag(name = "posts", description = "게시판/게시물관련 API")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor

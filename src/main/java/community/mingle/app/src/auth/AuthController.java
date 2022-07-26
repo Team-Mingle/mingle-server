@@ -29,7 +29,7 @@ import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 //=======
 ////@Api(tags = {"API 정보를 제공하는 Controller"})
 //>>>>>>> 2d2c252c23b3820543db375698b79b1fccd7751e
-@CrossOrigin(origins = "")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
