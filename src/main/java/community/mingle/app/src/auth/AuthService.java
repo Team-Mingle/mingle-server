@@ -79,7 +79,7 @@ public class AuthService {
         }
 
         if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+            throw new BaseException(USER_EXISTS_EMAIL);
         }
 
         try {
@@ -150,7 +150,7 @@ public class AuthService {
 
         //닉네임 중복검사 먼저
         if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
-            throw new BaseException(POSTS_USERS_EXISTS_NICKNAME);
+            throw new BaseException(USER_EXISTS_NICKNAME);
         }
 
         //이메일 암호화
@@ -174,7 +174,7 @@ public class AuthService {
         //이메일 중복검사
         /** 얘를 try catch 밖으로 빼니 콘솔에 에러 문구가 안뜸. (??) */
         if ((authRepository.findEmail(email) == true)) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+            throw new BaseException(USER_EXISTS_EMAIL);
         }
 
         //로직
@@ -278,7 +278,7 @@ public class AuthService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
-        //이메일로 멤버 찾기 멤버 찾기
+        //이메일로 멤버 찾기
         Member member;
         try {
             member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());

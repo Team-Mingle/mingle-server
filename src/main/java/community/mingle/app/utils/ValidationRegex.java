@@ -12,7 +12,7 @@ public class ValidationRegex {
     }
 
     //https://www.geeksforgeeks.org/how-to-validate-a-password-using-regular-expressions-in-java/
-    public static boolean isRegexPassword(String password) {
+    public static boolean isRegexPassword(String password) { //영문, 숫자 포함 6자 이상
         String regex = "^(?=.*[0-9])"
                 + "(?=.*[a-z])(?=.*[A-Z])"
 //                + "(?=.*[@#$%^&+=!])"

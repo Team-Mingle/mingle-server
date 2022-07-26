@@ -1,12 +1,9 @@
 package community.mingle.app.src.post;
 
 
-import community.mingle.app.src.auth.AuthRepository;
-import community.mingle.app.src.auth.model.PostSignupResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import community.mingle.app.src.post.model.PostCreateResponse;
 import lombok.RequiredArgsConstructor;

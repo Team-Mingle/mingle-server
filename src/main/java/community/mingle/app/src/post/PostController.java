@@ -1,3 +1,5 @@
+
+
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
@@ -32,7 +34,7 @@ public class PostController {
     private final PostRepository postRepository;
 
     /**
-     * 2.1 광고 배너 API
+     * 3.1 광고 배너 API
      */
     @GetMapping("/banner")
     public BaseResponse<List<GetBannerResponse>> getBanner(){
@@ -51,10 +53,9 @@ public class PostController {
 
 
     /**
-     * 2.2 홍콩 배스트 게시판 API
+     * 3.2 홍콩 배스트 게시판 API
      */
-    //@Operation(summary = "2.2 getTotalBest Posts API", description = "2.2 광장 베스트 게시물 리스트 API")
-//    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
+    @Operation(summary = "2.2 getTotalBest Posts API", description = "2.2 광장 베스트 게시물 리스트 API")
     @GetMapping("/total/best")
     public BaseResponse<List<GetTotalBestPostsResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
@@ -72,10 +73,10 @@ public class PostController {
 
 
     /**
-     * 2.3 학교 베스트 게시판 API
+     * 3.3 학교 베스트 게시판 API
      */
 
-    @Operation(summary = "2.3 getUnivBest Posts API", description = "2.3 학교 베스트 게시물 리스트 API")
+    @Operation(summary = "3.3 getUnivBest Posts API", description = "3.3 학교 베스트 게시물 리스트 API")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @GetMapping("/univ/best")
     public BaseResponse<List<GetUnivBestResponse>> getUnivBest() {
@@ -92,17 +93,12 @@ public class PostController {
         }
     }
 
-//     JWT 에서 인덱스 추출
-//    인덱스로 멤버 찾기
-//    멤버의 univId 찾기
-//    쿼리문: 동적쿼리? select * from Post fetch join Member,
-//    Response: Post- title, content, createdAt, likeCount, commentCount,
 
     /**
-     * 2.4 광장 게시판 리스트 API
+     * 3.4 광장 게시판 리스트 API
      */
-    @Operation(summary = "2.4 getTotal Posts API", description = "2.4 광장 게시판 게시물 리스트 API")
-    @GetMapping("/total/all")
+    @Operation(summary = "3.4 getTotal Posts API", description = "3.4 광장 게시판 게시물 리스트 API")
+    @GetMapping("/total")
     public BaseResponse<List<GetTotalPostsResponse>> getAll(@RequestParam int category) {
         try {
             List<TotalPost> totalPosts = postService.findTotalPost(category);
@@ -119,9 +115,9 @@ public class PostController {
 
 
     /**
-     * 2.5 게시물 작성 API
+     * 3.5 전체 게시물 작성 API
      */
-    @PostMapping("/board")
+    @PostMapping("/univ")
     public BaseResponse<PostCreateResponse> createPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
         try{
             return new BaseResponse<>(postService.createPost(postCreateRequest));
