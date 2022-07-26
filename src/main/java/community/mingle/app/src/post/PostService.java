@@ -1,6 +1,5 @@
 package community.mingle.app.src.post;
 
-import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -13,7 +12,6 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import static community.mingle.app.config.BaseResponseStatus.*;
 
@@ -26,7 +24,7 @@ public class PostService {
 
 
     /**
-     * 2.1 광고 배너 API
+     * 3.1 광고 배너 API
      */
     public List<Banner> findBanner() throws BaseException{
         try{
@@ -38,7 +36,7 @@ public class PostService {
     }
 
     /**
-     * 2.2 홍콩 배스트 게시판 API
+     * 3.2 홍콩 배스트 게시판 API
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException{
         try{
@@ -51,7 +49,7 @@ public class PostService {
 
 
     /**
-     * 2.3 학교 베스트 게시판 API
+     * 3.3 학교 베스트 게시판 API
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
 //       try { //null 이 나오기 전에 쿼리문에서 에러가 남.
@@ -76,7 +74,7 @@ public class PostService {
     }
 
     /**
-     * 2.4 광장 게시판 리스트 API
+     * 3.4 광장 게시판 리스트 API
      */
     public List<TotalPost> findTotalPost(int category) throws BaseException{
         try{
@@ -89,7 +87,7 @@ public class PostService {
 
 
     /**
-     * 2.5 게시물 작성 API
+     * 3.5 게시물 작성 API
      */
     @Transactional
     public PostCreateResponse createPost (PostCreateRequest postCreateRequest) throws BaseException{
