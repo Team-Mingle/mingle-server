@@ -7,6 +7,9 @@ import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import io.swagger.v3.oas.annotations.Operation;
 import community.mingle.app.utils.JwtService;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,8 +41,8 @@ public class AuthController {
      */
     @Operation(summary = "1.1 get univ list API", description = "1.1 대학교 리스트 가져오기")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @GetMapping("/univList")
     public BaseResponse<List<GetUnivListResponse>> univName() {
@@ -61,8 +64,8 @@ public class AuthController {
      */
     @Operation(summary = "1.2 get email domain list by univ API", description = "1.2 대학교 별 이메일 도메인 리스트 가져오기")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @ResponseBody
     @GetMapping("/univDomain")
@@ -87,12 +90,11 @@ public class AuthController {
 
     @Operation(summary = "1.3 email duplicate check API", description = "1.3 이메일 입력 & 중복검사 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요."),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
-            @ApiResponse(responseCode = "2012", description = "중복된 이메일입니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다."),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2012", description = "중복된 이메일입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @ResponseBody
     @PostMapping("checkEmail") // (POST) 127.0.0.1:9000/users
@@ -119,9 +121,12 @@ public class AuthController {
      */
     @Operation(summary = "1.4 email verification code send API", description = "1.4 이메일 인증코드 전송 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요."),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.//프론트에서 확인해주세요")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2014", description = "인증번호 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2015", description = "인증번호 전송에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @PostMapping("sendCode")
     public BaseResponse<String> sendCode(@RequestBody @Valid PostEmailRequest req) {
@@ -148,9 +153,9 @@ public class AuthController {
      */
     @Operation(summary = "1.5 email verification code check API", description = "1.5 이메일 인증코드 검사 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
-            @ApiResponse(responseCode = "2013", description = "인증번호가 일치하지 않습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2013", description = "인증번호가 일치하지 않습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @ResponseBody
     @PostMapping("checkCode")
@@ -265,16 +270,18 @@ public class AuthController {
      */
     @Operation(summary = "1.8 sign up API", description = "1.8 회원가입 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요."),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
-            @ApiResponse(responseCode = "2012", description = "중복된 이메일입니다."),
-            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요."),
-            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다."),
-            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다."),
-            @ApiResponse(responseCode = "2018", description = "중복된 닉네임입니다."),
-            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다."),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2012", description = "중복된 이메일입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2017", description = "중복된 닉네임입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2018", description = "존재하지 않는 학교 id 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3010", description = "회원가입에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @ResponseBody
     @PostMapping("signup")
@@ -314,14 +321,15 @@ public class AuthController {
      */
     @Operation(summary = "1.9 login API", description = "1.9 로그인 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요."),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
-            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요."),
-            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다."),
-            @ApiResponse(responseCode = "3010", description = "존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
-            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다."),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3011", description = "존재하지 않는 이메일이거나 비밀번호가 틀렸습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3012", description = "JWT 발급에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @PostMapping("login")
     public BaseResponse<PostLoginResponse> logIn(@RequestBody @Valid PostLoginRequest postLoginRequest) {
@@ -354,13 +362,14 @@ public class AuthController {
 
     @Operation(summary = "1.10 resetPwd API", description = "1.10 비밀번호 초기화 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요."),
-            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다."),
-            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다."),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다."),
-            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다."),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.")
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2019", description = "등록되지 않은 유저입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3013", description = "비밀번호 변경에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @PatchMapping("pwd")
     public BaseResponse<String> resetPwd(@RequestBody @Valid PatchUpdatePwdRequest patchUpdatePwdRequest) {
