@@ -19,6 +19,8 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 @Tag(name = "auth", description = "회원가입 process 관련 API")
 @RestController
 @RequestMapping("/auth")
