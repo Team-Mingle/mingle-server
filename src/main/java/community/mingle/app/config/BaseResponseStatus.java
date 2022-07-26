@@ -34,14 +34,17 @@ public enum BaseResponseStatus {
     EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요.//프론트에서 확인해주세요 "),
     USER_EXISTS_EMAIL(false,2012,"중복된 이메일입니다."),
     EMAIL_CODE_FAIL(false, 2013, "인증번호가 일치하지 않습니다."),
+    CODE_GENERATE_FAIL(false, 2014, "인증번호 생성에 실패하습니다."),
+    EMAIL_SEND_FAIL(false, 2015, "인증번호 전송에 실패하였습니다."),
+
 
     //password
     PASSWORD_EMPTY_ERROR(false, 2014, "비밀번호를 입력해주세요."),
     PASSWORD_LENGTH_ERROR(false, 2015, "비밀번호가 너무 짧습니다."),
     PASSWORD_FORMAT_ERROR(false, 2016, "비밀번호는 영문,숫자를 포함해야 합니다."),
-    PASSWORD_MATCH_ERROR(false, 2017, "비밀번호가 일치하지 않습니다."),
-
-    USER_EXISTS_NICKNAME(false, 2018, "중복된 닉네임입니다."),
+    USER_EXISTS_NICKNAME(false, 2017, "중복된 닉네임입니다."),
+    INVALID_UNIV_ID(false,2018 , "존재하지 않는 학교 id 입니다."),
+    USER_NOT_EXIST(false, 2019, "등록되지 않은 유저입니다."),
 
 
     /** 2. /user */
@@ -68,17 +71,24 @@ public enum BaseResponseStatus {
     //RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
 
     /** 1. /auth  */
-    FAILED_TO_LOGIN(false,3010,"존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_SIGNUP(false, 3010, "회원가입에 실패하였습니다."),
+    FAILED_TO_LOGIN(false,3011,"존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_CREATEJWT(false, 3012, "JWT 발급에 실패하였습니다."),
+    FAILED_TO_CHANGEPWD(false, 3013, "비밀번호 변경에 실패하였습니다."),
 
     /** 2. /user  */
-    //DELETE_FAIL_USER(false,4015,"유저 삭제에 실패했습니다."),
-    //MODIFY_FAIL_NICKNAME(false,4014,"닉네임 수정에 실패하였습니다."),
+    //DELETE_FAIL_USER(false,3020,"유저 삭제에 실패했습니다."),
+    //MODIFY_FAIL_NICKNAME(false,3021,"닉네임 수정에 실패하였습니다."),
 
     /** 3. /posts 주석 해제하고 쓰기 */
+    EMPTY_BEST_POSTS(false, 3030,"최근 3일간 올라온 베스트 게시물이 없습니다."),
+    INVALID_POST_CATEGORY(false, 3031, "유효하지 않은 카테고리 입니다."),
+    EMPTY_POSTS_LIST(false, 3032, "해당 카테고리에 게시물이 없습니다."),
+    CREATE_FAIL_POST(false, 3033, "게시물 생성에 실패하였습니다."),
     //9주차 3.3 게시물수정
-    MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
+    //MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
     //3.4 게시물삭제
-    DELETE_FAIL_POST(false, 3021, "게시물 삭제를 실패했습니다."),
+    //DELETE_FAIL_POST(false, 3021, "게시물 삭제를 실패했습니다."),
 
     /** 4. /comment  */
 
@@ -95,7 +105,7 @@ public enum BaseResponseStatus {
 
     // /auth : 암호화
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    EMAIL_ENCRYPTION_ERROR(false, 4020, "이메일 암호화에 실패하였습니다.");
+    EMAIL_ENCRYPTION_ERROR(false, 4012, "이메일 암호화에 실패하였습니다.");
 
 
 

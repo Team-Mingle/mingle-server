@@ -1,6 +1,6 @@
 package community.mingle.app.src.post;
 
-
+import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -45,8 +45,7 @@ public class PostService {
             List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
             return totalPosts;
         }catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
+            throw new BaseException(EMPTY_BEST_POSTS);
         }
     }
 
@@ -55,19 +54,24 @@ public class PostService {
      * 2.3 학교 베스트 게시판 API
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
-        Long memberIdByJwt;
+//       try { //null 이 나오기 전에 쿼리문에서 에러가 남.
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+//        } catch (Exception e) {
+//            throw new BaseException(EMPTY_JWT);
+//        }
+        Member member;
+
         try {
-            memberIdByJwt = jwtService.getUserIdx();
+            member = postRepository.findMemberbyId(memberIdByJwt);
         } catch (Exception e) {
-            throw new BaseException(EMPTY_JWT);
+            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
         }
 
         try {
-            Member member = postRepository.findMemberbyId(memberIdByJwt);
             List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member);
             return univPosts;
         } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+            throw new BaseException(EMPTY_BEST_POSTS);
         }
     }
 
@@ -79,8 +83,7 @@ public class PostService {
             List<TotalPost> getAll = postRepository.findTotalPost(category);
             return getAll;
         }catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
+            throw new BaseException(EMPTY_POSTS_LIST);
         }
     }
 
@@ -90,25 +93,28 @@ public class PostService {
      */
     @Transactional
     public PostCreateResponse createPost (PostCreateRequest postCreateRequest) throws BaseException{
-        Long memberIdByJwt;
+        Member member;
+        Category category;
+
+        Long memberIdByJwt = jwtService.getUserIdx();
+
         try {
-            memberIdByJwt = jwtService.getUserIdx();
-        } catch (Exception e) {
-            throw new BaseException(EMPTY_JWT);
+            member = postRepository.findMemberbyId(memberIdByJwt);
+            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+        } catch(Exception exception){
+            throw new BaseException(INVALID_POST_CATEGORY);
         }
-        try{
 
-            Member member = postRepository.findMemberbyId(memberIdByJwt);
-
-            Category category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+        try {
             UnivPost univPost = UnivPost.createPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
             return new PostCreateResponse(id);
-
-        }catch(Exception exception){
-            exception.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
-
+        } catch (Exception e) {
+            throw new BaseException(CREATE_FAIL_POST);
         }
+
+
+
+
     }
 }
