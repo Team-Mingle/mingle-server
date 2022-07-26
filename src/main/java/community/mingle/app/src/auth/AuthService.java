@@ -82,11 +82,6 @@ public class AuthService {
             throw new BaseException(USER_EXISTS_EMAIL);
         }
 
-        try {
-
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
         return null;
     }
 
@@ -106,7 +101,7 @@ public class AuthService {
     }
 
     /**
-     * 1.4.1 인증번호 아매알전송
+     * 1.4.1 인증번호 이메일 전송
      */
     private void sendAuthEmail(String email, String authKey) throws BaseException {
         String subject = "Mingle의 이메일을 인증하세요!";
@@ -131,7 +126,7 @@ public class AuthService {
     }
 
     /**
-     * 1.4.2 인증 코드 검사 API
+     * 1.5 인증 코드 검사 API
      */
     public void authCode(String email, String code) throws BaseException {
         if (code.equals(redisUtil.getData(email))) {
@@ -181,12 +176,9 @@ public class AuthService {
         try {
             UnivName univName = authRepository.findUniv(postSignupRequest.getUnivId());
             Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
-            System.out.println("====1. createMember====="); //실행됨
 
             Long id = authRepository.save(member);
-            System.out.println("====2. save====="); //실행안됨
-//            authRepository.save(member);
-//            String jwt = jwtService.createJwt(id);
+
             return new PostSignupResponse(id);
 
         } catch (Exception e) {
@@ -221,11 +213,7 @@ public class AuthService {
         Member member; //try 안에있으면 인식안됨
         try {
             member = authRepository.findMemberByEmail(postLoginRequest.getEmail());
-            if (member == null) {
-                throw new BaseException(EMAIL_CODE_FAIL);
-            }
         } catch (Exception e) {
-            System.out.println("======2=======");
             throw new BaseException(FAILED_TO_LOGIN);
         }
 
@@ -256,7 +244,7 @@ public class AuthService {
      * 1.10 비밀번호 재설정 api
      */
     @Transactional
-    public void updatePwd (PatchUpdatePwdRequest patchUpdatePwdRequest) throws BaseException{
+    public void updatePwd (PatchUpdatePwdRequest patchUpdatePwdRequest) throws BaseException {
         //이메일 암호화
         String email;
         try {
@@ -268,12 +256,9 @@ public class AuthService {
 
 //        비밀번호 암호화
         String encryptPwd;
-        String encryptRePwd;
         try {
             encryptPwd = new SHA256().encrypt(patchUpdatePwdRequest.getPwd());
-            encryptRePwd = new SHA256().encrypt(patchUpdatePwdRequest.getRePwd());
             patchUpdatePwdRequest.setPwd(encryptPwd);
-            patchUpdatePwdRequest.setRePwd(encryptRePwd);
         } catch (Exception exception) {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
@@ -282,42 +267,16 @@ public class AuthService {
         Member member;
         try {
             member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
-            if (member == null) { // .equals(null) : always false?
-                //return; // No entity found for query; nested exception is javax.persistence.NoResultException: No entity found for query
-                throw new BaseException(FAILED_TO_LOGIN);
-            }
         } catch (Exception e) {
-            throw new BaseException(FAILED_TO_LOGIN);
+            throw new BaseException(USER_NOT_EXIST);
         }
 
-        //여기서 이메일로 JWT로 해당 유저인지 확인 필요
-        /**
-         * 이메일로 찾은 member 의 id 가 JWT 로 찾은 id 랑 같은지 비교
-         */
-        Long userIdxByJwt = jwtService.getUserIdx();
-        if (member.getId() != userIdxByJwt) {
-            throw new BaseException(INVALID_USER_JWT);
-        }
-        if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) == 0) {
+        try {
             member.setPwd(patchUpdatePwdRequest.getPwd()); //Setter 로 바로 해도 될까?
             Long id = authRepository.save(member);
-        } else if ((patchUpdatePwdRequest.getPwd().compareTo(patchUpdatePwdRequest.getRePwd())) != 0) {
-            throw new BaseException(PASSWORD_MATCH_ERROR);
+        } catch (Exception e) {
+            throw new BaseException(FAILED_TO_CHANGEPWD);
         }
-    }
 
-//    /**
-//     * 1.5 비밀번호 검사
-//     */
-//    public void verifyPwd(PwdRequest pwdRequest) throws BaseException {
-//        try {
-//            if ((pwdRequest.getPwd().compareTo(pwdRequest.getRePwd())) != 0) {
-//                System.out.println("match error");
-//                throw new BaseException(PASSWORD_MATCH_ERROR);
-//            }
-//        } catch (Exception e) { //Base 말고 더 제너럴하게 잡아주는듯 하다.
-//            System.out.println("general ex");
-//            throw new BaseException(SERVER_ERROR); //DB 접근을 안하니 디비에러는 아니고 그냥 서버에러로?
-//        }
-//    }
+    }
 }

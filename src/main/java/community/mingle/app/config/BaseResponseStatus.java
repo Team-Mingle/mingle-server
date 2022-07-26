@@ -31,7 +31,7 @@ public enum BaseResponseStatus {
 
     //email
     EMAIL_EMPTY_ERROR(false, 2010, "이메일을 입력해주세요."),
-    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요.//프론트에서 확인해주세요 "),
+    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
     USER_EXISTS_EMAIL(false,2012,"중복된 이메일입니다."),
     EMAIL_CODE_FAIL(false, 2013, "인증번호가 일치하지 않습니다."),
 
@@ -39,9 +39,9 @@ public enum BaseResponseStatus {
     PASSWORD_EMPTY_ERROR(false, 2014, "비밀번호를 입력해주세요."),
     PASSWORD_LENGTH_ERROR(false, 2015, "비밀번호가 너무 짧습니다."),
     PASSWORD_FORMAT_ERROR(false, 2016, "비밀번호는 영문,숫자를 포함해야 합니다."),
-    PASSWORD_MATCH_ERROR(false, 2017, "비밀번호가 일치하지 않습니다."),
-
-    USER_EXISTS_NICKNAME(false, 2018, "중복된 닉네임입니다."),
+    USER_EXISTS_NICKNAME(false, 2017, "중복된 닉네임입니다."),
+    INVALID_UNIV_ID(false,2018 , "존재하지 않는 학교 id 입니다."),
+    USER_NOT_EXIST(false, 2019, "등록되지 않은 유저입니다."),
 
 
     /** 2. /user */
@@ -69,6 +69,8 @@ public enum BaseResponseStatus {
 
     /** 1. /auth  */
     FAILED_TO_LOGIN(false,3010,"존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_GET_TERMS(false, 3011, "약관을 불러오는데 실패하였습니다."),
+    FAILED_TO_CHANGEPWD(false, 3013, "비밀번호 변경에 실패하였습니다."),
 
     /** 2. /user  */
     //DELETE_FAIL_USER(false,4015,"유저 삭제에 실패했습니다."),
@@ -95,7 +97,7 @@ public enum BaseResponseStatus {
 
     // /auth : 암호화
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    EMAIL_ENCRYPTION_ERROR(false, 4020, "이메일 암호화에 실패하였습니다.");
+    EMAIL_ENCRYPTION_ERROR(false, 4012, "이메일 암호화에 실패하였습니다.");
 
 
 

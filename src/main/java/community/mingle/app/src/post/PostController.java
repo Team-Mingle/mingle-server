@@ -36,6 +36,7 @@ public class PostController {
     /**
      * 3.1 광고 배너 API
      */
+    @Operation(summary = "3.1 ad banner API", description = "3.1 광고 배너 API")
     @GetMapping("/banner")
     public BaseResponse<List<GetBannerResponse>> getBanner(){
         try {
@@ -55,7 +56,7 @@ public class PostController {
     /**
      * 3.2 홍콩 배스트 게시판 API
      */
-    @Operation(summary = "2.2 getTotalBest Posts API", description = "2.2 광장 베스트 게시물 리스트 API")
+    @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
     @GetMapping("/total/best")
     public BaseResponse<List<GetTotalBestPostsResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
@@ -117,6 +118,7 @@ public class PostController {
     /**
      * 3.5 전체 게시물 작성 API
      */
+    @Operation(summary = "3.5 total post create API", description = "3.5 전체 게시물 작성 API")
     @PostMapping("/univ")
     public BaseResponse<PostCreateResponse> createPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
         try{
