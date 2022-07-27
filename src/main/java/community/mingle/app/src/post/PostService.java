@@ -39,14 +39,12 @@ public class PostService {
      * 3.2 홍콩 배스트 게시판 API
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException{
-        try{
-            List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
-            return totalPosts;
-        }catch (Exception e) {
+        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
+        if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
+        return totalPosts;
     }
-
 
     /**
      * 3.3 학교 베스트 게시판 API
@@ -58,31 +56,35 @@ public class PostService {
 //            throw new BaseException(EMPTY_JWT);
 //        }
         Member member;
-
-        try {
-            member = postRepository.findMemberbyId(memberIdByJwt);
-        } catch (Exception e) {
+//        try {
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
             throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
         }
+//        } catch (Exception e) {
+//            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
+//        }
 
-        try {
-            List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member);
-            return univPosts;
-        } catch (Exception e) {
+//        try {
+        List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member);
+        if (univPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
+        return univPosts;
+//        } catch (Exception e) {
+//            throw new BaseException(EMPTY_BEST_POSTS);
+//        }
     }
 
     /**
      * 3.4 광장 게시판 리스트 API
      */
     public List<TotalPost> findTotalPost(int category) throws BaseException{
-        try{
-            List<TotalPost> getAll = postRepository.findTotalPost(category);
-            return getAll;
-        }catch (Exception e) {
+        List<TotalPost> getAll = postRepository.findTotalPost(category);
+        if (getAll.size() == 0) {
             throw new BaseException(EMPTY_POSTS_LIST);
         }
+        return getAll;
     }
 
 
@@ -93,16 +95,16 @@ public class PostService {
     public PostCreateResponse createPost (PostCreateRequest postCreateRequest) throws BaseException{
         Member member;
         Category category;
-
         Long memberIdByJwt = jwtService.getUserIdx();
-
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
         try {
-            member = postRepository.findMemberbyId(memberIdByJwt);
             category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
         } catch(Exception exception){
             throw new BaseException(INVALID_POST_CATEGORY);
         }
-
         try {
             UnivPost univPost = UnivPost.createPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
@@ -110,9 +112,5 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
-
-
-
-
     }
 }

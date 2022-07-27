@@ -57,8 +57,6 @@ public class AuthController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
-
     /**
      * 1.2 학교별 도메인 리스트 전송 API
      */
@@ -66,6 +64,7 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+
     })
     @ResponseBody
     @GetMapping("/univDomain")
@@ -225,6 +224,7 @@ public class AuthController {
         /**
          * 통으로나옴
          */
+
 //        File file = new File("src/main/java/community/mingle/app/config/personalinfoterms");
 //        StringBuilder sb = new StringBuilder();
 //        Scanner scan = new Scanner(file);
