@@ -41,6 +41,9 @@ public class PostService {
     public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException{
         try{
             List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
+            if (totalPosts.size() == 0) {
+                throw new BaseException(EMPTY_BEST_POSTS);
+            }
             return totalPosts;
         }catch (Exception e) {
             throw new BaseException(EMPTY_BEST_POSTS);
@@ -79,6 +82,9 @@ public class PostService {
     public List<TotalPost> findTotalPost(int category) throws BaseException{
         try{
             List<TotalPost> getAll = postRepository.findTotalPost(category);
+            if (getAll.size() == 0) {
+                throw new BaseException(EMPTY_POSTS_LIST);
+            }
             return getAll;
         }catch (Exception e) {
             throw new BaseException(EMPTY_POSTS_LIST);

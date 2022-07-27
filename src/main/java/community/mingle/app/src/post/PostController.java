@@ -140,7 +140,8 @@ public class PostController {
     /**
      * 3.5 전체 게시물 작성 API
      */
-    @Operation(summary = "3.5 createTotalPosts API", description = "3.5 광장 게시물 생성 API")
+    @Operation(summary = "3.5 createTotalPosts API", description = "3.5 학교 게시물 생성 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @PostMapping("/univ")
     @ApiResponses ({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),

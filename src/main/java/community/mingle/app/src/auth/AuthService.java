@@ -267,7 +267,6 @@ public class AuthService {
         Member member;
         try {
             member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
-            // No entity found for query; nested exception is javax.persistence.NoResultException: No entity found for query
         } catch (Exception e) {
             throw new BaseException(USER_NOT_EXIST);
         }
