@@ -24,6 +24,7 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
 import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 
 @Tag(name = "auth", description = "회원가입 process 관련 API")
@@ -44,7 +45,7 @@ public class AuthController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    @GetMapping("/univList")
+    @GetMapping("/univlist")
     public BaseResponse<List<GetUnivListResponse>> univName() {
         try {
             List<UnivName> findUnivNames = authService.findUniv();
@@ -67,7 +68,7 @@ public class AuthController {
 
     })
     @ResponseBody
-    @GetMapping("/univDomain")
+    @GetMapping("/domain")
     public BaseResponse<List<GetUnivDomainResponse>> getDomain(@RequestParam int univId) {
         try {
 
@@ -95,8 +96,9 @@ public class AuthController {
             @ApiResponse(responseCode = "2012", description = "중복된 이메일입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
+
     @ResponseBody
-    @PostMapping("checkEmail") // (POST) 127.0.0.1:9000/users
+    @PostMapping("checkemail") // (POST) 127.0.0.1:9000/users
     public BaseResponse<String> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
 
         if (postUserEmailRequest.getEmail() == null) {
@@ -127,7 +129,7 @@ public class AuthController {
             @ApiResponse(responseCode = "2015", description = "인증번호 전송에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    @PostMapping("sendCode")
+    @PostMapping("sendcode")
     public BaseResponse<String> sendCode(@RequestBody @Valid PostEmailRequest req) {
         try {
             if (req.getEmail() == null) {
@@ -157,7 +159,7 @@ public class AuthController {
             @ApiResponse(responseCode = "2013", description = "인증번호가 일치하지 않습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @ResponseBody
-    @PostMapping("checkCode")
+    @PostMapping("checkcode")
     public BaseResponse<String> verifyCode(@RequestBody @Valid PostCodeRequest code) {
         try {
             if (!isRegexEmail(code.getEmail())) { //이메일 형식(정규식) 검증

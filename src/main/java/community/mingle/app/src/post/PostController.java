@@ -2,6 +2,7 @@
 
 package community.mingle.app.src.post;
 
+
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
@@ -61,7 +62,7 @@ public class PostController {
 
 
     /**
-     * 3.2 홍콩 배스트 게시판 API
+     * 3.2 전체 배스트 게시판 API
      */
 
     @GetMapping("/total/best")
@@ -114,7 +115,7 @@ public class PostController {
 
 
     /**
-     * 3.4 광장 게시판 리스트 API
+     * 3.4 전체 게시판 리스트 API
      */
     @GetMapping("/total")
     @Operation(summary = "3.4 getTotal Posts API", description = "3.4 광장 게시판 게시물 리스트 API")
@@ -138,9 +139,9 @@ public class PostController {
 
 
     /**
-     * 3.5 학교 게시물 작성 API
+     * 3.7 학교 게시물 작성 API
      */
-    @Operation(summary = "3.5 createUnivPosts API", description = "3.5 학교 게시물 생성 API")
+    @Operation(summary = "3.7 createUnivPosts API", description = "3.7 학교 게시물 생성 API")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @PostMapping("/univ")
     @ApiResponses ({
