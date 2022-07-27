@@ -9,5 +9,5 @@ public class PatchUpdatePwdRequest {
 //    private Long userIdx;
     private String email;
     private String pwd;
-    private String rePwd;
+//    private String rePwd;
 }

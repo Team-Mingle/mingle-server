@@ -3,10 +3,7 @@ package community.mingle.app.utils;
 
 import community.mingle.app.config.secret.Secret;
 import community.mingle.app.config.BaseException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -21,6 +18,7 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 @RequiredArgsConstructor
 public class JwtService {
 
+
     /*
     JWT 생성
     @param userIdx
@@ -29,6 +27,7 @@ public class JwtService {
     public String createJwt(Long userIdx) {
         Date now = new Date();
         return Jwts.builder()
+                .setIssuer("mingle.community")
                 .setHeaderParam("type","jwt")
                 .claim("userIdx",userIdx)
                 .setIssuedAt(now)
@@ -46,6 +45,24 @@ public class JwtService {
         return request.getHeader("X-ACCESS-TOKEN");
     }
 
+//    public boolean checkClaim(String jwt) {
+//        try {
+//            Claims claims = Jwts.parser()
+//                    .setSigningKey(secretKey.getBytes())
+//                    .parseClaimsJws(jwt).getBody();
+//            return true;
+//
+//        }catch(ExpiredJwtException e) {
+////            logger.error("Token Expired");
+//            return false;
+//
+//        }catch(JwtException e) {
+////            logger.error("Token Error");
+//            return false;
+//        }
+//    }
+
+
     /*
     header에서 받아온 JWT에서 userIdx 추출
     @return int
@@ -54,6 +71,9 @@ public class JwtService {
     public Long getUserIdx() throws BaseException{
         //1. JWT 추출
         String accessToken = getJwt();
+
+
+
         if(accessToken == null || accessToken.length() == 0) {
             throw new BaseException(EMPTY_JWT);
         }

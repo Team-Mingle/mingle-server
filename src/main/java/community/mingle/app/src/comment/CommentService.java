@@ -2,20 +2,14 @@ package community.mingle.app.src.comment;
 
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.auth.model.PostSignupResponse;
 import community.mingle.app.src.comment.model.PostTotalCommentRequest;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static community.mingle.app.config.BaseResponseStatus.DATABASE_ERROR;
 import static community.mingle.app.config.BaseResponseStatus.EMPTY_JWT;

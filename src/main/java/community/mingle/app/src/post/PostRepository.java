@@ -1,6 +1,8 @@
 package community.mingle.app.src.post;
 
 
+import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -15,7 +17,14 @@ import java.util.List;
 public class PostRepository {
 
     private final EntityManager em;
+    /**
+     * 2.1 광고 배너 API
+     */
+    public List<Banner> findBanner(){
+        return em.createQuery("select b from Banner b", Banner.class)
+                .getResultList();
 
+    }
 
     /**
      * 2.2 전체 베스트 게시판 api
@@ -46,6 +55,15 @@ public class PostRepository {
                 .getResultList();
     }
 
+    /**
+     * 2.4 광장 게시판 api
+     */
+    public List<TotalPost> findTotalPost(int category) {
+        return em.createQuery("select p from TotalPost p where p.category.id = :category order by p.createdAt desc", TotalPost.class)
+                .setParameter("category", category)
+                .getResultList();
+    }
+
 
     /**
      * memberId 로 Member 반환
@@ -61,5 +79,17 @@ public class PostRepository {
         } else { //없으면 null 반환
             return null;
         }
+    }
+
+    public Long save(UnivPost univPost) {
+        em.persist(univPost);
+        return univPost.getId();
+    }
+
+    public Category findCategoryById(int id) { //쿼리문에서 나는 에러는 if else 로 잡아서 null 로 보낼 수 없다.
+        Category category = em.createQuery("select c from Category c where c.id = :id", Category.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return category;
     }
 }

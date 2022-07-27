@@ -10,4 +10,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PostEmailResponse {
     private String message;
+
 }

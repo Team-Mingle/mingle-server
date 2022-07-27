@@ -13,3 +13,8 @@ public class GetUnivDomainResponse {
     private String domain;
 
 }
+
+
+
+
+
