@@ -76,9 +76,14 @@ public class AuthService {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
 
-        if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
+        try {
+            if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
+                throw new BaseException(USER_EXISTS_EMAIL);
+            }
+        } catch (Exception e) {
             throw new BaseException(USER_EXISTS_EMAIL);
         }
+
         return null;
     }
 
@@ -114,24 +119,36 @@ public class AuthService {
             javaMailSender.send(mimeMessage);
 
         } catch(MessagingException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new BaseException(EMAIL_SEND_FAIL);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-        redisUtil.setDataExpire(authKey, email, 60*5L);
+
+        try {
+            redisUtil.setDataExpire(authKey, email, 60 * 5L);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 
     /**
      * 1.5 인증 코드 검사 API
      */
     public void authCode(String email, String code) throws BaseException {
-        if (code.equals(redisUtil.getData(email))) {
-            return;
+
+        try {
+            if (code.equals(redisUtil.getData(email))) {
+                return;
 //            return new CodeResponse("인증에 성공하였습니다.");
-        } else {
+            } else {
+                throw new BaseException(EMAIL_CODE_FAIL);
+            }
+        } catch (Exception e) {
             throw new BaseException(EMAIL_CODE_FAIL);
         }
+
     }
 
     /**
@@ -141,13 +158,13 @@ public class AuthService {
     public PostSignupResponse createMember(PostSignupRequest postSignupRequest) throws BaseException {
 
         //닉네임 중복검사 먼저
+
         if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
             throw new BaseException(USER_EXISTS_NICKNAME);
         }
+
 //        없는 univId 일때 추가
-        try {
-            authRepository.findUniv(postSignupRequest.getUnivId());
-        } catch (Exception e) {
+        if (authRepository.findUniv(postSignupRequest.getUnivId()) == null) {
             throw new BaseException(INVALID_UNIV_ID);
         }
 
@@ -212,12 +229,9 @@ public class AuthService {
         }
 
         Member member;
-        try {
-            member = authRepository.findMemberByEmail(postLoginRequest.getEmail());
-//            if (member == null) {
-//                throw new BaseException(EMAIL_CODE_FAIL);
-//            }
-        } catch (Exception e) {
+
+        member = authRepository.findMemberByEmail(postLoginRequest.getEmail());
+        if (member == null) {
             throw new BaseException(FAILED_TO_LOGIN);
         }
 
@@ -265,10 +279,9 @@ public class AuthService {
 
         //이메일로 멤버 찾기
         Member member;
-        try {
-            member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
-            // No entity found for query; nested exception is javax.persistence.NoResultException: No entity found for query
-        } catch (Exception e) {
+
+        member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
+        if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
 
