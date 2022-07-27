@@ -278,9 +278,7 @@ public class AuthService {
         }
 
         //이메일로 멤버 찾기
-        Member member;
-
-        member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
+        Member member = authRepository.findMemberByEmail(patchUpdatePwdRequest.getEmail());
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
