@@ -59,6 +59,7 @@ public class AuthRepository {
         return em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
                 .getSingleResult(); //에러남
+        // No entity found for query; nested exception is javax.persistence.NoResultException: No entity found for query
     }
 
     public Member findMemberByEmail(String email) {
