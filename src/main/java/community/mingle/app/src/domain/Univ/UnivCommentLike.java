@@ -24,7 +24,7 @@ public class UnivCommentLike {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "univcomment_id")
-    private UnivComment comment;
+    private UnivComment univComment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

@@ -2,9 +2,9 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.post.model.PostCreateRequest;
-import community.mingle.app.src.post.model.PostCreateResponse;
+import community.mingle.app.src.post.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import community.mingle.app.config.BaseException;
@@ -12,7 +12,11 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
@@ -113,4 +117,74 @@ public class PostService {
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
+
+    /**
+     * 3.10 학교 게시물 상세
+     */
+    @Transactional(readOnly = true)
+    public UnivPost findUnivPost(Long univPostId) throws BaseException {
+
+//        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+//        Member member;
+
+//        member = postRepository.findMemberbyId(memberIdByJwt);
+//        if (member == null) {
+//            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
+//        }
+
+
+        UnivPost univPost = postRepository.findUnivPost(univPostId);
+
+
+//        List<UnivComment> univComments = univPost.getComments();
+//
+//        List<GetUnivCommentsRes> comments = univComments.stream()
+//                .map(p -> new GetUnivCommentsRes(p))
+//                .collect(Collectors.toList());
+
+        return univPost;
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetUnivCommentsRes> findUnivCoComment(UnivPost univPost) {
+
+        List<GetUnivCommentsRes> commentsList = new ArrayList<>();
+
+//        List<UnivComment> nullCommentsList = new ArrayList<>(); // 1번
+        List<UnivComment> comments = univPost.getComments();
+//        for (UnivComment comment : comments) {
+//            if (comment.getParentCommentId() == null) {
+//                nullCommentsList.add(comment);
+//            }
+//        }
+
+        List<UnivComment> nullCommentList = comments.stream()
+                .filter(obj -> obj.getParentCommentId()==null)
+                .collect(Collectors.toList());
+
+//        List<UnivComment> nullComments = postRepository.findNullComments(comments); //2번
+
+        List<UnivComment> coComments; // 대댓글 리스트 : null 일수도 있지.
+
+        for (UnivComment univComment : nullCommentList) {
+            coComments = postRepository.findUnivCoComment(univPost, univComment); //댓글 하나마다 대댓글 리스트 찾음.
+            List<GetCoCommentsRes> coCommentsRes = coComments.stream()
+                    .map(cc -> new GetCoCommentsRes(cc))
+                    .collect(Collectors.toList());
+            GetUnivCommentsRes commentsRes = new GetUnivCommentsRes(univComment, coCommentsRes);
+            commentsList.add(commentsRes);
+        }
+
+        return commentsList;
+
+//        List<GetCoCommentsRes> coCommentsRes = coComments.stream()
+//        .map(cc -> new GetCoCommentsRes(cc))
+//        .collect(Collectors.toList());
+
+//        return commentsRes;
+
+//        UnivComment univComment = postRepository.findUnivCoComment(univPost.getComments());
+    }
+
 }

@@ -5,6 +5,7 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -92,4 +93,62 @@ public class PostRepository {
                 .getSingleResult();
         return category;
     }
+
+    //13개 -> 15ㄴㅋ -> 59개  (댓글29개)
+    //fetch join 201개
+    public UnivPost findUnivPost(Long univPostId) {
+        UnivPost univPost = em.createQuery("select p from UnivPost p join fetch p.member m join fetch p.comments c join fetch p.univName u where p.id = :id", UnivPost.class)
+                .setParameter("id", univPostId)
+                .getSingleResult();
+        return univPost;
+    }
+
+
+    //34개
+    public UnivPost findUnivPostById(Long univPostId) {
+        UnivPost univPost = em.createQuery("select p from UnivPost p where p.id = :id", UnivPost.class)
+                .setParameter("id", univPostId)
+                .getSingleResult();
+        return univPost;
+    }
+
+
+    public List<UnivComment> findUnivCoComment(UnivPost p, UnivComment c) { // commentId = 1;
+        List<UnivComment> univCoComments = em.createQuery("select cc from UnivComment cc " +
+                        "join fetch cc.member m join fetch cc.univCommentLikes cl " +
+                        " where cc.univPost.id = :id and cc.parentCommentId = :parentCommentId", UnivComment.class)
+                .setParameter("parentCommentId", c.getId())
+                .setParameter("id", p.getId())
+                .setFirstResult(0)
+                .setMaxResults(40)
+                .getResultList();
+        return univCoComments;
+    }
+
+    public List<UnivComment> findNullComments(List<UnivComment> comments) {
+        List<UnivComment> nullComments = em.createQuery("select c from UnivComment c where c.parentCommentId = :null", UnivComment.class)
+                .setParameter("null", null)
+                .getResultList();
+        return nullComments;
+    }
+
+
+
+//    public List<List<UnivComment>> findAllComments(UnivComment cc) {
+//        List<List<UnivComment>> allComments =
+//                em.createQuery("select c from UnivComment c " +
+//                                     " where c " +
+//                        " and ")
+//    }
+
+
+
+    //1. 포스트 찾음
+
+    //2. 그 포스트의 댓글 찾음
+
+    //3. 댓글 하나당 대댓글 찾음
+    // 그 포스트의 댓글 (2) 리스트에서 parentCommentId 가 null 인 댓글들 리스트에서 하나씩 비교해가며 찾음.
+
+
 }
