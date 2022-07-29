@@ -6,6 +6,7 @@ package community.mingle.app.src.post;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
@@ -19,11 +20,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.text.FormattableUtils;
 import org.springframework.web.bind.annotation.*;
 import community.mingle.app.src.post.model.*;
 
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,7 +140,6 @@ public class PostController {
     }
 
 
-
     /**
      * 3.7 학교 게시물 작성 API
      */
@@ -158,5 +160,47 @@ public class PostController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * 3.9 통합 게시물 상세 API
+     */
+    @GetMapping("/total/{totalPostId}")
+    public BaseResponse<GetTotalPostDetailResponse> totalPostDetail(@PathVariable Long totalPostId) {
+        TotalPost totalPostDetail = postService.getTotalPost(totalPostId);
+        List<TotalComment> totalComments = postRepository.getTotalCommentsWithParentComment(totalPostId);
+        List<TotalComment> totalcoComments = postRepository.getTotalcoCommentsWithParentComment(totalPostId);
+        List<GetTotalPostDetailComments> finalComments = new ArrayList<>();
+        for (TotalComment tc : totalComments) {
+            System.out.println("룰루" + tc.getId());
+            List<TotalComment> coComments = totalcoComments.stream()
+                    .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
+                    .collect(Collectors.toList());
+            System.out.println("룰루" + coComments.get(0));
+            List<GetTotalPostDetailCocomment> result = coComments.stream()
+                    .map(p -> new GetTotalPostDetailCocomment(p, tc.getMember().getNickname()))
+                    .collect(Collectors.toList());
+            GetTotalPostDetailComments getTotalPostDetailComments = new GetTotalPostDetailComments(tc, result);
+            finalComments.add(getTotalPostDetailComments);
+        }
+        GetTotalPostDetailResponse getTotalPostDetailResponse = new GetTotalPostDetailResponse(totalPostDetail, finalComments);
+        return new BaseResponse<>(getTotalPostDetailResponse);
+
+//        for (TotalComment tc : totalComments) {
+//            List<TotalComment> totalCocomments = postRepository.getTotalCommentsByCocommentId(totalPostId, tc.getId());
+//            List<GetTotalPostDetailCocomment> result = totalCocomments.stream()
+//                    .map(p -> new GetTotalPostDetailCocomment(p, tc.getMember().getNickname()))
+//                    .collect(Collectors.toList());
+//        }
+
+
+//        List<TotalComment> totalPostDetailComments = totalPostDetail.getTotalPostComments();
+//        List<GetTotalPostDetailComments> result = totalPostDetailComments.stream()
+//                .map(p -> new GetTotalPostDetailComments(p, p.getTotalCommentLikes().size()))
+//                .collect(Collectors.toList());
+//        GetTotalPostDetailResponse getTotalPostDetailResponse = new GetTotalPostDetailResponse(totalPostDetail, result);
+//        return new BaseResponse<>(getTotalPostDetailResponse);
+    }
+
+
 
 }

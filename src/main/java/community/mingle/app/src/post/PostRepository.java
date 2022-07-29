@@ -4,6 +4,7 @@ package community.mingle.app.src.post;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
@@ -91,5 +92,36 @@ public class PostRepository {
                 .setParameter("id", id)
                 .getSingleResult();
         return category;
+    }
+
+    public TotalPost getTotalPostbyId(Long id) {
+        TotalPost totalPost = em.createQuery("select tp from TotalPost tp where tp.id = :id", TotalPost.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return  totalPost;
+    }
+
+    public List<TotalComment> getTotalCommentsWithParentComment(Long id) {
+        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId = :null", TotalComment.class)
+                .setParameter("id", id)
+                .setParameter("null", null)
+                .getResultList();
+        return totalComments;
+    }
+
+    public List<TotalComment> getTotalcoCommentsWithParentComment(Long id) {
+        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId <> :null", TotalComment.class)
+                .setParameter("id", id)
+                .setParameter("null", null)
+                .getResultList();
+        return totalComments;
+    }
+
+    public List<TotalComment> getTotalCommentsByCocommentId(Long totalPostId, Long patentCommentId) {
+        List<TotalComment> totalCocomments= em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :totalPostId and tc.parentCommentId = :parentCommentId", TotalComment.class)
+                .setParameter("totalPostId", totalPostId)
+                .setParameter("parentCommentId", patentCommentId)
+                .getResultList();
+        return totalCocomments;
     }
 }

@@ -11,7 +11,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -37,6 +39,12 @@ public class TotalComment {
 
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
+
+    /**
+     * 양방향
+     */
+    @OneToMany(mappedBy = "totalComment")
+    private List<TotalCommentLike> totalCommentLikes = new ArrayList<>();
 
     /** 익명방법? */
     @Column(name = "is_anonymous")

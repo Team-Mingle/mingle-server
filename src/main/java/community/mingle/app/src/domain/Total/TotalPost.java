@@ -34,6 +34,9 @@ public class TotalPost {
     @OneToMany(mappedBy = "totalPost")
     private List<TotalPostLike> totalPostLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalPostScrap> totalPostScraps = new ArrayList<>();
+
 
 //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum

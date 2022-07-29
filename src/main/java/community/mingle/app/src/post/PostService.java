@@ -2,6 +2,7 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import community.mingle.app.src.post.model.PostCreateResponse;
@@ -113,4 +114,17 @@ public class PostService {
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
+
+    /**
+     * 3.9
+     */
+
+    public TotalPost getTotalPost(Long totalPostId) {
+        TotalPost totalPost = postRepository.getTotalPostbyId(totalPostId);
+        return totalPost;
+    }
+
+
+
+
 }
