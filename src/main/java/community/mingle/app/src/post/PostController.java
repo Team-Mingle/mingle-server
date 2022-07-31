@@ -180,6 +180,14 @@ public class PostController {
         return new BaseResponse<>(totalCommentDtoList);
     }
 
+    @GetMapping("/totalposttry/{totalPostId}")
+    public BaseResponse<TotalPostTry> totalPostTry(@PathVariable Long totalPostId) {
+        TotalPost totalPost = postService.getTotalPost(totalPostId);
+        List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
+        TotalPostTry totalPostTry = new TotalPostTry(totalPost, totalCommentDtoList);
+
+        return new BaseResponse<>(totalPostTry);
+    }
 
 
 }
