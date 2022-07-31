@@ -51,7 +51,7 @@ public class PostService {
     }
 
     /**
-     * 3.3 학교 베스트 게시판 API
+     * 3.3 학교 베스트 게시판 API --> try-catch 설명
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
 //       try { //null 이 나오기 전에 쿼리문에서 에러가 남.
@@ -187,6 +187,64 @@ public class PostService {
 //        return commentsRes;
 
 //        UnivComment univComment = postRepository.findUnivCoComment(univPost.getComments());
+    }
+
+
+
+    /**
+     * 3.10.1 학교 게시물 상세 - 게시물 API
+     */
+    public UnivPost getUnivPost(Long postId) throws BaseException {
+        try {
+            UnivPost univPost = postRepository.getUnivPostById(postId);
+            return univPost;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+    /**
+     * 3.10.2 학교 게시물 상세 - 댓글 API
+     */
+    public List<UnivCommentDTO> getUnivComments(Long postId) throws BaseException {
+
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        Member member;
+        member = postRepository.findMemberbyId(memberIdByJwt);
+
+        try {
+            //1. postId 의 댓글, 대댓글 리스트 각각 가져오기
+            List<UnivComment> univComments = postRepository.getUnivComments(postId); //댓글
+            List<UnivComment> univCoComments = postRepository.getUnivCoComments(postId); //대댓글
+
+            //2. 댓글 + 대댓글 DTO 생성
+            List<UnivCommentDTO> univCommentDTOList = new ArrayList<>();
+
+            //3. 댓글 리스트 돌면서 댓글 하나당 대댓글 리스트 넣어서 합쳐주기
+            for (UnivComment c : univComments) {
+                //parentComment 하나당 해당하는 UnivComment 타입의 대댓글 찾아서 리스트 만들기
+                List<UnivComment> CoCommentList = univCoComments.stream()
+                        .filter(cc -> c.getId().equals(cc.getParentCommentId()))
+                        .collect(Collectors.toList());
+
+                postRepository.checkCoCommentLiked(CoCommentList);
+
+                //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
+                List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
+                        .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt ))
+                        .collect(Collectors.toList());
+
+                //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
+                UnivCommentDTO univCommentDTO = new UnivCommentDTO(c, coCommentDTO);
+                univCommentDTOList.add(univCommentDTO);
+            }
+            return univCommentDTOList;
+
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 
 }

@@ -32,4 +32,7 @@ public class UnivCommentLike {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+
+
 }

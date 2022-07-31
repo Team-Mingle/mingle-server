@@ -179,7 +179,6 @@ public class PostController {
         /*
         1. JWT -> 내 게시물인지 확인
         2. 이미지 조인 해서 이미지리스트도 반환.
-        3.
          */
 
         try {
@@ -204,22 +203,36 @@ public class PostController {
     }
 
     /**
-     * 3.10 학교 게시물 상세 API
+     * 3.10.1 학교 게시물 상세 - 게시물 API
      */
-//    @GetMapping("/univ/{univPostId}")
-//    @Operation(summary = "3.10 getUnivPostDetail API", description = "3.10 학교 게시물 상세 API")
-//    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
-//    public BaseResponse<UnivPostDetailDTO> getUnivPostDetail(@PathVariable Long univPostId) {
-//
-//        try {
-//            UnivPost univPost = postService.findUnivPost(univPostId);
-//            List<UnivCommentDTO> univCommentDTO = postService.getUnivCommentList(univPostId);
-//            UnivPostDetailDTO univPostDetailDTO = new UnivPostDetailDTO(univPost, univCommentDTO);
-//
-//            return new BaseResponse<>(UnivPostDetailDTO);
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
-//    }
+    @GetMapping("/univ/{univPostId}/post")
+    @Operation(summary = "3.10.1 getUnivPost API", description = "3.10 학교 게시물 상세 - 게시물 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    public BaseResponse<UnivPostDTO> getUnivPost(@PathVariable Long univPostId) {
+        try {
+            UnivPost univPost = postService.getUnivPost(univPostId);
+            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
+            return new BaseResponse<>(univPostDTO);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 3.10.2 학교 게시물 상세 - 댓글 API
+     */
+    @GetMapping("/univ/{univPostId}/comment")
+    @Operation(summary = "3.10.2 getUnivPostComment API", description = "3.10.2 학교 게시물 상세 - 댓글 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
+    public BaseResponse<List<UnivCommentDTO>> univPostComment(@PathVariable Long univPostId) {
+        try {
+            List<UnivCommentDTO> univPostDTOList = postService.getUnivComments(univPostId);
+            return new BaseResponse<>(univPostDTOList);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }

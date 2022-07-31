@@ -83,5 +83,9 @@ public class UnivPost {
         return univPost;
     }
 
+    //== 비즈니스 로직 == //
+    public static boolean isLiked(Member member) {
+        if (this.univPostLikes)
+    }
 
 }
