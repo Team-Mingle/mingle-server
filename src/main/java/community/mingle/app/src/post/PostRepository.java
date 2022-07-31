@@ -5,10 +5,7 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivComment;
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostLike;
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
+import community.mingle.app.src.domain.Univ.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
@@ -209,6 +206,24 @@ public class PostRepository {
         return univCoCommentList;
     }
 
+
+    /**
+     * 댓글 좋아요
+     * @param commentId
+     * @param memberId
+     * @return
+     */
+    public boolean checkCommentIsLiked(Long commentId, Long memberId) {
+        List<UnivCommentLike> univCommentLikes = em.createQuery("select ucl from UnivCommentLike ucl join ucl.univComment uc join ucl.member m where uc.id = :commentId and m.id = :memberId", UnivCommentLike.class)
+                .setParameter("commentId", commentId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (univCommentLikes.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 //    public boolean checkCoCommentLiked(List<UnivComment> coCommentList) {
 //
 //    }

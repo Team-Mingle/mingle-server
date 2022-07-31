@@ -30,8 +30,8 @@ public class UnivCoCommentDTO {
         this.createdTime = convertLocaldatetimeToTime(cc.getCreatedAt());
         this.likeCount = cc.getUnivCommentLikes().size();
 
-        for (UnivCommentLike ucl : cc.getUnivCommentLikes()) {
-            if (ucl.getMember().getId() == memberId) {
+        for (UnivCommentLike ucl : cc.getUnivCommentLikes()) { //영속성
+            if (ucl.getMember().getId() == memberId) { //배치사이즈?
                 isLiked = true;
                 break;
             } else {

@@ -235,10 +235,13 @@ public class PostService {
                         .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt))
                         .collect(Collectors.toList());
 
-
+                /**
+                 * 얘가 쿼리문 많이나옴
+                 */
+                //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
 
                 //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
-                UnivCommentDTO univCommentDTO = new UnivCommentDTO(c, coCommentDTO);
+                UnivCommentDTO univCommentDTO = new UnivCommentDTO(c, coCommentDTO, memberIdByJwt);
                 univCommentDTOList.add(univCommentDTO);
             }
             return univCommentDTOList;
