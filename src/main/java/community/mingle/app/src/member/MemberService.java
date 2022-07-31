@@ -3,9 +3,9 @@ package community.mingle.app.src.member;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.member.model.ScrapDTO;
+import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.utils.JwtService;
-import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,19 +40,27 @@ public class MemberService {
         }
     }
 
-    public List<ScrapDTO> getScraps() throws BaseException {
+
+    public List<UnivPost> getUnivScraps() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         Member member = memberRepository.findMember(userIdByJwt);
 
         try {
-            List<ScrapDTO> scraps = memberRepository.findScraps1(member.getId());
-            for (ScrapDTO scrap : scraps) {
-                scrap.getPostId();
-            }
+            List<UnivPost> scraps = memberRepository.findUnivScraps(member.getId());
             return scraps;
-
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<TotalPost> getTotalScraps() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+
+        try {
+            List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId());
+            return scraps;
+        } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

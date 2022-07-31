@@ -203,6 +203,23 @@ public class PostController {
         }
     }
 
-
+    /**
+     * 3.10 학교 게시물 상세 API
+     */
+//    @GetMapping("/univ/{univPostId}")
+//    @Operation(summary = "3.10 getUnivPostDetail API", description = "3.10 학교 게시물 상세 API")
+//    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+//    public BaseResponse<UnivPostDetailDTO> getUnivPostDetail(@PathVariable Long univPostId) {
+//
+//        try {
+//            UnivPost univPost = postService.findUnivPost(univPostId);
+//            List<UnivCommentDTO> univCommentDTO = postService.getUnivCommentList(univPostId);
+//            UnivPostDetailDTO univPostDetailDTO = new UnivPostDetailDTO(univPost, univCommentDTO);
+//
+//            return new BaseResponse<>(UnivPostDetailDTO);
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//    }
 
 }

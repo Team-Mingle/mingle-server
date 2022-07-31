@@ -3,8 +3,13 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostScrap;
+import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import community.mingle.app.src.member.model.PatchNicknameRequest;
-import community.mingle.app.src.member.model.ScrapDTO;
+import community.mingle.app.src.member.model.TotalPostScrapDTO;
+import community.mingle.app.src.member.model.UnivPostScrapDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +21,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "member", description = "유저 관련 API")
 @RestController
@@ -51,13 +57,34 @@ public class MemberController {
 
 
     /**
-     * 2.5 내가 스크랩 한 글 API
+     * 2.5 내가 스크랩 한 글 (대학) API
      */
-    @GetMapping("/scraps")
-    public BaseResponse<List<ScrapDTO>> getScraps() {
+    @GetMapping("/scraps/univ")
+    public BaseResponse<List<UnivPostScrapDTO>> getUnivScraps() {
         try {
-            List<ScrapDTO> myScraps = memberService.getScraps();
-            return new BaseResponse<>(myScraps);
+            List<UnivPost> univPosts = memberService.getUnivScraps();
+            List<UnivPostScrapDTO> result = univPosts.stream()
+                    .map(post -> new UnivPostScrapDTO(post))
+                    .collect(Collectors.toList());
+
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 2.6 내가 스크랩 한 글 (전체) API
+     */
+    @GetMapping("/scraps/total")
+    public BaseResponse<List<TotalPostScrapDTO>> getTotalScraps() {
+        try {
+            List<TotalPost> totalPosts = memberService.getTotalScraps();
+            List<TotalPostScrapDTO> result = totalPosts.stream()
+                    .map(post -> new TotalPostScrapDTO(post))
+                    .collect(Collectors.toList());
+
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }

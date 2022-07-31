@@ -40,7 +40,7 @@ public class GetUnivPostDetailResponse {
         contents = u.getContent();
         nickname = u.getMember().getNickname();
         likeCount = u.getUnivPostLikes().size();
-        commentCount = u.getComments().size();
+        commentCount = u.getUnivComments().size();
         scrapCount = u.getUnivPostScraps().size();
         createdTime = convertLocaldatetimeToTime(u.getCreatedAt());
         commentList = fullComment;

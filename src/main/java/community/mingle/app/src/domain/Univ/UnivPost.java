@@ -26,7 +26,7 @@ public class UnivPost {
     private Member member;
 
     @OneToMany(mappedBy = "univPost")
-    private List<UnivComment> comments = new ArrayList<>();
+    private List<UnivComment> univComments = new ArrayList<>();
 
 
     /** 3.3 추가 */
