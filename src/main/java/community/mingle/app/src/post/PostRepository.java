@@ -102,17 +102,17 @@ public class PostRepository {
     }
 
     public List<TotalComment> getTotalCommentsWithParentComment(Long id) {
-        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId = :null", TotalComment.class)
+        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId is null ", TotalComment.class)
                 .setParameter("id", id)
-                .setParameter("null", null)
+//                .setParameter("null", null)
                 .getResultList();
         return totalComments;
     }
 
     public List<TotalComment> getTotalcoCommentsWithParentComment(Long id) {
-        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId <> :null", TotalComment.class)
+        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId is not null ", TotalComment.class)
                 .setParameter("id", id)
-                .setParameter("null", null)
+//                .setParameter("null", null)
                 .getResultList();
         return totalComments;
     }

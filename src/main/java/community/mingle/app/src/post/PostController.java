@@ -171,11 +171,11 @@ public class PostController {
         List<TotalComment> totalcoComments = postRepository.getTotalcoCommentsWithParentComment(totalPostId);
         List<GetTotalPostDetailComments> finalComments = new ArrayList<>();
         for (TotalComment tc : totalComments) {
-            System.out.println("룰루" + tc.getId());
+//            System.out.println("룰루" + tc.getId());
             List<TotalComment> coComments = totalcoComments.stream()
                     .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                     .collect(Collectors.toList());
-            System.out.println("룰루" + coComments.get(0));
+//            System.out.println("룰루" + coComments.get(0));
             List<GetTotalPostDetailCocomment> result = coComments.stream()
                     .map(p -> new GetTotalPostDetailCocomment(p, tc.getMember().getNickname()))
                     .collect(Collectors.toList());
