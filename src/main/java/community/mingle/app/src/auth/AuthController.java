@@ -177,8 +177,7 @@ public class AuthController {
 
 
     /**
-     * 1.6.2 개인정보 처리방침
-     * isSucceess, code, message, result 가 \n 과 같이 나옴
+     * 1.6 개인정보 처리방침
      */
     @Operation(summary = "1.6 get privacy policy API", description = "1.6 개인정보처리방침 가져오기 API ")
     @ApiResponses({
@@ -288,9 +287,7 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3011", description = "존재하지 않는 이메일이거나 비밀번호가 틀렸습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3012", description = "JWT 발급에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
@@ -305,13 +302,6 @@ public class AuthController {
             if (postLoginRequest.getPwd() == null) {
                 return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
             }
-            if (!isRegexEmail(postLoginRequest.getEmail())) { //이메일 정규표현
-                return new BaseResponse<>(EMAIL_FORMAT_ERROR);
-            }
-            if (!isRegexPassword(postLoginRequest.getPwd())) { //비밀번호 정규표현
-                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
-            }
-            //return ResponseEntity.ok().build();
             PostLoginResponse postloginResponse = authService.logIn(postLoginRequest);
             return new BaseResponse<>(postloginResponse);
 
