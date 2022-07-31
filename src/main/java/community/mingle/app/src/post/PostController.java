@@ -6,9 +6,9 @@ package community.mingle.app.src.post;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
+import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.post.model.*;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,8 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import community.mingle.app.src.post.model.*;
-
 
 import javax.validation.Valid;
 import java.util.List;
@@ -137,6 +135,33 @@ public class PostController {
     }
 
 
+    /**
+     * 3.5 학교 게시판 리스트 API
+     */
+    @GetMapping("/univ")
+    @Operation(summary = "3.5 getUnivPosts API", description = " 3.5 학교 게시판 게시물 리스트 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<List<GetUnivPostsResponse>> getUnivAll(@RequestParam int category) {
+        try {
+            List<UnivPost> univPosts = postService.findUnivPost(category);
+            List<GetUnivPostsResponse> result = univPosts.stream()
+                    .map(u -> new GetUnivPostsResponse(u))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
 
     /**
      * 3.7 학교 게시물 작성 API
@@ -158,5 +183,48 @@ public class PostController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
+    /**
+     * 3.17 통합 게시물 스크랩 api
+     */
+    @Operation(summary = "3.17  scrapTotalPost API", description = "3.17 통합 게시물 스크랩 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PostMapping("/total/scrap")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<PostScrapTotalResponse> scrapTotalPost (@RequestParam Long postIdx){
+        try{
+            return new BaseResponse<>(postService.scrapTotalPost(postIdx));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 3.18 학교 게시물 스크랩 api
+     */
+    @Operation(summary = "3.17  scrapTotalPost API", description = "3.17 통합 게시물 스크랩 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PostMapping("/univ/scrap")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<PostScrapUnivResponse> scrapUnivPost (@RequestParam Long postIdx){
+        try{
+            return new BaseResponse<>(postService.scrapUnivPost(postIdx));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
 
 }

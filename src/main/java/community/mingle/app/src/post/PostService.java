@@ -1,18 +1,24 @@
 package community.mingle.app.src.post;
 
+import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.post.model.PostCreateRequest;
-import community.mingle.app.src.post.model.PostCreateResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostScrap;
+import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Univ.UnivPostScrap;
+import community.mingle.app.src.post.model.PostCreateRequest;
+import community.mingle.app.src.post.model.PostCreateResponse;
+import community.mingle.app.src.post.model.PostScrapTotalResponse;
+import community.mingle.app.src.post.model.PostScrapUnivResponse;
 import community.mingle.app.utils.JwtService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
@@ -87,6 +93,28 @@ public class PostService {
         return getAll;
     }
 
+    /**
+     * 3.5 학교 게시판 리스트 API
+     */
+    public List<UnivPost> findUnivPost(int category) throws BaseException{
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+//        } catch (Exception e) {
+//            throw new BaseException(EMPTY_JWT);
+//        }
+        Member member;
+//        try {
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
+        }
+
+        List<UnivPost>  getUnivAll = postRepository.findUnivPost(category);
+        if (getUnivAll.size() == 0) {
+            throw new BaseException(EMPTY_POSTS_LIST);
+        }
+        return getUnivAll;
+    }
+
 
     /**
      * 3.5 게시물 작성 API
@@ -113,4 +141,62 @@ public class PostService {
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
+
+
+
+    /**
+     * 3.17 통합 게시물 스크랩 api
+     */
+    @Transactional
+    public PostScrapTotalResponse scrapTotalPost(Long postIdx) throws BaseException{
+        Long memberIdByJwt;
+        try {
+            memberIdByJwt = jwtService.getUserIdx();
+        } catch (Exception e) {
+            throw new BaseException(EMPTY_JWT);
+        }
+        try {
+            TotalPost totalpost =postRepository.findTotalPostbyId(postIdx);
+            Member member = postRepository.findMemberbyId(memberIdByJwt);
+
+
+            TotalPostScrap totalPostScrap = TotalPostScrap.scrapTotalPost(totalpost, member);
+            Long id = postRepository.save(totalPostScrap);
+            return new PostScrapTotalResponse(id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    /**
+     * 3.18 학교 게시물 스크랩 api
+     */
+    @Transactional
+    public PostScrapUnivResponse scrapUnivPost(Long postIdx) throws BaseException{
+        Long memberIdByJwt;
+        try {
+            memberIdByJwt = jwtService.getUserIdx();
+        } catch (Exception e) {
+            throw new BaseException(EMPTY_JWT);
+        }
+        try {
+            UnivPost univpost =postRepository.findUnivPostbyId(postIdx);
+            Member member = postRepository.findMemberbyId(memberIdByJwt);
+
+
+            UnivPostScrap univPostScrap = UnivPostScrap.scrapUnivPost( univpost, member);
+            Long id = postRepository.save(univPostScrap);
+            return new PostScrapUnivResponse(id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
 }

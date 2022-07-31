@@ -30,4 +30,14 @@ public class TotalPostLike {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public int getTotalLike() {
+        int totalLike = 0;
+        //for (TotalPost totalPost : totalPosts) {
+        //    totalLike +=totalPost.getTotalLike();
+        //}
+        return totalLike;
+    }
+
+
+
 }

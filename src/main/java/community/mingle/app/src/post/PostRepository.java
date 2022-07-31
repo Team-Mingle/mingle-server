@@ -5,9 +5,12 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,6 +67,16 @@ public class PostRepository {
                 .getResultList();
     }
 
+    /**
+     * 2.5 학교 게시판 api
+     */
+    public List<UnivPost> findUnivPost(int category) {
+        return em.createQuery("select u from UnivPost u where u.category.id = :category order by u.createdAt desc", UnivPost.class)
+                .setParameter("category", category)
+                .getResultList();
+    }
+
+
 
     /**
      * memberId 로 Member 반환
@@ -92,4 +105,40 @@ public class PostRepository {
                 .getSingleResult();
         return category;
     }
+
+    public Long save(TotalPostScrap totalPostScrap) {
+        em.persist(totalPostScrap);
+        return totalPostScrap.getId();
+    }
+
+    public Long save(UnivPostScrap univPostScrap) {
+        em.persist(univPostScrap);
+        return univPostScrap.getId();
+    }
+
+    public TotalPost findTotalPostbyId(Long postId) {
+        List<TotalPost> totalPosts = em.createQuery("select tp from TotalPost tp where tp.id = :postId", TotalPost.class)
+                .setParameter("postId", postId)
+                .getResultList();
+        if (totalPosts.size() != 0) {
+            return totalPosts.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public UnivPost findUnivPostbyId(Long postId) {
+        List<UnivPost> univPosts = em.createQuery("select up from UnivPost up where up.id = :postId", UnivPost.class)
+                .setParameter("postId", postId)
+                .getResultList();
+        if (univPosts.size() != 0) {
+            return univPosts.get(0);
+        } else {
+            return null;
+        }
+    }
+
+
+
+
 }
