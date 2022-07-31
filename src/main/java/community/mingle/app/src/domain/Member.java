@@ -79,8 +79,6 @@ public class Member {
     private Userstatus status;
 
 
-
-
     //== 생성 메서드 ==// -> constructor 역할.
     public static Member createMember(UnivName univName, String nickname, String email, String pwd) {
         Member member = new Member();
@@ -95,5 +93,13 @@ public class Member {
 
         return member;
     }
+
+
+    //== 비즈니스 로직 ==//
+    //닉네임 수정
+    public void modifyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
 
 }
