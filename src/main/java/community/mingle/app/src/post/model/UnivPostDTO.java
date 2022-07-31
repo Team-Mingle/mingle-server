@@ -19,9 +19,9 @@ public class UnivPostDTO {
     private int commentCount;
     private String createdTime;
 
-    private boolean isLiked;
-
-    private boolean isScraped;
+//    private boolean isLiked;
+//
+//    private boolean isScraped;
 
     //private List<PostImgDTO> postImgUrls;
 

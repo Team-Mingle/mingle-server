@@ -228,12 +228,14 @@ public class PostService {
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
                         .collect(Collectors.toList());
 
-                postRepository.checkCoCommentLiked(CoCommentList);
+//                postRepository.checkCoCommentLiked(CoCommentList);
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
-                        .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt ))
+                        .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt))
                         .collect(Collectors.toList());
+
+
 
                 //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
                 UnivCommentDTO univCommentDTO = new UnivCommentDTO(c, coCommentDTO);

@@ -209,7 +209,7 @@ public class PostRepository {
         return univCoCommentList;
     }
 
-    public boolean checkCoCommentLiked(List<UnivComment> coCommentList) {
-
-    }
+//    public boolean checkCoCommentLiked(List<UnivComment> coCommentList) {
+//
+//    }
 }

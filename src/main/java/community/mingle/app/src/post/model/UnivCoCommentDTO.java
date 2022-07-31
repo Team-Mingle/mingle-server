@@ -21,8 +21,7 @@ public class UnivCoCommentDTO {
 
     public UnivCoCommentDTO(UnivComment c, UnivComment cc, Long memberId) {
 
-        boolean contains = cc.getUnivCommentLikes()
-
+//        boolean contains = cc.getUnivCommentLikes()
 
         this.commentId = cc.getId();
         this.parentCommentId = cc.getParentCommentId();
