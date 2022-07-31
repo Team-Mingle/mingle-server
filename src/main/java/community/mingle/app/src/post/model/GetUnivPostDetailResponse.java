@@ -29,6 +29,9 @@ public class GetUnivPostDetailResponse {
 
 //    private List<GetPostImgRes> imgs;
 
+    //isLiked
+    //isScraped?
+
 //   조회수?
 
     public GetUnivPostDetailResponse(UnivPost u, List<GetUnivCommentsRes> fullComment) {
