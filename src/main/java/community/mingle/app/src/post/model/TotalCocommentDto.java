@@ -1,9 +1,11 @@
 package community.mingle.app.src.post.model;
 
 import community.mingle.app.src.domain.Total.TotalComment;
+import lombok.Getter;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
+@Getter
 public class TotalCocommentDto {
 
     private Long commentId;
