@@ -15,8 +15,9 @@ public class TotalCocommentDto {
     private int likeCount;
     private String nickname;
     private String createdAt;
+    private boolean isLiked;
 
-    public TotalCocommentDto(TotalComment coComment, TotalComment comment) {
+    public TotalCocommentDto(TotalComment coComment, TotalComment comment, boolean isLiked) {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
         if (comment.isAnonymous() == true) {
@@ -32,5 +33,6 @@ public class TotalCocommentDto {
             this.nickname = coComment.getMember().getNickname();
         }
         this.createdAt = convertLocaldatetimeToTime(coComment.getCreatedAt());
+        this.isLiked = isLiked;
     }
 }

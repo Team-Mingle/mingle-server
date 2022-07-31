@@ -4,10 +4,7 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.post.model.PostCreateRequest;
-import community.mingle.app.src.post.model.PostCreateResponse;
-import community.mingle.app.src.post.model.TotalCocommentDto;
-import community.mingle.app.src.post.model.TotalCommentDto;
+import community.mingle.app.src.post.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import community.mingle.app.config.BaseException;
@@ -125,29 +122,59 @@ public class PostService {
      * 3.9
      */
 
-    public TotalPost getTotalPost(Long id) {
+    public TotalPost getTotalPost(Long id) throws BaseException{
 
         TotalPost totalPost = postRepository.getTotalPostbyId(id);
         return totalPost;
     }
 
-    public List<TotalCommentDto> getTotalCommentList(Long id) {
+    public TotalPostDto getTotalPostDto(TotalPost totalPost) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        boolean isMyPost = false;
+        boolean isLiked = false;
+        boolean isScraped = false;
+        try {
+            if (totalPost.getMember().getId() == memberIdByJwt) {
+                isMyPost = true;
+            }
+            if (postRepository.checkIsLiked(totalPost.getId(), memberIdByJwt) == true) {
+                isLiked = true;
+            }
+            if (postRepository.checkIsScraped(totalPost.getId(), memberIdByJwt) == true) {
+                isScraped = true;
+            }
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+        TotalPostDto totalPostDto = new TotalPostDto(totalPost, isMyPost, isLiked, isScraped);
+
+        return totalPostDto;
+    }
+
+    public List<TotalCommentDto> getTotalCommentList(Long id) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
         List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
         List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
+        final boolean isLikedcc;
         for (TotalComment tc : totalCommentList) {
             List<TotalComment> coComments = totalCocommentList.stream()
                     .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                     .collect(Collectors.toList());
             List<TotalCocommentDto> coCommentDtos = coComments.stream()
-                    .map(p -> new TotalCocommentDto(p, tc))
+                    .map(p -> new TotalCocommentDto(p, tc, isLikedcc))
                     .collect(Collectors.toList());
-            TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos);
+
+            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
+            TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, isLiked);
             totalCommentDtoList.add(totalCommentDto);
         }
         return totalCommentDtoList;
 
     }
+
+
 
 
 

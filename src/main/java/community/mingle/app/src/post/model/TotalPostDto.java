@@ -17,7 +17,11 @@ public class TotalPostDto {
     private int scrapCount;
     private String createdAt;
 
-    public TotalPostDto(TotalPost totalPost) {
+    private boolean isMyPost;
+    private boolean isLiked;
+    private boolean isScraped;
+
+    public TotalPostDto(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped) {
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
         if (totalPost.isAnonymous() == true) {
@@ -28,5 +32,8 @@ public class TotalPostDto {
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
+        this.isMyPost = isMyPost;
+        this.isLiked = isLiked;
+        this.isScraped = isScraped;
     }
 }

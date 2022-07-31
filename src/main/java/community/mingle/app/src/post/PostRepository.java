@@ -4,8 +4,7 @@ package community.mingle.app.src.post;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -109,10 +108,46 @@ public class PostRepository {
     }
 
     public List<TotalComment> getTotalCocomments(Long id) {
-        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is not null", TotalComment.class)
+        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp join fetch tc.totalCommentLikes tcl where tp.id = :id and tc.parentCommentId is not null", TotalComment.class)
                 .setParameter("id", id)
                 .getResultList();
         return totalCocommentList;
+    }
+
+    public boolean checkIsLiked(Long postId, Long memberId) {
+        List<TotalPostLike> totalPostLikeList = em.createQuery("select tpl from TotalPostLike tpl join tpl.totalPost tp join tpl.member m where tp.id = :postId and m.id = :memberId", TotalPostLike.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalPostLikeList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkIsScraped(Long postId, Long memberId) {
+        List<TotalPostScrap> totalPostScrapList = em.createQuery("select tps from TotalPostScrap tps join tps.totalPost tp join tps.member m where tp.id = :postId and m.id = :memberId", TotalPostScrap.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalPostScrapList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkCommentIsLiked(Long commentId, Long memberId) {
+        List<TotalCommentLike> totalCommentLikeList = em.createQuery("select tcl from TotalCommentLike tcl join tcl.totalComment tc join tcl.member m where tc.id = :commentId and m.id = :memberId", TotalCommentLike.class)
+                .setParameter("commentId", commentId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalCommentLikeList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

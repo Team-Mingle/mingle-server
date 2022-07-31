@@ -17,7 +17,9 @@ public class TotalCommentDto {
     private String createdAt;
     private List<TotalCocommentDto> totalCocommentDtoList;
 
-    public TotalCommentDto(TotalComment totalComment, List<TotalCocommentDto> totalCocommentDtoList) {
+    private boolean isLiked;
+
+    public TotalCommentDto(TotalComment totalComment, List<TotalCocommentDto> totalCocommentDtoList, boolean isLiked) {
         this.commentId = totalComment.getId();
         this.content = totalComment.getContent();
         this.likeCount = totalComment.getTotalCommentLikes().size();
@@ -28,6 +30,7 @@ public class TotalCommentDto {
         }
         this.createdAt = convertLocaldatetimeToTime(totalComment.getCreatedAt());
         this.totalCocommentDtoList = totalCocommentDtoList;
+        this.isLiked = isLiked;
     }
 
 }

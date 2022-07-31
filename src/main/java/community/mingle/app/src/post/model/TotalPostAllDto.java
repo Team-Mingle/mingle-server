@@ -8,7 +8,7 @@ import java.util.List;
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
 @Getter
-public class TotalPostTry {
+public class TotalPostAllDto {
 
     private String title;
     private String content;
@@ -19,7 +19,11 @@ public class TotalPostTry {
 
     private List<TotalCommentDto> totalCommentDtoList;
 
-    public TotalPostTry(TotalPost totalPost, List<TotalCommentDto> totalCommentDtoList) {
+    private boolean isMyPost;
+    private boolean isLiked;
+    private boolean isScraped;
+
+    public TotalPostAllDto(TotalPost totalPost, List<TotalCommentDto> totalCommentDtoList) {
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
         if (totalPost.isAnonymous() == true) {

@@ -6,7 +6,6 @@ package community.mingle.app.src.post;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
@@ -164,29 +163,46 @@ public class PostController {
      */
     @GetMapping("/total/{totalPostId}")
     public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
+        try {
+            TotalPost totalPost = postService.getTotalPost(totalPostId);
 
-        TotalPost totalPost = postService.getTotalPost(totalPostId);
+            TotalPostDto totalPostDto = postService.getTotalPostDto(totalPost);
 
-        TotalPostDto totalPostDto = new TotalPostDto(totalPost);
+//        TotalPostDto totalPostDto = new TotalPostDto(totalPost);
 
-        return new BaseResponse<>(totalPostDto);
+            return new BaseResponse<>(totalPostDto);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 
     @GetMapping("/totalcomment/{totalPostId}")
     public BaseResponse<List<TotalCommentDto>> totalPostDetailComment(@PathVariable Long totalPostId) {
 
-        List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
+        try {
+            List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
 
-        return new BaseResponse<>(totalCommentDtoList);
+            return new BaseResponse<>(totalCommentDtoList);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 
-    @GetMapping("/totalposttry/{totalPostId}")
-    public BaseResponse<TotalPostTry> totalPostTry(@PathVariable Long totalPostId) {
-        TotalPost totalPost = postService.getTotalPost(totalPostId);
-        List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
-        TotalPostTry totalPostTry = new TotalPostTry(totalPost, totalCommentDtoList);
+    @GetMapping("/totalpostall/{totalPostId}")
+    public BaseResponse<TotalPostAllDto> totalPostAll(@PathVariable Long totalPostId){
+        try {
+            TotalPost totalPost = postService.getTotalPost(totalPostId);
+            List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
+            TotalPostAllDto totalPostAllDto = new TotalPostAllDto(totalPost, totalCommentDtoList);
 
-        return new BaseResponse<>(totalPostTry);
+            return new BaseResponse<>(totalPostAllDto);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+
     }
 
 
