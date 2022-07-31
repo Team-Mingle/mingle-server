@@ -101,27 +101,19 @@ public class PostRepository {
         return  totalPost;
     }
 
-    public List<TotalComment> getTotalCommentsWithParentComment(Long id) {
-        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId is null ", TotalComment.class)
+    public List<TotalComment> getTotalComments(Long id) {
+        List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.isAnonymous is null", TotalComment.class)
                 .setParameter("id", id)
-//                .setParameter("null", null)
                 .getResultList();
-        return totalComments;
+        return totalCommentList;
     }
 
-    public List<TotalComment> getTotalcoCommentsWithParentComment(Long id) {
-        List<TotalComment> totalComments = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.parentCommentId is not null ", TotalComment.class)
+    public List<TotalComment> getTotalCocomments(Long id) {
+        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :id and tc.isAnonymous is not null", TotalComment.class)
                 .setParameter("id", id)
-//                .setParameter("null", null)
                 .getResultList();
-        return totalComments;
+        return totalCocommentList;
     }
 
-    public List<TotalComment> getTotalCommentsByCocommentId(Long totalPostId, Long patentCommentId) {
-        List<TotalComment> totalCocomments= em.createQuery("select tc from TotalComment tc where tc.totalPost.id = :totalPostId and tc.parentCommentId = :parentCommentId", TotalComment.class)
-                .setParameter("totalPostId", totalPostId)
-                .setParameter("parentCommentId", patentCommentId)
-                .getResultList();
-        return totalCocomments;
-    }
+
 }

@@ -6,6 +6,8 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import community.mingle.app.src.post.model.PostCreateResponse;
+import community.mingle.app.src.post.model.TotalCocommentDto;
+import community.mingle.app.src.post.model.TotalCommentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import community.mingle.app.config.BaseException;
@@ -13,7 +15,11 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
@@ -119,10 +125,31 @@ public class PostService {
      * 3.9
      */
 
-    public TotalPost getTotalPost(Long totalPostId) {
-        TotalPost totalPost = postRepository.getTotalPostbyId(totalPostId);
+    public TotalPost getTotalPost(Long id) {
+
+        TotalPost totalPost = postRepository.getTotalPostbyId(id);
         return totalPost;
     }
+
+    public List<TotalCommentDto> getTotalCommentList(Long id) {
+        List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
+        List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
+        List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
+        for (TotalComment tc : totalCommentList) {
+            List<TotalComment> coComments = totalCocommentList.stream()
+                    .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
+                    .collect(Collectors.toList());
+            List<TotalCocommentDto> coCommentDtos = coComments.stream()
+                    .map(p -> new TotalCocommentDto(p, tc))
+                    .collect(Collectors.toList());
+            TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos);
+            totalCommentDtoList.add(totalCommentDto);
+        }
+        return totalCommentDtoList;
+
+    }
+
+
 
 
 

@@ -59,22 +59,22 @@ public class Member {
 
     /** 전체게시판*/
     @OneToMany(mappedBy = "member")
-    private List<TotalPost> total_posts = new ArrayList<>();
+    private List<TotalPost> totalPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TotalPostLike> total_post_likes = new ArrayList<>();
+    private List<TotalPostLike> totalPostLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TotalPostScrap> total_post_scraps = new ArrayList<>();
+    private List<TotalPostScrap> totalPostScraps = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TotalComment> total_comments = new ArrayList<>();
+    private List<TotalComment> totalComments = new ArrayList<>();
 
 
-    private LocalDateTime agreed_at;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
-    private LocalDateTime deleted_at;
+    private LocalDateTime agreedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
 //    @Column(name = "status",columnDefinition = "ENUM('ACTIVE','INACTIVE','REPORTED','ADMIN", nullable = false)
@@ -90,9 +90,9 @@ public class Member {
         member.setNickname(nickname);
         member.setEmail(email);
         member.setPwd(pwd);
-        member.agreed_at = LocalDateTime.now();
-        member.created_at = LocalDateTime.now();
-        member.updated_at = LocalDateTime.now();
+        member.agreedAt = LocalDateTime.now();
+        member.createdAt = LocalDateTime.now();
+        member.updatedAt = LocalDateTime.now();
         member.status = Userstatus.ACTIVE;
 
         return member;
