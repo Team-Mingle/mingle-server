@@ -2,6 +2,7 @@
 
 package community.mingle.app.src.post;
 
+
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
@@ -62,7 +63,7 @@ public class PostController {
 
 
     /**
-     * 3.2 홍콩 배스트 게시판 API
+     * 3.2 전체 배스트 게시판 API
      */
 
     @GetMapping("/total/best")
@@ -115,7 +116,7 @@ public class PostController {
 
 
     /**
-     * 3.4 광장 게시판 리스트 API
+     * 3.4 전체 게시판 리스트 API
      */
     @GetMapping("/total")
     @Operation(summary = "3.4 getTotalPosts API", description = "3.4 광장 게시판 게시물 리스트 API")
