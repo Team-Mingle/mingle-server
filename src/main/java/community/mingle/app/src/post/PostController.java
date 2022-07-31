@@ -186,8 +186,6 @@ public class PostController {
 
             List<GetUnivCommentsRes> fullComment = postService.findUnivCoComment(univPost);
 
-
-
 //            List<GetUnivCommentsRes> comments = univComment.stream()
 //                    .map(p -> new GetUnivCommentsRes(p))
 //                    .collect(Collectors.toList());

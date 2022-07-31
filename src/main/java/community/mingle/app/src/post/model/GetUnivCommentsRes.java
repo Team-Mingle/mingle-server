@@ -1,5 +1,6 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import lombok.Getter;
 

@@ -8,11 +8,8 @@ import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostLike;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 /** Setter 주의 */
-import lombok.Setter;
 
 
 import javax.persistence.*;
@@ -80,6 +77,7 @@ public class Member {
 //    @Column(name = "status",columnDefinition = "ENUM('ACTIVE','INACTIVE','REPORTED','ADMIN", nullable = false)
     @Column(columnDefinition = "enum")
     private Userstatus status;
+
 
 
 

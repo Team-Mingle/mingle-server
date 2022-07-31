@@ -97,7 +97,7 @@ public class PostRepository {
     //13개 -> 15ㄴㅋ -> 59개  (댓글29개)
     //fetch join 201개
     public UnivPost findUnivPost(Long univPostId) {
-        UnivPost univPost = em.createQuery("select p from UnivPost p join fetch p.member m join fetch p.comments c join fetch p.univName u where p.id = :id", UnivPost.class)
+        UnivPost univPost = em.createQuery("select distinct p from UnivPost p left join fetch p.member m join fetch p.comments c join fetch p.univName u where p.id = :id", UnivPost.class)
                 .setParameter("id", univPostId)
                 .getSingleResult();
         return univPost;
@@ -112,10 +112,22 @@ public class PostRepository {
         return univPost;
     }
 
+    public List<UnivComment> findUnivComment(Long postId) { //without null? left join?
+        Long id = null;
+        List<UnivComment> univComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id and c.parentCommentId IS NULL ", UnivComment.class)
+                .setParameter("id", postId)
+//                .setParameter("null", id)
+                .setFirstResult(0)
+                .setMaxResults(40)
+                .getResultList();
+        return univComments;
+
+    }
+
 
     public List<UnivComment> findUnivCoComment(UnivPost p, UnivComment c) { // commentId = 1;
-        List<UnivComment> univCoComments = em.createQuery("select cc from UnivComment cc " +
-                        "join fetch cc.member m join fetch cc.univCommentLikes cl " +
+        List<UnivComment> univCoComments = em.createQuery("select distinct cc from UnivComment cc " +
+                        "left join fetch cc.member m " +
                         " where cc.univPost.id = :id and cc.parentCommentId = :parentCommentId", UnivComment.class)
                 .setParameter("parentCommentId", c.getId())
                 .setParameter("id", p.getId())
@@ -131,6 +143,10 @@ public class PostRepository {
                 .getResultList();
         return nullComments;
     }
+
+//    public List<UnivComment> findAllComments() {
+//        List<UnivComment> allComments = em.createQuery("select c, count(c.univCommentLikes) from UnivComment c join fetch c.univCommentLikes  ")
+//    }
 
 
 
