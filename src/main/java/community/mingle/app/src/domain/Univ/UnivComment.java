@@ -35,6 +35,9 @@ public class UnivComment {
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
+    @Column(name = "anonymous_id")
+    private Long anonymousId;
+
     /**
      * 양방향 3.10 추가
      */

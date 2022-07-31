@@ -20,7 +20,12 @@ public class UnivCommentDTO {
 
     public UnivCommentDTO (UnivComment c, List<UnivCoCommentDTO> cc, Long memberId) {
         commentId = c.getId();
-        nickname = c.getMember().getNickname();
+//        nickname = c.getMember().getNickname();
+        if (c.isAnonymous() == true) {
+            this.nickname = "익명 "+c.getAnonymousId();
+        } else {
+            this.nickname = c.getMember().getNickname();
+        }
         content = c.getContent();
         createdTime = convertLocaldatetimeToTime(c.getCreatedAt());
         likeCount = c.getUnivCommentLikes().size();

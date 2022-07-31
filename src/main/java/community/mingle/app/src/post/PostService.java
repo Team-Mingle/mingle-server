@@ -194,6 +194,7 @@ public class PostService {
     /**
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
+    @Transactional(readOnly = true)
     public UnivPost getUnivPost(Long postId) throws BaseException {
         try {
             UnivPost univPost = postRepository.getUnivPostById(postId);
@@ -207,6 +208,7 @@ public class PostService {
     /**
      * 3.10.2 학교 게시물 상세 - 댓글 API
      */
+    @Transactional(readOnly = true)
     public List<UnivCommentDTO> getUnivComments(Long postId) throws BaseException {
 
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감

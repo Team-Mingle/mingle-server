@@ -19,13 +19,25 @@ public class UnivCoCommentDTO {
     private boolean isLiked;
 
 
-    public UnivCoCommentDTO(UnivComment c, UnivComment cc, Long memberId) {
+    public UnivCoCommentDTO(UnivComment parent, UnivComment cc, Long memberId) {
 
 //        boolean contains = cc.getUnivCommentLikes()
 
         this.commentId = cc.getId();
         this.parentCommentId = cc.getParentCommentId();
-        this.nickname = cc.getMember().getNickname(); //jwt userIdx 로 멤버 찾음
+
+//        this.nickname = cc.getMember().getNickname(); //jwt userIdx 로 멤버 찾음
+        if (cc.isAnonymous() == true) {
+            this.nickname = "익명 "+cc.getAnonymousId();
+        } else{
+            this.nickname = cc.getMember().getNickname();
+        }
+
+        if (parent.isAnonymous() == true) {
+            this.mention = "익명 "+parent.getAnonymousId();
+        }else{
+            this.mention = parent.getMember().getNickname();
+        }
         this.content = cc.getContent();
         this.createdTime = convertLocaldatetimeToTime(cc.getCreatedAt());
         this.likeCount = cc.getUnivCommentLikes().size();
