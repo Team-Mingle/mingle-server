@@ -150,7 +150,7 @@ public class AuthController {
     }
 
     /**
-     * 1.5 인증 코드 검사 API    //프론트 실수로 이메일 잘못 받았을 때 validation
+     * 1.5 인증 코드 검사 API
      */
     @Operation(summary = "1.5 email verification code check API", description = "1.5 이메일 인증코드 검사 API")
     @ApiResponses({
@@ -175,40 +175,18 @@ public class AuthController {
         }
     }
 
-    /**
-     * 1.6.1 개인정보 처리방침- Alternative 스트링으로 반환
-     */
-    @Operation(summary = "1.6.1 get privacy policy API v1", description = "1.6.1 개인정보처리방침 가져오기 API v1")
-
-    @GetMapping("terms/privacy/1")
-    public String getPrivacyTerms1() {
-        try {
-            String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
-            FileInputStream fileStream = null;
-
-            fileStream = new FileInputStream(filePath);
-            byte[] readBuffer = new byte[fileStream.available()];
-            while (fileStream.read(readBuffer) != -1) {
-            }
-            fileStream.close();
-            return (new String(readBuffer));
-
-        } catch (IOException e) {
-            return "약관을 불러오는데 실패하였습니다.";
-        }
-    }
 
     /**
      * 1.6.2 개인정보 처리방침
      * isSucceess, code, message, result 가 \n 과 같이 나옴
      */
-    @Operation(summary = "1.6.2 get privacy policy API v2", description = "1.6.2 개인정보처리방침 가져오기 API v2")
+    @Operation(summary = "1.6 get privacy policy API", description = "1.6 개인정보처리방침 가져오기 API ")
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "3011", description = "약관을 불러오는데 실패하였습니다.")
     })
-    @GetMapping("terms/privacy/2")
-    public BaseResponse<String> getPrivacyTerms2() {
+    @GetMapping("terms/privacy")
+    public BaseResponse<String> getPrivacyTerms() {
         try {
             String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
             FileInputStream fileStream = null;
@@ -222,34 +200,19 @@ public class AuthController {
         } catch (IOException e) {
             return new BaseResponse<>(FAILED_TO_GET_TERMS);
         }
-
-        /**
-         * 통으로나옴
-         */
-
-//        File file = new File("src/main/java/community/mingle/app/config/personalinfoterms");
-//        StringBuilder sb = new StringBuilder();
-//        Scanner scan = new Scanner(file);
-//        while(scan.hasNextLine()){
-//            sb.append(scan.nextLine());
-//        }
-//        String result = sb.toString();
-//        return new BaseResponse<>(result);
-
-        /**
-         * \n 나오는방법
-         */
-//        String str = Files.readString(Paths.get("src/main/java/community/mingle/app/config/personalinfoterms"));
-//        return new BaseResponse<>(str);
     }
 
 
     /**
      * 1.7 서비스이용약관
      */
-    @Operation(summary = "1.7 get terms of policy API", description = "1.7 서비스이용약관 가져오기 API")
+    @Operation(summary = "1.7 get service policy API", description = "1.7 서비스이용약관 가져오기 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "3011", description = "약관을 불러오는데 실패하였습니다.")
+    })
     @GetMapping("terms/service")
-    public String getServiceTerms() {
+    public BaseResponse<String> getServiceTerms() {
         try {
             String filePath = "src/main/java/community/mingle/app/config/serviceUsageTerms";
             FileInputStream fileStream = null;
@@ -259,10 +222,9 @@ public class AuthController {
             while (fileStream.read(readBuffer) != -1) {
             }
             fileStream.close();
-            return (new String(readBuffer));
-
+            return new BaseResponse<>(new String(readBuffer));
         } catch (IOException e) {
-            return "약관을 불러오는데 실패하였습니다.";
+            return new BaseResponse<>(FAILED_TO_GET_TERMS);
         }
     }
 
@@ -301,7 +263,7 @@ public class AuthController {
             return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
         }
         //비밀번호 길이
-        if (postSignupRequest.getPwd().length() < 8) {
+        if (postSignupRequest.getPwd().length() < 6) {
             return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
         }
         //비밀번호 정규표현
@@ -317,6 +279,7 @@ public class AuthController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
 
     /**
      * 1.9 로그인 API + JWT
@@ -361,7 +324,6 @@ public class AuthController {
     /**
      * 1.10 비밀번호 초기화 API + JWT
      */
-
     @Operation(summary = "1.10 resetPwd API", description = "1.10 비밀번호 초기화 API")
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
@@ -381,7 +343,7 @@ public class AuthController {
             if (patchUpdatePwdRequest.getPwd().length() == 0) {
                 return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
             }
-            if (patchUpdatePwdRequest.getPwd().length() < 8) {
+            if (patchUpdatePwdRequest.getPwd().length() < 6) {
                 return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
             }
             if (!isRegexPassword(patchUpdatePwdRequest.getPwd())) {
