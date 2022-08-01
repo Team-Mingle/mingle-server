@@ -87,12 +87,11 @@ public class PostService {
         return getAll;
     }
 
-
     /**
-     * 3.5 게시물 작성 API
+     * 3.6 통합 게시물 작성 API
      */
     @Transactional
-    public PostCreateResponse createPost (PostCreateRequest postCreateRequest) throws BaseException{
+    public PostCreateResponse createTotalPost (PostCreateRequest postCreateRequest) throws BaseException{
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -106,7 +105,33 @@ public class PostService {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
         try {
-            UnivPost univPost = UnivPost.createPost(member, category, postCreateRequest);
+            TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
+            Long id = postRepository.save(totalPost);
+            return new PostCreateResponse(id);
+        } catch (Exception e) {
+            throw new BaseException(CREATE_FAIL_POST);
+        }
+    }
+
+    /**
+     * 3.7 학교 게시물 작성 API
+     */
+    @Transactional
+    public PostCreateResponse createUnivPost (PostCreateRequest postCreateRequest) throws BaseException{
+        Member member;
+        Category category;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+        try {
+            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+        } catch(Exception exception){
+            throw new BaseException(INVALID_POST_CATEGORY);
+        }
+        try {
+            UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
             return new PostCreateResponse(id);
         } catch (Exception e) {

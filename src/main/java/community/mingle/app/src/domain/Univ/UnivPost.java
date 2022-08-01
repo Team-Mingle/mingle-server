@@ -63,7 +63,7 @@ public class UnivPost {
     private PostStatus status;
 
 
-    public static UnivPost createPost (Member member, Category category, PostCreateRequest req){
+    public static UnivPost createUnivPost (Member member, Category category, PostCreateRequest req){
         UnivPost univPost = new UnivPost();
         univPost.setMember(member);
         univPost.setUnivName(member.getUniv());
@@ -75,7 +75,6 @@ public class UnivPost {
         univPost.setAnonymous(req.isAnonymous());
         univPost.status = PostStatus.ACTIVE;
         return univPost;
-
     }
 
 

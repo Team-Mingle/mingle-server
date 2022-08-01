@@ -81,6 +81,10 @@ public class PostRepository {
         }
     }
 
+    public Long save(TotalPost totalPost) {
+        em.persist(totalPost);
+        return totalPost.getId();
+    }
     public Long save(UnivPost univPost) {
         em.persist(univPost);
         return univPost.getId();
