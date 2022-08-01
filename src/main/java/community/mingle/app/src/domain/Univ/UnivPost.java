@@ -1,6 +1,7 @@
 package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.*;
+import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import lombok.*;
 
@@ -77,5 +78,15 @@ public class UnivPost {
         return univPost;
     }
 
+    public void updateUnivPost (PatchUpdatePostRequest req){
+        this.setTitle(req.getTitle());
+        this.setContent(req.getContent());
+        this.updatedAt = LocalDateTime.now();
+        this.status = PostStatus.ACTIVE;
+    }
 
+    public void deleteUnivPost (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
 }

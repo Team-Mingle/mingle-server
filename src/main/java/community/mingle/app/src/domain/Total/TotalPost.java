@@ -4,6 +4,7 @@ import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -77,6 +78,13 @@ public class TotalPost {
         totalPost.setAnonymous(req.isAnonymous());
         totalPost.status = PostStatus.ACTIVE;
         return totalPost;
+    }
+
+    public void updateTotalPost (PatchUpdatePostRequest req){
+        this.setTitle(req.getTitle());
+        this.setContent(req.getContent());
+        this.updatedAt = LocalDateTime.now();
+        this.status = PostStatus.ACTIVE;
     }
 
 }

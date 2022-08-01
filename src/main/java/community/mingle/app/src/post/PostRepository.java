@@ -96,4 +96,16 @@ public class PostRepository {
                 .getSingleResult();
         return category;
     }
+    public TotalPost findTotalPostById(Long id) {
+        TotalPost totalPost = em.createQuery("select p from TotalPost p where p.id = :id", TotalPost.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return totalPost;
+    }
+    public UnivPost findUnivPostById(Long id) {
+        UnivPost univPost = em.createQuery("select p from UnivPost p where p.id = :id", UnivPost.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return univPost;
+    }
 }
