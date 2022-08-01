@@ -76,11 +76,13 @@ public enum BaseResponseStatus {
     FAILED_TO_LOGIN(false,3011,"존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
     FAILED_TO_CREATEJWT(false, 3012, "JWT 발급에 실패하였습니다."),
     FAILED_TO_CHANGEPWD(false, 3013, "비밀번호 변경에 실패하였습니다."),
-    FAILED_TO_GET_TERMS(false, 3014, "개인정보처리방침을 가져오는데 실패하였습니다"),
+    FAILED_TO_GET_TERMS(false, 3014, "개인정보처리방침을 가져오는데 실패하였습니다."),
 
-    /** 2. /user  */
-    //DELETE_FAIL_USER(false,3020,"유저 삭제에 실패했습니다."),
-    //MODIFY_FAIL_NICKNAME(false,3021,"닉네임 수정에 실패하였습니다."),
+    /** 2. /member  */
+    MODIFY_FAIL_NICKNAME(false, 3020,"닉네임 수정에 실패하였습니다." ),
+
+    //DELETE_FAIL_USER(false,3021,"유저 삭제에 실패했습니다."),
+    //MODIFY_FAIL_NICKNAME(false,3022,"닉네임 수정에 실패하였습니다."),
 
     /** 3. /posts 주석 해제하고 쓰기 */
     EMPTY_BEST_POSTS(false, 3030,"최근 3일간 올라온 베스트 게시물이 없습니다."),

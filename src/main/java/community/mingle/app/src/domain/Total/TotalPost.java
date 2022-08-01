@@ -66,4 +66,8 @@ public class TotalPost {
     private PostStatus status;
 
 
+    //postImg 추가하기
+//    @OneToMany
+
+
 }

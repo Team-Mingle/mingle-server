@@ -8,11 +8,8 @@ import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostLike;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 /** Setter 주의 */
-import lombok.Setter;
 
 
 import javax.persistence.*;
@@ -76,11 +73,11 @@ public class Member {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
+
     @Enumerated(EnumType.STRING)
 //    @Column(name = "status",columnDefinition = "ENUM('ACTIVE','INACTIVE','REPORTED','ADMIN", nullable = false)
     @Column(columnDefinition = "enum")
     private Userstatus status;
-
 
 
     //== 생성 메서드 ==// -> constructor 역할.
@@ -97,5 +94,13 @@ public class Member {
 
         return member;
     }
+
+
+    //== 비즈니스 로직 ==//
+    //닉네임 수정
+    public void modifyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
 
 }

@@ -6,6 +6,7 @@ package community.mingle.app.src.post;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
@@ -118,7 +119,7 @@ public class PostController {
      * 3.4 전체 게시판 리스트 API
      */
     @GetMapping("/total")
-    @Operation(summary = "3.4 getTotal Posts API", description = "3.4 광장 게시판 게시물 리스트 API")
+    @Operation(summary = "3.4 getTotalPosts API", description = "3.4 광장 게시판 게시물 리스트 API")
     @ApiResponses ({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3032", description = "해당 카테고리에 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true)))
@@ -211,5 +212,38 @@ public class PostController {
 
     }
 
+
+    /**
+     * 3.10.1 학교 게시물 상세 - 게시물 API
+     */
+    @GetMapping("/univ/{univPostId}/post")
+    @Operation(summary = "3.10.1 getUnivPost API", description = "3.10 학교 게시물 상세 - 게시물 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    public BaseResponse<UnivPostDTO> getUnivPost(@PathVariable Long univPostId) {
+        try {
+            UnivPost univPost = postService.getUnivPost(univPostId);
+            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
+            return new BaseResponse<>(univPostDTO);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 3.10.2 학교 게시물 상세 - 댓글 API
+     */
+    @GetMapping("/univ/{univPostId}/comment")
+    @Operation(summary = "3.10.2 getUnivPostComment API", description = "3.10.2 학교 게시물 상세 - 댓글 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
+    public BaseResponse<List<UnivCommentDTO>> univPostComment(@PathVariable Long univPostId) {
+        try {
+            List<UnivCommentDTO> univPostDTOList = postService.getUnivComments(univPostId);
+            return new BaseResponse<>(univPostDTOList);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }
