@@ -101,21 +101,21 @@ public class PostRepository {
      */
 
     public TotalPost getTotalPostbyId(Long id) {
-        TotalPost totalPost = em.createQuery("select tp from TotalPost tp where tp.id = :id", TotalPost.class)
+        TotalPost totalPost = em.createQuery("select tp from TotalPost tp where tp.id = :id order by tp.createdAt desc", TotalPost.class)
                 .setParameter("id", id)
                 .getSingleResult();
         return  totalPost;
     }
 
     public List<TotalComment> getTotalComments(Long id) {
-        List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null", TotalComment.class)
+        List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null order by tc.createdAt asc", TotalComment.class)
                 .setParameter("id", id)
                 .getResultList();
         return totalCommentList;
     }
 
     public List<TotalComment> getTotalCocomments(Long id) {
-        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp join fetch tc.totalCommentLikes tcl where tp.id = :id and tc.parentCommentId is not null", TotalComment.class)
+        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp join tc.totalCommentLikes tcl where tp.id = :id and tc.parentCommentId is not null order by tc.createdAt asc", TotalComment.class)
                 .setParameter("id", id)
                 .getResultList();
         return totalCocommentList;

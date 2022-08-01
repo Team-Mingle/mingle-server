@@ -4,12 +4,9 @@ package community.mingle.app.src.member;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
-import community.mingle.app.src.member.model.PatchNicknameRequest;
-import community.mingle.app.src.member.model.TotalPostScrapDTO;
-import community.mingle.app.src.member.model.UnivPostScrapDTO;
+import community.mingle.app.src.member.model.*;
+import community.mingle.app.src.post.model.TotalCocommentDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -87,6 +83,58 @@ public class MemberController {
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    @GetMapping("/posts/total")
+    public BaseResponse<List<TotalMyPostDTO>> getTotalPosts() {
+        try {
+            List<TotalPost> totalPosts = memberService.getTotalPosts();
+            List<TotalMyPostDTO> result = totalPosts.stream()
+                    .map(p -> new TotalMyPostDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/posts/univ")
+    public BaseResponse<List<UnivMyPostDTO>> getUnivPosts() {
+        try {
+            List<UnivPost> univPosts = memberService.getUnivPosts();
+            List<UnivMyPostDTO> result = univPosts.stream()
+                    .map(p -> new UnivMyPostDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/comments/total")
+    public BaseResponse<List<TotalMyCommentDTO>> getTotalComments() {
+        try {
+            List<TotalPost> totalComments = memberService.getTotalComments();
+            List<TotalMyCommentDTO> result = totalComments.stream()
+                    .map(p -> new TotalMyCommentDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/comments/univ")
+    public BaseResponse<List<UnivMyCommentDTO>> getUnivComments() {
+        try {
+            List<UnivPost> univComments = memberService.getUnivComments();
+            List<UnivMyCommentDTO> result = univComments.stream()
+                    .map(p -> new UnivMyCommentDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 }

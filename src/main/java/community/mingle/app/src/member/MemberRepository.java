@@ -1,7 +1,9 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import community.mingle.app.src.member.model.UnivPostScrapDTO;
@@ -56,6 +58,36 @@ public class MemberRepository {
                 .getResultList();
         return resultList;
     }
+
+    public List<TotalPost> findTotalPosts(Long memberId) {
+        List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where m.id = :id order by p.createdAt desc", TotalPost.class)
+                .setParameter("id", memberId)
+                .getResultList();
+        return resultList;
+    }
+
+    public List<UnivPost> findUnivPosts(Long memberId) {
+        List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where m.id = :id order by p.createdAt desc", UnivPost.class)
+                .setParameter("id", memberId)
+                .getResultList();
+        return resultList;
+    }
+
+    public List<TotalPost> findTotalComments(Long memberId) {
+        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where m.id = :id order by c.createdAt desc ", TotalPost.class)
+                .setParameter("id", memberId)
+                .getResultList();
+        return resultList;
+    }
+
+    public List<UnivPost> findUnivComments(Long memberId) {
+        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where m.id = :id order by c.createdAt desc ", UnivPost.class)
+                .setParameter("id", memberId)
+                .getResultList();
+        return resultList;
+    }
+
+
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberId) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ
 //        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join fetch us.univPost p where m.id = :id order by us.createdAt desc", UnivPost.class)
