@@ -87,4 +87,9 @@ public class TotalPost {
         this.status = PostStatus.ACTIVE;
     }
 
+    public void deleteTotalPost (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
+
 }

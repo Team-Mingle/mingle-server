@@ -233,11 +233,34 @@ public class PostController {
         }
     }
 
+    /**
+     * 3.13 통합 게시물 삭제 API
+     */
+    @Operation(summary = "3.13 deleteTotalPost API", description = "3.13 통합 게시물 삭제 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PatchMapping("/total/status/{id}")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<String> deleteTotalPost (@PathVariable Long id){
+
+        try{
+            postService.deleteTotalPost(id);
+            String result = "게시물 삭제에 성공하였습니다.";
+            return new BaseResponse<>(result);
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
     /**
      * 3.14 학교 게시물 삭제 API
      */
-    @Operation(summary = "3.14 deleteUnivPosts API", description = "3.14 학교 게시물 삭제 API")
+    @Operation(summary = "3.14 deleteUnivPost API", description = "3.14 학교 게시물 삭제 API")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @PatchMapping("/univ/status/{id}")
     @ApiResponses ({
@@ -246,7 +269,7 @@ public class PostController {
             @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<String> updateUnivPost (@PathVariable Long id){
+    public BaseResponse<String> deleteUnivPost (@PathVariable Long id){
 
         try{
             postService.deleteUnivPost(id);

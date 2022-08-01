@@ -199,6 +199,35 @@ public class PostService {
     }
 
     /**
+     * 3.13 통합 게시물 삭제 API
+     */
+    @Transactional
+    public void deleteTotalPost (Long id) throws BaseException{
+        Member member;
+        TotalPost totalPost;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        try {
+            totalPost = postRepository.findTotalPostById(id);
+        } catch (Exception e) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+
+        if (memberIdByJwt != totalPost.getMember().getId()) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
+        try {
+            totalPost.deleteTotalPost();
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_POST);
+        }
+    }
+
+    /**
      * 3.14 학교 게시물 삭제 API
      */
     @Transactional
