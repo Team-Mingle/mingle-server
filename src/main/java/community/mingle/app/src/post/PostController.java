@@ -159,7 +159,7 @@ public class PostController {
     }
 
     /**
-     * 3.9 통합 게시물 상세 API
+     * 3.9.1 통합 게시물 상세 - 게시물 API
      */
     @GetMapping("/total/{totalPostId}")
     public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
@@ -177,6 +177,9 @@ public class PostController {
 
     }
 
+    /**
+     * 3.9.2 통합 게시물 상세 - 댓글 API
+     */
     @GetMapping("/totalcomment/{totalPostId}")
     public BaseResponse<List<TotalCommentDto>> totalPostDetailComment(@PathVariable Long totalPostId) {
 
@@ -190,6 +193,9 @@ public class PostController {
 
     }
 
+    /**
+     * 3.9.3 통합 게시물 상세 - 게시물 + 댓글 API
+     */
     @GetMapping("/totalpostall/{totalPostId}")
     public BaseResponse<TotalPostAllDto> totalPostAll(@PathVariable Long totalPostId){
         try {

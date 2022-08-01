@@ -119,15 +119,19 @@ public class PostService {
     }
 
     /**
-     * 3.9
+     * 3.9.1 통합 게시물 상세 - 게시물 API
      */
-
+    @Transactional(readOnly = true)
     public TotalPost getTotalPost(Long id) throws BaseException{
 
         TotalPost totalPost = postRepository.getTotalPostbyId(id);
         return totalPost;
     }
 
+    /**
+     * 3.9.1 통합 게시물 상세 - 게시물 API
+     */
+    @Transactional(readOnly = true)
     public TotalPostDto getTotalPostDto(TotalPost totalPost) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         boolean isMyPost = false;
@@ -152,22 +156,25 @@ public class PostService {
         return totalPostDto;
     }
 
+    /**
+     * 3.9.2 통합 게시물 상세 - 댓글 API
+     */
+    @Transactional(readOnly = true)
     public List<TotalCommentDto> getTotalCommentList(Long id) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
         List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
         List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
-        final boolean isLikedcc;
         for (TotalComment tc : totalCommentList) {
             List<TotalComment> coComments = totalCocommentList.stream()
                     .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                     .collect(Collectors.toList());
             List<TotalCocommentDto> coCommentDtos = coComments.stream()
-                    .map(p -> new TotalCocommentDto(p, tc, isLikedcc))
+                    .map(p -> new TotalCocommentDto(p, tc, memberIdByJwt))
                     .collect(Collectors.toList());
 
-            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
-            TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, isLiked);
+//            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
+            TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, memberIdByJwt);
             totalCommentDtoList.add(totalCommentDto);
         }
         return totalCommentDtoList;

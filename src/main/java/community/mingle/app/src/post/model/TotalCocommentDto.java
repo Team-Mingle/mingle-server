@@ -1,6 +1,8 @@
 package community.mingle.app.src.post.model;
 
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
+import community.mingle.app.src.domain.Total.TotalPostLike;
 import lombok.Getter;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
@@ -17,7 +19,7 @@ public class TotalCocommentDto {
     private String createdAt;
     private boolean isLiked;
 
-    public TotalCocommentDto(TotalComment coComment, TotalComment comment, boolean isLiked) {
+    public TotalCocommentDto(TotalComment coComment, TotalComment comment, Long memberId) {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
         if (comment.isAnonymous() == true) {
@@ -33,6 +35,14 @@ public class TotalCocommentDto {
             this.nickname = coComment.getMember().getNickname();
         }
         this.createdAt = convertLocaldatetimeToTime(coComment.getCreatedAt());
-        this.isLiked = isLiked;
+
+        for (TotalCommentLike tpl : coComment.getTotalCommentLikes()) {
+            if (tpl.getMember().getId() == memberId) {
+                this.isLiked = true;
+                break;
+            } else {
+                this.isLiked = false;
+            }
+        }
     }
 }

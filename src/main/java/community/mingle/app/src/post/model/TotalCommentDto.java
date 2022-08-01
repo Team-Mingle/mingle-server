@@ -1,6 +1,7 @@
 package community.mingle.app.src.post.model;
 
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.Getter;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class TotalCommentDto {
 
     private boolean isLiked;
 
-    public TotalCommentDto(TotalComment totalComment, List<TotalCocommentDto> totalCocommentDtoList, boolean isLiked) {
+    public TotalCommentDto(TotalComment totalComment, List<TotalCocommentDto> totalCocommentDtoList, Long memberId) {
         this.commentId = totalComment.getId();
         this.content = totalComment.getContent();
         this.likeCount = totalComment.getTotalCommentLikes().size();
@@ -30,7 +31,15 @@ public class TotalCommentDto {
         }
         this.createdAt = convertLocaldatetimeToTime(totalComment.getCreatedAt());
         this.totalCocommentDtoList = totalCocommentDtoList;
-        this.isLiked = isLiked;
+
+        for (TotalCommentLike tcl : totalComment.getTotalCommentLikes()) {
+            if (tcl.getMember().getId() == memberId) {
+                this.isLiked = true;
+                break;
+            } else {
+                this.isLiked = false;
+            }
+        }
     }
 
 }
