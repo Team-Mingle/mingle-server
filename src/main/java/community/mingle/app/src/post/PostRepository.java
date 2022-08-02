@@ -5,8 +5,10 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostLike;
 import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Univ.UnivPostLike;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -114,6 +116,16 @@ public class PostRepository {
     public Long save(UnivPostScrap univPostScrap) {
         em.persist(univPostScrap);
         return univPostScrap.getId();
+    }
+
+    public Long save(TotalPostLike totalPostLike) {
+        em.persist(totalPostLike);
+        return totalPostLike.getId();
+    }
+
+    public Long save(UnivPostLike univPostLike) {
+        em.persist(univPostLike);
+        return univPostLike.getId();
     }
 
     public TotalPost findTotalPostbyId(Long postId) {

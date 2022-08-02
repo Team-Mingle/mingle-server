@@ -5,13 +5,12 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostLike;
 import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Univ.UnivPostLike;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
-import community.mingle.app.src.post.model.PostCreateRequest;
-import community.mingle.app.src.post.model.PostCreateResponse;
-import community.mingle.app.src.post.model.PostScrapTotalResponse;
-import community.mingle.app.src.post.model.PostScrapUnivResponse;
+import community.mingle.app.src.post.model.*;
 import community.mingle.app.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -141,6 +140,66 @@ public class PostService {
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
+
+
+    /**
+     * 3.15 통합 게시물 좋아요 api
+     */
+    @Transactional
+    public PostLikesTotalResponse likesTotalPost(Long postIdx) throws BaseException{
+        Long memberIdByJwt;
+        try {
+            memberIdByJwt = jwtService.getUserIdx();
+        } catch (Exception e) {
+            throw new BaseException(EMPTY_JWT);
+        }
+        try {
+            TotalPost totalpost =postRepository.findTotalPostbyId(postIdx);
+            Member member = postRepository.findMemberbyId(memberIdByJwt);
+
+
+            TotalPostLike totalPostLike = TotalPostLike.likesTotalPost(totalpost, member);
+            Long id = postRepository.save(totalPostLike);
+            return new PostLikesTotalResponse(id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 3.15 학교 게시물 좋아요 api
+     */
+    @Transactional
+    public PostLikesUnivResponse likesUnivPost(Long postIdx) throws BaseException{
+        Long memberIdByJwt;
+        try {
+            memberIdByJwt = jwtService.getUserIdx();
+        } catch (Exception e) {
+            throw new BaseException(EMPTY_JWT);
+        }
+        try {
+            UnivPost univpost =postRepository.findUnivPostbyId(postIdx);
+            Member member = postRepository.findMemberbyId(memberIdByJwt);
+
+
+            UnivPostLike univPostLike= UnivPostLike.likesUnivPost(univpost, member);
+            Long id = postRepository.save(univPostLike);
+            return new PostLikesUnivResponse(id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+
+
 
 
 

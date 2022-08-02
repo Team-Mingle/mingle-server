@@ -186,6 +186,51 @@ public class PostController {
 
 
     /**
+     * 3.15 통합 게시물 좋아요 api
+     */
+    @Operation(summary = "3.15  LikesTotalPost API", description = "3.15 통합 게시물 좋아요 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PostMapping("/total/likes")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<PostLikesTotalResponse> likesTotalPost (@RequestParam Long postIdx){
+        try{
+            return new BaseResponse<>(postService.likesTotalPost(postIdx));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+
+    /**
+     * 3.16 학교 게시물 좋아요 api
+     */
+    @Operation(summary = "3.16  LikesUnivPost API", description = "3.16  학교 게시물 좋아요 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PostMapping("/univ/likes")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<PostLikesUnivResponse> likesUnivPost (@RequestParam Long postIdx){
+        try{
+            return new BaseResponse<>(postService.likesUnivPost(postIdx));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+
+
+    /**
      * 3.17 통합 게시물 스크랩 api
      */
     @Operation(summary = "3.17  scrapTotalPost API", description = "3.17 통합 게시물 스크랩 api")
