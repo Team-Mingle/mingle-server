@@ -208,10 +208,7 @@ public class PostRepository {
 
 
     /**
-     * 댓글 좋아요
-     * @param commentId
-     * @param memberId
-     * @return
+     * 댓글 좋아요 isLiked 확인
      */
     public boolean checkCommentIsLiked(Long commentId, Long memberId) {
         List<UnivCommentLike> univCommentLikes = em.createQuery("select ucl from UnivCommentLike ucl join ucl.univComment uc join ucl.member m where uc.id = :commentId and m.id = :memberId", UnivCommentLike.class)
@@ -224,7 +221,5 @@ public class PostRepository {
             return false;
         }
     }
-//    public boolean checkCoCommentLiked(List<UnivComment> coCommentList) {
-//
-//    }
+
 }

@@ -118,77 +118,6 @@ public class PostService {
         }
     }
 
-    /**
-     * 3.10 학교 게시물 상세
-     */
-    @Transactional(readOnly = true)
-    public UnivPost findUnivPost(Long univPostId) throws BaseException {
-
-        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
-        Member member;
-
-        member = postRepository.findMemberbyId(memberIdByJwt);
-        if (member == null) {
-            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
-        }
-
-
-        UnivPost univPost = postRepository.findUnivPost(univPostId);
-
-
-//        List<UnivComment> univComments = univPost.getComments();
-//
-//        List<GetUnivCommentsRes> comments = univComments.stream()
-//                .map(p -> new GetUnivCommentsRes(p))
-//                .collect(Collectors.toList());
-
-        return univPost;
-
-    }
-
-    @Transactional(readOnly = true)
-    public List<GetUnivCommentsRes> findUnivCoComment(UnivPost univPost) {
-
-        List<GetUnivCommentsRes> commentsList = new ArrayList<>();
-
-//        List<UnivComment> nullCommentsList = new ArrayList<>(); // 1번
-
-//        List<UnivComment> comments = univPost.getComments();
-        List<UnivComment> comments = postRepository.findUnivComment(univPost.getId()); //null 도 포함
-
-//        for (UnivComment comment : comments) {
-//            if (comment.getParentCommentId() == null) {
-//                nullCommentsList.add(comment);
-//            }
-//        }
-//        List<UnivComment> nullCommentList = comments.stream()
-//                .filter(obj -> obj.getParentCommentId()==null)
-//                .collect(Collectors.toList());
-
-//        List<UnivComment> nullComments = postRepository.findNullComments(comments); //2번
-
-        List<UnivComment> coComments; // 대댓글 리스트 : null 일수도 있지.
-
-        for (UnivComment univComment : comments) {
-            coComments = postRepository.findUnivCoComment(univPost, univComment); //댓글 하나마다 대댓글 리스트 찾음.
-            List<GetCoCommentsRes> coCommentsRes = coComments.stream()
-                    .map(cc -> new GetCoCommentsRes(cc))
-                    .collect(Collectors.toList());
-            GetUnivCommentsRes commentsRes = new GetUnivCommentsRes(univComment, coCommentsRes);
-            commentsList.add(commentsRes);
-        }
-
-        return commentsList;
-
-//        List<GetCoCommentsRes> coCommentsRes = coComments.stream()
-//        .map(cc -> new GetCoCommentsRes(cc))
-//        .collect(Collectors.toList());
-
-//        return commentsRes;
-
-//        UnivComment univComment = postRepository.findUnivCoComment(univPost.getComments());
-    }
-
 
 
     /**
@@ -196,8 +125,14 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public UnivPost getUnivPost(Long postId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        Member member;
+        member = postRepository.findMemberbyId(memberIdByJwt);
+
         try {
             UnivPost univPost = postRepository.getUnivPostById(postId);
+            boolean checkLiked = postRepository.checkIsLiked(postId, memberIdByJwt);
+            boolean checkScraped = postRepository.checkIsScraped(postId, memberIdByJwt);
             return univPost;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
@@ -230,16 +165,14 @@ public class PostService {
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
                         .collect(Collectors.toList());
 
-//                postRepository.checkCoCommentLiked(CoCommentList);
+//                postRepository.checkCoCommentLiked(CoCommentList); 성능 저하. for문 돌때마다 쿼리문 나감
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
                         .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt))
                         .collect(Collectors.toList());
 
-                /**
-                 * 얘가 쿼리문 많이나옴
-                 */
+                /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
                 //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
 
                 //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
@@ -251,7 +184,64 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-
     }
 
+
+    /**
+     * 3.10 학교 게시물 상세 (Old)
+     */
+//    @Transactional(readOnly = true)
+//    public UnivPost findUnivPost(Long univPostId) throws BaseException {
+//
+//        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+//        Member member;
+//        member = postRepository.findMemberbyId(memberIdByJwt);
+//        if (member == null) {
+//            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
+//        }
+//        UnivPost univPost = postRepository.findUnivPost(univPostId);
+//
+////        List<UnivComment> univComments = univPost.getComments();
+////
+////        List<GetUnivCommentsRes> comments = univComments.stream()
+////                .map(p -> new GetUnivCommentsRes(p))
+////                .collect(Collectors.toList());
+//        return univPost;
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<GetUnivCommentsRes> findUnivCoComment(UnivPost univPost) {
+//
+//        List<GetUnivCommentsRes> commentsList = new ArrayList<>();
+////        List<UnivComment> nullCommentsList = new ArrayList<>(); // 1번
+////        List<UnivComment> comments = univPost.getComments();
+//        List<UnivComment> comments = postRepository.findUnivComment(univPost.getId()); //null 도 포함
+//
+////        for (UnivComment comment : comments) {
+////            if (comment.getParentCommentId() == null) {
+////                nullCommentsList.add(comment);
+////            }
+////        }
+////        List<UnivComment> nullCommentList = comments.stream()
+////                .filter(obj -> obj.getParentCommentId()==null)
+////                .collect(Collectors.toList());
+//
+////        List<UnivComment> nullComments = postRepository.findNullComments(comments); //2번
+//
+//        List<UnivComment> coComments; // 대댓글 리스트 : null 일수도 있지.
+//        for (UnivComment univComment : comments) {
+//            coComments = postRepository.findUnivCoComment(univPost, univComment); //댓글 하나마다 대댓글 리스트 찾음.
+//            List<GetCoCommentsRes> coCommentsRes = coComments.stream()
+//                    .map(cc -> new GetCoCommentsRes(cc))
+//                    .collect(Collectors.toList());
+//            GetUnivCommentsRes commentsRes = new GetUnivCommentsRes(univComment, coCommentsRes);
+//            commentsList.add(commentsRes);
+//        }
+//        return commentsList;
+////        List<GetCoCommentsRes> coCommentsRes = coComments.stream()
+////        .map(cc -> new GetCoCommentsRes(cc))
+////        .collect(Collectors.toList());
+////        return commentsRes;
+////        UnivComment univComment = postRepository.findUnivCoComment(univPost.getComments());
+//    }
 }

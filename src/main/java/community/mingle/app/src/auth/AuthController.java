@@ -100,8 +100,9 @@ public class AuthController {
     @ResponseBody
     @PostMapping("checkemail") // (POST) 127.0.0.1:9000/users
     public BaseResponse<String> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
+        System.out.println("email=" + postUserEmailRequest.getEmail());
 
-        if (postUserEmailRequest.getEmail() == null) {
+        if (postUserEmailRequest.getEmail().isEmpty()) {
             return new BaseResponse<>(EMAIL_EMPTY_ERROR);
         }
         // 이메일 정규표현

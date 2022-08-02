@@ -31,7 +31,7 @@ public enum BaseResponseStatus {
 
     //email
     EMAIL_EMPTY_ERROR(false, 2010, "이메일을 입력해주세요."),
-    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
+    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요."),
     USER_EXISTS_EMAIL(false,2012,"중복된 이메일입니다."),
     EMAIL_CODE_FAIL(false, 2013, "인증번호가 일치하지 않습니다."),
     CODE_GENERATE_FAIL(false, 2014, "인증번호 생성에 실패하습니다."),
