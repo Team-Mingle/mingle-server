@@ -57,6 +57,8 @@ public class CommentRepository {
     public Long findAnonymousId(TotalPost post, Long memberIdByJwt ) {
         Long newAnonymousId;
 
+        //처음 달때 추가
+
         /**
          * case 1: 해당 게시글 커멘츠가 멤버가 있는지 없는지 확인하고 있으면 그 전 id 부여
          */
@@ -76,7 +78,7 @@ public class CommentRepository {
         TotalComment totalCommentWithMaxAnonymousId = null;
         try {  //게시물에서 제일 큰 id를 찾은 후 +1 한 id 를 내 댓글에 새로운 anonymousId 로 부여
             totalCommentWithMaxAnonymousId = totalComments.stream()
-                    .max(Comparator.comparingLong(TotalComment::getAnonymousId))
+                    .max(Comparator.comparingLong(TotalComment::getAnonymousId))//nullPointerException
                     .get();
             newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
             return newAnonymousId;
