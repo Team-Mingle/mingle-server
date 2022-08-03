@@ -173,7 +173,7 @@ public class AuthController {
             if (!isRegexEmail(code.getEmail())) { //이메일 형식(정규식) 검증
                 return new BaseResponse<>(EMAIL_FORMAT_ERROR);
             }
-            authService.authCode(code.getCode(), code.getEmail());
+            authService.authCode(code.getEmail(), code.getCode());
 //            CodeResponse codeRes = emailService.authCode(code.getCode(), code.getEmail());
             String result = "인증에 성공하였습니다.";
             return new BaseResponse<>(result);
