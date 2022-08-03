@@ -31,18 +31,15 @@ public enum BaseResponseStatus {
 
     //email
     EMAIL_EMPTY_ERROR(false, 2010, "이메일을 입력해주세요."),
-    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
-    USER_EXISTS_EMAIL(false,2012,"중복된 이메일입니다."),
+    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요."),
+    USER_EXISTS_EMAIL(false,2012,"이미 존재하는 이메일 주소입니다."),
     EMAIL_CODE_FAIL(false, 2013, "인증번호가 일치하지 않습니다."),
-    CODE_GENERATE_FAIL(false, 2014, "인증번호 생성에 실패하습니다."),
-    EMAIL_SEND_FAIL(false, 2015, "인증번호 전송에 실패하였습니다."),
-
 
     //password
     PASSWORD_EMPTY_ERROR(false, 2014, "비밀번호를 입력해주세요."),
     PASSWORD_LENGTH_ERROR(false, 2015, "비밀번호가 너무 짧습니다."),
     PASSWORD_FORMAT_ERROR(false, 2016, "비밀번호는 영문,숫자를 포함해야 합니다."),
-    USER_EXISTS_NICKNAME(false, 2017, "중복된 닉네임입니다."),
+    USER_EXISTS_NICKNAME(false, 2017, "이미 존재하는 닉네임입니다."),
     INVALID_UNIV_ID(false,2018 , "존재하지 않는 학교 id 입니다."),
     USER_NOT_EXIST(false, 2019, "등록되지 않은 유저입니다."),
 
@@ -107,8 +104,9 @@ public enum BaseResponseStatus {
 
     // /auth : 암호화
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    EMAIL_ENCRYPTION_ERROR(false, 4012, "이메일 암호화에 실패하였습니다.");
-
+    EMAIL_ENCRYPTION_ERROR(false, 4012, "이메일 암호화에 실패하였습니다."),
+    CODE_GENERATE_FAIL(false, 4013, "인증번호 생성에 실패하습니다."),
+    EMAIL_SEND_FAIL(false, 4014, "인증번호 전송에 실패하였습니다.");
 
 
 

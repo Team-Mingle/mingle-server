@@ -93,7 +93,7 @@ public class AuthController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2012", description = "중복된 이메일입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
 
@@ -101,7 +101,7 @@ public class AuthController {
     @PostMapping("checkemail") // (POST) 127.0.0.1:9000/users
     public BaseResponse<String> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
 
-        if (postUserEmailRequest.getEmail() == null) {
+        if (postUserEmailRequest.getEmail().isEmpty()) {
             return new BaseResponse<>(EMAIL_EMPTY_ERROR);
         }
         // 이메일 정규표현
@@ -125,14 +125,14 @@ public class AuthController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2014", description = "인증번호 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2015", description = "인증번호 전송에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4013", description = "인증번호 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4014", description = "인증번호 전송에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @PostMapping("sendcode")
     public BaseResponse<String> sendCode(@RequestBody @Valid PostEmailRequest req) {
         try {
-            if (req.getEmail() == null) {
+            if (req.getEmail().isEmpty()) {
                 return new BaseResponse<>(EMAIL_EMPTY_ERROR);
             }
 
@@ -236,11 +236,11 @@ public class AuthController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2012", description = "중복된 이메일입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2017", description = "중복된 닉네임입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2017", description = "이미 존재하는 닉네임입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2018", description = "존재하지 않는 학교 id 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3010", description = "회원가입에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
@@ -250,7 +250,7 @@ public class AuthController {
     @PostMapping("signup")
     public BaseResponse<PostSignupResponse> createMember(@RequestBody @Valid PostSignupRequest postSignupRequest) {
         //이메일 빔
-        if (postSignupRequest.getEmail() == null) {
+        if (postSignupRequest.getEmail().isEmpty()) {
             return new BaseResponse<>(EMAIL_EMPTY_ERROR);
         }
         //이메일 형식(정규식) 검증 (new)
@@ -258,7 +258,7 @@ public class AuthController {
             return new BaseResponse<>(EMAIL_FORMAT_ERROR);
         }
         // 비밀번호 빔
-        if (postSignupRequest.getPwd().length() == 0) {
+        if (postSignupRequest.getPwd().isEmpty()) {
             return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
         }
         //비밀번호 길이
@@ -296,10 +296,10 @@ public class AuthController {
     @PostMapping("login")
     public BaseResponse<PostLoginResponse> logIn(@RequestBody @Valid PostLoginRequest postLoginRequest) {
         try {
-            if (postLoginRequest.getEmail() == null) {
+            if (postLoginRequest.getEmail().isEmpty()) {
                 return new BaseResponse<>(EMAIL_EMPTY_ERROR);
             }
-            if (postLoginRequest.getPwd() == null) {
+            if (postLoginRequest.getPwd().isEmpty()) {
                 return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
             }
             PostLoginResponse postloginResponse = authService.logIn(postLoginRequest);
@@ -330,7 +330,7 @@ public class AuthController {
         try { //JWT로 해당 유저인지 확인 필요
 
             //형식적 validation
-            if (patchUpdatePwdRequest.getPwd().length() == 0) {
+            if (patchUpdatePwdRequest.getPwd().isEmpty()) {
                 return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
             }
             if (patchUpdatePwdRequest.getPwd().length() < 6) {
