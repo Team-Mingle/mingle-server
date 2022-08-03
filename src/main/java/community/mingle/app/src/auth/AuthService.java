@@ -125,7 +125,7 @@ public class AuthService {
         }
 
         try {
-            redisUtil.setDataExpire(authKey, email, 60 * 3L);
+            redisUtil.setDataExpire(email, authKey, 60 * 3L);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -137,9 +137,7 @@ public class AuthService {
      */
     public void authCode(String email, String code) throws BaseException {
 
-        try { //만료
-            redisUtil.getData(email).isEmpty(); //nullpointerException
-        } catch (Exception e) {
+        if (redisUtil.getData(email) == null) {
             throw new BaseException(EMAIL_CODE_EXPIRED);
         }
 
