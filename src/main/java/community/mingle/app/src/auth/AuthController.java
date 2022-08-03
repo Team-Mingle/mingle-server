@@ -130,12 +130,11 @@ public class AuthController {
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @PostMapping("sendcode")
-    public BaseResponse<String> sendCode(@RequestBody @Valid PostEmailRequest req) {
+    public BaseResponse<String> sendCode(@RequestBody PostEmailRequest req) {
         try {
             if (req.getEmail().isEmpty()) {
                 return new BaseResponse<>(EMAIL_EMPTY_ERROR);
             }
-
             if (!isRegexEmail(req.getEmail())) { //이메일 형식(정규식) 검증
                 return new BaseResponse<>(EMAIL_FORMAT_ERROR);
             }
@@ -155,13 +154,22 @@ public class AuthController {
     @Operation(summary = "1.5 email verification code check API", description = "1.5 이메일 인증코드 검사 API")
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2013", description = "인증번호가 일치하지 않습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "2013", description = "인증번호가 일치하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2019", description = "인증번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3015", description = "인증번호 입력시간이 초과되었습니다" , content = @Content (schema = @Schema(hidden = true))),
     })
     @ResponseBody
     @PostMapping("checkcode")
-    public BaseResponse<String> verifyCode(@RequestBody @Valid PostCodeRequest code) {
+    public BaseResponse<String> verifyCode(@RequestBody PostCodeRequest code) {
         try {
+            if (code.getEmail().isEmpty()) {
+                return new BaseResponse<>(EMAIL_EMPTY_ERROR);
+            }
+            if (code.getCode().isEmpty()) {
+                return new BaseResponse<>(CODE_EMPTY_ERROR);
+            }
             if (!isRegexEmail(code.getEmail())) { //이메일 형식(정규식) 검증
                 return new BaseResponse<>(EMAIL_FORMAT_ERROR);
             }
@@ -248,7 +256,7 @@ public class AuthController {
     })
     @ResponseBody
     @PostMapping("signup")
-    public BaseResponse<PostSignupResponse> createMember(@RequestBody @Valid PostSignupRequest postSignupRequest) {
+    public BaseResponse<PostSignupResponse> createMember(@RequestBody PostSignupRequest postSignupRequest) {
         //이메일 빔
         if (postSignupRequest.getEmail().isEmpty()) {
             return new BaseResponse<>(EMAIL_EMPTY_ERROR);
@@ -294,7 +302,7 @@ public class AuthController {
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @PostMapping("login")
-    public BaseResponse<PostLoginResponse> logIn(@RequestBody @Valid PostLoginRequest postLoginRequest) {
+    public BaseResponse<PostLoginResponse> logIn(@RequestBody PostLoginRequest postLoginRequest) {
         try {
             if (postLoginRequest.getEmail().isEmpty()) {
                 return new BaseResponse<>(EMAIL_EMPTY_ERROR);
@@ -320,13 +328,13 @@ public class AuthController {
             @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2019", description = "등록되지 않은 유저입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2020", description = "등록되지 않은 유저입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3013", description = "비밀번호 변경에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @PatchMapping("pwd")
-    public BaseResponse<String> resetPwd(@RequestBody @Valid PatchUpdatePwdRequest patchUpdatePwdRequest) {
+    public BaseResponse<String> resetPwd(@RequestBody PatchUpdatePwdRequest patchUpdatePwdRequest) {
         try { //JWT로 해당 유저인지 확인 필요
 
             //형식적 validation

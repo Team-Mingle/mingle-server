@@ -34,6 +34,7 @@ public enum BaseResponseStatus {
     EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요."),
     USER_EXISTS_EMAIL(false,2012,"이미 존재하는 이메일 주소입니다."),
     EMAIL_CODE_FAIL(false, 2013, "인증번호가 일치하지 않습니다."),
+    CODE_EMPTY_ERROR(false, 2019, "인증번호를 입력해주세요."),
 
     //password
     PASSWORD_EMPTY_ERROR(false, 2014, "비밀번호를 입력해주세요."),
@@ -41,10 +42,12 @@ public enum BaseResponseStatus {
     PASSWORD_FORMAT_ERROR(false, 2016, "비밀번호는 영문,숫자를 포함해야 합니다."),
     USER_EXISTS_NICKNAME(false, 2017, "이미 존재하는 닉네임입니다."),
     INVALID_UNIV_ID(false,2018 , "존재하지 않는 학교 id 입니다."),
-    USER_NOT_EXIST(false, 2019, "등록되지 않은 유저입니다."),
+
 
 
     /** 2. /user */
+    USER_NOT_EXIST(false, 2020, "등록되지 않은 유저입니다."),
+
 //    DELETE_USER_NOTEXIST(false,2020,"삭제할 유저가 존재하지 않습니다."),
 //    POSTS_USERS_EXISTS_NICKNAME(false, 5030, "중복된 닉네임입니다."),
 
@@ -74,6 +77,8 @@ public enum BaseResponseStatus {
     FAILED_TO_CREATEJWT(false, 3012, "JWT 발급에 실패하였습니다."),
     FAILED_TO_CHANGEPWD(false, 3013, "비밀번호 변경에 실패하였습니다."),
     FAILED_TO_GET_TERMS(false, 3014, "개인정보처리방침을 가져오는데 실패하였습니다"),
+    EMAIL_CODE_EXPIRED(false, 3015, "인증번호 입력시간이 초과되었습니다."),
+
 
     /** 2. /user  */
     //DELETE_FAIL_USER(false,3020,"유저 삭제에 실패했습니다."),
