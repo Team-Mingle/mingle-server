@@ -137,16 +137,29 @@ public class PostService {
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
-    public UnivPost getUnivPost(Long postId) throws BaseException {
+    public UnivPostDTO getUnivPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
 
+        boolean isMyPost = false, isLiked = false, isScraped = false;
+
         try {
             UnivPost univPost = postRepository.getUnivPostById(postId);
-            boolean checkLiked = postRepository.checkIsLiked(postId, memberIdByJwt);
-            boolean checkScraped = postRepository.checkIsScraped(postId, memberIdByJwt);
-            return univPost;
+
+            if (univPost.getMember().getId() == memberIdByJwt) {
+                isMyPost = true;
+            }
+            if (postRepository.checkUnivPostIsLiked(postId, memberIdByJwt) == true) {
+                isLiked = true;
+            }
+            if (postRepository.checkUnivPostIsScraped(postId, memberIdByJwt) == true) {
+                isScraped = true;
+            }
+
+            UnivPostDTO univPostDTO = new UnivPostDTO(univPost, isMyPost, isLiked, isScraped);
+            return univPostDTO;
+
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

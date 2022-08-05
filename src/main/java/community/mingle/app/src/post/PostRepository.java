@@ -174,7 +174,7 @@ public class PostRepository {
         return univPost;
     }
 
-    public boolean checkIsLiked(Long postId, Long memberId) {
+    public boolean checkUnivPostIsLiked(Long postId, Long memberId) {
         List<UnivPostLike> univPostLikeList = em.createQuery("select upl from UnivPostLike upl join upl.univPost up join upl.member m where up.id = :postId and m.id = :memberId", UnivPostLike.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
@@ -186,7 +186,7 @@ public class PostRepository {
         }
     }
 
-    public boolean checkIsScraped(Long postId, Long memberId) {
+    public boolean checkUnivPostIsScraped(Long postId, Long memberId) {
         List<UnivPostScrap> univPostScrapList = em.createQuery("select ups from UnivPostScrap ups join ups.univPost up join ups.member m where up.id = :postId and m.id = :memberId", UnivPostScrap.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)

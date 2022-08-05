@@ -15,9 +15,9 @@ public class UnivCoCommentDTO {
     private String mention; //멘션 추가
     private String content;
     private int likeCount;
-    private String createdTime;
     private boolean isLiked;
-
+    private boolean isMyComment;
+    private String createdTime;
 
     public UnivCoCommentDTO(UnivComment parent, UnivComment cc, Long memberId) {
 
@@ -39,7 +39,6 @@ public class UnivCoCommentDTO {
             this.mention = parent.getMember().getNickname();
         }
         this.content = cc.getContent();
-        this.createdTime = convertLocaldatetimeToTime(cc.getCreatedAt());
         this.likeCount = cc.getUnivCommentLikes().size();
 
         for (UnivCommentLike ucl : cc.getUnivCommentLikes()) { //영속성
@@ -50,6 +49,12 @@ public class UnivCoCommentDTO {
                 isLiked = false;
             }
         }
+
+        if (cc.getMember().getId() == memberId) {
+            isMyComment = true;
+        }
+        this.createdTime = convertLocaldatetimeToTime(cc.getCreatedAt());
+
     }
 
 }

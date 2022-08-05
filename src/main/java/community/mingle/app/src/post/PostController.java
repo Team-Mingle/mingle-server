@@ -231,8 +231,9 @@ public class PostController {
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     public BaseResponse<UnivPostDTO> getUnivPost(@PathVariable Long univPostId) {
         try {
-            UnivPost univPost = postService.getUnivPost(univPostId);
-            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
+//            UnivPost univPost = postService.getUnivPost(univPostId);
+//            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
+            UnivPostDTO univPostDTO = postService.getUnivPost(univPostId);
             return new BaseResponse<>(univPostDTO);
 
         } catch (BaseException e) {
@@ -248,8 +249,8 @@ public class PostController {
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
     public BaseResponse<List<UnivCommentDTO>> univPostComment(@PathVariable Long univPostId) {
         try {
-            List<UnivCommentDTO> univPostDTOList = postService.getUnivComments(univPostId);
-            return new BaseResponse<>(univPostDTOList);
+            List<UnivCommentDTO> univCommentDTOList = postService.getUnivComments(univPostId);
+            return new BaseResponse<>(univCommentDTOList);
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
