@@ -95,6 +95,17 @@ public class PostService {
 
 
     /**
+     * 페이징 테스트
+     */
+    public List<TotalPost> findTotalPostByPaging(int category, Long postId) throws BaseException {
+        List<TotalPost> totalPostList = postRepository.findTotalPostByPaging(category, postId);
+        if (totalPostList.size() == 0) {
+            throw new BaseException(EMPTY_POSTS_LIST);
+        }
+        return totalPostList;
+    }
+
+    /**
      * 3.5 게시물 작성 API
      */
     @Transactional

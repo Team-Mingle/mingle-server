@@ -66,9 +66,20 @@ public class PostRepository {
 
 
     /**
+     * 페이징 테스트
+     */
+    public List<TotalPost> findTotalPostByPaging(int category, Long postId) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where c.id = :categoryId and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+                .setParameter("categoryId", category)
+                .setParameter("postId", postId)
+                .setMaxResults(3)
+                .getResultList();
+    }
+
+
+
+    /**
      * memberId 로 Member 반환
-     * @param id
-     * @return Member
      */
     public Member findMemberbyId(Long id) {
         List<Member> m = em.createQuery("select m from Member m where m.id = :id", Member.class)
@@ -92,6 +103,8 @@ public class PostRepository {
                 .getSingleResult();
         return category;
     }
+
+
 
 
     /**

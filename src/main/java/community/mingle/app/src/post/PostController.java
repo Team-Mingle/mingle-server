@@ -138,6 +138,27 @@ public class PostController {
     }
 
 
+    /**
+     * 전체 게시물 리스트 by paging test
+     * @param category
+     * @param postId
+     */
+    @GetMapping("/total/paging")
+    public BaseResponse<List<TotalPostListDTO>> getTotalPostsByPaging (@RequestParam int category, @RequestParam Long postId) {
+        try {
+            List<TotalPost> totalPosts = postService.findTotalPostByPaging(category, postId);
+            List<TotalPostListDTO> result = totalPosts.stream()
+                    .map(p -> new TotalPostListDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+
 
     /**
      * 3.7 학교 게시물 작성 API
