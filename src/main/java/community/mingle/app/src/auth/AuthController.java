@@ -329,7 +329,7 @@ public class AuthController {
             @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2020", description = "등록되지 않은 유저입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3013", description = "비밀번호 변경에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
@@ -355,6 +355,37 @@ public class AuthController {
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+
+    /**
+     * 1.11 비밀번호 재설정용 인증번호 보내기
+     */
+    @Operation(summary = "1.11 sendCodeForPwdReset api", description = "1.11 비밀번호 재설정 인증번호 보내기 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4014", description = "인증번호 전송에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    @PostMapping("sendcode/pwd")
+    public BaseResponse<String> sendCodeForPwdReset (@RequestBody PostEmailRequest req) {
+        if (req.getEmail().isEmpty()) {
+            return new BaseResponse<>(EMAIL_EMPTY_ERROR);
+        }
+        if (!isRegexEmail(req.getEmail())) {
+            return new BaseResponse<>(EMAIL_FORMAT_ERROR);
+        }
+        try {
+            authService.sendCodeForPwd(req);
+            String result = "인증번호가 전송되었습니다.";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
