@@ -57,8 +57,6 @@ public class CommentRepository {
     public Long findAnonymousId(TotalPost post, Long memberIdByJwt ) {
         Long newAnonymousId;
 
-        //처음 달때 추가
-
         /**
          * case 1: 해당 게시글 커멘츠가 멤버가 있는지 없는지 확인하고 있으면 그 전 id 부여
          */
@@ -83,7 +81,7 @@ public class CommentRepository {
             newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
             return newAnonymousId;
 
-        } catch (NoSuchElementException e) {  //게시물에 기존 익명 id 가 아예 없을때: id 로 1 부여
+        } catch (Exception e) {  //게시물에 기존 익명 id 가 아예 없을때: id 로 1 부여
             newAnonymousId = Long.valueOf(1);
         }
         return newAnonymousId;

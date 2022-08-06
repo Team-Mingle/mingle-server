@@ -133,6 +133,8 @@ public class PostService {
 
 
 
+
+
     /**
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
@@ -191,8 +193,6 @@ public class PostService {
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
                         .collect(Collectors.toList());
 
-//                postRepository.checkCoCommentLiked(CoCommentList); 성능 저하. for문 돌때마다 쿼리문 나감
-
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
                         .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt))
@@ -211,4 +211,7 @@ public class PostService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+
+
 }
