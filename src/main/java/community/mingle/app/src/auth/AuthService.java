@@ -119,14 +119,13 @@ public class AuthService {
             javaMailSender.send(mimeMessage);
 
         } catch(MessagingException e) {
-//            e.printStackTrace();
             throw new BaseException(EMAIL_SEND_FAIL);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
 
         try {
-            redisUtil.setDataExpire(authKey, email, 60 * 5L);
+            redisUtil.setDataExpire(email, authKey, 60 * 3L);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -138,17 +137,17 @@ public class AuthService {
      */
     public void authCode(String email, String code) throws BaseException {
 
-        try {
-            if (code.equals(redisUtil.getData(email))) {
-                return;
-//            return new CodeResponse("인증에 성공하였습니다.");
-            } else {
-                throw new BaseException(EMAIL_CODE_FAIL);
-            }
-        } catch (Exception e) {
+        if (redisUtil.getData(email) == null) {
+            throw new BaseException(EMAIL_CODE_EXPIRED);
+        }
+
+        if (!(code.equals(redisUtil.getData(email)))) {
             throw new BaseException(EMAIL_CODE_FAIL);
         }
 
+        if (code.equals(redisUtil.getData(email))) {
+            return;
+        }
     }
 
     /**
