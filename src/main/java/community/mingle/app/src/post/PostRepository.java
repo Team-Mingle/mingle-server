@@ -115,7 +115,7 @@ public class PostRepository {
     }
 
     public List<TotalComment> getTotalCocomments(Long id) {
-        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp join tc.totalCommentLikes tcl where tp.id = :id and tc.parentCommentId is not null order by tc.createdAt asc", TotalComment.class)
+        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is not null order by tc.createdAt asc", TotalComment.class)
                 .setParameter("id", id)
                 .getResultList();
         return totalCocommentList;

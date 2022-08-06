@@ -138,6 +138,11 @@ public class AuthService {
      */
     public void authCode(String email, String code) throws BaseException {
 
+//        if (redisUtil.getData(email) == null) {
+//            throw new BaseException(TIME_EXPIRED ERROR);
+//        }
+
+
         try {
             if (code.equals(redisUtil.getData(email))) {
                 return;

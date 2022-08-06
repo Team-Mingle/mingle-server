@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,4 +138,10 @@ public class MemberController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+//    @PostMapping("/report")
+//    public BaseResponse<ReportDTO> createReport(@RequestBody @Valid ReportRequest reportRequest) {
+//        memberService.createReport(reportRequest);
+//    }
+
 }

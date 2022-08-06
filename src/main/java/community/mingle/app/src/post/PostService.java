@@ -120,7 +120,6 @@ public class PostService {
     }
 
     /**
-<<<<<<< HEAD
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
@@ -163,22 +162,27 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<TotalCommentDto> getTotalCommentList(Long id) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-        List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
-        List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
-        List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
-        for (TotalComment tc : totalCommentList) {
-            List<TotalComment> coComments = totalCocommentList.stream()
-                    .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
-                    .collect(Collectors.toList());
-            List<TotalCocommentDto> coCommentDtos = coComments.stream()
-                    .map(p -> new TotalCocommentDto(p, tc, memberIdByJwt))
-                    .collect(Collectors.toList());
+        try {
+            List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
+            List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
+            List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
+            for (TotalComment tc : totalCommentList) {
+                List<TotalComment> coComments = totalCocommentList.stream()
+                        .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
+                        .collect(Collectors.toList());
+                List<TotalCocommentDto> coCommentDtos = coComments.stream()
+                        .map(p -> new TotalCocommentDto(p, tc, memberIdByJwt))
+                        .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
-            TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, memberIdByJwt);
-            totalCommentDtoList.add(totalCommentDto);
+                TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, memberIdByJwt);
+                totalCommentDtoList.add(totalCommentDto);
+            }
+            return totalCommentDtoList;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
         }
-        return totalCommentDtoList;
+
 
     }
 
@@ -263,6 +267,29 @@ public class PostService {
         try {
             UnivPost univPost = postRepository.getUnivPostById(postId);
             return univPost;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public UnivPostDTO getUnivPostDto(UnivPost univPost) throws BaseException{
+        try {
+            Long memberIdByJwt = jwtService.getUserIdx();
+            boolean isMyPost = false;
+            boolean isLiked = false;
+            boolean isScraped = false;
+            if (univPost.getMember().getId() == memberIdByJwt) {
+                isMyPost = true;
+            }
+            if (postRepository.checkUnivIsLiked(univPost.getId(), memberIdByJwt) == true) {
+                isLiked = true;
+            }
+            if (postRepository.checkUnivIsScraped(univPost.getId(), memberIdByJwt) == true) {
+                isScraped = true;
+            }
+            UnivPostDTO result = new UnivPostDTO(univPost, isMyPost, isLiked, isScraped);
+            return result;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

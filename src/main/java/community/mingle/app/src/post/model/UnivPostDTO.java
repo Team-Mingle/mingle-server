@@ -19,6 +19,10 @@ public class UnivPostDTO {
     private int commentCount;
     private String createdTime;
 
+    private boolean isMyPost;
+    private boolean isLiked;
+    private boolean isScraped;
+
 //    private boolean isLiked;
 //
 //    private boolean isScraped;
@@ -26,7 +30,7 @@ public class UnivPostDTO {
     //private List<PostImgDTO> postImgUrls;
 
 
-    public UnivPostDTO(UnivPost u) {
+    public UnivPostDTO(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped) {
         univPostId = u.getId();
         title = u.getTitle();
         content = u.getContent();
@@ -41,5 +45,8 @@ public class UnivPostDTO {
         commentCount = u.getUnivComments().size();
 //        isLiked = u.getUnivPostLikes()
         createdTime = convertLocaldatetimeToTime(u.getCreatedAt());
+        this.isMyPost = isMyPost;
+        this.isLiked = isLiked;
+        this.isScraped = isScraped;
     }
 }

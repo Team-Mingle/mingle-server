@@ -162,14 +162,13 @@ public class PostController {
     /**
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
+
     @GetMapping("/total/{totalPostId}")
     public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
         try {
             TotalPost totalPost = postService.getTotalPost(totalPostId);
 
             TotalPostDto totalPostDto = postService.getTotalPostDto(totalPost);
-
-//        TotalPostDto totalPostDto = new TotalPostDto(totalPost);
 
             return new BaseResponse<>(totalPostDto);
         } catch (BaseException e) {
@@ -222,7 +221,8 @@ public class PostController {
     public BaseResponse<UnivPostDTO> getUnivPost(@PathVariable Long univPostId) {
         try {
             UnivPost univPost = postService.getUnivPost(univPostId);
-            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
+//            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
+            UnivPostDTO univPostDTO = postService.getUnivPostDto(univPost);
             return new BaseResponse<>(univPostDTO);
 
         } catch (BaseException e) {

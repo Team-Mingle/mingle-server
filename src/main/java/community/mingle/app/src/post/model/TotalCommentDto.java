@@ -16,9 +16,11 @@ public class TotalCommentDto {
     private int likeCount;
     private String nickname;
     private String createdAt;
-    private List<TotalCocommentDto> totalCocommentDtoList;
 
     private boolean isLiked;
+    private List<TotalCocommentDto> totalCocommentDtoList;
+
+
 
     public TotalCommentDto(TotalComment totalComment, List<TotalCocommentDto> totalCocommentDtoList, Long memberId) {
         this.commentId = totalComment.getId();
@@ -30,8 +32,6 @@ public class TotalCommentDto {
             this.nickname = totalComment.getMember().getNickname();
         }
         this.createdAt = convertLocaldatetimeToTime(totalComment.getCreatedAt());
-        this.totalCocommentDtoList = totalCocommentDtoList;
-
         for (TotalCommentLike tcl : totalComment.getTotalCommentLikes()) {
             if (tcl.getMember().getId() == memberId) {
                 this.isLiked = true;
@@ -40,6 +40,7 @@ public class TotalCommentDto {
                 this.isLiked = false;
             }
         }
+        this.totalCocommentDtoList = totalCocommentDtoList;
     }
 
 }

@@ -1,6 +1,7 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
@@ -85,6 +86,39 @@ public class MemberRepository {
                 .setParameter("id", memberId)
                 .getResultList();
         return resultList;
+    }
+
+    public Member findReportedTotalPostMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from TotalPost tp join tp.member m where m.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
+    public Member findReportedTotalCommentMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from TotalComment tc join tc.member m where m.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
+    public Member findReportedUnivPostMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from UnivPost up join up.member m where m.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
+    public Member findReportedUnivCommentMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from UnivComment uc join uc.member m where m.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
+    public Long reportSave(Report report) {
+        em.persist(report);
+        return report.getReportId();
     }
 
 

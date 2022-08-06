@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.member.model.ReportDTO;
+import community.mingle.app.src.member.model.ReportRequest;
 import community.mingle.app.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -106,5 +109,37 @@ public class MemberService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public ReportDTO createReport(ReportRequest reportRequest) throws BaseException {
+        Member reportedMember = null;
+        //나중에 case문으로 바꿀 수 있는지 확인
+        try {
+
+            if (reportRequest.getTable_id() == 1) {
+                reportedMember = memberRepository.findReportedTotalPostMember(reportRequest.getContent_id());
+            } else if (reportRequest.getTable_id() == 2) {
+                reportedMember = memberRepository.findReportedTotalCommentMember(reportRequest.getContent_id());
+            } else if (reportRequest.getTable_id() == 3) {
+                reportedMember = memberRepository.findReportedUnivPostMember(reportRequest.getContent_id());
+            } else if (reportRequest.getTable_id() == 4) {
+                reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContent_id());
+            }
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+        Long reportedMemberId = reportedMember.getId();
+        Long reporterMemberId = jwtService.getUserIdx();
+        try {
+            Report report = Report.createReport(reportRequest.getTable_id(), reportRequest.getContent_id(), reportedMemberId, reporterMemberId, reportRequest.getType(), reportRequest.getReason());
+            Long reportId = memberRepository.reportSave(report);
+            ReportDTO reportDTO = new ReportDTO(reportId);
+            return reportDTO;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void checkReportedMember() {
     }
 }
