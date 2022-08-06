@@ -121,6 +121,13 @@ public class MemberRepository {
         return report.getReportId();
     }
 
+    public Long countMemberReport(Long memberId) {
+        Long countMember = em.createQuery("select count(r.reportedMemberId) from Report r where r.reportedMemberId = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+        return countMember;
+    }
+
 
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberId) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ

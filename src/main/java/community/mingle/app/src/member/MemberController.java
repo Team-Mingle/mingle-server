@@ -3,6 +3,7 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.member.model.*;
@@ -139,9 +140,20 @@ public class MemberController {
         }
     }
 
-//    @PostMapping("/report")
-//    public BaseResponse<ReportDTO> createReport(@RequestBody @Valid ReportRequest reportRequest) {
-//        memberService.createReport(reportRequest);
-//    }
+    @PostMapping("/report")
+    public BaseResponse<ReportDTO> createReport(@RequestBody @Valid ReportRequest reportRequest) {
+        try {
+            Member reportedMember = memberService.findReportedMember(reportRequest);
+            ReportDTO reportDTO = memberService.createReport(reportRequest, reportedMember);
+            memberService.checkReportedMember(reportedMember);
+            memberService.checkReportedPost(reportRequest);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+
+
+
+    }
 
 }

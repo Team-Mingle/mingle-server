@@ -102,5 +102,9 @@ public class Member {
         this.nickname = nickname;
     }
 
+    public void modifyReportStatus() {
+        this.status = Userstatus.REPORTED;
+    }
+
 
 }

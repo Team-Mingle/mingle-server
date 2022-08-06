@@ -111,11 +111,11 @@ public class MemberService {
         }
     }
 
-    public ReportDTO createReport(ReportRequest reportRequest) throws BaseException {
+
+    public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
         Member reportedMember = null;
         //나중에 case문으로 바꿀 수 있는지 확인
         try {
-
             if (reportRequest.getTable_id() == 1) {
                 reportedMember = memberRepository.findReportedTotalPostMember(reportRequest.getContent_id());
             } else if (reportRequest.getTable_id() == 2) {
@@ -125,9 +125,12 @@ public class MemberService {
             } else if (reportRequest.getTable_id() == 4) {
                 reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContent_id());
             }
+            return reportedMember;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+    public ReportDTO createReport(ReportRequest reportRequest, Member reportedMember) throws BaseException {
         Long reportedMemberId = reportedMember.getId();
         Long reporterMemberId = jwtService.getUserIdx();
         try {
@@ -140,6 +143,15 @@ public class MemberService {
         }
     }
 
-    public void checkReportedMember() {
+    public void checkReportedMember(Member member) {
+       Long memberCount = memberRepository.countMemberReport(member.getId());
+        if (memberCount > 9) {
+            member.modifyReportStatus();
+        }
     }
+
+    public void checkReportedPost(ReportRequest reportRequest) {
+
+    }
+
 }
