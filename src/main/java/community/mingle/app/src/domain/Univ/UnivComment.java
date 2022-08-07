@@ -67,6 +67,10 @@ public class UnivComment {
         this.status = PostStatus.REPORTED;
     }
 
+    public void modifyInactiveStatus() {
+        this.status = PostStatus.INACTIVE;
+    }
+
 
 
 }

@@ -111,6 +111,9 @@ public class MemberService {
         }
     }
 
+    /**
+     * report API
+     */
     @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
         Member reportedMember = null;
@@ -130,16 +133,24 @@ public class MemberService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
     @Transactional
+    //신고 추가 메소드
     public ReportDTO createReport(ReportRequest reportRequest, Member reportedMember) throws BaseException {
+        //신고당한 사람 (신고당한 컨텐츠를 작성한 사람)의 memberId를 가져옴
         Long reportedMemberId = reportedMember.getId();
+        //신고한 사람의 memberId를 가져옴 by jwt
         Long reporterMemberId = jwtService.getUserIdx();
+        //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
         if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
             throw new BaseException(ALREADY_REPORTED);
         }
+
         try {
+            //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
             Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId, reportRequest.getType(), reportRequest.getReason());
             Long reportId = memberRepository.reportSave(report);
+            //reportDTO에 reportId를 담아서 반환해 줌 (신고가 잘 저장됐다는 뜻)
             ReportDTO reportDTO = new ReportDTO(reportId);
             return reportDTO;
         } catch (Exception e) {
@@ -147,45 +158,60 @@ public class MemberService {
         }
     }
     @Transactional
+    //신고 10회 이상 누적된 멤버 삭제 메소드
     public void checkReportedMember(Member member) {
+        //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
        Long memberCount = memberRepository.countMemberReport(member.getId());
+       //10번일 시 member의 status를 REPORTED로 변환
         if (memberCount > 9) {
             member.modifyReportStatus();
         }
     }
     @Transactional
+    //신고 3회 이상 누적된 멤버 삭제 메소드
     public void checkReportedPost(ReportRequest reportRequest) {
+        //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
         Long contentCount = memberRepository.countContentReport(reportRequest);
         if (contentCount > 2) {
             //total post
             if (reportRequest.getTableId() == 1) {
+                //신고 된 total post 찾음
                 TotalPost reportedTotalPost = memberRepository.findReportedTotalPost(reportRequest.getContentId());
+                //해당 total post에 딸린 total comments들도 찾음
                 List<TotalComment> reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
+                //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
                 reportedTotalPost.modifyReportStatus();
                 for (TotalComment tc : reportedTotalComments) {
-                    tc.modifyReportStatus();
+                    tc.modifyInactiveStatus();
                 }
             }
 
             //total comment
             else if (reportRequest.getTableId() == 2) {
+                //신고 된 total comment를 찾음
                 TotalComment reportedTotalComment = memberRepository.findReportedTotalCommentByCommentId(reportRequest.getContentId());
+                //해당 댓글을 REPORTED status로 만들어 줌
                 reportedTotalComment.modifyReportStatus();
             }
 
             //univ post
             else if (reportRequest.getTableId() == 3) {
+                //신고 된 univ post를 찾음
                 UnivPost reportedUnivPost = memberRepository.findReportedUnivPost(reportRequest.getContentId());
+                //해당 univ post에 딸린 univ comments들도 찾음
                 List<UnivComment> reportedUnivComments = memberRepository.findReportedUnivCommentsByPostId(reportRequest.getContentId());
+                //univ post는 REPORTED status로 univ comments는 INACTIVE status로 만들어 줌
                 reportedUnivPost.modifyReportStatus();
                 for (UnivComment uc : reportedUnivComments) {
-                    uc.modifyReportStatus();
+                    uc.modifyInactiveStatus();
                 }
             }
 
             //univ comment
             else if (reportRequest.getTableId() == 4) {
+                //신고 된 univ comment를 찾음
                 UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
+                //해당 댓글을 REPORTED status로 만들어 줌
                 reportedUnivComment.modifyReportStatus();
             }
         }

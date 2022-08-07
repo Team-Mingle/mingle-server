@@ -88,5 +88,9 @@ public class TotalComment {
         this.status = PostStatus.REPORTED;
     }
 
+    public void modifyInactiveStatus() {
+        this.status = PostStatus.INACTIVE;
+    }
+
 
 }
