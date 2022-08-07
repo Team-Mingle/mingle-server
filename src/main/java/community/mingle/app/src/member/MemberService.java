@@ -142,9 +142,9 @@ public class MemberService {
         //신고한 사람의 memberId를 가져옴 by jwt
         Long reporterMemberId = jwtService.getUserIdx();
         //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
-        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
-            throw new BaseException(ALREADY_REPORTED);
-        }
+//        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
+//            throw new BaseException(ALREADY_REPORTED);
+//        }
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
@@ -163,7 +163,7 @@ public class MemberService {
         //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
        Long memberCount = memberRepository.countMemberReport(member.getId());
        //10번일 시 member의 status를 REPORTED로 변환
-        if (memberCount > 9) {
+        if (memberCount%10 == 0) {
             member.modifyReportStatus();
         }
     }
@@ -172,18 +172,18 @@ public class MemberService {
     public void checkReportedPost(ReportRequest reportRequest) {
         //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
         Long contentCount = memberRepository.countContentReport(reportRequest);
-        if (contentCount > 2) {
+        if (contentCount == 3) {
             //total post
             if (reportRequest.getTableId() == 1) {
                 //신고 된 total post 찾음
                 TotalPost reportedTotalPost = memberRepository.findReportedTotalPost(reportRequest.getContentId());
                 //해당 total post에 딸린 total comments들도 찾음
-                List<TotalComment> reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
+                int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
                 //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
                 reportedTotalPost.modifyReportStatus();
-                for (TotalComment tc : reportedTotalComments) {
-                    tc.modifyInactiveStatus();
-                }
+//                for (TotalComment tc : reportedTotalComments) {
+//                    tc.modifyInactiveStatus();
+//                }
             }
 
             //total comment
@@ -199,12 +199,12 @@ public class MemberService {
                 //신고 된 univ post를 찾음
                 UnivPost reportedUnivPost = memberRepository.findReportedUnivPost(reportRequest.getContentId());
                 //해당 univ post에 딸린 univ comments들도 찾음
-                List<UnivComment> reportedUnivComments = memberRepository.findReportedUnivCommentsByPostId(reportRequest.getContentId());
+                int reportedUnivComments = memberRepository.findReportedUnivCommentsByPostId(reportRequest.getContentId());
                 //univ post는 REPORTED status로 univ comments는 INACTIVE status로 만들어 줌
                 reportedUnivPost.modifyReportStatus();
-                for (UnivComment uc : reportedUnivComments) {
-                    uc.modifyInactiveStatus();
-                }
+//                for (UnivComment uc : reportedUnivComments) {
+//                    uc.modifyInactiveStatus();
+//                }
             }
 
             //univ comment

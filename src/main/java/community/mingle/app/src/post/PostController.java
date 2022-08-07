@@ -163,6 +163,7 @@ public class PostController {
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
 
+
     @GetMapping("/total/{totalPostId}")
     public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
         try {
@@ -179,6 +180,7 @@ public class PostController {
 
     /**
      * 3.9.2 통합 게시물 상세 - 댓글 API
+     * 댓글 지웠을 때 "삭제된 댓글입니다" 라고 나오는 기능 추가!!!!!
      */
     @GetMapping("/totalcomment/{totalPostId}")
     public BaseResponse<List<TotalCommentDto>> totalPostDetailComment(@PathVariable Long totalPostId) {
@@ -232,6 +234,7 @@ public class PostController {
 
     /**
      * 3.10.2 학교 게시물 상세 - 댓글 API
+     * ==댓글 지웠을 때 "삭제된 댓글입니다" 라고 나오는 기능 추가!!!!!==
      */
     @GetMapping("/univ/{univPostId}/comment")
     @Operation(summary = "3.10.2 getUnivPostComment API", description = "3.10.2 학교 게시물 상세 - 댓글 API")

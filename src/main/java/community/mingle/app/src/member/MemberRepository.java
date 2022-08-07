@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static community.mingle.app.src.domain.PostStatus.INACTIVE;
+
 @Repository
 @RequiredArgsConstructor
 public class MemberRepository {
@@ -89,6 +91,9 @@ public class MemberRepository {
         return resultList;
     }
 
+    /**
+     * report API
+     */
     public boolean isMultipleReport(ReportRequest reportRequest, Long memberId) {
         Long countMultipleReport = em.createQuery("select count(r) from Report r where r.tableId = :tableId and r.contentId = :contentId and r.reporterMemberId = :memberId", Long.class)
                 .setParameter("tableId", reportRequest.getTableId())
@@ -156,10 +161,11 @@ public class MemberRepository {
                 .getSingleResult();
         return reportedTotalPost;
     }
-    public List<TotalComment> findReportedTotalCommentsByPostId(Long totalPostId) {
-        List<TotalComment> reportedTotalComments = em.createQuery("select tc from TotalComment tc join tc.totalPost tp where tp.id = :totalPostId", TotalComment.class)
+    //select tc from TotalComment tc join tc.totalPost tp where tp.id = :totalPostId
+    public int findReportedTotalCommentsByPostId(Long totalPostId) {
+        int reportedTotalComments = em.createQuery("update TotalComment tc set tc.status = 'INACTIVE' where tc.totalPost.id = :totalPostId")
                 .setParameter("totalPostId", totalPostId)
-                .getResultList();
+                .executeUpdate();
         return reportedTotalComments;
     }
 
@@ -177,10 +183,10 @@ public class MemberRepository {
         return reportedUnivPost;
     }
 
-    public List<UnivComment> findReportedUnivCommentsByPostId(Long univPostId) {
-        List<UnivComment> reportedUnivComments = em.createQuery("select uc from UnivComment uc join uc.univPost up where up.id = :univPostId", UnivComment.class)
+    public int findReportedUnivCommentsByPostId(Long univPostId) {
+        int reportedUnivComments = em.createQuery("update TotalComment tc set tc.status = 'INACTIVE' where tc.totalPost.id = :totalPostId")
                 .setParameter("univPostId", univPostId)
-                .getResultList();
+                .executeUpdate();
         return reportedUnivComments;
     }
 

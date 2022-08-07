@@ -151,10 +151,6 @@ public class MemberController {
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
-
-
-
-
     }
 
 }
