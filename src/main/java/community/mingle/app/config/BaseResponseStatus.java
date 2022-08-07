@@ -47,7 +47,8 @@ public enum BaseResponseStatus {
     USER_NOT_EXIST(false, 2019, "등록되지 않은 유저입니다."),
 
 
-    /** 2. /user */
+    /** 2. /member */
+    ALREADY_REPORTED(false, 2021, "이미 신고한 컨텐츠입니다."),
 //    DELETE_USER_NOTEXIST(false,2020,"삭제할 유저가 존재하지 않습니다."),
 //    POSTS_USERS_EXISTS_NICKNAME(false, 5030, "중복된 닉네임입니다."),
 

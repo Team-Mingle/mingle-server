@@ -63,6 +63,9 @@ public class UnivComment {
     @Column(columnDefinition = "enum")
     private PostStatus status;
 
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
 
 
 

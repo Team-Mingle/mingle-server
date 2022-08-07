@@ -84,5 +84,9 @@ public class TotalComment {
         return totalComment;
     }
 
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
 
 }

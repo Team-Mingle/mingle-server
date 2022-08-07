@@ -65,6 +65,10 @@ public class TotalPost {
     @Column(columnDefinition = "enum")
     private PostStatus status;
 
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
 
     //postImg 추가하기
 //    @OneToMany

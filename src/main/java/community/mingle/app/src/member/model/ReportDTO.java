@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public class ReportDTO {
-    private Long report_id;
+    private Long reportId;
 }
 

@@ -83,6 +83,10 @@ public class UnivPost {
         return univPost;
     }
 
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
     //== 비즈니스 로직 == //
 //    public static boolean isLiked(Member member) {
 //        if (this.univPostLikes)

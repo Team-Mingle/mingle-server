@@ -7,6 +7,7 @@ import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
+import community.mingle.app.src.member.model.ReportRequest;
 import community.mingle.app.src.member.model.UnivPostScrapDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -88,29 +89,42 @@ public class MemberRepository {
         return resultList;
     }
 
+    public boolean isMultipleReport(ReportRequest reportRequest, Long memberId) {
+        Long countMultipleReport = em.createQuery("select count(r) from Report r where r.tableId = :tableId and r.contentId = :contentId and r.reporterMemberId = :memberId", Long.class)
+                .setParameter("tableId", reportRequest.getTableId())
+                .setParameter("contentId", reportRequest.getContentId())
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+        if (countMultipleReport != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Member findReportedTotalPostMember(Long contentId) {
-        Member reportedMember = em.createQuery("select m from TotalPost tp join tp.member m where m.id = :contentId", Member.class)
+        Member reportedMember = em.createQuery("select m from TotalPost tp join tp.member m where tp.id = :contentId", Member.class)
                 .setParameter("contentId", contentId)
                 .getSingleResult();
         return reportedMember;
     }
 
     public Member findReportedTotalCommentMember(Long contentId) {
-        Member reportedMember = em.createQuery("select m from TotalComment tc join tc.member m where m.id = :contentId", Member.class)
+        Member reportedMember = em.createQuery("select m from TotalComment tc join tc.member m where tc.id = :contentId", Member.class)
                 .setParameter("contentId", contentId)
                 .getSingleResult();
         return reportedMember;
     }
 
     public Member findReportedUnivPostMember(Long contentId) {
-        Member reportedMember = em.createQuery("select m from UnivPost up join up.member m where m.id = :contentId", Member.class)
+        Member reportedMember = em.createQuery("select m from UnivPost up join up.member m where up.id = :contentId", Member.class)
                 .setParameter("contentId", contentId)
                 .getSingleResult();
         return reportedMember;
     }
 
     public Member findReportedUnivCommentMember(Long contentId) {
-        Member reportedMember = em.createQuery("select m from UnivComment uc join uc.member m where m.id = :contentId", Member.class)
+        Member reportedMember = em.createQuery("select m from UnivComment uc join uc.member m where uc.id = :contentId", Member.class)
                 .setParameter("contentId", contentId)
                 .getSingleResult();
         return reportedMember;
@@ -126,6 +140,55 @@ public class MemberRepository {
                 .setParameter("memberId", memberId)
                 .getSingleResult();
         return countMember;
+    }
+
+    public Long countContentReport(ReportRequest reportRequest) {
+        Long countContent = em.createQuery("select count(r) from Report r where r.tableId =:tableId and r.contentId =: contentId", Long.class)
+                .setParameter("tableId", reportRequest.getTableId())
+                .setParameter("contentId", reportRequest.getContentId())
+                .getSingleResult();
+        return countContent;
+    }
+
+    public TotalPost findReportedTotalPost(Long totalPostId) {
+        TotalPost reportedTotalPost = em.createQuery("select tp from TotalPost tp where tp.id = :totalPostId", TotalPost.class)
+                .setParameter("totalPostId", totalPostId)
+                .getSingleResult();
+        return reportedTotalPost;
+    }
+    public List<TotalComment> findReportedTotalCommentsByPostId(Long totalPostId) {
+        List<TotalComment> reportedTotalComments = em.createQuery("select tc from TotalComment tc join tc.totalPost tp where tp.id = :totalPostId", TotalComment.class)
+                .setParameter("totalPostId", totalPostId)
+                .getResultList();
+        return reportedTotalComments;
+    }
+
+    public TotalComment findReportedTotalCommentByCommentId(Long totalCommentId) {
+        TotalComment reportedTotalComment = em.createQuery("select tc from TotalComment tc where tc.id = :totalCommentId", TotalComment.class)
+                .setParameter("totalCommentId", totalCommentId)
+                .getSingleResult();
+        return reportedTotalComment;
+    }
+
+    public UnivPost findReportedUnivPost(Long univPostId) {
+        UnivPost reportedUnivPost = em.createQuery("select up from UnivPost up where up.id = :univPostId", UnivPost.class)
+                .setParameter("univPostId", univPostId)
+                .getSingleResult();
+        return reportedUnivPost;
+    }
+
+    public List<UnivComment> findReportedUnivCommentsByPostId(Long univPostId) {
+        List<UnivComment> reportedUnivComments = em.createQuery("select uc from UnivComment uc join uc.univPost up where up.id = :univPostId", UnivComment.class)
+                .setParameter("univPostId", univPostId)
+                .getResultList();
+        return reportedUnivComments;
+    }
+
+    public UnivComment findReportedUnivCommentByCommentId(Long univCommentId) {
+        UnivComment reportedUnivComment = em.createQuery("select uc from UnivComment uc where uc.id = :univCommentId", UnivComment.class)
+                .setParameter("univCommentId", univCommentId)
+                .getSingleResult();
+        return reportedUnivComment;
     }
 
 

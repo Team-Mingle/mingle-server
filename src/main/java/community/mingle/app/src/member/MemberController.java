@@ -147,6 +147,7 @@ public class MemberController {
             ReportDTO reportDTO = memberService.createReport(reportRequest, reportedMember);
             memberService.checkReportedMember(reportedMember);
             memberService.checkReportedPost(reportRequest);
+            return new BaseResponse<>(reportDTO);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

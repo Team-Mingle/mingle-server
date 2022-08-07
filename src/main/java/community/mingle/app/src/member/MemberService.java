@@ -111,30 +111,34 @@ public class MemberService {
         }
     }
 
-
+    @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
         Member reportedMember = null;
         //나중에 case문으로 바꿀 수 있는지 확인
         try {
-            if (reportRequest.getTable_id() == 1) {
-                reportedMember = memberRepository.findReportedTotalPostMember(reportRequest.getContent_id());
-            } else if (reportRequest.getTable_id() == 2) {
-                reportedMember = memberRepository.findReportedTotalCommentMember(reportRequest.getContent_id());
-            } else if (reportRequest.getTable_id() == 3) {
-                reportedMember = memberRepository.findReportedUnivPostMember(reportRequest.getContent_id());
-            } else if (reportRequest.getTable_id() == 4) {
-                reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContent_id());
+            if (reportRequest.getTableId() == 1) {
+                reportedMember = memberRepository.findReportedTotalPostMember(reportRequest.getContentId());
+            } else if (reportRequest.getTableId() == 2) {
+                reportedMember = memberRepository.findReportedTotalCommentMember(reportRequest.getContentId());
+            } else if (reportRequest.getTableId() == 3) {
+                reportedMember = memberRepository.findReportedUnivPostMember(reportRequest.getContentId());
+            } else if (reportRequest.getTableId() == 4) {
+                reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContentId());
             }
             return reportedMember;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+    @Transactional
     public ReportDTO createReport(ReportRequest reportRequest, Member reportedMember) throws BaseException {
         Long reportedMemberId = reportedMember.getId();
         Long reporterMemberId = jwtService.getUserIdx();
+        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
+            throw new BaseException(ALREADY_REPORTED);
+        }
         try {
-            Report report = Report.createReport(reportRequest.getTable_id(), reportRequest.getContent_id(), reportedMemberId, reporterMemberId, reportRequest.getType(), reportRequest.getReason());
+            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId, reportRequest.getType(), reportRequest.getReason());
             Long reportId = memberRepository.reportSave(report);
             ReportDTO reportDTO = new ReportDTO(reportId);
             return reportDTO;
@@ -142,16 +146,49 @@ public class MemberService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
+    @Transactional
     public void checkReportedMember(Member member) {
        Long memberCount = memberRepository.countMemberReport(member.getId());
         if (memberCount > 9) {
             member.modifyReportStatus();
         }
     }
-
+    @Transactional
     public void checkReportedPost(ReportRequest reportRequest) {
+        Long contentCount = memberRepository.countContentReport(reportRequest);
+        if (contentCount > 2) {
+            //total post
+            if (reportRequest.getTableId() == 1) {
+                TotalPost reportedTotalPost = memberRepository.findReportedTotalPost(reportRequest.getContentId());
+                List<TotalComment> reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
+                reportedTotalPost.modifyReportStatus();
+                for (TotalComment tc : reportedTotalComments) {
+                    tc.modifyReportStatus();
+                }
+            }
 
+            //total comment
+            else if (reportRequest.getTableId() == 2) {
+                TotalComment reportedTotalComment = memberRepository.findReportedTotalCommentByCommentId(reportRequest.getContentId());
+                reportedTotalComment.modifyReportStatus();
+            }
+
+            //univ post
+            else if (reportRequest.getTableId() == 3) {
+                UnivPost reportedUnivPost = memberRepository.findReportedUnivPost(reportRequest.getContentId());
+                List<UnivComment> reportedUnivComments = memberRepository.findReportedUnivCommentsByPostId(reportRequest.getContentId());
+                reportedUnivPost.modifyReportStatus();
+                for (UnivComment uc : reportedUnivComments) {
+                    uc.modifyReportStatus();
+                }
+            }
+
+            //univ comment
+            else if (reportRequest.getTableId() == 4) {
+                UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
+                reportedUnivComment.modifyReportStatus();
+            }
+        }
     }
 
 }
