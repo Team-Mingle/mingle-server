@@ -1,5 +1,6 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.Getter;
@@ -24,14 +25,25 @@ public class TotalCommentDto {
 
     public TotalCommentDto(TotalComment totalComment, List<TotalCocommentDto> totalCocommentDtoList, Long memberId) {
         this.commentId = totalComment.getId();
-        this.content = totalComment.getContent();
+
+        if (totalComment.getStatus() == PostStatus.REPORTED) {
+            this.content = "신고된 댓글입니다";
+        } else if (totalComment.getStatus() == PostStatus.INACTIVE) {
+            this.content = "삭제된 댓글입니다";
+        } else {
+            this.content = totalComment.getContent();
+        }
+
         this.likeCount = totalComment.getTotalCommentLikes().size();
+
         if (totalComment.isAnonymous() == true) {
             this.nickname = "익명 "+totalComment.getAnonymousId();
         } else {
             this.nickname = totalComment.getMember().getNickname();
         }
+
         this.createdAt = convertLocaldatetimeToTime(totalComment.getCreatedAt());
+
         for (TotalCommentLike tcl : totalComment.getTotalCommentLikes()) {
             if (tcl.getMember().getId() == memberId) {
                 this.isLiked = true;
@@ -40,6 +52,7 @@ public class TotalCommentDto {
                 this.isLiked = false;
             }
         }
+
         this.totalCocommentDtoList = totalCocommentDtoList;
     }
 

@@ -184,7 +184,7 @@ public class MemberRepository {
     }
 
     public int findReportedUnivCommentsByPostId(Long univPostId) {
-        int reportedUnivComments = em.createQuery("update TotalComment tc set tc.status = 'INACTIVE' where tc.totalPost.id = :totalPostId")
+        int reportedUnivComments = em.createQuery("update UnivComment uc set uc.status = 'INACTIVE' where uc.univPost.id = :univPostId")
                 .setParameter("univPostId", univPostId)
                 .executeUpdate();
         return reportedUnivComments;

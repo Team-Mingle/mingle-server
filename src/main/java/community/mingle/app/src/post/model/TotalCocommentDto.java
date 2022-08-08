@@ -1,5 +1,6 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
 import community.mingle.app.src.domain.Total.TotalPostLike;
@@ -22,13 +23,23 @@ public class TotalCocommentDto {
     public TotalCocommentDto(TotalComment coComment, TotalComment comment, Long memberId) {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
+
         if (comment.isAnonymous() == true) {
             this.mention = "익명 "+comment.getAnonymousId();
         }else{
             this.mention = comment.getMember().getNickname();
         }
-        this.content = coComment.getContent();
+
+        if (coComment.getStatus() == PostStatus.REPORTED) {
+            this.content = "신고된 댓글 입니다";
+        } else if (coComment.getStatus() == PostStatus.INACTIVE) {
+            this.content = "삭제된 댓글 입니다";
+        } else {
+            this.content = coComment.getContent();
+        }
+
         this.likeCount = coComment.getTotalCommentLikes().size();
+
         if (coComment.isAnonymous() == true) {
             this.nickname = "익명 "+coComment.getAnonymousId();
         } else{
