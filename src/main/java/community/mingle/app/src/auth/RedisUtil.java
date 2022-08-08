@@ -33,6 +33,10 @@ public class RedisUtil {
         stringRedisTemplate.delete(key);
     }
 
+    public Long checkExpired(String key) {
+        return stringRedisTemplate.getExpire(key);
+    }
+
 
 }
 

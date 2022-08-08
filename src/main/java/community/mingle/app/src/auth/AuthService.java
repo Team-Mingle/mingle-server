@@ -103,7 +103,7 @@ public class AuthService {
     }
 
     /**
-     * 1.4.1 인증번호 이메일 전송
+     * 1.4.2 인증번호 이메일 전송
      */
     private void sendAuthEmail(String email, String authKey) throws BaseException {
         String subject = "Mingle의 이메일을 인증하세요!";
@@ -119,14 +119,13 @@ public class AuthService {
             javaMailSender.send(mimeMessage);
 
         } catch(MessagingException e) {
-//            e.printStackTrace();
             throw new BaseException(EMAIL_SEND_FAIL);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
 
         try {
-            redisUtil.setDataExpire(authKey, email, 60 * 5L);
+            redisUtil.setDataExpire(email, authKey, 60 * 3L);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -138,17 +137,17 @@ public class AuthService {
      */
     public void authCode(String email, String code) throws BaseException {
 
-        try {
-            if (code.equals(redisUtil.getData(email))) {
-                return;
-//            return new CodeResponse("인증에 성공하였습니다.");
-            } else {
-                throw new BaseException(EMAIL_CODE_FAIL);
-            }
-        } catch (Exception e) {
+        if (redisUtil.getData(email) == null) {
+            throw new BaseException(EMAIL_CODE_EXPIRED);
+        }
+
+        if (!(code.equals(redisUtil.getData(email)))) {
             throw new BaseException(EMAIL_CODE_FAIL);
         }
 
+        if (code.equals(redisUtil.getData(email))) {
+            return;
+        }
     }
 
     /**
@@ -290,5 +289,32 @@ public class AuthService {
             throw new BaseException(FAILED_TO_CHANGEPWD);
         }
 
+    }
+
+    /**
+     * 1.11 비밀번호 재설정 용 인증번호 보내기 API
+     * 등록된 이메일인지 확인 후 sendAuthEmail
+     */
+    @Transactional
+    public void sendCodeForPwd (PostEmailRequest req) throws BaseException {
+        String encryptedEmail;
+        try {
+             encryptedEmail = new SHA256().encrypt(req.getEmail());
+        } catch (Exception ignored) {
+            throw new BaseException(EMAIL_ENCRYPTION_ERROR);
+        }
+
+        if ((authRepository.findEmail(encryptedEmail) == false)) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        try {
+            Random random = new Random();
+            String authKey = String.valueOf(random.nextInt(888888) + 111111);
+            sendAuthEmail(req.getEmail(), authKey); // 1.4.2 authService
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(EMAIL_SEND_FAIL);
+        }
     }
 }
