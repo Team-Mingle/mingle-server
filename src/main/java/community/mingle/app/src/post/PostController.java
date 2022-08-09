@@ -162,8 +162,6 @@ public class PostController {
     /**
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
-
-
     @GetMapping("/total/{totalPostId}")
     public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
         try {
