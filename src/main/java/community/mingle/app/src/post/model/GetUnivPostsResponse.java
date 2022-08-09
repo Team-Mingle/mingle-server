@@ -23,7 +23,7 @@ public class GetUnivPostsResponse {
         this.contents = univPost.getContent();
         this.nickname = univPost.getMember().getNickname();
         this.likeCount = univPost.getUnivPostLikes().size();
-        this.commentCount = univPost.getComments().size();
+        this.commentCount = univPost.getUnivComments().size();
         this.createdTime = convertLocaldatetimeToTime(univPost.getCreatedAt());
     }
 

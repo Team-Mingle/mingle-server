@@ -10,6 +10,11 @@ import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostLike;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
+
+import community.mingle.app.src.domain.Total.*;
+
+import community.mingle.app.src.domain.Univ.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,6 +115,7 @@ public class PostRepository {
         return category;
     }
 
+
     public Long save(TotalPostScrap totalPostScrap) {
         em.persist(totalPostScrap);
         return totalPostScrap.getId();
@@ -181,4 +187,134 @@ public class PostRepository {
         em.remove(findScrap);
 
     }
+
+    /**
+     * 3.9 통합 게시물 상세 api
+     */
+
+    public TotalPost getTotalPostbyId(Long id) {
+        TotalPost totalPost = em.createQuery("select tp from TotalPost tp where tp.id = :id order by tp.createdAt desc", TotalPost.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return  totalPost;
+    }
+
+    public List<TotalComment> getTotalComments(Long id) {
+        List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null order by tc.createdAt asc", TotalComment.class)
+                .setParameter("id", id)
+                .getResultList();
+        return totalCommentList;
+    }
+
+    public List<TotalComment> getTotalCocomments(Long id) {
+        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is not null order by tc.createdAt asc", TotalComment.class)
+                .setParameter("id", id)
+                .getResultList();
+        return totalCocommentList;
+    }
+
+    public boolean checkTotalIsLiked(Long postId, Long memberId) {
+        List<TotalPostLike> totalPostLikeList = em.createQuery("select tpl from TotalPostLike tpl join tpl.totalPost tp join tpl.member m where tp.id = :postId and m.id = :memberId", TotalPostLike.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalPostLikeList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkTotalIsScraped(Long postId, Long memberId){
+        List<TotalPostScrap> totalPostScrapList = em.createQuery("select tps from TotalPostScrap tps join tps.totalPost tp join tps.member m where tp.id = :postId and m.id = :memberId", TotalPostScrap.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalPostScrapList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * getUnivPostDetail >> NEW <<
+     */
+    public UnivPost getUnivPostById(Long id) {
+        UnivPost univPost = em.createQuery("select up from UnivPost up where up.id = :id", UnivPost.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return univPost;
+    }
+
+    public boolean checkUnivIsLiked(Long postId, Long memberId) {
+        List<UnivPostLike> univPostLikeList = em.createQuery("select upl from UnivPostLike upl join upl.univPost up join upl.member m where up.id = :postId and m.id = :memberId", UnivPostLike.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (univPostLikeList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
+    public boolean checkUnivIsScraped(Long postId, Long memberId){
+        List<UnivPostScrap> univPostScrapList = em.createQuery("select ups from UnivPostScrap ups join ups.univPost up join ups.member m where up.id = :postId and m.id = :memberId", UnivPostScrap.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (univPostScrapList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
+
+    //parentCommentId 가 null 인 댓글만 가져오기 (commentLike 는? )
+    public List<UnivComment> getUnivComments(Long postId) {
+        List<UnivComment> univCommentList = em.createQuery("select uc from UnivComment uc join uc.univPost as p" +
+                " where p.id = :postId and uc.parentCommentId is null" +
+                " order by uc.createdAt asc ", UnivComment.class)
+                .setParameter("postId", postId)
+                .getResultList();
+        return univCommentList;
+    }
+
+
+    //대댓글만 가져오기 --> 페이징?
+    public List<UnivComment> getUnivCoComments(Long postId) {
+        List<UnivComment> univCoCommentList = em.createQuery("select uc from UnivComment uc join uc.univPost as p " +
+                " where p.id = :postId and uc.parentCommentId is not null " +
+                " order by uc.createdAt asc", UnivComment.class)
+                .setParameter("postId", postId)
+                .getResultList();
+        return univCoCommentList;
+    }
+
+
+    /**
+     * 댓글 좋아요
+     * @param commentId
+     * @param memberId
+     * @return
+     */
+    public boolean checkUnivCommentIsLiked(Long commentId, Long memberId) {
+        List<UnivCommentLike> univCommentLikes = em.createQuery("select ucl from UnivCommentLike ucl join ucl.univComment uc join ucl.member m where uc.id = :commentId and m.id = :memberId", UnivCommentLike.class)
+                .setParameter("commentId", commentId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (univCommentLikes.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

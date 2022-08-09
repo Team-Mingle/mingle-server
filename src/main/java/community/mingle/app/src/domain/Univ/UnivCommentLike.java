@@ -28,9 +28,6 @@ public class UnivCommentLike {
     @JoinColumn(name = "univcomment_id")
     private UnivComment univComment;
 
-
-
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -46,5 +43,6 @@ public class UnivCommentLike {
 
         return univCommentLike;
     }
+
 
 }

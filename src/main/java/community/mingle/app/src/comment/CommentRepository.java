@@ -98,6 +98,7 @@ public class CommentRepository {
         return comment;
     }
 
+
     public Long save(TotalCommentLike totalCommentLike) {
         em.persist(totalCommentLike);
         return totalCommentLike.getId();
@@ -143,4 +144,5 @@ public class CommentRepository {
         em.remove(findComment);
 
     }
+
 }

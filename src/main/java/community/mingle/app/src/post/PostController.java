@@ -6,6 +6,8 @@ package community.mingle.app.src.post;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Univ.UnivComment;
+import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.post.model.*;
@@ -116,7 +118,7 @@ public class    PostController {
      * 3.4 전체 게시판 리스트 API
      */
     @GetMapping("/total")
-    @Operation(summary = "3.4 getTotal Posts API", description = "3.4 광장 게시판 게시물 리스트 API")
+    @Operation(summary = "3.4 getTotalPosts API", description = "3.4 광장 게시판 게시물 리스트 API")
     @ApiResponses ({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3032", description = "해당 카테고리에 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true)))
@@ -183,6 +185,7 @@ public class    PostController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
 
 
 
@@ -329,15 +332,72 @@ public class    PostController {
             @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<String> deleteScrapTotalPost (@RequestParam Long scrapIdx){
-        try{
+    public BaseResponse<String> deleteScrapTotalPost (@RequestParam Long scrapIdx) {
+        try {
             postService.deleteScrapTotal(scrapIdx);
             String result = "저장이 취소되었습니다";
             return new BaseResponse<>(result);
-        }catch (BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
+
         }
     }
+
+
+
+    /**
+     * 3.9.1 통합 게시물 상세 - 게시물 API
+     */
+    @GetMapping("/total/{totalPostId}")
+    public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
+        try {
+            TotalPost totalPost = postService.getTotalPost(totalPostId);
+
+            TotalPostDto totalPostDto = postService.getTotalPostDto(totalPost);
+
+            return new BaseResponse<>(totalPostDto);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+    /**
+     * 3.9.2 통합 게시물 상세 - 댓글 API
+     * 댓글 지웠을 때 "삭제된 댓글입니다" 라고 나오는 기능 추가!!!!!
+     */
+    @GetMapping("/totalcomment/{totalPostId}")
+    public BaseResponse<List<TotalCommentDto>> totalPostDetailComment(@PathVariable Long totalPostId) {
+
+        try {
+            List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
+
+            return new BaseResponse<>(totalCommentDtoList);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+    /**
+     * 3.9.3 통합 게시물 상세 - 게시물 + 댓글 API
+     */
+    @GetMapping("/totalpostall/{totalPostId}")
+    public BaseResponse<TotalPostAllDto> totalPostAll(@PathVariable Long totalPostId){
+        try {
+            TotalPost totalPost = postService.getTotalPost(totalPostId);
+            List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
+            TotalPostAllDto totalPostAllDto = new TotalPostAllDto(totalPost, totalCommentDtoList);
+
+            return new BaseResponse<>(totalPostAllDto);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+
+    }
+
+
 
     /**
      * 학교 게시물 스크랩 취소 api
@@ -362,4 +422,6 @@ public class    PostController {
     }
 
 
+
 }
+

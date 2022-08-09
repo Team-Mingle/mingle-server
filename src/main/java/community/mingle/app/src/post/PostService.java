@@ -4,6 +4,13 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
+import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Univ.UnivComment;
+import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.post.model.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Total.TotalPostLike;
@@ -17,8 +24,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
+
+
 import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 
@@ -54,7 +65,7 @@ public class PostService {
     }
 
     /**
-     * 3.3 학교 베스트 게시판 API
+     * 3.3 학교 베스트 게시판 API --> try-catch 설명
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
 //       try { //null 이 나오기 전에 쿼리문에서 에러가 남.
@@ -291,6 +302,72 @@ public class PostService {
         }
     }
 
+    /**
+     * 3.9.1 통합 게시물 상세 - 게시물 API
+     */
+    @Transactional(readOnly = true)
+    public TotalPost getTotalPost(Long id) throws BaseException{
+
+        TotalPost totalPost = postRepository.getTotalPostbyId(id);
+        return totalPost;
+    }
+
+    /**
+     * 3.9.1 통합 게시물 상세 - 게시물 API
+     */
+    @Transactional(readOnly = true)
+    public TotalPostDto getTotalPostDto(TotalPost totalPost) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        boolean isMyPost = false;
+        boolean isLiked = false;
+        boolean isScraped = false;
+        try {
+            if (totalPost.getMember().getId() == memberIdByJwt) {
+                isMyPost = true;
+            }
+            if (postRepository.checkTotalIsLiked(totalPost.getId(), memberIdByJwt) == true) {
+                isLiked = true;
+            }
+            if (postRepository.checkTotalIsScraped(totalPost.getId(), memberIdByJwt) == true) {
+                isScraped = true;
+            }
+        } catch (Exception e) {
+        throw new BaseException(DATABASE_ERROR);
+        }
+        TotalPostDto totalPostDto = new TotalPostDto(totalPost, isMyPost, isLiked, isScraped);
+
+        return totalPostDto;
+    }
+
+    /**
+     * 3.9.2 통합 게시물 상세 - 댓글 API
+     */
+    @Transactional(readOnly = true)
+    public List<TotalCommentDto> getTotalCommentList(Long id) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        try {
+            List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
+            List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
+            List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
+            for (TotalComment tc : totalCommentList) {
+                List<TotalComment> coComments = totalCocommentList.stream()
+                        .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
+                        .collect(Collectors.toList());
+                List<TotalCocommentDto> coCommentDtos = coComments.stream()
+                        .map(p -> new TotalCocommentDto(p, tc, memberIdByJwt))
+                        .collect(Collectors.toList());
+
+//            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
+                TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, memberIdByJwt);
+                totalCommentDtoList.add(totalCommentDto);
+            }
+            return totalCommentDtoList;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
 
     /**
      * 통합 게시물 스크랩 취소 api
@@ -324,4 +401,30 @@ public class PostService {
         }
 
     }
+
+
+    @Transactional(readOnly = true)
+    public UnivPostDTO getUnivPostDto(UnivPost univPost) throws BaseException{
+        try {
+            Long memberIdByJwt = jwtService.getUserIdx();
+            boolean isMyPost = false;
+            boolean isLiked = false;
+            boolean isScraped = false;
+            if (univPost.getMember().getId() == memberIdByJwt) {
+                isMyPost = true;
+            }
+            if (postRepository.checkUnivIsLiked(univPost.getId(), memberIdByJwt) == true) {
+                isLiked = true;
+            }
+            if (postRepository.checkUnivIsScraped(univPost.getId(), memberIdByJwt) == true) {
+                isScraped = true;
+            }
+            UnivPostDTO result = new UnivPostDTO(univPost, isMyPost, isLiked, isScraped);
+            return result;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

@@ -45,9 +45,9 @@ public enum BaseResponseStatus {
 
 
 
-    /** 2. /user */
-    USER_NOT_EXIST(false, 2020, "등록되지 않은 유저입니다."),
-
+    /** 2. /member */
+    USER_NOT_EXIST(false, 2020, "회원 정보를 찾을 수 없습니다."),
+    ALREADY_REPORTED(false, 2021, "이미 신고한 컨텐츠입니다."),
 //    DELETE_USER_NOTEXIST(false,2020,"삭제할 유저가 존재하지 않습니다."),
 //    POSTS_USERS_EXISTS_NICKNAME(false, 5030, "중복된 닉네임입니다."),
     DELETE_FAIL_USER(false, 1000, "유저 삭제를 실패하였습니다."),
@@ -80,9 +80,11 @@ public enum BaseResponseStatus {
     EMAIL_CODE_EXPIRED(false, 3015, "인증번호 입력시간이 초과되었습니다."),
 
 
-    /** 2. /user  */
-    //DELETE_FAIL_USER(false,3020,"유저 삭제에 실패했습니다."),
-    //MODIFY_FAIL_NICKNAME(false,3021,"닉네임 수정에 실패하였습니다."),
+    /** 2. /member  */
+    MODIFY_FAIL_NICKNAME(false, 3020,"닉네임 수정에 실패하였습니다." ),
+
+    //DELETE_FAIL_USER(false,3021,"유저 삭제에 실패했습니다."),
+    //MODIFY_FAIL_NICKNAME(false,3022,"닉네임 수정에 실패하였습니다."),
 
     /** 3. /posts 주석 해제하고 쓰기 */
     EMPTY_BEST_POSTS(false, 3030,"최근 3일간 올라온 베스트 게시물이 없습니다."),

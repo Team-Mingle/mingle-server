@@ -37,12 +37,15 @@ public class TotalComment {
     private String content;
 
 
-    @OneToMany(mappedBy = "totalComment")
-    private List<TotalCommentLike> totalCommentLikes = new ArrayList<>();
-
 
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
+
+    /**
+     * 양방향
+     */
+    @OneToMany(mappedBy = "totalComment")
+    private List<TotalCommentLike> totalCommentLikes = new ArrayList<>();
 
     /** 익명방법? */
     @Column(name = "is_anonymous")
@@ -80,6 +83,14 @@ public class TotalComment {
         totalComment.status = PostStatus.ACTIVE;
 
         return totalComment;
+    }
+
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
+    public void modifyInactiveStatus() {
+        this.status = PostStatus.INACTIVE;
     }
 
 

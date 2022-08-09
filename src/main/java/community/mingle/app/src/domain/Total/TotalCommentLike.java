@@ -1,7 +1,6 @@
 package community.mingle.app.src.domain.Total;
 
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Userstatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,17 +20,15 @@ public class TotalCommentLike {
     @Column(name = "totalcomment_like_id")
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "totalpost_id")
-//    private TotalPost post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "totalcomment_id")
+    private TotalComment totalComment;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "totalcomment_id")
-    private TotalComment totalComment;
 
 
     @Column(name = "created_at")
