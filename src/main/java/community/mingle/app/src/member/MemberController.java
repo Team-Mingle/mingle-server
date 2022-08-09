@@ -60,9 +60,9 @@ public class MemberController {
      * 2.5 내가 스크랩 한 글 (대학) API
      */
     @GetMapping("/scraps/univ")
-    public BaseResponse<List<UnivPostScrapDTO>> getUnivScraps() {
+    public BaseResponse<List<UnivPostScrapDTO>> getUnivScraps(@RequestParam Long postId) {
         try {
-            List<UnivPost> univPosts = memberService.getUnivScraps();
+            List<UnivPost> univPosts = memberService.getUnivScraps(postId);
             List<UnivPostScrapDTO> result = univPosts.stream()
                     .map(post -> new UnivPostScrapDTO(post))
                     .collect(Collectors.toList());
@@ -77,9 +77,9 @@ public class MemberController {
      * 2.6 내가 스크랩 한 글 (전체) API
      */
     @GetMapping("/scraps/total")
-    public BaseResponse<List<TotalPostScrapDTO>> getTotalScraps() {
+    public BaseResponse<List<TotalPostScrapDTO>> getTotalScraps(@RequestParam Long postId) {
         try {
-            List<TotalPost> totalPosts = memberService.getTotalScraps();
+            List<TotalPost> totalPosts = memberService.getTotalScraps(postId);
             List<TotalPostScrapDTO> result = totalPosts.stream()
                     .map(post -> new TotalPostScrapDTO(post))
                     .collect(Collectors.toList());

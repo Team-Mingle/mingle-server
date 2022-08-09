@@ -43,16 +43,23 @@ public class MemberRepository {
         return resultList;
     }
 
-    public List<UnivPost> findUnivScraps(Long memberId) { // join fetch 안했을경우 : likeCount: size()
-        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p where m.id = :id order by p.createdAt desc", UnivPost.class)
+    public List<UnivPost> findUnivScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
+        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p " +
+                        "where m.id = :id and p.id < :postId order by p.createdAt desc", UnivPost.class)
                 .setParameter("id", memberId)
+                .setParameter("postId", postId)
+                .setMaxResults(20)
                 .getResultList();
         return resultList;
     }
 
-    public List<TotalPost> findTotalScraps(Long memberId) { // join fetch 안했을경우 : likeCount: size()
-        List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p where m.id = :id order by p.createdAt desc", TotalPost.class)
+
+    public List<TotalPost> findTotalScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
+        List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p" +
+                        " where m.id = :id and p.id < :postId order by p.createdAt desc", TotalPost.class)
                 .setParameter("id", memberId)
+                .setParameter("postId", postId)
+                .setMaxResults(20)
                 .getResultList();
         return resultList;
     }

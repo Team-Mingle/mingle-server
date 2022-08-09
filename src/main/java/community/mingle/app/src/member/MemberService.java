@@ -41,24 +41,24 @@ public class MemberService {
     }
 
 
-    public List<UnivPost> getUnivScraps() throws BaseException {
+    public List<UnivPost> getUnivScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         Member member = memberRepository.findMember(userIdByJwt);
 
         try {
-            List<UnivPost> scraps = memberRepository.findUnivScraps(member.getId());
+            List<UnivPost> scraps = memberRepository.findUnivScraps(member.getId(), postId);
             return scraps;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    public List<TotalPost> getTotalScraps() throws BaseException {
+    public List<TotalPost> getTotalScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         Member member = memberRepository.findMember(userIdByJwt);
 
         try {
-            List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId());
+            List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId(), postId);
             return scraps;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);

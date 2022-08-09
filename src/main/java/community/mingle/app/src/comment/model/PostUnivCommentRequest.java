@@ -9,6 +9,7 @@ public class PostUnivCommentRequest {
 
     private Long postId;
     private Long parentCommentId; //
+    private Long mentionId;
     private String content;
     private boolean isAnonymous;
 

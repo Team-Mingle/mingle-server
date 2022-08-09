@@ -2,7 +2,6 @@ package community.mingle.app.src.comment;
 
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.src.comment.model.PostCommentRequest;
 import community.mingle.app.src.comment.model.PostTotalCommentRequest;
 import community.mingle.app.src.comment.model.PostUnivCommentRequest;
 import community.mingle.app.src.domain.Member;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static community.mingle.app.config.BaseResponseStatus.DATABASE_ERROR;
-import static community.mingle.app.config.BaseResponseStatus.EMPTY_JWT;
 
 @Service
 @RequiredArgsConstructor
