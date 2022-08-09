@@ -10,5 +10,7 @@ import lombok.Getter;
 public class PostScrapTotalResponse {
 
     private Long id;
+    private int scrapCount;
+
 
 }

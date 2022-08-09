@@ -24,7 +24,7 @@ public class TotalPostScrap {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "totalpost_id")
-    private TotalPost totalpost;
+    private TotalPost totalPost;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -37,7 +37,7 @@ public class TotalPostScrap {
     public static TotalPostScrap scrapTotalPost(TotalPost totalpost, Member member) {
         TotalPostScrap totalPostScrap = new TotalPostScrap();
         totalPostScrap.setMember(member);
-        totalPostScrap.setTotalpost(totalpost);
+        totalPostScrap.setTotalPost(totalpost);
         totalPostScrap.createdAt = LocalDateTime.now();
 
         return totalPostScrap;

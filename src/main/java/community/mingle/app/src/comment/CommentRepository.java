@@ -2,7 +2,12 @@ package community.mingle.app.src.comment;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostScrap;
+import community.mingle.app.src.domain.Univ.UnivComment;
+import community.mingle.app.src.domain.Univ.UnivCommentLike;
+import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -91,5 +96,51 @@ public class CommentRepository {
     public TotalComment save(TotalComment comment) {
         em.persist(comment);
         return comment;
+    }
+
+    public Long save(TotalCommentLike totalCommentLike) {
+        em.persist(totalCommentLike);
+        return totalCommentLike.getId();
+    }
+
+    public Long save(UnivCommentLike univCommentLike) {
+        em.persist(univCommentLike);
+        return univCommentLike.getId();
+    }
+
+    public TotalComment findTotalCommentbyId(Long commentIdx) {
+        List<TotalComment> totalComments = em.createQuery("select tp from TotalComment tp where tp.id = :commentIdx", TotalComment.class)
+                .setParameter("commentIdx", commentIdx)
+                .getResultList();
+        if (totalComments.size() != 0) {
+            return totalComments.get(0);
+        } else {
+            return null;
+        }
+    }
+
+
+    public UnivComment findUnivCommentbyId(Long commentIdx) {
+        List<UnivComment> univComments = em.createQuery("select tp from UnivComment tp where tp.id = :commentIdx", UnivComment.class)
+                .setParameter("commentIdx", commentIdx)
+                .getResultList();
+        if (univComments.size() != 0) {
+            return univComments.get(0);
+        } else {
+            return null;
+        }
+    }
+
+
+    public void deleteLikeTotal(Long commentIdx) {
+        TotalCommentLike findComment = em.find(TotalCommentLike.class, commentIdx);
+        em.remove(findComment);
+
+    }
+
+    public void deleteLikeUniv(Long commentIdx) {
+        UnivCommentLike findComment = em.find(UnivCommentLike.class, commentIdx);
+        em.remove(findComment);
+
     }
 }

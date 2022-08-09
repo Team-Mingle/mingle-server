@@ -1,13 +1,15 @@
 package community.mingle.app.src.domain.Total;
 
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Userstatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
+@Setter
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +29,26 @@ public class TotalCommentLike {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "totalcomment_id")
+    private TotalComment totalComment;
+
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public static TotalCommentLike likesTotalComment(TotalComment totalcomment, Member member) {
+        TotalCommentLike totalCommentLike = new TotalCommentLike();
+        totalCommentLike.setMember(member);
+        totalCommentLike.setTotalComment(totalcomment);
+        totalCommentLike.createdAt = LocalDateTime.now();
+
+        return totalCommentLike;
+    }
+
+
+
+
+
+
 }

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/post")
 @RequiredArgsConstructor
-public class PostController {
+public class    PostController {
 
     private final PostService postService;
     private final JwtService jwtService;
@@ -185,6 +185,8 @@ public class PostController {
     }
 
 
+
+
     /**
      * 3.15 통합 게시물 좋아요 api
      */
@@ -205,6 +207,28 @@ public class PostController {
         }
     }
 
+
+    /**
+     * 통합 게시물 좋아요 취소 api
+     */
+    @Operation(summary = "UnlikeTotalPost API", description = "통합 게시물 좋아요 취소 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @DeleteMapping("/total/unlike")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<String> unlikeTotalPost (@RequestParam Long likeIdx){
+        try{
+            postService.unlikeTotal(likeIdx);
+            String result = "좋아요가 취소되었습니다";
+            return new BaseResponse<>(result);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 
     /**
@@ -227,6 +251,27 @@ public class PostController {
         }
     }
 
+    /**
+     * 학교 게시물 좋아요 취소 api
+     */
+    @Operation(summary = "UnlikeUnivPost API", description = "학교 게시물 좋아요 취소 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @DeleteMapping("/univ/unlike")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<String> unlikeUnivPost (@RequestParam Long likeIdx){
+        try{
+            postService.unlikeUniv(likeIdx);
+            String result = "좋아요가 취소되었습니다";
+            return new BaseResponse<>(result);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 
 
@@ -250,6 +295,8 @@ public class PostController {
         }
     }
 
+
+
     /**
      * 3.18 학교 게시물 스크랩 api
      */
@@ -270,6 +317,49 @@ public class PostController {
         }
     }
 
+    /**
+     * 통합 게시물 스크랩  취소 api
+     */
+    @Operation(summary = "UnscrapTotalPost API", description = "통합 게시물 스크랩 취소 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @DeleteMapping("/total/deleteScrap")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<String> deleteScrapTotalPost (@RequestParam Long scrapIdx){
+        try{
+            postService.deleteScrapTotal(scrapIdx);
+            String result = "저장이 취소되었습니다";
+            return new BaseResponse<>(result);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 학교 게시물 스크랩 취소 api
+     */
+    @Operation(summary = "UnlikeTotalPost API", description = "통합 게시물 스크랩 취소 api")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @DeleteMapping("/univ/deleteScrap")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<String> deleteScrapUnivPost (@RequestParam Long scrapIdx){
+        try{
+            postService.deleteScrapUniv(scrapIdx);
+            String result = "저장이 취소되었습니다";
+            return new BaseResponse<>(result);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 
 }

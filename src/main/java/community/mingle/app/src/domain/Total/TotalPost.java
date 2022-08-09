@@ -3,6 +3,7 @@ package community.mingle.app.src.domain.Total;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,10 @@ public class TotalPost {
     @OneToMany(mappedBy = "totalPost")
     private List<TotalPostLike> totalPostLikes = new ArrayList<>();
 
+   //scrap Count 추가
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalPostScrap> totalPostScraps = new ArrayList<>();
+
 
 //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum
@@ -61,6 +66,7 @@ public class TotalPost {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
+
 
 
 }

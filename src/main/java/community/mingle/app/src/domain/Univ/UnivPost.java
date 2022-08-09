@@ -1,6 +1,7 @@
 package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import lombok.*;
 
@@ -32,6 +33,10 @@ public class UnivPost {
     /** 2.3 추가 */
     @OneToMany(mappedBy = "univPost")
     private List<UnivPostLike> univPostLikes = new ArrayList<>();
+
+    //scrap Count 추가
+    @OneToMany(mappedBy = "univPost")
+    private List<UnivPostScrap> univPostScraps = new ArrayList<>();
 
     /** 2.3 추가  - 단방향 */
     @ManyToOne(fetch = FetchType.LAZY)

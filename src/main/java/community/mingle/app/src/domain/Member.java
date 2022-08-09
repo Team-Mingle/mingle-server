@@ -98,4 +98,10 @@ public class Member {
         return member;
     }
 
+    public void deleteMember() {
+        this.deleted_at = LocalDateTime.now();
+        this.status = Userstatus.INACTIVE;
+
+    }
+    
 }

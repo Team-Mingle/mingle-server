@@ -10,5 +10,6 @@ import lombok.Getter;
 public class PostLikesUnivResponse {
 
     private Long id;
+    private int likeCount;
 
 }

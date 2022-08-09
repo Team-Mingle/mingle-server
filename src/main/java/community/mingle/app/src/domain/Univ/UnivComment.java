@@ -2,12 +2,15 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,11 +27,15 @@ public class UnivComment {
     @JoinColumn(name = "univpost_id")
     private UnivPost univPost;
 
+    @OneToMany(mappedBy = "univComment")
+    private List<UnivCommentLike> univCommentLikes = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     private String content;
+
 
     @Column(name = "parent_comment_id")
     private Long parentCommentId;

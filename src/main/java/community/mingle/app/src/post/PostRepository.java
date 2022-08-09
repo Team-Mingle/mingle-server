@@ -12,6 +12,8 @@ import community.mingle.app.src.domain.Univ.UnivPostLike;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -78,8 +80,6 @@ public class PostRepository {
                 .getResultList();
     }
 
-
-
     /**
      * memberId 로 Member 반환
      * @param id
@@ -100,6 +100,8 @@ public class PostRepository {
         em.persist(univPost);
         return univPost.getId();
     }
+
+
 
     public Category findCategoryById(int id) { //쿼리문에서 나는 에러는 if else 로 잡아서 null 로 보낼 수 없다.
         Category category = em.createQuery("select c from Category c where c.id = :id", Category.class)
@@ -128,9 +130,11 @@ public class PostRepository {
         return univPostLike.getId();
     }
 
-    public TotalPost findTotalPostbyId(Long postId) {
-        List<TotalPost> totalPosts = em.createQuery("select tp from TotalPost tp where tp.id = :postId", TotalPost.class)
-                .setParameter("postId", postId)
+
+
+    public TotalPost findTotalPostbyId(Long likeId) {
+        List<TotalPost> totalPosts = em.createQuery("select tp from TotalPostLike tp where tp.id = :postId", TotalPost.class)
+                .setParameter("postId", likeId)
                 .getResultList();
         if (totalPosts.size() != 0) {
             return totalPosts.get(0);
@@ -152,5 +156,29 @@ public class PostRepository {
 
 
 
+    public void deleteTotalLike(Long likeIdx) {
+        TotalPostLike findLike = em.find(TotalPostLike.class, likeIdx);
+        em.remove(findLike);
 
+    }
+
+    public void deleteUnivLike(Long likeIdx) {
+        UnivPostLike findLike = em.find(UnivPostLike.class, likeIdx);
+        em.remove(findLike);
+
+    }
+
+
+    public void deleteTotalScrap(Long scrapIdx) {
+        TotalPostScrap findScrap = em.find(TotalPostScrap.class, scrapIdx);
+        em.remove(findScrap);
+
+    }
+
+
+    public void deleteUnivScrap(Long scrapIdx) {
+        UnivPostScrap findScrap = em.find(UnivPostScrap.class, scrapIdx);
+        em.remove(findScrap);
+
+    }
 }
