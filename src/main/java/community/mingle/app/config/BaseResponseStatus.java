@@ -31,23 +31,22 @@ public enum BaseResponseStatus {
 
     //email
     EMAIL_EMPTY_ERROR(false, 2010, "이메일을 입력해주세요."),
-    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요.//프론트에서 확인해주세요"),
-    USER_EXISTS_EMAIL(false,2012,"중복된 이메일입니다."),
+    EMAIL_FORMAT_ERROR(false, 2011, "이메일 형식을 확인해주세요."),
+    USER_EXISTS_EMAIL(false,2012,"이미 존재하는 이메일 주소입니다."),
     EMAIL_CODE_FAIL(false, 2013, "인증번호가 일치하지 않습니다."),
-    CODE_GENERATE_FAIL(false, 2014, "인증번호 생성에 실패하습니다."),
-    EMAIL_SEND_FAIL(false, 2015, "인증번호 전송에 실패하였습니다."),
-
+    CODE_EMPTY_ERROR(false, 2019, "인증번호를 입력해주세요."),
 
     //password
     PASSWORD_EMPTY_ERROR(false, 2014, "비밀번호를 입력해주세요."),
     PASSWORD_LENGTH_ERROR(false, 2015, "비밀번호가 너무 짧습니다."),
     PASSWORD_FORMAT_ERROR(false, 2016, "비밀번호는 영문,숫자를 포함해야 합니다."),
-    USER_EXISTS_NICKNAME(false, 2017, "중복된 닉네임입니다."),
+    USER_EXISTS_NICKNAME(false, 2017, "이미 존재하는 닉네임입니다."),
     INVALID_UNIV_ID(false,2018 , "존재하지 않는 학교 id 입니다."),
-    USER_NOT_EXIST(false, 2019, "등록되지 않은 유저입니다."),
+
 
 
     /** 2. /member */
+    USER_NOT_EXIST(false, 2020, "회원 정보를 찾을 수 없습니다."),
     ALREADY_REPORTED(false, 2021, "이미 신고한 컨텐츠입니다."),
 //    DELETE_USER_NOTEXIST(false,2020,"삭제할 유저가 존재하지 않습니다."),
 //    POSTS_USERS_EXISTS_NICKNAME(false, 5030, "중복된 닉네임입니다."),
@@ -77,7 +76,9 @@ public enum BaseResponseStatus {
     FAILED_TO_LOGIN(false,3011,"존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
     FAILED_TO_CREATEJWT(false, 3012, "JWT 발급에 실패하였습니다."),
     FAILED_TO_CHANGEPWD(false, 3013, "비밀번호 변경에 실패하였습니다."),
-    FAILED_TO_GET_TERMS(false, 3014, "개인정보처리방침을 가져오는데 실패하였습니다."),
+    FAILED_TO_GET_TERMS(false, 3014, "개인정보처리방침을 가져오는데 실패하였습니다"),
+    EMAIL_CODE_EXPIRED(false, 3015, "인증번호 입력시간이 초과되었습니다."),
+
 
     /** 2. /member  */
     MODIFY_FAIL_NICKNAME(false, 3020,"닉네임 수정에 실패하였습니다." ),
@@ -110,8 +111,9 @@ public enum BaseResponseStatus {
 
     // /auth : 암호화
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    EMAIL_ENCRYPTION_ERROR(false, 4012, "이메일 암호화에 실패하였습니다.");
-
+    EMAIL_ENCRYPTION_ERROR(false, 4012, "이메일 암호화에 실패하였습니다."),
+    CODE_GENERATE_FAIL(false, 4013, "인증번호 생성에 실패하습니다."),
+    EMAIL_SEND_FAIL(false, 4014, "인증번호 전송에 실패하였습니다.");
 
 
 
