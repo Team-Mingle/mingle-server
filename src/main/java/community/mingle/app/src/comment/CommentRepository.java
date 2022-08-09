@@ -3,6 +3,7 @@ package community.mingle.app.src.comment;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -22,14 +23,7 @@ public class CommentRepository {
      * @return Member
      */
     public Member findMemberbyId(Long id) {
-        List<Member> m = em.createQuery("select m from Member m where m.id = :id", Member.class)
-                .setParameter("id", id)
-                .getResultList();
-        if (m.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
-            return m.get(0);
-        } else { //없으면 null 반환
-            return null;
-        }
+        return em.find(Member.class, id);
     }
 
 
@@ -91,5 +85,13 @@ public class CommentRepository {
     public TotalComment save(TotalComment comment) {
         em.persist(comment);
         return comment;
+    }
+
+    public TotalComment findTotalCommentById(Long id) {
+        return em.find(TotalComment.class, id);
+    }
+
+    public UnivComment findUnivCommentById(Long id) {
+        return em.find(UnivComment.class, id);
     }
 }

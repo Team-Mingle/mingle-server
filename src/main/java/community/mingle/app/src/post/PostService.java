@@ -2,6 +2,8 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
+import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
@@ -211,9 +213,9 @@ public class PostService {
             throw new BaseException(USER_NOT_EXIST);
         }
 
-        try {
-            totalPost = postRepository.findTotalPostById(id);
-        } catch (Exception e) {
+
+        totalPost = postRepository.findTotalPostById(id);
+        if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
 
@@ -221,6 +223,10 @@ public class PostService {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
+            List <TotalComment> totalComments = postRepository.findAllTotalComment(id);
+            for (TotalComment c: totalComments) {
+                c.deleteTotalComment();
+            }
             totalPost.deleteTotalPost();
         } catch (Exception e) {
             throw new BaseException(DELETE_FAIL_POST);
@@ -240,9 +246,9 @@ public class PostService {
             throw new BaseException(USER_NOT_EXIST);
         }
 
-        try {
-            univPost = postRepository.findUnivPostById(id);
-        } catch (Exception e) {
+
+        univPost = postRepository.findUnivPostById(id);
+        if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
 
@@ -250,6 +256,10 @@ public class PostService {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
+            List <UnivComment> univComments = postRepository.findAllUnivComment(id);
+            for (UnivComment c: univComments) {
+                c.deleteUnivComment();
+            }
             univPost.deleteUnivPost();
         } catch (Exception e) {
             throw new BaseException(DELETE_FAIL_POST);

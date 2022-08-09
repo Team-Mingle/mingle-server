@@ -51,5 +51,9 @@ public class UnivComment {
     private PostStatus status;
 
 
+    public void deleteUnivComment (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
 
 }

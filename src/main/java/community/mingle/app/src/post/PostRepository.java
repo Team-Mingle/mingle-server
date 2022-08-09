@@ -4,7 +4,9 @@ package community.mingle.app.src.post;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -97,15 +99,23 @@ public class PostRepository {
         return category;
     }
     public TotalPost findTotalPostById(Long id) {
-        TotalPost totalPost = em.createQuery("select p from TotalPost p where p.id = :id", TotalPost.class)
-                .setParameter("id", id)
-                .getSingleResult();
-        return totalPost;
+        return em.find(TotalPost.class,id);
     }
     public UnivPost findUnivPostById(Long id) {
-        UnivPost univPost = em.createQuery("select p from UnivPost p where p.id = :id", UnivPost.class)
-                .setParameter("id", id)
-                .getSingleResult();
-        return univPost;
+        return em.find(UnivPost.class, id);
+    }
+
+    public List<TotalComment> findAllTotalComment(Long postId) {
+        List<TotalComment> allTotalComments = em.createQuery("select c from TotalComment c where c.totalPost.id = :id", TotalComment.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allTotalComments;
+    }
+
+    public List<UnivComment> findAllUnivComment(Long postId) {
+        List<UnivComment> allUnivComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id", UnivComment.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allUnivComments;
     }
 }

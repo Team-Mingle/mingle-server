@@ -100,7 +100,8 @@ public enum BaseResponseStatus {
 
     /** 4. /comment  */
 
-
+    DELETE_FAIL_COMMENT(false, 4025, "댓글 삭제를 실패했습니다."),
+    COMMENT_NOT_EXIST(false, 4035, "댓글이 존재하지 않습니다."),
 
 
 

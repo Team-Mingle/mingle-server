@@ -76,5 +76,9 @@ public class TotalComment {
         return totalComment;
     }
 
+    public void deleteTotalComment (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
 
 }
