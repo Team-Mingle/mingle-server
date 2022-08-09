@@ -4,12 +4,13 @@ import community.mingle.app.src.domain.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="univ_post_scrap")
 
@@ -29,4 +30,15 @@ public class UnivPostScrap {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+
+    public static UnivPostScrap scrapUnivPost(UnivPost univPost, Member member) {
+        UnivPostScrap univPostScrap = new UnivPostScrap();
+        univPostScrap.setMember(member);
+        univPostScrap.setUnivPost(univPost);
+        univPostScrap.createdAt = LocalDateTime.now();
+
+        return univPostScrap;
+
+    }
 }

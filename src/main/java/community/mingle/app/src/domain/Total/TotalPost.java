@@ -3,9 +3,13 @@ package community.mingle.app.src.domain.Total;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
+
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
+
+import community.mingle.app.src.domain.Univ.UnivPostScrap;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +44,10 @@ public class TotalPost {
     private List<TotalPostLike> totalPostLikes = new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalPostScrap> totalPostScraps = new ArrayList<>();
+
+
 //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum
     @ManyToOne(fetch = FetchType.LAZY)
@@ -67,6 +75,7 @@ public class TotalPost {
     @Column(columnDefinition = "enum")
     private PostStatus status;
 
+
     public static TotalPost createTotalPost (Member member, Category category, PostCreateRequest req){
         TotalPost totalPost = new TotalPost();
         totalPost.setMember(member);
@@ -91,5 +100,15 @@ public class TotalPost {
         this.deletedAt = LocalDateTime.now();
         this.status = PostStatus.INACTIVE;
     }
+
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
+
+    //postImg 추가하기
+//    @OneToMany
+
+
 
 }

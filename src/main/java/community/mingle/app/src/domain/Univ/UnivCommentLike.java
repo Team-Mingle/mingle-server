@@ -1,13 +1,15 @@
 package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
+@Setter
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,7 +26,7 @@ public class UnivCommentLike {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "univcomment_id")
-    private UnivComment comment;
+    private UnivComment univComment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -32,4 +34,15 @@ public class UnivCommentLike {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public static UnivCommentLike likesUnivComment(UnivComment univComment, Member member) {
+        UnivCommentLike univCommentLike = new UnivCommentLike();
+        univCommentLike.setMember(member);
+        univCommentLike.setUnivComment(univComment);
+        univCommentLike.createdAt = LocalDateTime.now();
+
+        return univCommentLike;
+    }
+
+
 }
