@@ -105,63 +105,14 @@ public class PostRepository {
     }
 
 
-
-    /**
-     * 게시물 상세
+    /*
+    1. 포스트 찾음
+    2. 그 포스트의 댓글 찾음
+    3. 댓글 하나당 대댓글 찾음
+    4. 그 포스트의 댓글 (2) 리스트에서 parentCommentId 가 null 인 댓글들 리스트에서 하나씩 비교해가며 찾음. <Old 로직>
+    3 & 4 포스트의 댓글, 대댓글 따로 다 찾음. 그다음에 댓글에 대댓글 리스트를 하나씩 매핑 <new 로직>
      */
-    //13개 -> 15ㄴㅋ -> 59개  (댓글29개)  //fetch join 201개
-    public UnivPost findUnivPost(Long univPostId) {
-        UnivPost univPost = em.createQuery("select distinct p from UnivPost p left join fetch p.member m " +
-                        " join fetch p.univComments c join fetch p.univName u where p.id = :id", UnivPost.class)
-                .setParameter("id", univPostId)
-                .getSingleResult();
-        return univPost;
-    }
 
-    //34개
-    public UnivPost findUnivPostById(Long univPostId) {
-        UnivPost univPost = em.createQuery("select p from UnivPost p where p.id = :id", UnivPost.class)
-                .setParameter("id", univPostId)
-                .getSingleResult();
-        return univPost;
-    }
-
-    public List<UnivComment> findUnivComment(Long postId) { //without null? left join?
-        Long id = null;
-        List<UnivComment> univComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id and c.parentCommentId IS NULL ", UnivComment.class)
-                .setParameter("id", postId)
-//                .setParameter("null", id)
-                .setFirstResult(0)
-                .setMaxResults(40)
-                .getResultList();
-        return univComments;
-    }
-
-
-    public List<UnivComment> findUnivCoComment(UnivPost p, UnivComment c) { // commentId = 1;
-        List<UnivComment> univCoComments = em.createQuery("select distinct cc from UnivComment cc " +
-                        "left join fetch cc.member m " +
-                        " where cc.univPost.id = :id and cc.parentCommentId = :parentCommentId", UnivComment.class)
-                .setParameter("parentCommentId", c.getId())
-                .setParameter("id", p.getId())
-                .setFirstResult(0)
-                .setMaxResults(40)
-                .getResultList();
-        return univCoComments;
-    }
-
-
-//    public List<UnivComment> findAllComments() {
-//        List<UnivComment> allComments = em.createQuery("select c, count(c.univCommentLikes) from UnivComment c join fetch c.univCommentLikes  ")
-//    }
-
-
-
-    //1. 포스트 찾음
-    //2. 그 포스트의 댓글 찾음
-    //3. 댓글 하나당 대댓글 찾음
-    //4. 그 포스트의 댓글 (2) 리스트에서 parentCommentId 가 null 인 댓글들 리스트에서 하나씩 비교해가며 찾음. <Old 로직>
-    // 3 & 4 포스트의 댓글, 대댓글 따로 다 찾음. 그다음에 댓글에 대댓글 리스트를 하나씩 매핑 <new 로직>
 
     /**
      * getUnivPostDetail >> NEW <<
@@ -216,22 +167,6 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .getResultList();
         return univCoCommentList;
-    }
-
-
-    /**
-     * 댓글 좋아요 isLiked 확인
-     */
-    public boolean checkCommentIsLiked(Long commentId, Long memberId) {
-        List<UnivCommentLike> univCommentLikes = em.createQuery("select ucl from UnivCommentLike ucl join ucl.univComment uc join ucl.member m where uc.id = :commentId and m.id = :memberId", UnivCommentLike.class)
-                .setParameter("commentId", commentId)
-                .setParameter("memberId", memberId)
-                .getResultList();
-        if (univCommentLikes.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
 }

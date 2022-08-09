@@ -3,7 +3,9 @@ package community.mingle.app.src.comment;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.model.PostSignupResponse;
+import community.mingle.app.src.comment.model.PostCommentRequest;
 import community.mingle.app.src.comment.model.PostTotalCommentRequest;
+import community.mingle.app.src.comment.model.PostUnivCommentRequest;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.post.model.GetTotalBestPostsResponse;
@@ -34,9 +36,24 @@ public class CommentController {
      * 전체 게시판 댓글 작성 api
      */
     @PostMapping("/total")
-    public BaseResponse<Long> createComment(@RequestBody @Valid PostTotalCommentRequest postTotalCommentRequest) {
+    public BaseResponse<Long> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
         try {
-            Long id = commentService.createComment(postTotalCommentRequest);
+            Long id = commentService.createTotalComment(postTotalCommentRequest);
+            return new BaseResponse<>(id);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    /**
+     * 4.1 학교 게시판 댓글 작성 api
+     */
+    @PostMapping("/univ")
+    public BaseResponse<Long> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
+        try {
+            Long id = commentService.createUnivComment(univCommentRequest);
             return new BaseResponse<>(id);
 
         } catch (BaseException exception) {

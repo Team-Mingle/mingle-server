@@ -2,10 +2,14 @@ package community.mingle.app.src.comment;
 
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.src.comment.model.PostCommentRequest;
 import community.mingle.app.src.comment.model.PostTotalCommentRequest;
+import community.mingle.app.src.comment.model.PostUnivCommentRequest;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivComment;
+import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,15 +30,8 @@ public class CommentService {
      * @return commentId
      */
     @Transactional
-    public Long createComment(PostTotalCommentRequest postTotalCommentRequest) throws BaseException {
-
-        //jwt userIdx 추출
-        Long memberIdByJwt;
-        try {
-            memberIdByJwt = jwtService.getUserIdx();
-        } catch (Exception e) {
-            throw new BaseException(EMPTY_JWT);
-        }
+    public Long createTotalComment(PostTotalCommentRequest postTotalCommentRequest) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
 
         try {
             TotalPost post = commentRepository.findTotalPostbyId(postTotalCommentRequest.getPostId());
@@ -43,7 +40,7 @@ public class CommentService {
             Long anonymousId;
 
             if (postTotalCommentRequest.isAnonymous() == true) {
-                anonymousId = commentRepository.findAnonymousId(post, memberIdByJwt);
+                anonymousId = commentRepository.findTotalAnonymousId(post, memberIdByJwt);
             }
             else {
                 anonymousId = null;
@@ -52,7 +49,7 @@ public class CommentService {
             //댓글 생성
             TotalComment comment = TotalComment.createComment(post, member, postTotalCommentRequest.getContent(), postTotalCommentRequest.getParentCommentId(), postTotalCommentRequest.isAnonymous(), anonymousId);
 
-            TotalComment savedComment = commentRepository.save(comment);
+            TotalComment savedComment = commentRepository.saveTotalComment(comment);
             Long id = savedComment.getId();
 
             return id;
@@ -62,5 +59,35 @@ public class CommentService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    @Transactional
+    public Long createUnivComment(PostUnivCommentRequest request) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+
+        UnivPost univPost = commentRepository.findUnivPostById(request.getPostId());
+        Member member = commentRepository.findMemberbyId(memberIdByJwt);
+
+        Long anonymousId;
+
+        if (request.isAnonymous() == true) {
+            anonymousId = commentRepository.findUnivAnonymousId(univPost, memberIdByJwt);
+            System.out.println("true");
+        }
+        else {
+            System.out.println("false");
+            anonymousId = null;
+        }
+
+        //댓글 생성
+        UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.isAnonymous(), anonymousId);
+
+//        UnivComment savedComment = commentRepository.saveUnivComment(comment);
+//        Long id = savedComment.getId();
+
+        commentRepository.saveUnivComment(comment);
+        return comment.getId();
+
+    }
+
 
 }

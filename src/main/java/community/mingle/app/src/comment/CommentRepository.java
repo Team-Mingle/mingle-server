@@ -3,6 +3,8 @@ package community.mingle.app.src.comment;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivComment;
+import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,45 +18,22 @@ public class CommentRepository {
     private final EntityManager em;
 
 
-    /**
-     * memberId 로 Member 반환
-     * @param id
-     * @return Member
-     */
     public Member findMemberbyId(Long id) {
-        List<Member> m = em.createQuery("select m from Member m where m.id = :id", Member.class)
-                .setParameter("id", id)
-                .getResultList();
-        if (m.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
-            return m.get(0);
-        } else { //없으면 null 반환
-            return null;
-        }
+        return em.find(Member.class, id);
     }
 
-
-    /**
-     * postId 로 Post 찾기
-     * @param postId
-     * @return
-     */
-
     public TotalPost findTotalPostbyId(Long postId) {
-        List<TotalPost> totalPosts = em.createQuery("select tp from TotalPost tp where tp.id = :postId", TotalPost.class)
-                .setParameter("postId", postId)
-                .getResultList();
-        if (totalPosts.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
-            return totalPosts.get(0);
-        } else { //없으면 null 반환
-            return null;
-        }
+        return em.find(TotalPost.class, postId);
+    }
+
+    public UnivPost findUnivPostById(Long postId) {
+        return em.find(UnivPost.class , postId);
     }
 
     /**
      * 익명 몇 인지 찾기 (anonymousId)
-     * @return
      */
-    public Long findAnonymousId(TotalPost post, Long memberIdByJwt ) {
+    public Long findTotalAnonymousId(TotalPost post, Long memberIdByJwt ) {
         Long newAnonymousId;
 
         /**
@@ -88,9 +67,54 @@ public class CommentRepository {
     }
 
 
-    public TotalComment save(TotalComment comment) {
+    public TotalComment saveTotalComment (TotalComment comment) {
         em.persist(comment);
         return comment;
     }
 
+    public Long findUnivAnonymousId(UnivPost univPost, Long memberIdByJwt) {
+        Long newAnonymousId;
+
+        List<UnivComment> univCommentsByMember = em.createQuery("select uc from UnivComment uc " +
+                        "join fetch uc.univPost as p join fetch uc.member as m " +
+                        "where p.id = :postId and m.id = :memberId and uc.isAnonymous = true", UnivComment.class)
+                .setParameter("postId", univPost.getId())
+                .setParameter("memberId", memberIdByJwt)
+                .getResultList();
+        if (univCommentsByMember.size() != 0) {
+           newAnonymousId = univCommentsByMember.get(0).getAnonymousId();
+            System.out.println("=======Existing AnonymousId=========");
+           return newAnonymousId;
+        }
+
+        List<UnivComment> univComments = univPost.getUnivComments();
+        UnivComment univCommentWithMaxAnonymousId;
+
+        try {
+            univCommentWithMaxAnonymousId = univComments.stream()
+                    .max(Comparator.comparingLong(UnivComment::getAnonymousId))//NullPointerException
+                    .get(); //NoSuchElementException
+            newAnonymousId = univCommentWithMaxAnonymousId.getAnonymousId() + 1;
+            System.out.println("===========NewAnonymousId==============");
+            return newAnonymousId;
+
+        } catch (NullPointerException e) {
+            System.out.println("=================NullPointerException=================");
+            newAnonymousId = Long.valueOf(1);
+            return newAnonymousId;
+
+        } catch (NoSuchElementException e) {
+            System.out.println("=================NoSuchElementException=================");
+            newAnonymousId = Long.valueOf(1);
+            return newAnonymousId;
+        }
+//        } catch (Exception e) { // missing return statement 에러
+//            e.printStackTrace();
+//        }
+    }
+
+    public void saveUnivComment(UnivComment univComment) {
+        em.persist(univComment);
+//        return univComment;
+    }
 }

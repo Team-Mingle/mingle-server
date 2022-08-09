@@ -388,6 +388,8 @@ public class AuthController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+    //검증 api
+    //
 
 }
 
