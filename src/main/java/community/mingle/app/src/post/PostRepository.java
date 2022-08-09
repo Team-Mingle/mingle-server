@@ -4,9 +4,14 @@ package community.mingle.app.src.post;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
+
+import community.mingle.app.src.domain.Univ.UnivComment;
+
 import community.mingle.app.src.domain.Total.TotalPostLike;
 import community.mingle.app.src.domain.Total.TotalPostScrap;
+
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostLike;
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
@@ -101,6 +106,10 @@ public class PostRepository {
         }
     }
 
+    public Long save(TotalPost totalPost) {
+        em.persist(totalPost);
+        return totalPost.getId();
+    }
     public Long save(UnivPost univPost) {
         em.persist(univPost);
         return univPost.getId();
@@ -114,6 +123,28 @@ public class PostRepository {
                 .getSingleResult();
         return category;
     }
+
+    public TotalPost findTotalPostById(Long id) {
+        return em.find(TotalPost.class,id);
+    }
+    public UnivPost findUnivPostById(Long id) {
+        return em.find(UnivPost.class, id);
+    }
+
+    public List<TotalComment> findAllTotalComment(Long postId) {
+        List<TotalComment> allTotalComments = em.createQuery("select c from TotalComment c where c.totalPost.id = :id", TotalComment.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allTotalComments;
+    }
+
+    public List<UnivComment> findAllUnivComment(Long postId) {
+        List<UnivComment> allUnivComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id", UnivComment.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allUnivComments;
+    }
+
 
 
     public Long save(TotalPostScrap totalPostScrap) {

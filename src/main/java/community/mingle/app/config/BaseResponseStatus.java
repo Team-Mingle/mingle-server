@@ -91,14 +91,19 @@ public enum BaseResponseStatus {
     EMPTY_POSTS_LIST(false, 3031, "해당 카테고리에 게시물이 없습니다."),
     INVALID_POST_CATEGORY(false, 3032, "유효하지 않은 카테고리 입니다."),
     CREATE_FAIL_POST(false, 3033, "게시물 생성에 실패하였습니다."),
-    //9주차 3.3 게시물수정
-    //MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
-    //3.4 게시물삭제
-    //DELETE_FAIL_POST(false, 3021, "게시물 삭제를 실패했습니다."),
+
+    POST_NOT_EXIST(false, 3035, "게시물이 존재하지 않습니다."),
+
+    MODIFY_NOT_AUTHORIZED(false, 3040, "게시물 수정 권한이 없습니다."),
+    MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
+    TITLE_EMPTY_ERROR(false, 3021, "제목을 입력해주세요."),
+
+    DELETE_FAIL_POST(false, 3025, "게시물 삭제를 실패했습니다."),
 
     /** 4. /comment  */
 
-
+    DELETE_FAIL_COMMENT(false, 4025, "댓글 삭제를 실패했습니다."),
+    COMMENT_NOT_EXIST(false, 4035, "댓글이 존재하지 않습니다."),
 
 
 

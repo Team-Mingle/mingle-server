@@ -7,7 +7,13 @@ import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
+
+import community.mingle.app.src.post.model.PatchUpdatePostRequest;
+import community.mingle.app.src.post.model.PostCreateRequest;
+import community.mingle.app.src.post.model.PostCreateResponse;
+
 import community.mingle.app.src.post.model.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import community.mingle.app.config.BaseException;
@@ -105,6 +111,7 @@ public class PostService {
         return getAll;
     }
 
+
     /**
      * 3.5 학교 게시판 리스트 API
      */
@@ -128,11 +135,13 @@ public class PostService {
     }
 
 
+
     /**
-     * 3.5 게시물 작성 API
+     * 3.6 통합 게시물 작성 API
      */
     @Transactional
-    public PostCreateResponse createPost(PostCreateRequest postCreateRequest) throws BaseException {
+
+    public PostCreateResponse createTotalPost (PostCreateRequest postCreateRequest) throws BaseException{
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -146,14 +155,68 @@ public class PostService {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
         try {
-            UnivPost univPost = UnivPost.createPost(member, category, postCreateRequest);
-            Long id = postRepository.save(univPost);
+            TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
+            Long id = postRepository.save(totalPost);
             return new PostCreateResponse(id);
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
 
+    /**
+     * 3.7 학교 게시물 작성 API
+     */
+    @Transactional
+    public PostCreateResponse createUnivPost (PostCreateRequest postCreateRequest) throws BaseException{
+        Member member;
+        Category category;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+        try {
+            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+        } catch(Exception exception){
+            throw new BaseException(INVALID_POST_CATEGORY);
+        }
+        try {
+            UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
+            Long id = postRepository.save(univPost);
+            return new PostCreateResponse(id);
+        } catch (Exception e) {
+            throw new BaseException(CREATE_FAIL_POST);
+        }
+    }
+    
+    /**
+     * 3.11 통합 게시물 수정 API
+     */
+    @Transactional
+    public void updateTotalPost (Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
+        Member member;
+        TotalPost totalPost;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        try {
+            totalPost = postRepository.findTotalPostById(id);
+        } catch (Exception e) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+
+        if (memberIdByJwt != totalPost.getMember().getId()) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
+        try {
+            totalPost.updateTotalPost(patchUpdatePostRequest);
+        } catch (Exception e) {
+            throw new BaseException(MODIFY_FAIL_POST);
+        }
+    }
 
     /**
      * 3.15 통합 게시물 좋아요 api
@@ -179,10 +242,41 @@ public class PostService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
+
         }
     }
 
     /**
+
+     * 3.12 학교 게시물 수정 API
+     */
+    @Transactional
+    public void updateUnivPost (Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
+        Member member;
+        UnivPost univPost;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        try {
+            univPost = postRepository.findUnivPostById(id);
+        } catch (Exception e) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+
+        if (memberIdByJwt != univPost.getMember().getId()) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
+        try {
+            univPost.updateUnivPost(patchUpdatePostRequest);
+        } catch (Exception e) {
+            throw new BaseException(MODIFY_FAIL_POST);
+        }
+    }
+
+/*
      * 통합 게시물 좋아요 취소 api
      */
 
@@ -299,10 +393,78 @@ public class PostService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
+
         }
     }
 
     /**
+<<<<<<< HEAD
+     * 3.13 통합 게시물 삭제 API
+     */
+    @Transactional
+    public void deleteTotalPost (Long id) throws BaseException{
+        Member member;
+        TotalPost totalPost;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+
+        totalPost = postRepository.findTotalPostById(id);
+        if (totalPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+
+        if (memberIdByJwt != totalPost.getMember().getId()) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
+        try {
+            List <TotalComment> totalComments = postRepository.findAllTotalComment(id);
+            for (TotalComment c: totalComments) {
+                c.deleteTotalComment();
+            }
+            totalPost.deleteTotalPost();
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_POST);
+        }
+    }
+
+    /**
+     * 3.14 학교 게시물 삭제 API
+     */
+    @Transactional
+    public void deleteUnivPost (Long id) throws BaseException{
+        Member member;
+        UnivPost univPost;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+
+        univPost = postRepository.findUnivPostById(id);
+        if (univPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+
+        if (memberIdByJwt != univPost.getMember().getId()) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
+        try {
+            List <UnivComment> univComments = postRepository.findAllUnivComment(id);
+            for (UnivComment c: univComments) {
+                c.deleteUnivComment();
+            }
+            univPost.deleteUnivPost();
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_POST);
+        }
+    }
+
+/*
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)

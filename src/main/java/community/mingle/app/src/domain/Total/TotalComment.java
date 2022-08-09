@@ -85,6 +85,12 @@ public class TotalComment {
         return totalComment;
     }
 
+
+    public void deleteTotalComment (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
+
     public void modifyReportStatus() {
         this.status = PostStatus.REPORTED;
     }
@@ -92,6 +98,7 @@ public class TotalComment {
     public void modifyInactiveStatus() {
         this.status = PostStatus.INACTIVE;
     }
+
 
 
 }

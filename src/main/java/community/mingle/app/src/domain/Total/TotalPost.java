@@ -3,10 +3,17 @@ package community.mingle.app.src.domain.Total;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
+
+import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.post.model.PatchUpdatePostRequest;
+import community.mingle.app.src.post.model.PostCreateRequest;
+
 import community.mingle.app.src.domain.Univ.UnivPostScrap;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Entity
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "total_post")
@@ -66,6 +74,32 @@ public class TotalPost {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
+
+
+    public static TotalPost createTotalPost (Member member, Category category, PostCreateRequest req){
+        TotalPost totalPost = new TotalPost();
+        totalPost.setMember(member);
+        totalPost.setCategory(category);
+        totalPost.setTitle(req.getTitle());
+        totalPost.setContent(req.getContent());
+        totalPost.createdAt = LocalDateTime.now();
+        totalPost.updatedAt = LocalDateTime.now();
+        totalPost.setAnonymous(req.isAnonymous());
+        totalPost.status = PostStatus.ACTIVE;
+        return totalPost;
+    }
+
+    public void updateTotalPost (PatchUpdatePostRequest req){
+        this.setTitle(req.getTitle());
+        this.setContent(req.getContent());
+        this.updatedAt = LocalDateTime.now();
+        this.status = PostStatus.ACTIVE;
+    }
+
+    public void deleteTotalPost (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
 
     public void modifyReportStatus() {
         this.status = PostStatus.REPORTED;

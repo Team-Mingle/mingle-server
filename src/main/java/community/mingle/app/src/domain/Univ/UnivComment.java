@@ -74,5 +74,9 @@ public class UnivComment {
     }
 
 
+    public void deleteUnivComment (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
 
 }

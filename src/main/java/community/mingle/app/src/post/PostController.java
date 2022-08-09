@@ -27,6 +27,8 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static community.mingle.app.config.BaseResponseStatus.*;
+
 @Tag(name = "post", description = "게시판/게시물관련 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -138,6 +140,28 @@ public class    PostController {
 
 
     /**
+     * 3.6 통합 게시물 작성 API
+     */
+    @Operation(summary = "3.6 createTotalPosts API", description = "3.6 통합 게시물 생성 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PostMapping("/total")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<PostCreateResponse> createTotalPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+        try{
+            return new BaseResponse<>(postService.createTotalPost(postCreateRequest));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    /**
      * 3.5 학교 게시판 리스트 API
      */
     @GetMapping("/univ")
@@ -178,9 +202,110 @@ public class    PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostCreateResponse> createPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+    public BaseResponse<PostCreateResponse> createUnivPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
         try{
-            return new BaseResponse<>(postService.createPost(postCreateRequest));
+            return new BaseResponse<>(postService.createUnivPost(postCreateRequest));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 3.11 통합 게시물 수정 API
+     */
+    @Operation(summary = "3.11 patchTotalPosts API", description = "3.11 통합 게시물 수정 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PatchMapping("/total/{id}")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3020", description = "게시물 수정을 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<String> updateTotalPost (@PathVariable Long id, @RequestBody @Valid PatchUpdatePostRequest patchUpdatePostRequest){
+        //empty일 경우 (title&content)
+        if (patchUpdatePostRequest.getTitle().length() == 0) {
+            return new BaseResponse<>(TITLE_EMPTY_ERROR);
+        }
+        try{
+            postService.updateTotalPost(id, patchUpdatePostRequest);
+            String result = "게시물 수정에 성공하였습니다.";
+            return new BaseResponse<>(result);
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+    /**
+     * 3.12 학교 게시물 수정 API
+     */
+    @Operation(summary = "3.12 patchUnivPosts API", description = "3.12 학교 게시물 수정 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PatchMapping("/univ/{id}")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3020", description = "게시물 수정을 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<String> updateUnivPost (@PathVariable Long id, @RequestBody @Valid PatchUpdatePostRequest patchUpdatePostRequest){
+        //empty일 경우 (title&content)
+        if (patchUpdatePostRequest.getTitle().length() == 0) {
+            return new BaseResponse<>(TITLE_EMPTY_ERROR);
+        }
+        try{
+            postService.updateUnivPost(id, patchUpdatePostRequest);
+            String result = "게시물 수정에 성공하였습니다.";
+            return new BaseResponse<>(result);
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 3.13 통합 게시물 삭제 API
+     */
+    @Operation(summary = "3.13 deleteTotalPost API", description = "3.13 통합 게시물 삭제 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PatchMapping("/total/status/{id}")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<String> deleteTotalPost (@PathVariable Long id){
+
+        try{
+            postService.deleteTotalPost(id);
+            String result = "게시물 삭제에 성공하였습니다.";
+            return new BaseResponse<>(result);
+
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 3.14 학교 게시물 삭제 API
+     */
+    @Operation(summary = "3.14 deleteUnivPost API", description = "3.14 학교 게시물 삭제 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @PatchMapping("/univ/status/{id}")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<String> deleteUnivPost (@PathVariable Long id){
+
+        try{
+            postService.deleteUnivPost(id);
+            String result = "게시물 삭제에 성공하였습니다.";
+            return new BaseResponse<>(result);
+
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }

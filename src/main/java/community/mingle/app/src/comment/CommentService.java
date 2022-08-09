@@ -18,8 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static community.mingle.app.config.BaseResponseStatus.DATABASE_ERROR;
-import static community.mingle.app.config.BaseResponseStatus.EMPTY_JWT;
+import java.util.List;
+
+import static community.mingle.app.config.BaseResponseStatus.*;
+import static community.mingle.app.config.BaseResponseStatus.DELETE_FAIL_POST;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +73,64 @@ public class CommentService {
     }
 
 
+    /**
+     * 4.07 통합 게시물 댓글 삭제 API
+     */
+    @Transactional
+    public void deleteTotalComment (Long id) throws BaseException{
+        Member member;
+        TotalComment totalComment;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = commentRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+
+        totalComment = commentRepository.findTotalCommentById(id);
+        if (totalComment == null) {
+            throw new BaseException(COMMENT_NOT_EXIST);
+        }
+
+        if (memberIdByJwt != totalComment.getMember().getId()) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
+        try {
+            totalComment.deleteTotalComment();
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_COMMENT);
+        }
+    }
+
+    /**
+     * 4.08 학교 게시물 댓글 삭제 API
+     */
+    @Transactional
+    public void deleteUnivComment (Long id) throws BaseException{
+        Member member;
+        UnivComment univComment;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = commentRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        try {
+            univComment = commentRepository.findUnivCommentById(id);
+        } catch (Exception e) {
+            throw new BaseException(COMMENT_NOT_EXIST);
+        }
+
+        if (memberIdByJwt != univComment.getMember().getId()) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
+        try {
+            univComment.deleteUnivComment();
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_COMMENT);
+        }
+    }
+
 
     /**
      * 3.05 통합 게시물 댓글 좋아요 api
@@ -84,7 +144,7 @@ public class CommentService {
             throw new BaseException(EMPTY_JWT);
         }
         try {
-            TotalComment totalcomment =commentRepository.findTotalCommentbyId(commentIdx);
+            TotalComment totalcomment =commentRepository.findTotalCommentById(commentIdx);
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
 
@@ -112,7 +172,7 @@ public class CommentService {
             throw new BaseException(EMPTY_JWT);
         }
         try {
-            UnivComment univComment =commentRepository.findUnivCommentbyId(commentIdx);
+            UnivComment univComment =commentRepository.findUnivCommentById(commentIdx);
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
 
@@ -152,4 +212,5 @@ public class CommentService {
         }
 
     }
+
 }

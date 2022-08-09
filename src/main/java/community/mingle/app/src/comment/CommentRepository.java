@@ -27,14 +27,7 @@ public class CommentRepository {
      * @return Member
      */
     public Member findMemberbyId(Long id) {
-        List<Member> m = em.createQuery("select m from Member m where m.id = :id", Member.class)
-                .setParameter("id", id)
-                .getResultList();
-        if (m.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
-            return m.get(0);
-        } else { //없으면 null 반환
-            return null;
-        }
+        return em.find(Member.class, id);
     }
 
 
@@ -98,6 +91,13 @@ public class CommentRepository {
         return comment;
     }
 
+    public TotalComment findTotalCommentById(Long id) {
+        return em.find(TotalComment.class, id);
+    }
+
+    public UnivComment findUnivCommentById(Long id) {
+        return em.find(UnivComment.class, id);
+    }
 
     public Long save(TotalCommentLike totalCommentLike) {
         em.persist(totalCommentLike);
@@ -107,29 +107,6 @@ public class CommentRepository {
     public Long save(UnivCommentLike univCommentLike) {
         em.persist(univCommentLike);
         return univCommentLike.getId();
-    }
-
-    public TotalComment findTotalCommentbyId(Long commentIdx) {
-        List<TotalComment> totalComments = em.createQuery("select tp from TotalComment tp where tp.id = :commentIdx", TotalComment.class)
-                .setParameter("commentIdx", commentIdx)
-                .getResultList();
-        if (totalComments.size() != 0) {
-            return totalComments.get(0);
-        } else {
-            return null;
-        }
-    }
-
-
-    public UnivComment findUnivCommentbyId(Long commentIdx) {
-        List<UnivComment> univComments = em.createQuery("select tp from UnivComment tp where tp.id = :commentIdx", UnivComment.class)
-                .setParameter("commentIdx", commentIdx)
-                .getResultList();
-        if (univComments.size() != 0) {
-            return univComments.get(0);
-        } else {
-            return null;
-        }
     }
 
 
