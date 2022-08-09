@@ -1,14 +1,13 @@
 package community.mingle.app.src.member;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Report;
-import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Report;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.member.model.ReportDTO;
 import community.mingle.app.src.member.model.ReportRequest;
 import community.mingle.app.utils.JwtService;
@@ -30,6 +29,25 @@ public class MemberService {
 
 
     @Transactional
+    public void  deleteMember() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member;
+        member = memberRepository.findMember(userIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        try {
+            member.deleteMember();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+
     public void modifyNickname(String nickname) throws BaseException {
 
         Long userIdByJwt = jwtService.getUserIdx();
@@ -226,5 +244,6 @@ public class MemberService {
         }
 
     }
+
 
 }

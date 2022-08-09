@@ -50,7 +50,7 @@ public enum BaseResponseStatus {
     ALREADY_REPORTED(false, 2021, "이미 신고한 컨텐츠입니다."),
 //    DELETE_USER_NOTEXIST(false,2020,"삭제할 유저가 존재하지 않습니다."),
 //    POSTS_USERS_EXISTS_NICKNAME(false, 5030, "중복된 닉네임입니다."),
-
+    DELETE_FAIL_USER(false, 1000, "유저 삭제를 실패하였습니다."),
 
     /** 3. /posts  */
 //    POST_INVALID_CONTENTS(false,2030,"내용의 글자수를 확인해주세요."),

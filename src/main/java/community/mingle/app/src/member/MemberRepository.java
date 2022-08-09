@@ -205,4 +205,5 @@ public class MemberRepository {
 //                .getResultList();
 //        return resultList;
 //    }
+
 }

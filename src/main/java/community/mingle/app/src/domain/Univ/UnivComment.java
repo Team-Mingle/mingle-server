@@ -2,6 +2,7 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ public class UnivComment {
     private Member member;
 
     private String content;
+
 
     @Column(name = "parent_comment_id")
     private Long parentCommentId;

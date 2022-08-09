@@ -96,6 +96,13 @@ public class Member {
     }
 
 
+    public void deleteMember() {
+        this.deletedAt = LocalDateTime.now();
+        this.status = Userstatus.INACTIVE;
+
+    }
+
+
     //== 비즈니스 로직 ==//
     //닉네임 수정
     public void modifyNickname(String nickname) {

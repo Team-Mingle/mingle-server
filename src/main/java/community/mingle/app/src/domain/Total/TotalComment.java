@@ -37,6 +37,7 @@ public class TotalComment {
     private String content;
 
 
+
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
