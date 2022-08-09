@@ -26,14 +26,20 @@ public class UnivPost {
     private Member member;
 
     @OneToMany(mappedBy = "univPost")
-    private List<UnivComment> comments = new ArrayList<>();
+    private List<UnivComment> univComments = new ArrayList<>();
 
 
-    /** 2.3 추가 */
+    /** 3.3 추가 */
     @OneToMany(mappedBy = "univPost")
     private List<UnivPostLike> univPostLikes = new ArrayList<>();
 
-    /** 2.3 추가  - 단방향 */
+    /**
+     * 3.10 추가
+     */
+    @OneToMany(mappedBy = "univPost")
+    private List<UnivPostScrap> univPostScraps = new ArrayList<>();
+
+    /** 3.3 추가  - 단방향 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "univ_id")
     private UnivName univName;
@@ -75,8 +81,15 @@ public class UnivPost {
         univPost.setAnonymous(req.isAnonymous());
         univPost.status = PostStatus.ACTIVE;
         return univPost;
-
     }
 
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
+    //== 비즈니스 로직 == //
+//    public static boolean isLiked(Member member) {
+//        if (this.univPostLikes)
+//    }
 
 }

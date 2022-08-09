@@ -15,6 +15,8 @@ public class GetTotalPostsResponse {
     private int commentCount;
     private String createdTime;
 
+    private String postImgUrl;
+
 
     public GetTotalPostsResponse(TotalPost totalPost) {
         this.totalPostIdx = totalPost.getId();
@@ -24,6 +26,7 @@ public class GetTotalPostsResponse {
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.commentCount = totalPost.getTotalPostComments().size();
         this.createdTime = convertLocaldatetimeToTime(totalPost.getCreatedAt());
+//        this.postImgUrl = totalPost.getTotalPostComments().get(0);
     }
 
 }

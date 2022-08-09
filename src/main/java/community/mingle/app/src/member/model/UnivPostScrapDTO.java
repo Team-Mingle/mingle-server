@@ -1,4 +1,4 @@
-package community.mingle.app.src.post.model;
+package community.mingle.app.src.member.model;
 
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.AllArgsConstructor;
@@ -7,27 +7,26 @@ import lombok.Getter;
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
 @Getter
-//@AllArgsConstructor
-public class GetUnivBestResponse {
+@AllArgsConstructor
+public class UnivPostScrapDTO {
 
-    private Long univPostIdx;
+    private Long univPostId;
     private String title;
     private String contents;
     private String nickname;
     private int likeCount;
     private int commentCount;
-//    private LocalDateTime createdTime;
-    private String createdAt;
+    private String createdTime;
 
 
-    public GetUnivBestResponse(UnivPost p) {
-        univPostIdx = p.getId();
+    public UnivPostScrapDTO(UnivPost p) {
+        univPostId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
         nickname = p.getMember().getNickname();
         likeCount = p.getUnivPostLikes().size();
         commentCount = p.getUnivComments().size();
-        createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
+        createdTime = convertLocaldatetimeToTime(p.getCreatedAt());
     }
 
 }

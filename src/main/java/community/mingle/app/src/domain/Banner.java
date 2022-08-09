@@ -21,6 +21,6 @@ public class Banner {
     @Column(name = "img_url", columnDefinition = "TEXT")
     private String url;
 
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

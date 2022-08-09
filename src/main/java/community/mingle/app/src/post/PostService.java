@@ -2,9 +2,10 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
+import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.post.model.PostCreateRequest;
-import community.mingle.app.src.post.model.PostCreateResponse;
+import community.mingle.app.src.post.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import community.mingle.app.config.BaseException;
@@ -12,7 +13,11 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
@@ -47,7 +52,7 @@ public class PostService {
     }
 
     /**
-     * 3.3 학교 베스트 게시판 API
+     * 3.3 학교 베스트 게시판 API --> try-catch 설명
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
 //       try { //null 이 나오기 전에 쿼리문에서 에러가 남.
@@ -113,4 +118,232 @@ public class PostService {
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
+
+    /**
+     * 3.9.1 통합 게시물 상세 - 게시물 API
+     */
+    @Transactional(readOnly = true)
+    public TotalPost getTotalPost(Long id) throws BaseException{
+
+        TotalPost totalPost = postRepository.getTotalPostbyId(id);
+        return totalPost;
+    }
+
+    /**
+     * 3.9.1 통합 게시물 상세 - 게시물 API
+     */
+    @Transactional(readOnly = true)
+    public TotalPostDto getTotalPostDto(TotalPost totalPost) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        boolean isMyPost = false;
+        boolean isLiked = false;
+        boolean isScraped = false;
+        try {
+            if (totalPost.getMember().getId() == memberIdByJwt) {
+                isMyPost = true;
+            }
+            if (postRepository.checkTotalIsLiked(totalPost.getId(), memberIdByJwt) == true) {
+                isLiked = true;
+            }
+            if (postRepository.checkTotalIsScraped(totalPost.getId(), memberIdByJwt) == true) {
+                isScraped = true;
+            }
+        } catch (Exception e) {
+        throw new BaseException(DATABASE_ERROR);
+        }
+        TotalPostDto totalPostDto = new TotalPostDto(totalPost, isMyPost, isLiked, isScraped);
+
+        return totalPostDto;
+    }
+
+    /**
+     * 3.9.2 통합 게시물 상세 - 댓글 API
+     */
+    @Transactional(readOnly = true)
+    public List<TotalCommentDto> getTotalCommentList(Long id) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        try {
+            List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
+            List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
+            List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
+            for (TotalComment tc : totalCommentList) {
+                List<TotalComment> coComments = totalCocommentList.stream()
+                        .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
+                        .collect(Collectors.toList());
+                List<TotalCocommentDto> coCommentDtos = coComments.stream()
+                        .map(p -> new TotalCocommentDto(p, tc, memberIdByJwt))
+                        .collect(Collectors.toList());
+
+//            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
+                TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, memberIdByJwt);
+                totalCommentDtoList.add(totalCommentDto);
+            }
+            return totalCommentDtoList;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+
+    }
+
+    /**
+     * 3.10 학교 게시물 상세
+     */
+    @Transactional(readOnly = true)
+    public UnivPost findUnivPost(Long univPostId) throws BaseException {
+
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        Member member;
+
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
+        }
+
+
+        UnivPost univPost = postRepository.findUnivPost(univPostId);
+
+
+//        List<UnivComment> univComments = univPost.getComments();
+//
+//        List<GetUnivCommentsRes> comments = univComments.stream()
+//                .map(p -> new GetUnivCommentsRes(p))
+//                .collect(Collectors.toList());
+
+        return univPost;
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetUnivCommentsRes> findUnivCoComment(UnivPost univPost) {
+
+        List<GetUnivCommentsRes> commentsList = new ArrayList<>();
+
+//        List<UnivComment> nullCommentsList = new ArrayList<>(); // 1번
+
+//        List<UnivComment> comments = univPost.getComments();
+        List<UnivComment> comments = postRepository.findUnivComment(univPost.getId()); //null 도 포함
+
+//        for (UnivComment comment : comments) {
+//            if (comment.getParentCommentId() == null) {
+//                nullCommentsList.add(comment);
+//            }
+//        }
+//        List<UnivComment> nullCommentList = comments.stream()
+//                .filter(obj -> obj.getParentCommentId()==null)
+//                .collect(Collectors.toList());
+
+//        List<UnivComment> nullComments = postRepository.findNullComments(comments); //2번
+
+        List<UnivComment> coComments; // 대댓글 리스트 : null 일수도 있지.
+
+        for (UnivComment univComment : comments) {
+            coComments = postRepository.findUnivCoComment(univPost, univComment); //댓글 하나마다 대댓글 리스트 찾음.
+            List<GetCoCommentsRes> coCommentsRes = coComments.stream()
+                    .map(cc -> new GetCoCommentsRes(cc))
+                    .collect(Collectors.toList());
+            GetUnivCommentsRes commentsRes = new GetUnivCommentsRes(univComment, coCommentsRes);
+            commentsList.add(commentsRes);
+        }
+
+        return commentsList;
+
+//        List<GetCoCommentsRes> coCommentsRes = coComments.stream()
+//        .map(cc -> new GetCoCommentsRes(cc))
+//        .collect(Collectors.toList());
+
+//        return commentsRes;
+
+//        UnivComment univComment = postRepository.findUnivCoComment(univPost.getComments());
+    }
+
+
+
+    /**
+     * 3.10.1 학교 게시물 상세 - 게시물 API
+     */
+    @Transactional(readOnly = true)
+    public UnivPost getUnivPost(Long postId) throws BaseException {
+        try {
+            UnivPost univPost = postRepository.getUnivPostById(postId);
+            return univPost;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public UnivPostDTO getUnivPostDto(UnivPost univPost) throws BaseException{
+        try {
+            Long memberIdByJwt = jwtService.getUserIdx();
+            boolean isMyPost = false;
+            boolean isLiked = false;
+            boolean isScraped = false;
+            if (univPost.getMember().getId() == memberIdByJwt) {
+                isMyPost = true;
+            }
+            if (postRepository.checkUnivIsLiked(univPost.getId(), memberIdByJwt) == true) {
+                isLiked = true;
+            }
+            if (postRepository.checkUnivIsScraped(univPost.getId(), memberIdByJwt) == true) {
+                isScraped = true;
+            }
+            UnivPostDTO result = new UnivPostDTO(univPost, isMyPost, isLiked, isScraped);
+            return result;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 3.10.2 학교 게시물 상세 - 댓글 API
+     */
+    @Transactional(readOnly = true)
+    public List<UnivCommentDTO> getUnivComments(Long postId) throws BaseException {
+
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        Member member;
+        member = postRepository.findMemberbyId(memberIdByJwt);
+
+        try {
+            //1. postId 의 댓글, 대댓글 리스트 각각 가져오기
+            List<UnivComment> univComments = postRepository.getUnivComments(postId); //댓글
+            List<UnivComment> univCoComments = postRepository.getUnivCoComments(postId); //대댓글
+
+            //2. 댓글 + 대댓글 DTO 생성
+            List<UnivCommentDTO> univCommentDTOList = new ArrayList<>();
+
+            //3. 댓글 리스트 돌면서 댓글 하나당 대댓글 리스트 넣어서 합쳐주기
+            for (UnivComment c : univComments) {
+                //parentComment 하나당 해당하는 UnivComment 타입의 대댓글 찾아서 리스트 만들기
+                List<UnivComment> CoCommentList = univCoComments.stream()
+                        .filter(cc -> c.getId().equals(cc.getParentCommentId()))
+                        .collect(Collectors.toList());
+
+//                postRepository.checkCoCommentLiked(CoCommentList);
+
+                //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
+                List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
+                        .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt))
+                        .collect(Collectors.toList());
+
+                /**
+                 * 얘가 쿼리문 많이나옴
+                 */
+                //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
+
+                //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
+                UnivCommentDTO univCommentDTO = new UnivCommentDTO(c, coCommentDTO, memberIdByJwt);
+                univCommentDTOList.add(univCommentDTO);
+            }
+            return univCommentDTOList;
+
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
 }

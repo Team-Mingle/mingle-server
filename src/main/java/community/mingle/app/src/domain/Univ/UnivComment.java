@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,9 +35,20 @@ public class UnivComment {
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
+    @Column(name = "anonymous_id")
+    private Long anonymousId;
+
+    /**
+     * 양방향 3.10 추가
+     */
+    @OneToMany(mappedBy = "univComment")
+    private List<UnivCommentLike> univCommentLikes = new ArrayList<>();
+
+
     /** 익명방법? */
     @Column(name = "is_anonymous")
     private boolean isAnonymous;
+
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -49,6 +62,14 @@ public class UnivComment {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
+
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
+    public void modifyInactiveStatus() {
+        this.status = PostStatus.INACTIVE;
+    }
 
 
 

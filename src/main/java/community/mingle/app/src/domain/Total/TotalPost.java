@@ -34,6 +34,9 @@ public class TotalPost {
     @OneToMany(mappedBy = "totalPost")
     private List<TotalPostLike> totalPostLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalPostScrap> totalPostScraps = new ArrayList<>();
+
 
 //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum
@@ -61,6 +64,14 @@ public class TotalPost {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
+
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
+
+    //postImg 추가하기
+//    @OneToMany
 
 
 }
