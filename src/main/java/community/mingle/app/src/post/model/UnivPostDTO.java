@@ -17,15 +17,10 @@ public class UnivPostDTO {
     private int likeCount;
     private int scrapCount;
     private int commentCount;
-    private String createdTime;
-
     private boolean isMyPost;
     private boolean isLiked;
     private boolean isScraped;
-
-//    private boolean isLiked;
-//
-//    private boolean isScraped;
+    private String createdTime;
 
     //private List<PostImgDTO> postImgUrls;
 
@@ -34,7 +29,6 @@ public class UnivPostDTO {
         univPostId = u.getId();
         title = u.getTitle();
         content = u.getContent();
-//        nickname = u.getMember().getNickname();
         if (u.isAnonymous() == true) {
             this.nickname = "글쓴이";
         } else {
@@ -43,7 +37,9 @@ public class UnivPostDTO {
         likeCount = u.getUnivPostLikes().size();
         scrapCount = u.getUnivPostScraps().size();
         commentCount = u.getUnivComments().size();
-//        isLiked = u.getUnivPostLikes()
+        this.isMyPost = isMyPost;
+        this.isLiked = isLiked;
+        this.isScraped = isScraped;
         createdTime = convertLocaldatetimeToTime(u.getCreatedAt());
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;

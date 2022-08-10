@@ -13,30 +13,30 @@ public class UnivCommentDTO {
     private Long commentId;
     private String nickname;
     private String content;
-    private String createdTime;
     private int likeCount;
+    private boolean isMyComment;
     private boolean isLiked;
+    private String createdTime;
     private List<UnivCoCommentDTO> coCommentsList;
 
 
     public UnivCommentDTO (UnivComment c, List<UnivCoCommentDTO> cc, Long memberId) {
         commentId = c.getId();
-//        nickname = c.getMember().getNickname();
         if (c.isAnonymous() == true) {
             this.nickname = "익명 "+c.getAnonymousId();
         } else {
             this.nickname = c.getMember().getNickname();
         }
+
         if (c.getStatus() == PostStatus.REPORTED) {
-            content = "신고된 댓글 입니다";
+            content = "신고된 댓글 입니다.";
         } else if (c.getStatus() == PostStatus.INACTIVE) {
-            content = "삭제된 댓글 입니다";
+            content = "삭제된 댓글 입니다.";
         } else {
             content = c.getContent();
         }
-        createdTime = convertLocaldatetimeToTime(c.getCreatedAt());
+
         likeCount = c.getUnivCommentLikes().size();
-        coCommentsList = cc;
 
         for (UnivCommentLike ucl : c.getUnivCommentLikes()) { //영속성
             if (ucl.getMember().getId() == memberId) { //배치사이즈?
@@ -46,5 +46,11 @@ public class UnivCommentDTO {
                 isLiked = false;
             }
         }
+        if (c.getMember().getId() == memberId) {
+            isMyComment = true;
+        }
+
+        createdTime = convertLocaldatetimeToTime(c.getCreatedAt());
+        coCommentsList = cc;
     }
 }

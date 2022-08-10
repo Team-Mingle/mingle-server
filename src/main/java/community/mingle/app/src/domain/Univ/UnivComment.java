@@ -2,10 +2,10 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="univ_comment")
 
@@ -73,6 +74,20 @@ public class UnivComment {
         this.status = PostStatus.INACTIVE;
     }
 
+    public static UnivComment createComment(UnivPost univPost, Member member, String content, Long parentCommentId, boolean isAnonymous, Long anonymousId) {
+        UnivComment univComment = new UnivComment();
+        univComment.setUnivPost(univPost);
+        univComment.setMember(member);
+        univComment.setContent(content);
+        univComment.setParentCommentId(parentCommentId);
+        univComment.setAnonymous(isAnonymous);
+        univComment.setAnonymousId(anonymousId);
+        univComment.createdAt = LocalDateTime.now();
+        univComment.updatedAt = LocalDateTime.now();
+        univComment.status = PostStatus.ACTIVE;
+
+        return univComment;
+    }
 
     public void deleteUnivComment (){
         this.deletedAt = LocalDateTime.now();
