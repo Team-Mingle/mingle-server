@@ -29,8 +29,6 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 public class    PostController {
 
     private final PostService postService;
-    private final JwtService jwtService;
-    private final PostRepository postRepository;
 
 
     /**
