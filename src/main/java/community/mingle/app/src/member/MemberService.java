@@ -23,6 +23,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
 
+    /**
+     * 2.1 닉네임 수정
+     */
     @Transactional
     public void modifyNickname(String nickname) throws BaseException {
 
@@ -41,6 +44,9 @@ public class MemberService {
     }
 
 
+    /**
+     * 2.5 univ 스크랩
+     */
     public List<UnivPost> getUnivScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         Member member = memberRepository.findMember(userIdByJwt);
@@ -53,6 +59,10 @@ public class MemberService {
         }
     }
 
+
+    /**
+     * 2.6 전체 스크랩
+     */
     public List<TotalPost> getTotalScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         Member member = memberRepository.findMember(userIdByJwt);

@@ -39,6 +39,7 @@ public class PostService {
         }
     }
 
+
     /**
      * 3.2 홍콩 배스트 게시판 API
      */
@@ -49,6 +50,7 @@ public class PostService {
         }
         return totalPosts;
     }
+
 
     /**
      * 3.3 학교 베스트 게시판 API --> try-catch 설명
@@ -78,9 +80,8 @@ public class PostService {
 //        } catch (Exception e) {
 //            throw new BaseException(EMPTY_BEST_POSTS);
 //        }
-
-
     }
+
 
     /**
      * 3.4 광장 게시판 리스트 API
@@ -94,8 +95,9 @@ public class PostService {
     }
 
 
+
     /**
-     * 페이징 테스트
+     * 3.4 페이징 테스트
      */
     public List<TotalPost> findTotalPostByPaging(int category, Long postId) throws BaseException {
         List<TotalPost> totalPostList = postRepository.findTotalPostByPaging(category, postId);
@@ -104,6 +106,7 @@ public class PostService {
         }
         return totalPostList;
     }
+
 
     /**
      * 3.5 게시물 작성 API
@@ -167,6 +170,7 @@ public class PostService {
         }
 
     }
+
 
     /**
      * 3.10.2 학교 게시물 상세 - 댓글 API

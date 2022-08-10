@@ -22,27 +22,10 @@ public class MemberRepository {
         return em.find(Member.class, userIdByJwt);
     }
 
-    public List<UnivPostScrapDTO> findScraps(Long id) {
-        List resultList = em.createQuery("select m.univPostScraps, m.totalPostScraps from Member m where m.id = :id")
-                .setParameter("id", id)
-                .getResultList();
-        return resultList;
-    }
 
-    public List<UnivPostScrapDTO> findScraps1(Long id) {
-        List resultList = em.createQuery("select UnivPostScrap ,TotalPostScrap from UnivPostScrap us , TotalPostScrap ts where us.member.id = :id and ts.member.id = :id order by us.createdAt, ts.createdAt desc")
-                .setParameter("id", id)
-                .getResultList();
-        return resultList;
-    }
-
-    public List<UnivPostScrap> findUnivScraps1(Long memberId) {
-        List<UnivPostScrap> resultList = em.createQuery("select us from UnivPostScrap us join us.member m where m.id = :id order by us.createdAt desc", UnivPostScrap.class)
-                .setParameter("id", memberId)
-                .getResultList();
-        return resultList;
-    }
-
+    /**
+     * 2.5 내가 스크랩한 글 - 대학
+     */
     public List<UnivPost> findUnivScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p " +
                         "where m.id = :id and p.id < :postId order by p.createdAt desc", UnivPost.class)
@@ -54,6 +37,9 @@ public class MemberRepository {
     }
 
 
+    /**
+     * 2.6 내가 스크랩 한 글 - 전체
+     */
     public List<TotalPost> findTotalScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p" +
                         " where m.id = :id and p.id < :postId order by p.createdAt desc", TotalPost.class)
@@ -70,4 +56,6 @@ public class MemberRepository {
 //                .getResultList();
 //        return resultList;
 //    }
+
+
 }

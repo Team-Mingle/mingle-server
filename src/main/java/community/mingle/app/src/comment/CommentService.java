@@ -23,8 +23,9 @@ public class CommentService {
     private final JwtService jwtService;
     private final CommentRepository commentRepository;
 
+
     /**
-     * 전체게시판 댓글 작성 api
+     * 4.1 전체게시판 댓글 작성 api
      * @return commentId
      */
     @Transactional
@@ -58,6 +59,10 @@ public class CommentService {
         }
     }
 
+
+    /**
+     * 4.2 학교 댓글 작성 api
+     */
     @Transactional
     public Long createUnivComment(PostUnivCommentRequest request) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -86,6 +91,8 @@ public class CommentService {
         return comment.getId();
 
     }
+
+
 
 
 }

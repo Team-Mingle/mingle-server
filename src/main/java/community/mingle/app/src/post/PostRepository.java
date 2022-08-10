@@ -23,8 +23,8 @@ public class PostRepository {
     public List<Banner> findBanner(){
         return em.createQuery("select b from Banner b", Banner.class)
                 .getResultList();
-
     }
+
 
     /**
      * 2.2 전체 베스트 게시판 api
@@ -38,6 +38,7 @@ public class PostRepository {
 
         return recentTotalPosts;
     }
+
 
     /**
      * 2.3 학교 베스트 게시판 api
@@ -55,6 +56,7 @@ public class PostRepository {
                 .getResultList();
     }
 
+
     /**
      * 2.4 광장 게시판 api
      */
@@ -66,7 +68,7 @@ public class PostRepository {
 
 
     /**
-     * 페이징 테스트
+     * 2.4 페이징 테스트
      */
     public List<TotalPost> findTotalPostByPaging(int category, Long postId) {
         return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where c.id = :categoryId and p.id < :postId order by p.createdAt desc ", TotalPost.class)
@@ -82,15 +84,9 @@ public class PostRepository {
      * memberId 로 Member 반환
      */
     public Member findMemberbyId(Long id) {
-        List<Member> m = em.createQuery("select m from Member m where m.id = :id", Member.class)
-                .setParameter("id", id)
-                .getResultList();
-        if (m.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
-            return m.get(0);
-        } else { //없으면 null 반환
-            return null;
-        }
+        return em.find(Member.class, id);
     }
+
 
     public Long save(UnivPost univPost) {
         em.persist(univPost);
@@ -115,7 +111,7 @@ public class PostRepository {
 
 
     /**
-     * getUnivPostDetail >> NEW <<
+     * 3.10 getUnivPostDetail >> NEW <<
      */
     public UnivPost getUnivPostById(Long id) {
         UnivPost univPost = em.createQuery("select up from UnivPost up where up.id = :id", UnivPost.class)
@@ -168,5 +164,6 @@ public class PostRepository {
                 .getResultList();
         return univCoCommentList;
     }
+
 
 }

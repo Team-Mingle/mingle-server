@@ -39,6 +39,7 @@ public class PostController {
     private final JwtService jwtService;
     private final PostRepository postRepository;
 
+
     /**
      * 3.1 광고 배너 API
      */
@@ -62,10 +63,10 @@ public class PostController {
     }
 
 
+
     /**
      * 3.2 전체 배스트 게시판 API
      */
-
     @GetMapping("/total/best")
     @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
     @ApiResponses ({
@@ -85,6 +86,7 @@ public class PostController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
 
 
     /**
@@ -115,6 +117,7 @@ public class PostController {
     }
 
 
+
     /**
      * 3.4 전체 게시판 리스트 API
      */
@@ -138,8 +141,9 @@ public class PostController {
     }
 
 
+
     /**
-     * 전체 게시물 리스트 by paging test
+     * 3.4 전체 게시물 리스트 by paging test
      * @param category
      * @param postId
      */
@@ -156,6 +160,7 @@ public class PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 
 
 
@@ -182,6 +187,7 @@ public class PostController {
 
 
 
+
     /**
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
@@ -200,6 +206,7 @@ public class PostController {
         }
     }
 
+
     /**
      * 3.10.2 학교 게시물 상세 - 댓글 API
      */
@@ -215,5 +222,6 @@ public class PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 
 }

@@ -56,6 +56,7 @@ public class MemberController {
     }
 
 
+
     /**
      * 2.5 내가 스크랩 한 글 (대학) API
      */
@@ -72,6 +73,8 @@ public class MemberController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
 
     /**
      * 2.6 내가 스크랩 한 글 (전체) API

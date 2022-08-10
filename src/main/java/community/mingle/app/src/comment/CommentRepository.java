@@ -22,16 +22,20 @@ public class CommentRepository {
         return em.find(Member.class, id);
     }
 
+
     public TotalPost findTotalPostbyId(Long postId) {
         return em.find(TotalPost.class, postId);
     }
+
 
     public UnivPost findUnivPostById(Long postId) {
         return em.find(UnivPost.class , postId);
     }
 
+
+
     /**
-     * 익명 몇 인지 찾기 (anonymousId)
+     * 4.1 익명 몇 인지 찾기 (anonymousId)
      */
     public Long findTotalAnonymousId(TotalPost post, Long memberIdByJwt ) {
         Long newAnonymousId;
@@ -72,6 +76,10 @@ public class CommentRepository {
         return comment;
     }
 
+
+    /**
+     * 4.2
+     */
     public Long findUnivAnonymousId(UnivPost univPost, Long memberIdByJwt) {
         Long newAnonymousId;
 

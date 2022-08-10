@@ -19,8 +19,9 @@ public class CommentController {
     private final CommentRepository commentRepository;
 
 
+
     /**
-     * 전체 게시판 댓글 작성 api
+     * 4.1 전체 게시판 댓글 작성 api
      */
     @PostMapping("/total")
     public BaseResponse<Long> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
@@ -34,8 +35,10 @@ public class CommentController {
     }
 
 
+
+
     /**
-     * 4.1 학교 게시판 댓글 작성 api
+     * 4.2  학교 게시판 댓글 작성 api
      */
     @PostMapping("/univ")
     public BaseResponse<Long> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
@@ -47,6 +50,9 @@ public class CommentController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
+
 }
 
 
