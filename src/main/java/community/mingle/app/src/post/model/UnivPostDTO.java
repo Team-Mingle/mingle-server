@@ -21,6 +21,7 @@ public class UnivPostDTO {
     private boolean isLiked;
     private boolean isScraped;
     private String createdTime;
+
     //private List<PostImgDTO> postImgUrls;
 
 
@@ -28,7 +29,6 @@ public class UnivPostDTO {
         univPostId = u.getId();
         title = u.getTitle();
         content = u.getContent();
-//        nickname = u.getMember().getNickname();
         if (u.isAnonymous() == true) {
             this.nickname = "글쓴이";
         } else {
@@ -41,5 +41,8 @@ public class UnivPostDTO {
         this.isLiked = isLiked;
         this.isScraped = isScraped;
         createdTime = convertLocaldatetimeToTime(u.getCreatedAt());
+        this.isMyPost = isMyPost;
+        this.isLiked = isLiked;
+        this.isScraped = isScraped;
     }
 }

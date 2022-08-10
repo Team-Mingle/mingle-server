@@ -68,10 +68,11 @@ public class Member {
     private List<TotalComment> totalComments = new ArrayList<>();
 
 
-    private LocalDateTime agreed_at;
+    private LocalDateTime agreedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime deleted_at;
+    private LocalDateTime deletedAt;
+
 
     @Enumerated(EnumType.STRING)
 //    @Column(name = "status",columnDefinition = "ENUM('ACTIVE','INACTIVE','REPORTED','ADMIN", nullable = false)
@@ -86,7 +87,7 @@ public class Member {
         member.setNickname(nickname);
         member.setEmail(email);
         member.setPwd(pwd);
-        member.agreed_at = LocalDateTime.now();
+        member.agreedAt = LocalDateTime.now();
         member.createdAt = LocalDateTime.now();
         member.updatedAt = LocalDateTime.now();
         member.status = Userstatus.ACTIVE;
@@ -95,10 +96,21 @@ public class Member {
     }
 
 
+    public void deleteMember() {
+        this.deletedAt = LocalDateTime.now();
+        this.status = Userstatus.INACTIVE;
+
+    }
+
+
     //== 비즈니스 로직 ==//
     //닉네임 수정
     public void modifyNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void modifyReportStatus() {
+        this.status = Userstatus.REPORTED;
     }
 
 

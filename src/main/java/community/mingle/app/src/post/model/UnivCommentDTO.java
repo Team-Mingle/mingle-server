@@ -1,4 +1,5 @@
 package community.mingle.app.src.post.model;
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivCommentLike;
 import lombok.Getter;
@@ -21,13 +22,20 @@ public class UnivCommentDTO {
 
     public UnivCommentDTO (UnivComment c, List<UnivCoCommentDTO> cc, Long memberId) {
         commentId = c.getId();
-//        nickname = c.getMember().getNickname();
         if (c.isAnonymous() == true) {
             this.nickname = "익명 "+c.getAnonymousId();
         } else {
             this.nickname = c.getMember().getNickname();
         }
-        content = c.getContent();
+
+        if (c.getStatus() == PostStatus.REPORTED) {
+            content = "신고된 댓글 입니다.";
+        } else if (c.getStatus() == PostStatus.INACTIVE) {
+            content = "삭제된 댓글 입니다.";
+        } else {
+            content = c.getContent();
+        }
+
         likeCount = c.getUnivCommentLikes().size();
 
         for (UnivCommentLike ucl : c.getUnivCommentLikes()) { //영속성

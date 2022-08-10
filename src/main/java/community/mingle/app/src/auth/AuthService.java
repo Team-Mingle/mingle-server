@@ -140,11 +140,9 @@ public class AuthService {
         if (redisUtil.getData(email) == null) {
             throw new BaseException(EMAIL_CODE_EXPIRED);
         }
-
         if (!(code.equals(redisUtil.getData(email)))) {
             throw new BaseException(EMAIL_CODE_FAIL);
         }
-
         if (code.equals(redisUtil.getData(email))) {
             return;
         }

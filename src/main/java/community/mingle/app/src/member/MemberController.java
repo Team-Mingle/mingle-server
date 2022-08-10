@@ -3,21 +3,16 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
-import community.mingle.app.src.member.model.PatchNicknameRequest;
-import community.mingle.app.src.member.model.TotalPostScrapDTO;
-import community.mingle.app.src.member.model.UnivPostScrapDTO;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import community.mingle.app.src.member.model.*;
+import io.swagger.v3.oas.annotations.media.*;
+import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,7 +53,73 @@ public class MemberController {
 
 
     /**
-     * 2.5 내가 스크랩 한 글 (대학) API
+     * 2.3 내가 쓴 글 조회 - 통합 api
+     */
+    @GetMapping("/posts/total")
+    public BaseResponse<List<TotalMyPostDTO>> getTotalPosts() {
+        try {
+            List<TotalPost> totalPosts = memberService.getTotalPosts();
+            List<TotalMyPostDTO> result = totalPosts.stream()
+                    .map(p -> new TotalMyPostDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 2.4 내가 쓴 글 조회 - 학교 api
+     */
+    @GetMapping("/posts/univ")
+    public BaseResponse<List<UnivMyPostDTO>> getUnivPosts() {
+        try {
+            List<UnivPost> univPosts = memberService.getUnivPosts();
+            List<UnivMyPostDTO> result = univPosts.stream()
+                    .map(p -> new UnivMyPostDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 2.5 내가 쓴 댓글 조회 - 전체 api
+     */
+    @GetMapping("/comments/total")
+    public BaseResponse<List<TotalMyCommentDTO>> getTotalComments() {
+        try {
+            List<TotalPost> totalComments = memberService.getTotalComments();
+            List<TotalMyCommentDTO> result = totalComments.stream()
+                    .map(p -> new TotalMyCommentDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 2.6 내가 쓴 댓글 조회 - 전체 api
+     */
+    @GetMapping("/comments/univ")
+    public BaseResponse<List<UnivMyCommentDTO>> getUnivComments() {
+        try {
+            List<UnivPost> univComments = memberService.getUnivComments();
+            List<UnivMyCommentDTO> result = univComments.stream()
+                    .map(p -> new UnivMyCommentDTO(p))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+
+    /**
+     * 2.7 내가 스크랩 한 글 (대학) API
      */
     @GetMapping("/scraps/univ")
     public BaseResponse<List<UnivPostScrapDTO>> getUnivScraps(@RequestParam Long postId) {
@@ -77,7 +138,7 @@ public class MemberController {
 
 
     /**
-     * 2.6 내가 스크랩 한 글 (전체) API
+     * 2.8 내가 스크랩 한 글 (전체) API
      */
     @GetMapping("/scraps/total")
     public BaseResponse<List<TotalPostScrapDTO>> getTotalScraps(@RequestParam Long postId) {
@@ -92,4 +153,46 @@ public class MemberController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
+    /**
+     * 2.9 유저 삭제 API
+     */
+    @PatchMapping("/delete")
+    @Operation(summary = "2.6  deleteMemberIdx API", description = "2.6 유저 삭제 API")
+    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<String> deleteMember() {
+        try {
+            memberService.deleteMember();
+            String result = "유저가 삭제되었습니다";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
+
+    /**
+     * 2.10 신고 API
+     */
+    @PostMapping("/report")
+    public BaseResponse<ReportDTO> createReport(@RequestBody ReportRequest reportRequest) {
+        try {
+            Member reportedMember = memberService.findReportedMember(reportRequest);
+            ReportDTO reportDTO = memberService.createReport(reportRequest, reportedMember);
+            memberService.checkReportedMember(reportedMember);
+            memberService.checkReportedPost(reportRequest);
+            return new BaseResponse<>(reportDTO);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }

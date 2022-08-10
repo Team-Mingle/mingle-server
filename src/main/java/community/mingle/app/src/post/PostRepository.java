@@ -1,13 +1,12 @@
 package community.mingle.app.src.post;
 
 
-import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Category;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +16,7 @@ import java.util.List;
 public class PostRepository {
 
     private final EntityManager em;
+
     /**
      * 2.1 광고 배너 API
      */
@@ -66,7 +66,6 @@ public class PostRepository {
                 .getResultList();
     }
 
-
     /**
      * 2.4 페이징 테스트
      */
@@ -79,19 +78,30 @@ public class PostRepository {
     }
 
 
-
     /**
-     * memberId 로 Member 반환
+     * 2.5 학교 게시판 api
      */
+    public List<UnivPost> findUnivPost(int category) {
+        return em.createQuery("select u from UnivPost u where u.category.id = :category order by u.createdAt desc", UnivPost.class)
+                .setParameter("category", category)
+                .getResultList();
+    }
+
+
     public Member findMemberbyId(Long id) {
         return em.find(Member.class, id);
     }
 
 
+    public Long save(TotalPost totalPost) {
+        em.persist(totalPost);
+        return totalPost.getId();
+    }
     public Long save(UnivPost univPost) {
         em.persist(univPost);
         return univPost.getId();
     }
+
 
     public Category findCategoryById(int id) { //쿼리문에서 나는 에러는 if else 로 잡아서 null 로 보낼 수 없다.
         Category category = em.createQuery("select c from Category c where c.id = :id", Category.class)
@@ -100,6 +110,76 @@ public class PostRepository {
         return category;
     }
 
+    public TotalPost findTotalPostById(Long id) {
+        return em.find(TotalPost.class,id);
+    }
+
+    public UnivPost findUnivPostById(Long id) {
+        return em.find(UnivPost.class, id);
+    }
+
+    public List<TotalComment> findAllTotalComment(Long postId) {
+        List<TotalComment> allTotalComments = em.createQuery("select c from TotalComment c where c.totalPost.id = :id", TotalComment.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allTotalComments;
+    }
+
+    public List<UnivComment> findAllUnivComment(Long postId) {
+        List<UnivComment> allUnivComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id", UnivComment.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allUnivComments;
+    }
+
+
+    public Long save(TotalPostScrap totalPostScrap) {
+        em.persist(totalPostScrap);
+        return totalPostScrap.getId();
+    }
+
+    public Long save(UnivPostScrap univPostScrap) {
+        em.persist(univPostScrap);
+        return univPostScrap.getId();
+    }
+
+    public Long save(TotalPostLike totalPostLike) {
+        em.persist(totalPostLike);
+        return totalPostLike.getId();
+    }
+
+    public Long save(UnivPostLike univPostLike) {
+        em.persist(univPostLike);
+        return univPostLike.getId();
+    }
+
+
+
+    public void deleteTotalLike(Long likeIdx) {
+        TotalPostLike findLike = em.find(TotalPostLike.class, likeIdx);
+        em.remove(findLike);
+
+    }
+
+    public void deleteUnivLike(Long likeIdx) {
+        UnivPostLike findLike = em.find(UnivPostLike.class, likeIdx);
+        em.remove(findLike);
+
+    }
+
+
+    public void deleteTotalScrap(Long scrapIdx) {
+        TotalPostScrap findScrap = em.find(TotalPostScrap.class, scrapIdx);
+        em.remove(findScrap);
+
+    }
+
+
+    public void deleteUnivScrap(Long scrapIdx) {
+        UnivPostScrap findScrap = em.find(UnivPostScrap.class, scrapIdx);
+        em.remove(findScrap);
+
+    }
 
     /*
     1. 포스트 찾음
@@ -108,6 +188,55 @@ public class PostRepository {
     4. 그 포스트의 댓글 (2) 리스트에서 parentCommentId 가 null 인 댓글들 리스트에서 하나씩 비교해가며 찾음. <Old 로직>
     3 & 4 포스트의 댓글, 대댓글 따로 다 찾음. 그다음에 댓글에 대댓글 리스트를 하나씩 매핑 <new 로직>
      */
+
+    /**
+     * 3.9 통합 게시물 상세 api
+     */
+
+    public TotalPost getTotalPostbyId(Long id) {
+        TotalPost totalPost = em.createQuery("select tp from TotalPost tp where tp.id = :id order by tp.createdAt desc", TotalPost.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return  totalPost;
+    }
+
+    public List<TotalComment> getTotalComments(Long id) {
+        List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null order by tc.createdAt asc", TotalComment.class)
+                .setParameter("id", id)
+                .getResultList();
+        return totalCommentList;
+    }
+
+    public List<TotalComment> getTotalCocomments(Long id) {
+        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is not null order by tc.createdAt asc", TotalComment.class)
+                .setParameter("id", id)
+                .getResultList();
+        return totalCocommentList;
+    }
+
+    public boolean checkTotalIsLiked(Long postId, Long memberId) {
+        List<TotalPostLike> totalPostLikeList = em.createQuery("select tpl from TotalPostLike tpl join tpl.totalPost tp join tpl.member m where tp.id = :postId and m.id = :memberId", TotalPostLike.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalPostLikeList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkTotalIsScraped(Long postId, Long memberId){
+        List<TotalPostScrap> totalPostScrapList = em.createQuery("select tps from TotalPostScrap tps join tps.totalPost tp join tps.member m where tp.id = :postId and m.id = :memberId", TotalPostScrap.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalPostScrapList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
     /**
@@ -132,7 +261,8 @@ public class PostRepository {
         }
     }
 
-    public boolean checkUnivPostIsScraped(Long postId, Long memberId) {
+
+    public boolean checkUnivPostIsScraped(Long postId, Long memberId){
         List<UnivPostScrap> univPostScrapList = em.createQuery("select ups from UnivPostScrap ups join ups.univPost up join ups.member m where up.id = :postId and m.id = :memberId", UnivPostScrap.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
@@ -143,6 +273,7 @@ public class PostRepository {
             return false;
         }
     }
+
 
     //parentCommentId 가 null 인 댓글만 가져오기 (commentLike 는? )
     public List<UnivComment> getUnivComments(Long postId) {
@@ -165,5 +296,20 @@ public class PostRepository {
         return univCoCommentList;
     }
 
+
+    /**
+     * 댓글 좋아요
+     */
+    public boolean checkUnivCommentIsLiked(Long commentId, Long memberId) {
+        List<UnivCommentLike> univCommentLikes = em.createQuery("select ucl from UnivCommentLike ucl join ucl.univComment uc join ucl.member m where uc.id = :commentId and m.id = :memberId", UnivCommentLike.class)
+                .setParameter("commentId", commentId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (univCommentLikes.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

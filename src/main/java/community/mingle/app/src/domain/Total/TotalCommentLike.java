@@ -4,10 +4,11 @@ import community.mingle.app.src.domain.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
+@Setter
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,14 +20,32 @@ public class TotalCommentLike {
     @Column(name = "totalcomment_like_id")
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "totalpost_id")
-//    private TotalPost post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "totalcomment_id")
+    private TotalComment totalComment;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public static TotalCommentLike likesTotalComment(TotalComment totalcomment, Member member) {
+        TotalCommentLike totalCommentLike = new TotalCommentLike();
+        totalCommentLike.setMember(member);
+        totalCommentLike.setTotalComment(totalcomment);
+        totalCommentLike.createdAt = LocalDateTime.now();
+
+        return totalCommentLike;
+    }
+
+
+
+
+
+
 }

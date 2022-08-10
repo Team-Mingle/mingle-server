@@ -1,5 +1,6 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivCommentLike;
 import lombok.Getter;
@@ -20,13 +21,9 @@ public class UnivCoCommentDTO {
     private String createdTime;
 
     public UnivCoCommentDTO(UnivComment parent, UnivComment cc, Long memberId) {
-
-//        boolean contains = cc.getUnivCommentLikes()
-
         this.commentId = cc.getId();
         this.parentCommentId = cc.getParentCommentId();
 
-//        this.nickname = cc.getMember().getNickname(); //jwt userIdx 로 멤버 찾음
         if (cc.isAnonymous() == true) {
             this.nickname = "익명 "+cc.getAnonymousId();
         } else{
@@ -38,7 +35,16 @@ public class UnivCoCommentDTO {
         }else{
             this.mention = parent.getMember().getNickname();
         }
-        this.content = cc.getContent();
+
+
+        if (cc.getStatus() == PostStatus.REPORTED) {
+            this.content = "신고된 댓글 입니다.";
+        } else if (cc.getStatus() == PostStatus.INACTIVE) {
+            this.content = "삭제된 댓글 입니다.";
+        } else {
+            this.content = cc.getContent();
+        }
+
         this.likeCount = cc.getUnivCommentLikes().size();
 
         for (UnivCommentLike ucl : cc.getUnivCommentLikes()) { //영속성
@@ -53,6 +59,7 @@ public class UnivCoCommentDTO {
         if (cc.getMember().getId() == memberId) {
             isMyComment = true;
         }
+
         this.createdTime = convertLocaldatetimeToTime(cc.getCreatedAt());
 
     }

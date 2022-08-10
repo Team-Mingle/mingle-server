@@ -1,10 +1,8 @@
 package community.mingle.app.src.comment;
 
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivComment;
-import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Total.*;
+import community.mingle.app.src.domain.Univ.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -77,6 +75,7 @@ public class CommentRepository {
     }
 
 
+
     /**
      * 4.2
      */
@@ -125,4 +124,38 @@ public class CommentRepository {
         em.persist(univComment);
 //        return univComment;
     }
+
+
+    public TotalComment findTotalCommentById(Long id) {
+        return em.find(TotalComment.class, id);
+    }
+
+    public UnivComment findUnivCommentById(Long id) {
+        return em.find(UnivComment.class, id);
+    }
+
+    public Long save(TotalCommentLike totalCommentLike) {
+        em.persist(totalCommentLike);
+        return totalCommentLike.getId();
+    }
+
+    public Long save(UnivCommentLike univCommentLike) {
+        em.persist(univCommentLike);
+        return univCommentLike.getId();
+    }
+
+
+    public void deleteLikeTotal(Long commentIdx) {
+        TotalCommentLike findComment = em.find(TotalCommentLike.class, commentIdx);
+        em.remove(findComment);
+
+    }
+
+    public void deleteLikeUniv(Long commentIdx) {
+        UnivCommentLike findComment = em.find(UnivCommentLike.class, commentIdx);
+        em.remove(findComment);
+
+    }
+
+
 }

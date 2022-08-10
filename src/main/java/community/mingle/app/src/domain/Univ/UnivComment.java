@@ -34,6 +34,7 @@ public class UnivComment {
 
     private String content;
 
+
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
@@ -65,6 +66,13 @@ public class UnivComment {
     @Column(columnDefinition = "enum")
     private PostStatus status;
 
+    public void modifyReportStatus() {
+        this.status = PostStatus.REPORTED;
+    }
+
+    public void modifyInactiveStatus() {
+        this.status = PostStatus.INACTIVE;
+    }
 
     public static UnivComment createComment(UnivPost univPost, Member member, String content, Long parentCommentId, boolean isAnonymous, Long anonymousId) {
         UnivComment univComment = new UnivComment();
@@ -80,4 +88,10 @@ public class UnivComment {
 
         return univComment;
     }
+
+    public void deleteUnivComment (){
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
+
 }
