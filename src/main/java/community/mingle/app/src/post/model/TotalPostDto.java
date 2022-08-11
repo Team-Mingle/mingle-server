@@ -10,19 +10,21 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 @Getter
 public class TotalPostDto {
 
+    private Long totalPostId;
     private String title;
     private String content;
     private String nickname;
     private int likeCount;
     private int scrapCount;
     private int commentCount;
-    private String createdAt;
-
     private boolean isMyPost;
     private boolean isLiked;
     private boolean isScraped;
+    private String createdAt;
+
 
     public TotalPostDto(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped) {
+        this.totalPostId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
         if (totalPost.isAnonymous() == true) {
@@ -32,10 +34,11 @@ public class TotalPostDto {
         }
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
-        this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
         this.commentCount = totalPost.getTotalPostComments().size();
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
+        this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
+
     }
 }
