@@ -312,4 +312,11 @@ public class PostRepository {
         }
     }
 
+
+    /**
+     * 3.10 mentionId로 댓글 찾기
+     */
+    public UnivComment findUnivComment(Long mentionId) {
+        return em.find(UnivComment.class, mentionId);
+    }
 }

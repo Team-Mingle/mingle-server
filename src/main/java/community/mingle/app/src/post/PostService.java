@@ -306,11 +306,10 @@ public class PostService {
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
                         .collect(Collectors.toList());
 
-//                postRepository.checkCoCommentLiked(CoCommentList); 성능 저하. for문 돌때마다 쿼리문 나감
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
-                        .map(cc -> new UnivCoCommentDTO(c, cc, memberIdByJwt))
+                        .map(cc -> new UnivCoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt))
                         .collect(Collectors.toList());
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
                 //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);

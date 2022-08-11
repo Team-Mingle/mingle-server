@@ -69,7 +69,7 @@ public class TotalPost {
     private LocalDateTime deletedAt;
 
     @Column(name = "is_anonymous")
-    private boolean isAnonymous;
+    private Boolean isAnonymous;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
@@ -84,7 +84,7 @@ public class TotalPost {
         totalPost.setContent(req.getContent());
         totalPost.createdAt = LocalDateTime.now();
         totalPost.updatedAt = LocalDateTime.now();
-        totalPost.setAnonymous(req.isAnonymous());
+        totalPost.setIsAnonymous(req.getIsAnonymous());
         totalPost.status = PostStatus.ACTIVE;
         return totalPost;
     }

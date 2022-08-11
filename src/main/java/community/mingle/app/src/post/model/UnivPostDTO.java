@@ -29,7 +29,7 @@ public class UnivPostDTO {
         univPostId = u.getId();
         title = u.getTitle();
         content = u.getContent();
-        if (u.isAnonymous() == true) {
+        if (u.getIsAnonymous() == true) {
             this.nickname = "글쓴이";
         } else {
             this.nickname = u.getMember().getNickname();
