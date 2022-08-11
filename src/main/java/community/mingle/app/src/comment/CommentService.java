@@ -84,7 +84,7 @@ public class CommentService {
             }
 
             //댓글 생성
-            UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.isAnonymous(), anonymousId);
+            UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.getMentionId(), request.isAnonymous(), anonymousId);
 
             commentRepository.saveUnivComment(comment);
             return comment.getId();

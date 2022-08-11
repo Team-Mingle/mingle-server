@@ -27,7 +27,7 @@ public class TotalPostDto {
         this.totalPostId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
-        if (totalPost.isAnonymous() == true) {
+        if (totalPost.getIsAnonymous() == true) {
             this.nickname = "글쓴이";
         } else{
             this.nickname = totalPost.getMember().getNickname();

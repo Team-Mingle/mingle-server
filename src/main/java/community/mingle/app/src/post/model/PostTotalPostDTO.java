@@ -1,11 +1,13 @@
 package community.mingle.app.src.post.model;
 import community.mingle.app.src.domain.Total.TotalPost;
+import lombok.Getter;
 
 import java.util.Collections;
 import java.util.List;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
+@Getter
 public class PostTotalPostDTO {
 
     private Long totalPostId;
@@ -28,7 +30,7 @@ public class PostTotalPostDTO {
         totalPostId = u.getId();
         title = u.getTitle();
         content = u.getContent();
-        if (u.isAnonymous() == true) {
+        if (u.getIsAnonymous() == true) {
             this.nickname = "글쓴이";
         } else {
             this.nickname = u.getMember().getNickname();

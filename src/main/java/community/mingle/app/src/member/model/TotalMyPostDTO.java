@@ -19,7 +19,7 @@ public class TotalMyPostDTO {
         this.totalPostId = p.getId();
         this.title = p.getTitle();
         this.contents = p.getContent();
-        if (p.isAnonymous() == true) {
+        if (p.getIsAnonymous() == true) {
             this.nickname = "익명";
         } else{
             this.nickname = p.getMember().getNickname();

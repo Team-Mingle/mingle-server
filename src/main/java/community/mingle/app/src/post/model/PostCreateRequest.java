@@ -15,6 +15,6 @@ public class PostCreateRequest {
     private int categoryId;
     private String title;
     private String content;
-    private boolean isAnonymous;
+    private Boolean isAnonymous;
 
 }

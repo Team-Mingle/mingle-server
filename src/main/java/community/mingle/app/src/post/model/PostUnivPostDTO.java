@@ -31,7 +31,7 @@ public class PostUnivPostDTO {
         univPostId = u.getId();
         title = u.getTitle();
         content = u.getContent();
-        if (u.isAnonymous() == true) {
+        if (u.getIsAnonymous() == true) {
             nickname = "글쓴이";
         } else {
             nickname = u.getMember().getNickname();
