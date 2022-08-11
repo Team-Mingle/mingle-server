@@ -134,7 +134,7 @@ public class PostService {
      */
     @Transactional
 
-    public PostCreateResponse createTotalPost (PostCreateRequest postCreateRequest) throws BaseException{
+    public PostTotalPostDTO createTotalPost (PostCreateRequest postCreateRequest) throws BaseException{
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -149,8 +149,11 @@ public class PostService {
         }
         try {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
-            Long id = postRepository.save(totalPost);
-            return new PostCreateResponse(id);
+            postRepository.save(totalPost);
+
+            PostTotalPostDTO postTotalPostDTO = new PostTotalPostDTO(totalPost);
+
+            return postTotalPostDTO;
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
@@ -160,7 +163,7 @@ public class PostService {
      * 3.7 학교 게시물 작성 API
      */
     @Transactional
-    public PostCreateResponse createUnivPost (PostCreateRequest postCreateRequest) throws BaseException{
+    public PostUnivPostDTO createUnivPost (PostCreateRequest postCreateRequest) throws BaseException{
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -175,8 +178,11 @@ public class PostService {
         }
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
-            Long id = postRepository.save(univPost);
-            return new PostCreateResponse(id);
+            postRepository.save(univPost);
+
+            PostUnivPostDTO postUnivPostDTO = new PostUnivPostDTO(univPost);
+            return postUnivPostDTO;
+
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }

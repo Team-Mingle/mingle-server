@@ -6,7 +6,6 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.post.model.*;
-import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.*;
@@ -193,7 +192,7 @@ public class    PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostCreateResponse> createTotalPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+    public BaseResponse<PostTotalPostDTO> createTotalPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
         try{
             return new BaseResponse<>(postService.createTotalPost(postCreateRequest));
         }catch (BaseException exception){
@@ -218,7 +217,7 @@ public class    PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostCreateResponse> createUnivPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+    public BaseResponse<PostUnivPostDTO> createUnivPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
         try{
             return new BaseResponse<>(postService.createUnivPost(postCreateRequest));
         }catch (BaseException exception){

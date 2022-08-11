@@ -3,13 +3,13 @@ package community.mingle.app.src.post.model;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
 @Getter
-public class UnivPostDTO {
-
+public class PostUnivPostDTO {
     private Long univPostId;
     private String title;
     private String content;
@@ -21,25 +21,28 @@ public class UnivPostDTO {
     private boolean isLiked;
     private boolean isScraped;
     private String createdTime;
+    private List<UnivCommentDTO> commentList;
+
 
     //private List<PostImgDTO> postImgUrls;
 
 
-    public UnivPostDTO(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped) {
+    public PostUnivPostDTO(UnivPost u) {
         univPostId = u.getId();
         title = u.getTitle();
         content = u.getContent();
         if (u.isAnonymous() == true) {
-            this.nickname = "글쓴이";
+            nickname = "글쓴이";
         } else {
-            this.nickname = u.getMember().getNickname();
+            nickname = u.getMember().getNickname();
         }
-        likeCount = u.getUnivPostLikes().size();
-        scrapCount = u.getUnivPostScraps().size();
-        commentCount = u.getUnivComments().size();
-        this.isMyPost = isMyPost;
-        this.isLiked = isLiked;
-        this.isScraped = isScraped;
+        likeCount = 0;
+        scrapCount = 0;
+        commentCount = 0;
+        this.isMyPost = true;
+        this.isLiked = false;
+        this.isScraped = false;
         createdTime = convertLocaldatetimeToTime(u.getCreatedAt());
+        commentList = Collections.emptyList();
     }
 }
