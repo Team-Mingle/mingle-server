@@ -1,8 +1,5 @@
 package community.mingle.app.config.security;
 
-import community.mingle.app.config.secret.CustomAuthenticationToken;
-import community.mingle.app.config.security.CustomUserDetails;
-import community.mingle.app.config.security.CustomUserDetailsService;
 import community.mingle.app.src.auth.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +23,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        //FilterChain: 이 필터 다음에 올 필터
         String token = extractToken(request);
         if (validateAccessToken(token)) {
+            //시큐리티컨텍스트에 Authentication을 집어넣음
             setAccessAuthentication("access", token);
         } else if (validateRefreshToken(token)) {
             setRefreshAuthentication("refresh", token);
