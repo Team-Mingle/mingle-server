@@ -31,13 +31,13 @@ public class AuthHelper {
                 .collect(Collectors.toSet());
     }
 
-    public boolean isAccessTokenType() {
-        return "access".equals(((CustomAuthenticationToken) getAuthentication()).getType());
-    }
-
-    public boolean isRefreshTokenType() {
-        return "refresh".equals(((CustomAuthenticationToken) getAuthentication()).getType());
-    }
+//    public boolean isAccessTokenType() {
+//        return "access".equals(((CustomAuthenticationToken) getAuthentication()).getType());
+//    }
+//
+//    public boolean isRefreshTokenType() {
+//        return "refresh".equals(((CustomAuthenticationToken) getAuthentication()).getType());
+//    }
 
     private Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();

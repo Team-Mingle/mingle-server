@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -45,5 +48,6 @@ public class TokenService {
     public String extractRefreshTokenSubject(String token) {
         return jwtHandler.extractSubject(refreshKey, token);
     }
+
 
 }

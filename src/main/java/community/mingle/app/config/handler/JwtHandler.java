@@ -15,7 +15,7 @@ public class JwtHandler {
 
     public String createToken(String key, String subject, long maxAgeSeconds) {
         Date now = new Date();
-        return type + Jwts.builder()
+        return type + " " + Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + maxAgeSeconds * 1000L))

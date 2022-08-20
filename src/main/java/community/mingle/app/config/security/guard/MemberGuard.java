@@ -14,7 +14,7 @@ public class MemberGuard {
     private final AuthHelper authHelper;
 
     public boolean check() {
-        return authHelper.isAuthenticated() && authHelper.isAccessTokenType() && hasAuthority();
+        return authHelper.isAuthenticated() && hasAuthority();
     }
 
     private boolean hasAuthority() {

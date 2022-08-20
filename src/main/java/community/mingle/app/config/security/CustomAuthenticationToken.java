@@ -12,9 +12,9 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
     private CustomUserDetails principal;
 
 
-    public CustomAuthenticationToken(String type, CustomUserDetails principal, Collection<? extends GrantedAuthority> authorities) {
+    public CustomAuthenticationToken(CustomUserDetails principal, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
-        this.type = type;
+//        this.type = type;
         this.principal = principal;
         setAuthenticated(true);
     }

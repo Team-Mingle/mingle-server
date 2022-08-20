@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.*;
@@ -384,6 +385,18 @@ public class AuthController {
             String result = "인증번호가 전송되었습니다.";
             return new BaseResponse<>(result);
 
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * access Token 재발급 By refresh Token
+     **/
+    @PostMapping("refresh-token")
+    public BaseResponse<ReissueAccessTokenDTO> reissueAccessToken(@RequestHeader(value = "Authorization") String refreshToken) {
+        try {
+            return new BaseResponse<>(authService.reissueAccessToken(refreshToken));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

@@ -1,6 +1,7 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.src.auth.TokenService;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -113,6 +114,8 @@ public class PostService {
 //        } catch (Exception e) {
 //            throw new BaseException(EMPTY_JWT);
 //        }
+
+
         Member member;
 //        try {
         member = postRepository.findMemberbyId(memberIdByJwt);

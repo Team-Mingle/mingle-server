@@ -27,10 +27,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String token = extractToken(request);
         if (validateAccessToken(token)) {
             //시큐리티컨텍스트에 Authentication을 집어넣음
-            setAccessAuthentication("access", token);
-        } else if (validateRefreshToken(token)) {
-            setRefreshAuthentication("refresh", token);
+            setAccessAuthentication(token);
         }
+//        else if (validateRefreshToken(token)) {
+//            setRefreshAuthentication("refresh", token);
+//        }
         chain.doFilter(request, response);
     }
 
@@ -46,17 +47,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         return token != null && tokenService.validateRefreshToken(token);
     }
 
-    private void setAccessAuthentication(String type, String token) {
+    private void setAccessAuthentication(String token) {
         String userId = tokenService.extractAccessTokenSubject(token);
         CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-        SecurityContextHolder.getContext().setAuthentication(new CustomAuthenticationToken(type, userDetails, userDetails.getAuthorities()));
+        SecurityContextHolder.getContext().setAuthentication(new CustomAuthenticationToken(userDetails, userDetails.getAuthorities()));
 
     }
 
-    private void setRefreshAuthentication(String type, String token) {
-        String userId = tokenService.extractRefreshTokenSubject(token);
-        CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-        SecurityContextHolder.getContext().setAuthentication(new CustomAuthenticationToken(type, userDetails, userDetails.getAuthorities()));
-    }
+//    private void setRefreshAuthentication(String type, String token) {
+//        String userId = tokenService.extractRefreshTokenSubject(token);
+//        CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+//        SecurityContextHolder.getContext().setAuthentication(new CustomAuthenticationToken(type, userDetails, userDetails.getAuthorities()));
+//    }
 }
 

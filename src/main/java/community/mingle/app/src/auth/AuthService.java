@@ -320,4 +320,21 @@ public class AuthService {
         }
     }
 
+    /**
+     * refresh token으로 access Token 발급
+     */
+
+    public ReissueAccessTokenDTO reissueAccessToken(String rToken) throws BaseException{
+        validateRefreshToken(rToken);
+        String subject = tokenService.extractRefreshTokenSubject(rToken);
+        String accessToken = tokenService.createAccessToken(subject);
+        return new ReissueAccessTokenDTO(accessToken);
+    }
+
+    private void validateRefreshToken(String rToken) throws BaseException{
+        if (!tokenService.validateRefreshToken(rToken)) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }
