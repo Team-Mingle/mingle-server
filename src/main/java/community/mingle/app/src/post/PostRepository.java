@@ -238,6 +238,15 @@ public class PostRepository {
         }
     }
 
+    /**
+     * 3.9 대댓글 이슈 수정용
+     * @param mentionId
+     * @return
+     */
+    public TotalComment findTotalComment(Long mentionId) {
+        return em.find(TotalComment.class, mentionId);
+    }
+
 
     /**
      * 3.10 getUnivPostDetail >> NEW <<

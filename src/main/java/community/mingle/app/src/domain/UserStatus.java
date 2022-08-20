@@ -1,7 +1,5 @@
 package community.mingle.app.src.domain;
 
-import javax.persistence.Column;
-
-public enum Userstatus {
+public enum UserStatus {
     ACTIVE, INACTIVE, REPORTED, ADMIN
 }

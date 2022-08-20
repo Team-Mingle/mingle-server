@@ -2,8 +2,6 @@ package community.mingle.app.src.domain.Total;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.UnivName;
-import community.mingle.app.src.domain.Userstatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +10,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -40,6 +37,9 @@ public class TotalComment {
 
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
+
+    @Column(name = "mention_id")
+    private Long mentionId;
 
     /**
      * 양방향
@@ -70,12 +70,13 @@ public class TotalComment {
 
 
     //== 생성 메서드 ==// -> constructor 역할.
-    public static TotalComment createComment(TotalPost totalPost, Member member, String content, Long parentCommentId, boolean isAnonymous, Long anonymousId) {
+    public static TotalComment createComment(TotalPost totalPost, Member member, String content, Long parentCommentId, Long mentionId, boolean isAnonymous, Long anonymousId) {
         TotalComment totalComment = new TotalComment();
         totalComment.setTotalPost(totalPost);
         totalComment.setMember(member);
         totalComment.setContent(content);
         totalComment.setParentCommentId(parentCommentId);
+        totalComment.setMentionId(mentionId);
         totalComment.setAnonymous(isAnonymous);
         totalComment.setAnonymousId(anonymousId);
         totalComment.createdAt = LocalDateTime.now();

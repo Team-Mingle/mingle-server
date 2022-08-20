@@ -38,6 +38,9 @@ public class UnivComment {
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
+    @Column(name = "mention_id")
+    private Long mentionId;
+
     @Column(name = "anonymous_id")
     private Long anonymousId;
 

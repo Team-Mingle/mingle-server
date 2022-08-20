@@ -32,6 +32,7 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final AuthRepository authRepository;
     private final JwtService jwtService;
+    private final TokenService tokenService;
 
     @Value("${spring.mail.username}")
     private  String from;
@@ -244,8 +245,11 @@ public class AuthService {
 
         try {
             Long userIdx = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
-            String jwt = jwtService.createJwt(userIdx);
-            return new PostLoginResponse(userIdx, jwt); //비교해서 이상이 없다면 jwt를 발급
+            String accessToken = tokenService.createAccessToken(String.valueOf(userIdx));
+            String refreshToken = tokenService.createRefreshToken(String.valueOf(userIdx));
+//            String jwt = jwtService.createJwt(userIdx);
+//            String refreshJwt = jwtService.createRefreshJwt(userIdx);
+            return new PostLoginResponse(userIdx, accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_CREATEJWT);
         }
@@ -315,4 +319,5 @@ public class AuthService {
             throw new BaseException(EMAIL_SEND_FAIL);
         }
     }
+
 }

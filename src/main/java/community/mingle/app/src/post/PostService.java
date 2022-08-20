@@ -235,7 +235,7 @@ public class PostService {
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                         .collect(Collectors.toList());
                 List<TotalCocommentDto> coCommentDtos = coComments.stream()
-                        .map(p -> new TotalCocommentDto(p, tc, memberIdByJwt))
+                        .map(p -> new TotalCocommentDto(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt))
                         .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
