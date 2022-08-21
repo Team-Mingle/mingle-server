@@ -21,6 +21,5 @@ public class MemberGuard {
 //        Long memberId = authHelper.extractMemberId();
         Set<String> memberRoles = authHelper.extractMemberRoles();
         return memberRoles.contains("USER");
-
     }
 }
