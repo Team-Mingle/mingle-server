@@ -3,6 +3,7 @@ package community.mingle.app.config.security;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -14,10 +15,11 @@ public class CustomUserDetails implements UserDetails {
     private final String userId;
     private final Set<GrantedAuthority> authorities;
 
-    public CustomUserDetails(String userId, Collection<? extends GrantedAuthority> authorities) {
+    //Collection<? extends GrantedAuthority> authorities 원래는 이거였음
+    public CustomUserDetails(String userId, SimpleGrantedAuthority authoritie) {
         this.userId = userId;
         //Set.copyOf 가 list인 authorities param을 set으로 바꿔줌
-        this.authorities = Set.copyOf(authorities);
+        this.authorities = Set.of(authoritie);
     }
 
     @Override

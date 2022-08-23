@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(tokenService, userDetailService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(userDetailService), UsernamePasswordAuthenticationFilter.class);
 //                .authorizeHttpRequests((authz) -> authz.anyRequest().authenticated()).httpBasic(withDefaults());
         return http.build();
     }
