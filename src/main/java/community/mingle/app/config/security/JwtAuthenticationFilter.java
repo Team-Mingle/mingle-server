@@ -35,6 +35,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 ////        }
 //        chain.doFilter(request, response);
         extractToken(request).map(userDetailsService::loadUserByUsername).ifPresent(this::setAccessAuthentication);
+        chain.doFilter(request, response);
+
     }
 
     private void setAccessAuthentication(CustomUserDetails userDetails) {
