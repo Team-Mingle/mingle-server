@@ -17,10 +17,8 @@ import java.util.List;
 @Component
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Service
 public class CustomUserDetailsService implements UserDetailsService {
 //    private final MemberRepository memberRepository;
-    @Autowired
     private final TokenHelper accessTokenHelper;
 
 

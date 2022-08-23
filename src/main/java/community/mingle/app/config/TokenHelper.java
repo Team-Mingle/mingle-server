@@ -17,10 +17,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Service
 public class TokenHelper {
 
-    @Autowired
     private final JwtHandler jwtHandler;
     private final RedisService redisService;
 //    private final String key;
