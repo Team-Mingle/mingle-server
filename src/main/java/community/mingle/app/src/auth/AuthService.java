@@ -1,6 +1,8 @@
 package community.mingle.app.src.auth;
 
+import antlr.Token;
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.security.auth.RefreshFailedException;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -32,7 +36,11 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final AuthRepository authRepository;
     private final JwtService jwtService;
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
+
+    private final TokenHelper accessTokenHelper;
+    private final TokenHelper refreshTokenHelper;
+
 
     @Value("${spring.mail.username}")
     private  String from;
@@ -244,13 +252,16 @@ public class AuthService {
         }
 
         try {
-            Long userIdx = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
-
-            String accessToken = tokenService.createAccessToken(String.valueOf(userIdx));
-            String refreshToken = tokenService.createRefreshToken(String.valueOf(userIdx));
+            Long memberId = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
+            String memberRole = member.getRole();
+//            String accessToken = tokenService.createAccessToken(String.valueOf(userIdx));
+//            String refreshToken = tokenService.createRefreshToken(String.valueOf(userIdx));
 //            String jwt = jwtService.createJwt(userIdx);
 //            String refreshJwt = jwtService.createRefreshJwt(userIdx);
-            return new PostLoginResponse(userIdx, accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
+            TokenHelper.PrivateClaims privateClaims = createPrivateClaims(memberId, memberRole);
+            String accessToken = accessTokenHelper.createAccessToken(privateClaims);
+            String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims);
+            return new PostLoginResponse(memberId, accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_CREATEJWT);
         }
@@ -326,16 +337,36 @@ public class AuthService {
      */
 
     public ReissueAccessTokenDTO reissueAccessToken(String rToken) throws BaseException{
-        validateRefreshToken(rToken);
-        String subject = tokenService.extractRefreshTokenSubject(rToken);
-        String accessToken = tokenService.createAccessToken(subject);
+
+        //orElseThrow 알아보기
+        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.refreshParse(rToken).orElseThrow();
+        String accessToken = accessTokenHelper.createAccessToken(privateClaims);
         return new ReissueAccessTokenDTO(accessToken);
+
+//        validateRefreshToken(rToken);
+//        String subject = tokenService.extractRefreshTokenSubject(rToken);
+//        String accessToken = tokenService.createAccessToken(subject);
+//        return new ReissueAccessTokenDTO(accessToken);
     }
 
-    private void validateRefreshToken(String rToken) throws BaseException{
-        if (!tokenService.validateRefreshToken(rToken)) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+//    public RefreshTokenResponse refreshToken(String rToken) {
+//        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.parse(rToken).orElseThrow(RefreshTokenFailureException::new);
+//        String accessToken = accessTokenHelper.createToken(privateClaims);
+//        return new RefreshTokenResponse(accessToken);
+//    }
+//
+//    private void validateRefreshToken(String rToken) throws BaseException{
+//        if (!tokenService.validateRefreshToken(rToken)) {
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//    }
+
+    /**
+     * PrivateClaim 발급
+     */
+
+    public TokenHelper.PrivateClaims createPrivateClaims(Long memberId, String memberRole) {
+        return new TokenHelper.PrivateClaims(String.valueOf(memberId), memberRole);
     }
 
 }

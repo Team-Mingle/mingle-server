@@ -16,14 +16,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final MemberRepository memberRepository;
+//    private final MemberRepository memberRepository;
     private final TokenHelper accessTokenHelper;
 
     @Override
     public CustomUserDetails loadUserByUsername(String token) throws UsernameNotFoundException {
 //        Member member = memberRepository.findMember(Long.valueOf(userId));
 //        return new CustomUserDetails(String.valueOf(member.getId()), List.of(new SimpleGrantedAuthority(member.getRole())));
-        return accessTokenHelper.parse(token).map(this::convert)
+        return accessTokenHelper.accessParse(token).map(this::convert)
                 .orElse(null);
     }
 
