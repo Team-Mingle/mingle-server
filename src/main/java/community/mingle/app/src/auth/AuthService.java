@@ -260,8 +260,8 @@ public class AuthService {
 //            String refreshJwt = jwtService.createRefreshJwt(userIdx);
             TokenHelper.PrivateClaims privateClaims = createPrivateClaims(memberId, memberRole);
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
-            String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims);
-            return new PostLoginResponse(memberId, accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
+            String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
+            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_CREATEJWT);
         }

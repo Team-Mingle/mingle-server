@@ -47,11 +47,11 @@ public class TokenHelper {
     }
 
 
-    public String createRefreshToken(PrivateClaims privateClaims) {
+    public String createRefreshToken(PrivateClaims privateClaims, String email) {
         String refreshToken = jwtHandler.createToken(refreshKey,
                 Map.of(MEMBER_ID, privateClaims.getMemberId(), ROLE_TYPES, privateClaims.getRoleTypes()),
                 refreshTokenMaxAgeSeconds);
-        redisService.setValues(privateClaims.getMemberId(), refreshToken, Duration.ofDays(refreshTokenMaxAgeSeconds));
+        redisService.setValues(email, refreshToken, Duration.ofDays(refreshTokenMaxAgeSeconds));
         return refreshToken;
     }
 
