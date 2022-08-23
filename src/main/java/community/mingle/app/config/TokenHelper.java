@@ -8,12 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Service
 public class TokenHelper {
 
     private final JwtHandler jwtHandler;
