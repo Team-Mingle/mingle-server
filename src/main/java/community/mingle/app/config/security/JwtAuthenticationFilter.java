@@ -1,6 +1,6 @@
 package community.mingle.app.config.security;
 
-import community.mingle.app.src.auth.TokenService;
+//import community.mingle.app.src.auth.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;

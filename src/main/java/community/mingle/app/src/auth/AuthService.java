@@ -245,6 +245,7 @@ public class AuthService {
 
         try {
             Long userIdx = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
+
             String accessToken = tokenService.createAccessToken(String.valueOf(userIdx));
             String refreshToken = tokenService.createRefreshToken(String.valueOf(userIdx));
 //            String jwt = jwtService.createJwt(userIdx);
