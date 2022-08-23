@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 import java.util.Optional;
@@ -14,21 +15,45 @@ import java.util.Optional;
 public class TokenHelper {
 
     private final JwtHandler jwtHandler;
-    private final String key;
-    private final long maxAgeSeconds;
+//    private final String key;
+//    private final long maxAgeSeconds;
+
+    @Value("${jwt.max-age.access}") // 1
+    private long accessTokenMaxAgeSeconds;
+
+    @Value("${jwt.max-age.refresh}") // 2
+    private long refreshTokenMaxAgeSeconds;
+
+    @Value("${jwt.key.access}") // 3
+    private String accessKey;
+
+    @Value("${jwt.key.refresh}") // 4
+    private String refreshKey;
 
 //    private static final String SEP = ",";
     private static final String ROLE_TYPES = "ROLE_TYPES";
     private static final String MEMBER_ID = "MEMBER_ID";
 
-    public String createToken(PrivateClaims privateClaims) {
-        return jwtHandler.createToken(key,
+    public String createAccessToken(PrivateClaims privateClaims) {
+        return jwtHandler.createToken(accessKey,
                 Map.of(MEMBER_ID, privateClaims.getMemberId(), ROLE_TYPES, privateClaims.getRoleTypes()),
-                maxAgeSeconds);
+                accessTokenMaxAgeSeconds);
     }
 
-    public Optional<PrivateClaims> parse(String token) {
-        return jwtHandler.parse(key, token).map(this::convert);
+    public String createRefreshToken(PrivateClaims privateClaims) {
+        return jwtHandler.createToken(refreshKey,
+                Map.of(MEMBER_ID, privateClaims.getMemberId(), ROLE_TYPES, privateClaims.getRoleTypes()),
+                refreshTokenMaxAgeSeconds);
+    }
+
+
+
+    public Optional<PrivateClaims> accessParse(String token) {
+        return jwtHandler.parse(accessKey, token).map(this::convert);
+    }
+
+    public Optional<PrivateClaims> refreshParse(String token) {
+        return jwtHandler.parse(refreshKey, token).map(this::convert);
     }
 
     private PrivateClaims convert(Claims claims) {
