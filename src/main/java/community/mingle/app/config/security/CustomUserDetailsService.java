@@ -4,6 +4,7 @@ import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +20,9 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 //    private final MemberRepository memberRepository;
+    @Autowired
     private final TokenHelper accessTokenHelper;
+
 
     @Override
     public CustomUserDetails loadUserByUsername(String token) throws UsernameNotFoundException {

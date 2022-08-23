@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,20 +15,22 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
+@Service
 @RequiredArgsConstructor
 @Service
 public class TokenHelper {
 
+    @Autowired
     private final JwtHandler jwtHandler;
     private final RedisService redisService;
 //    private final String key;
 //    private final long maxAgeSeconds;
 
     @Value("${jwt.max-age.access}") // 1
-    private long accessTokenMaxAgeSeconds;
+    private Long accessTokenMaxAgeSeconds;
 
     @Value("${jwt.max-age.refresh}") // 2
-    private long refreshTokenMaxAgeSeconds;
+    private Long refreshTokenMaxAgeSeconds;
 
     @Value("${jwt.key.access}") // 3
     private String accessKey;
