@@ -56,8 +56,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.PATCH, "/post/**").access("@memberGuard.check()")
                 .antMatchers(HttpMethod.DELETE, "/post/**").access("@memberGuard.check()")
                 .and()
-                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
-                .and()
+//                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
+//                .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(userDetailService), UsernamePasswordAuthenticationFilter.class);

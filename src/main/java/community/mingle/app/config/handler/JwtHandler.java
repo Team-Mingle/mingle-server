@@ -26,9 +26,19 @@ public class JwtHandler {
                 .compact();
     }
 
+    /** validateToken */
     public Optional<Claims> parse(String key, String token) {
+        String exception = "exception";
+
         try {
             return Optional.of(Jwts.parser().setSigningKey(key.getBytes()).parseClaimsJws(untype(token)).getBody());
+//        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+//            request.setAttribute(exception, "토큰의 형식을 확인하세요");
+//        } catch (ExpiredJwtException e) {
+//            request.setAttribute(exception, "토큰이 만료되었습니다.");
+//        } catch (IllegalArgumentException e) {
+//            request.setAttribute(exception, "JWT compact of handler are invalid");
+//        }
         } catch (JwtException e) {
             return Optional.empty();
         }
