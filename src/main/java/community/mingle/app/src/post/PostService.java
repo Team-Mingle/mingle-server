@@ -1,14 +1,30 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.src.domain.*;
+import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
+
+import community.mingle.app.src.post.model.PatchUpdatePostRequest;
+import community.mingle.app.src.post.model.PostCreateRequest;
+import community.mingle.app.src.post.model.PostCreateResponse;
+
 import community.mingle.app.src.post.model.*;
+
+import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import community.mingle.app.config.BaseException;
+import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Univ.UnivPost;
+
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -22,6 +38,8 @@ public class PostService {
 
     private final JwtService jwtService;
     private final PostRepository postRepository;
+
+    private final S3Service s3Service;
 
 
     /**
@@ -132,7 +150,7 @@ public class PostService {
      */
     @Transactional
 
-    public PostTotalPostDTO createTotalPost(PostCreateRequest postCreateRequest) throws BaseException {
+    public PostCreateResponse createTotalPost(PostCreateRequest postCreateRequest) throws BaseException {
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -147,11 +165,13 @@ public class PostService {
         }
         try {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
-            postRepository.save(totalPost);
-
-            PostTotalPostDTO postTotalPostDTO = new PostTotalPostDTO(totalPost);
-
-            return postTotalPostDTO;
+            Long id = postRepository.save(totalPost);
+            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+            for (String fileName: fileNameList) {
+                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
+                postRepository.save(totalPostImage);
+            }
+            return new PostCreateResponse(id, fileNameList);
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
@@ -161,7 +181,7 @@ public class PostService {
      * 3.7 학교 게시물 작성 API
      */
     @Transactional
-    public PostUnivPostDTO createUnivPost(PostCreateRequest postCreateRequest) throws BaseException {
+    public PostCreateResponse createUnivPost(PostCreateRequest postCreateRequest) throws BaseException {
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -176,10 +196,13 @@ public class PostService {
         }
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
-            postRepository.save(univPost);
-
-            PostUnivPostDTO postUnivPostDTO = new PostUnivPostDTO(univPost);
-            return postUnivPostDTO;
+            Long id = postRepository.save(univPost);
+            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+            for (String fileName: fileNameList) {
+                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost,fileName);
+                postRepository.save(univPostImage);
+            }
+            return new PostCreateResponse(id, fileNameList);
 
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
@@ -191,15 +214,11 @@ public class PostService {
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
-    public TotalPost getTotalPost(Long id) throws BaseException {
+    public TotalPost getTotalPost(Long id) throws BaseException{
 
         TotalPost totalPost = postRepository.getTotalPostbyId(id);
         return totalPost;
     }
-
-    /**
-     * 3.9.1 통합 게시물 상세 - 게시물 API
-     */
     @Transactional(readOnly = true)
     public TotalPostDto getTotalPostDto(TotalPost totalPost) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();

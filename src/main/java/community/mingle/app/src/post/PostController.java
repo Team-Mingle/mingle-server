@@ -136,6 +136,7 @@ public class    PostController {
      * @param category
      * @param postId
      */
+
     @GetMapping("/total/paging")
     public BaseResponse<List<TotalPostListDTO>> getTotalPostsByPaging (@RequestParam int category, @RequestParam Long postId) {
         try {
@@ -149,6 +150,7 @@ public class    PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 
 
 
@@ -193,14 +195,12 @@ public class    PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostTotalPostDTO> createTotalPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+    public BaseResponse<PostCreateResponse> createTotalPost (@ModelAttribute PostCreateRequest postCreateRequest){
         try{
             return new BaseResponse<>(postService.createTotalPost(postCreateRequest));
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
-        }
-    }
-
+    } }
 
 
 
@@ -218,10 +218,12 @@ public class    PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostUnivPostDTO> createUnivPost (@RequestBody @Valid PostCreateRequest postCreateRequest){
+
+    public BaseResponse<PostCreateResponse> createUnivPost (@ModelAttribute PostCreateRequest postCreateRequest){
         try{
             return new BaseResponse<>(postService.createUnivPost(postCreateRequest));
         }catch (BaseException exception){
+            exception.printStackTrace();
             return new BaseResponse<>(exception.getStatus());
         }
     }
