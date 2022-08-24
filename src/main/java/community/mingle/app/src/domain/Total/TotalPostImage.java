@@ -44,4 +44,8 @@ public class TotalPostImage {
         totalPostImage.createdAt = LocalDateTime.now();
         return totalPostImage;
     }
+
+    public void deleteTotalImage (){
+        this.deletedAt = LocalDateTime.now();
+    }
 }

@@ -421,8 +421,16 @@ public class PostService {
         }
         try {
             List<TotalComment> totalComments = postRepository.findAllTotalComment(id);
+            List<TotalPostImage> totalPostImages = postRepository.findAllTotalImage(id);
             for (TotalComment c : totalComments) {
                 c.deleteTotalComment();
+            }
+            for (TotalPostImage pi: totalPostImages) {
+                pi.deleteTotalImage();
+
+                String imgUrl = pi.getImgUrl();
+                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/total/")+11);
+                s3Service.deleteFile(fileName, "total");
             }
             totalPost.deleteTotalPost();
         } catch (Exception e) {
@@ -454,10 +462,21 @@ public class PostService {
         }
         try {
             List<UnivComment> univComments = postRepository.findAllUnivComment(id);
+            List<UnivPostImage> univPostImages = postRepository.findAllUnivImage(id);
             for (UnivComment c : univComments) {
                 c.deleteUnivComment();
             }
+
+            for (UnivPostImage pi: univPostImages) {
+                pi.deleteUnivImage();
+
+                String imgUrl = pi.getImgUrl();
+                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/univ/")+10);
+                s3Service.deleteFile(fileName, "univ");
+            }
             univPost.deleteUnivPost();
+
+
         } catch (Exception e) {
             throw new BaseException(DELETE_FAIL_POST);
         }
