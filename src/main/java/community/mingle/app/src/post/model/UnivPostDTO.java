@@ -22,6 +22,8 @@ public class UnivPostDTO {
     private boolean isScraped;
     private String createdTime;
 
+    private final int viewCount;
+
     //private List<PostImgDTO> postImgUrls;
 
 
@@ -41,5 +43,6 @@ public class UnivPostDTO {
         this.isLiked = isLiked;
         this.isScraped = isScraped;
         createdTime = convertLocaldatetimeToTime(u.getCreatedAt());
+        this.viewCount =  u.getViewCount();
     }
 }

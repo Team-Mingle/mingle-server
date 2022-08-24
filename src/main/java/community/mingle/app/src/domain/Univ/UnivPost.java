@@ -70,6 +70,10 @@ public class UnivPost {
     @Column(name = "is_anonymous")
     private Boolean isAnonymous;
 
+
+    @Column(name = "view_count", columnDefinition = "integer default 0", nullable = false)
+    private int viewCount;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
@@ -109,5 +113,15 @@ public class UnivPost {
     public void deleteUnivPost (){
         this.deletedAt = LocalDateTime.now();
         this.status = PostStatus.INACTIVE;
+    }
+
+
+    public void updateView() {
+        if (viewCount == 0) {
+            this.viewCount = 1;
+        } else{
+            this.viewCount = viewCount + 1;
+        }
+
     }
 }
