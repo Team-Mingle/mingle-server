@@ -2,15 +2,21 @@ package community.mingle.app.config;
 
 
 import community.mingle.app.config.handler.JwtHandler;
+import community.mingle.app.config.security.CustomAuthenticationToken;
+import community.mingle.app.config.security.CustomUserDetails;
+import community.mingle.app.config.security.CustomUserDetailsService;
 import community.mingle.app.utils.RedisService;
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +26,7 @@ import java.util.Optional;
 public class TokenHelper {
 
     private final JwtHandler jwtHandler;
+    private final CustomUserDetailsService customUserDetailsService;
     private final RedisService redisService;
 //    private final String key;
 //    private final long maxAgeSeconds;
@@ -56,17 +63,51 @@ public class TokenHelper {
     }
 
 
+
     public Optional<PrivateClaims> accessParse(String token) {
-        return jwtHandler.parse(accessKey, token).map(this::convert);
+        return jwtHandler.parse(accessKey, token).map(claims -> convert(claims));
     }
 
     public Optional<PrivateClaims> refreshParse(String token) {
-        return jwtHandler.parse(refreshKey, token).map(this::convert);
+        return jwtHandler.parse(refreshKey, token).map(claims -> convert(claims));
     }
 
     private PrivateClaims convert(Claims claims) {
         return new PrivateClaims(claims.get(MEMBER_ID, String.class), claims.get(ROLE_TYPES, String.class));
     }
+
+    //추출
+//    public Optional<PrivateClaims> parseToken(String token) {
+//        return jwtHandler.parseToken(accessKey, token).map(claims -> convert(claims));
+//    }
+
+    /**
+     * validateToken
+     */
+    public Authentication validateToken(HttpServletRequest request, String token) {
+        String exception = "exception";
+
+        try {
+            Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(jwtHandler.untype(token));
+            return getAuthentication(token);
+
+        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+            request.setAttribute(exception, "토큰의 형식을 확인하세요");
+        } catch (ExpiredJwtException e) {
+            request.setAttribute(exception, "토큰이 만료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            request.setAttribute(exception, "JWT compact of handler are invalid");
+//        } catch (JwtException e) {
+//            return Optional.empty();
+        }
+        return null;
+    }
+
+    private Authentication getAuthentication(String token) {
+        CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(token);
+        return new CustomAuthenticationToken(userDetails, userDetails.getAuthorities());
+    }
+
 
     @Getter
     @AllArgsConstructor
