@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -233,7 +234,7 @@ public class    PostController {
     public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
         try {
             TotalPost totalPost = postService.getTotalPost(totalPostId);
-
+            postService.updateView(totalPostId);
             TotalPostDto totalPostDto = postService.getTotalPostDto(totalPost);
 
             return new BaseResponse<>(totalPostDto);
@@ -273,12 +274,14 @@ public class    PostController {
         try {
 //            UnivPost univPost = postService.getUnivPost(univPostId);
 //            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
+            postService.updateViewUniv(univPostId);
             UnivPostDTO univPostDTO = postService.getUnivPost(univPostId);
             return new BaseResponse<>(univPostDTO);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
     /**
      * 3.10.2 학교 게시물 상세 - 댓글 API
      */
@@ -580,6 +583,65 @@ public class    PostController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
+    /**
+     * 전체 게시판 검색 기능
+     */
+    @Operation(summary = "UnlikeTotalPost API", description = "통합 게시물 스크랩 취소 api")
+    //@Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @GetMapping("total/search")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<List<SearchTotalPost>> searchTotalPost(@RequestParam(value="keyword") String keyword) {
+        try {
+            List<TotalPost> totalPosts = postService.findAllSearch(keyword);
+            List<SearchTotalPost> result = totalPosts.stream()
+                    .map(tp -> new SearchTotalPost(tp))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+
+
+    /**
+     * 학교 게시판 검색 기능
+     */
+    @Operation(summary = "UnlikeTotalPost API", description = "통합 게시물 스크랩 취소 api")
+    //@Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @GetMapping("univ/search")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
+    public BaseResponse<List<SearchUnivPost>> searchUnivPost(@RequestParam(value="keyword") String keyword) {
+        try {
+
+            List<UnivPost> univPosts = postService.findUnivSearch(keyword);
+            List<SearchUnivPost> result = univPosts.stream()
+                    .map(up -> new SearchUnivPost(up))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+
+
 
 
 

@@ -14,12 +14,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Setter
@@ -71,6 +74,11 @@ public class TotalPost {
     @Column(name = "is_anonymous")
     private Boolean isAnonymous;
 
+    @Column(name = "view_count", columnDefinition = "integer default 0", nullable = false)
+    private int viewCount;
+
+
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
@@ -104,6 +112,18 @@ public class TotalPost {
     public void modifyReportStatus() {
         this.status = PostStatus.REPORTED;
     }
+
+    public void updateView() {
+        if (viewCount == 0) {
+            this.viewCount = 1;
+        } else{
+            this.viewCount = viewCount + 1;
+        }
+
+    }
+
+
+
 
 
     //postImg 추가하기

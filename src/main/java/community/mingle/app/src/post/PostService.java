@@ -92,7 +92,6 @@ public class PostService {
     }
 
 
-
     /**
      * 3.4 페이징 테스트
      */
@@ -128,13 +127,12 @@ public class PostService {
     }
 
 
-
     /**
      * 3.6 통합 게시물 작성 API
      */
     @Transactional
 
-    public PostTotalPostDTO createTotalPost (PostCreateRequest postCreateRequest) throws BaseException{
+    public PostTotalPostDTO createTotalPost(PostCreateRequest postCreateRequest) throws BaseException {
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -163,7 +161,7 @@ public class PostService {
      * 3.7 학교 게시물 작성 API
      */
     @Transactional
-    public PostUnivPostDTO createUnivPost (PostCreateRequest postCreateRequest) throws BaseException{
+    public PostUnivPostDTO createUnivPost(PostCreateRequest postCreateRequest) throws BaseException {
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -173,7 +171,7 @@ public class PostService {
         }
         try {
             category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
-        } catch(Exception exception){
+        } catch (Exception exception) {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
         try {
@@ -193,7 +191,7 @@ public class PostService {
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
-    public TotalPost getTotalPost(Long id) throws BaseException{
+    public TotalPost getTotalPost(Long id) throws BaseException {
 
         TotalPost totalPost = postRepository.getTotalPostbyId(id);
         return totalPost;
@@ -255,7 +253,6 @@ public class PostService {
     }
 
 
-
     /**
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
@@ -282,7 +279,6 @@ public class PostService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
 
 
     /**
@@ -324,12 +320,11 @@ public class PostService {
     }
 
 
-    
     /**
      * 3.11 통합 게시물 수정 API
      */
     @Transactional
-    public void updateTotalPost (Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
+    public void updateTotalPost(Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
         Member member;
         TotalPost totalPost;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -359,7 +354,7 @@ public class PostService {
      * 3.12 학교 게시물 수정 API
      */
     @Transactional
-    public void updateUnivPost (Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
+    public void updateUnivPost(Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
         Member member;
         UnivPost univPost;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -388,7 +383,7 @@ public class PostService {
      * 3.13 통합 게시물 삭제 API
      */
     @Transactional
-    public void deleteTotalPost (Long id) throws BaseException{
+    public void deleteTotalPost(Long id) throws BaseException {
         Member member;
         TotalPost totalPost;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -406,8 +401,8 @@ public class PostService {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
-            List <TotalComment> totalComments = postRepository.findAllTotalComment(id);
-            for (TotalComment c: totalComments) {
+            List<TotalComment> totalComments = postRepository.findAllTotalComment(id);
+            for (TotalComment c : totalComments) {
                 c.deleteTotalComment();
             }
             totalPost.deleteTotalPost();
@@ -420,7 +415,7 @@ public class PostService {
      * 3.14 학교 게시물 삭제 API
      */
     @Transactional
-    public void deleteUnivPost (Long id) throws BaseException{
+    public void deleteUnivPost(Long id) throws BaseException {
         Member member;
         UnivPost univPost;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -439,8 +434,8 @@ public class PostService {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
-            List <UnivComment> univComments = postRepository.findAllUnivComment(id);
-            for (UnivComment c: univComments) {
+            List<UnivComment> univComments = postRepository.findAllUnivComment(id);
+            for (UnivComment c : univComments) {
                 c.deleteUnivComment();
             }
             univPost.deleteUnivPost();
@@ -509,7 +504,7 @@ public class PostService {
      * 3.17 통합 게시물 좋아요 취소 api
      */
     @Transactional
-    public void  unlikeTotal(Long likeIdx) throws BaseException {
+    public void unlikeTotal(Long likeIdx) throws BaseException {
 
         try {
             //totalPostLike.deleteLike(likeIdx);
@@ -526,7 +521,7 @@ public class PostService {
      * 3.18 학교 게시물 좋아요 취소 api
      */
     @Transactional
-    public void  unlikeUniv(Long likeIdx) throws BaseException {
+    public void unlikeUniv(Long likeIdx) throws BaseException {
 
         try {
             postRepository.deleteUnivLike(likeIdx);
@@ -536,7 +531,6 @@ public class PostService {
         }
 
     }
-
 
 
     /**
@@ -623,5 +617,67 @@ public class PostService {
     }
 
 
+    /**
+     * 통합 게시물 조회수
+     */
+    @Transactional
+    public void updateView(Long postIdx) throws BaseException {
+        TotalPost totalPost;
+        totalPost = postRepository.findTotalPostById(postIdx);
+        if (totalPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        try {
+            totalPost.updateView();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+
+    /**
+     * 학교 게시물 조회수
+     */
+    @Transactional
+    public void updateViewUniv(Long postIdx) throws BaseException {
+        UnivPost univPost;
+        univPost = postRepository.findUnivPostById(postIdx);
+        if (univPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        try {
+            univPost.updateView();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    /**
+     * 전체 게시판 검색 기능
+     */
+    @Transactional
+    public List<TotalPost> findAllSearch(String keyword)  throws BaseException {
+        List<TotalPost> searchTotalPostLists = postRepository.searchTotalPostWithKeyword(keyword);
+        if (searchTotalPostLists.size() == 0) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        return searchTotalPostLists;
+    }
+
+    /**
+     * 학교 게시판 검색 기능
+     */
+    @Transactional
+    public List<UnivPost> findUnivSearch(String keyword)  throws BaseException {
+        List<UnivPost> searchUnivPostLists = postRepository.searchUnivPostWithKeyword(keyword);
+        if (searchUnivPostLists.size() == 0) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        return searchUnivPostLists;
+    }
 
 }
