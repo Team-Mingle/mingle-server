@@ -407,7 +407,6 @@ public class PostService {
     }
 
     /**
-<<<<<<< HEAD
      * 3.13 통합 게시물 삭제 API
      */
     @Transactional
@@ -419,7 +418,6 @@ public class PostService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-
 
         totalPost = postRepository.findTotalPostById(id);
         if (totalPost == null) {

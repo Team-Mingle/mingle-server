@@ -146,6 +146,7 @@ public class PostRepository {
         return allTotalComments;
     }
 
+
     public List<UnivComment> findAllUnivComment(Long postId) {
         List<UnivComment> allUnivComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id", UnivComment.class)
                 .setParameter("id", postId)
