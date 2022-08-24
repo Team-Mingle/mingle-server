@@ -103,6 +103,8 @@ public enum BaseResponseStatus {
     UPLOAD_FAIL_IMAGE(false, 3070, "이미지 업로드에 실패했습니다"),
     INVALID_IMAGE_FORMAT(false, 3071,"잘못된 형식의 파일입니다"),
     INVALID_IMAGE(false, 3072,"유효하지 않은 이미지입니다"),
+    INVALID_IMAGE_NUMBER(false, 3073, "이미지 개수를 초과하였습니다"),
+    DELETE_FAIL_IMAGE(false, 3074,"이미지 삭제에 실패했습니다"),
     /** 4. /comment  */
 
     DELETE_FAIL_COMMENT(false, 4025, "댓글 삭제를 실패했습니다."),

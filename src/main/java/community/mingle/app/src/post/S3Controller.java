@@ -31,20 +31,22 @@ public class S3Controller {
     }
 
 
-
-
     /**
      * Amazon S3에 이미지 업로드 된 파일을 삭제
      * @return 성공 시 200 Success
      */
 
-    /*
-    @ApiOperation(value = "Amazon S3에 업로드 된 파일을 삭제", notes = "Amazon S3에 업로드된 이미지 삭제")
-    @DeleteMapping("/image")
-    public ResponseEntity<Void> deleteImage(@ApiParam(value="img 파일 하나 삭제", required = true) @RequestParam String fileName) {
-        awsS3Service.deleteImage(fileName);
-        return ApiResponse.success(null);
-    } */
 
+    @Operation(summary = "Amazon S3에 업로드 된 파일을 삭제", description = "Amazon S3에 업로드된 이미지 삭제")
+    @DeleteMapping("/file")
+    public BaseResponse<String> deleteFile(@RequestParam String fileName) {
+        try {
+            s3Service.deleteFile(fileName, "test");
+            String result = "파일 삭제에 성공하였습니다";
+            return new BaseResponse<>(result);
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 }

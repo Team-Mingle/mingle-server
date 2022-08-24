@@ -2,6 +2,7 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.*;
 
+import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 
 import community.mingle.app.src.domain.Total.TotalPostScrap;
@@ -44,6 +45,9 @@ public class UnivPost {
      */
     @OneToMany(mappedBy = "univPost")
     private List<UnivPostScrap> univPostScraps = new ArrayList<>();
+
+    @OneToMany(mappedBy = "univPost")
+    private List<UnivPostImage> univPostImages = new ArrayList<>();
 
     /** 3.3 추가  - 단방향 */
     @ManyToOne(fetch = FetchType.LAZY)

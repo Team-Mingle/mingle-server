@@ -40,6 +40,10 @@ public class S3Service {
     public List<String> uploadFile(List<MultipartFile> multipartFile, String dirName) throws BaseException {
         List<String> fileNameList = new ArrayList<>();
 
+        long count = multipartFile.stream().filter(t -> t.getSize() > 0).count();
+        if (count > 5) {
+            throw new BaseException(INVALID_IMAGE_NUMBER);
+        }
         // multipartFile로 넘어온 파일들 fileNameList에 추가
         for (MultipartFile file : multipartFile) {
             String fileName = dirName + "/" + createFileName(file.getOriginalFilename());
@@ -60,8 +64,15 @@ public class S3Service {
         return fileNameList;
     }
 
-    public void deleteFile(String fileName) { amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    public void deleteFile(String fileName, String dirName) throws BaseException {
+        String fileRename = dirName + "/" + fileName;
+        try{
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileRename));
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_IMAGE);
+        }
     }
+
 
     private String createFileName(String fileName) throws BaseException{ // 먼저 파일 업로드 시, 파일명을 난수화
         try{
@@ -74,6 +85,22 @@ public class S3Service {
 
     private String getFileExtension(String fileName) throws BaseException{ // file 형식이 잘못된 경우를 확인하기 위해 만들어진 로직이며, 파일 타입과 상관없이 업로드할 수 있게 하기 위해 .의 존재 유무만 판단하였습니다.
         try {
+            if (fileName.length() == 0) {
+                throw new BaseException(INVALID_IMAGE_FORMAT);
+            }
+            ArrayList<String> fileValidate = new ArrayList<>();
+            fileValidate.add(".jpg");
+            fileValidate.add(".jpeg");
+            fileValidate.add(".png");
+            fileValidate.add(".JPG");
+            fileValidate.add(".JPEG");
+            fileValidate.add(".PNG");
+            fileValidate.add(".heic");
+            fileValidate.add(".HEIC");
+            String idxFileName = fileName.substring(fileName.lastIndexOf("."));
+            if (!fileValidate.contains(idxFileName)) {
+                throw new BaseException(INVALID_IMAGE_FORMAT);
+            }
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (Exception e) {
             throw new BaseException(INVALID_IMAGE_FORMAT);

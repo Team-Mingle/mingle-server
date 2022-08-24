@@ -4,9 +4,8 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Univ.UnivComment;
-import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Total.*;
+import community.mingle.app.src.domain.Univ.*;
 
 import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
@@ -14,22 +13,18 @@ import community.mingle.app.src.post.model.PostCreateResponse;
 
 import community.mingle.app.src.post.model.*;
 
+import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Total.TotalPostLike;
-import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostLike;
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
 import community.mingle.app.src.post.model.*;
 import community.mingle.app.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -45,6 +40,8 @@ public class PostService {
 
     private final JwtService jwtService;
     private final PostRepository postRepository;
+
+    private final S3Service s3Service;
 
 
     /**
@@ -157,7 +154,12 @@ public class PostService {
         try {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
             Long id = postRepository.save(totalPost);
-            return new PostCreateResponse(id);
+            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+            for (String fileName: fileNameList) {
+                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
+                postRepository.save(totalPostImage);
+            }
+            return new PostCreateResponse(id, fileNameList);
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
@@ -183,7 +185,14 @@ public class PostService {
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
-            return new PostCreateResponse(id);
+            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+            for (String fileName: fileNameList) {
+                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost,fileName);
+                postRepository.save(univPostImage);
+            }
+            return new PostCreateResponse(id, fileNameList);
+
+
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }

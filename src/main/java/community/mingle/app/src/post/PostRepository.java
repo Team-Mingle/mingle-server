@@ -115,6 +115,14 @@ public class PostRepository {
         return univPost.getId();
     }
 
+    public void save(TotalPostImage totalPostImage) {
+        em.persist(totalPostImage);
+    }
+
+    public void save(UnivPostImage univPostImage) {
+        em.persist(univPostImage);
+    }
+
 
 
     public Category findCategoryById(int id) { //쿼리문에서 나는 에러는 if else 로 잡아서 null 로 보낼 수 없다.
