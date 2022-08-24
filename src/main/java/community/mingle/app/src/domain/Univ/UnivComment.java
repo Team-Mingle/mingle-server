@@ -2,10 +2,10 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="univ_comment")
 
@@ -41,6 +42,13 @@ public class UnivComment {
     private Long anonymousId;
 
     /**
+     * 3.9 3.10 게시물상세 댓글 추가
+     */
+    @Column(name = "mention_id")
+    private Long mentionId;
+
+
+    /**
      * 양방향 3.10 추가
      */
     @OneToMany(mappedBy = "univComment")
@@ -50,7 +58,6 @@ public class UnivComment {
     /** 익명방법? */
     @Column(name = "is_anonymous")
     private boolean isAnonymous;
-
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -69,10 +76,25 @@ public class UnivComment {
         this.status = PostStatus.REPORTED;
     }
 
-    public void modifyInactiveStatus() {
-        this.status = PostStatus.INACTIVE;
-    }
+//    public void modifyInactiveStatus() {
+//        this.status = PostStatus.INACTIVE; //update 문으로 변경
+//    }
 
+    public static UnivComment createComment(UnivPost univPost, Member member, String content, Long parentCommentId, Long mentionId, boolean isAnonymous, Long anonymousId) {
+        UnivComment univComment = new UnivComment();
+        univComment.setUnivPost(univPost);
+        univComment.setMember(member);
+        univComment.setContent(content);
+        univComment.setParentCommentId(parentCommentId);
+        univComment.setMentionId(mentionId);
+        univComment.setAnonymous(isAnonymous);
+        univComment.setAnonymousId(anonymousId);
+        univComment.createdAt = LocalDateTime.now();
+        univComment.updatedAt = LocalDateTime.now();
+        univComment.status = PostStatus.ACTIVE;
+
+        return univComment;
+    }
 
     public void deleteUnivComment (){
         this.deletedAt = LocalDateTime.now();

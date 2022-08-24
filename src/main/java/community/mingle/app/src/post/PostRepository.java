@@ -1,29 +1,14 @@
 package community.mingle.app.src.post;
 
 
-import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Category;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPost;
-
-import community.mingle.app.src.domain.Univ.UnivComment;
-
-import community.mingle.app.src.domain.Total.TotalPostLike;
-import community.mingle.app.src.domain.Total.TotalPostScrap;
-
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostLike;
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
-
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
-
 import community.mingle.app.src.domain.Univ.*;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -34,14 +19,15 @@ import java.util.List;
 public class PostRepository {
 
     private final EntityManager em;
+
     /**
      * 2.1 광고 배너 API
      */
     public List<Banner> findBanner(){
         return em.createQuery("select b from Banner b", Banner.class)
                 .getResultList();
-
     }
+
 
     /**
      * 2.2 전체 베스트 게시판 api
@@ -55,6 +41,7 @@ public class PostRepository {
 
         return recentTotalPosts;
     }
+
 
     /**
      * 2.3 학교 베스트 게시판 api
@@ -72,6 +59,7 @@ public class PostRepository {
                 .getResultList();
     }
 
+
     /**
      * 2.4 광장 게시판 api
      */
@@ -82,6 +70,18 @@ public class PostRepository {
     }
 
     /**
+     * 2.4 페이징 테스트
+     */
+    public List<TotalPost> findTotalPostByPaging(int category, Long postId) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where c.id = :categoryId and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+                .setParameter("categoryId", category)
+                .setParameter("postId", postId)
+                .setMaxResults(3)
+                .getResultList();
+    }
+
+
+    /**
      * 2.5 학교 게시판 api
      */
     public List<UnivPost> findUnivPost(int category) {
@@ -90,21 +90,11 @@ public class PostRepository {
                 .getResultList();
     }
 
-    /**
-     * memberId 로 Member 반환
-     * @param id
-     * @return Member
-     */
+
     public Member findMemberbyId(Long id) {
-        List<Member> m = em.createQuery("select m from Member m where m.id = :id", Member.class)
-                .setParameter("id", id)
-                .getResultList();
-        if (m.size() != 0) { //있으면 list 첫번째 element 반환. 중복은 없을테니
-            return m.get(0);
-        } else { //없으면 null 반환
-            return null;
-        }
+        return em.find(Member.class, id);
     }
+
 
     public Long save(TotalPost totalPost) {
         em.persist(totalPost);
@@ -124,7 +114,6 @@ public class PostRepository {
     }
 
 
-
     public Category findCategoryById(int id) { //쿼리문에서 나는 에러는 if else 로 잡아서 null 로 보낼 수 없다.
         Category category = em.createQuery("select c from Category c where c.id = :id", Category.class)
                 .setParameter("id", id)
@@ -135,6 +124,7 @@ public class PostRepository {
     public TotalPost findTotalPostById(Long id) {
         return em.find(TotalPost.class,id);
     }
+
     public UnivPost findUnivPostById(Long id) {
         return em.find(UnivPost.class, id);
     }
@@ -155,7 +145,6 @@ public class PostRepository {
     }
 
 
-
     public Long save(TotalPostScrap totalPostScrap) {
         em.persist(totalPostScrap);
         return totalPostScrap.getId();
@@ -174,30 +163,6 @@ public class PostRepository {
     public Long save(UnivPostLike univPostLike) {
         em.persist(univPostLike);
         return univPostLike.getId();
-    }
-
-
-
-    public TotalPost findTotalPostbyId(Long likeId) {
-        List<TotalPost> totalPosts = em.createQuery("select tp from TotalPostLike tp where tp.id = :postId", TotalPost.class)
-                .setParameter("postId", likeId)
-                .getResultList();
-        if (totalPosts.size() != 0) {
-            return totalPosts.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    public UnivPost findUnivPostbyId(Long postId) {
-        List<UnivPost> univPosts = em.createQuery("select up from UnivPost up where up.id = :postId", UnivPost.class)
-                .setParameter("postId", postId)
-                .getResultList();
-        if (univPosts.size() != 0) {
-            return univPosts.get(0);
-        } else {
-            return null;
-        }
     }
 
 
@@ -227,6 +192,14 @@ public class PostRepository {
         em.remove(findScrap);
 
     }
+
+    /*
+    1. 포스트 찾음
+    2. 그 포스트의 댓글 찾음
+    3. 댓글 하나당 대댓글 찾음
+    4. 그 포스트의 댓글 (2) 리스트에서 parentCommentId 가 null 인 댓글들 리스트에서 하나씩 비교해가며 찾음. <Old 로직>
+    3 & 4 포스트의 댓글, 대댓글 따로 다 찾음. 그다음에 댓글에 대댓글 리스트를 하나씩 매핑 <new 로직>
+     */
 
     /**
      * 3.9 통합 게시물 상세 api
@@ -279,7 +252,7 @@ public class PostRepository {
 
 
     /**
-     * getUnivPostDetail >> NEW <<
+     * 3.10 getUnivPostDetail >> NEW <<
      */
     public UnivPost getUnivPostById(Long id) {
         UnivPost univPost = em.createQuery("select up from UnivPost up where up.id = :id", UnivPost.class)
@@ -288,7 +261,7 @@ public class PostRepository {
         return univPost;
     }
 
-    public boolean checkUnivIsLiked(Long postId, Long memberId) {
+    public boolean checkUnivPostIsLiked(Long postId, Long memberId) {
         List<UnivPostLike> univPostLikeList = em.createQuery("select upl from UnivPostLike upl join upl.univPost up join upl.member m where up.id = :postId and m.id = :memberId", UnivPostLike.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
@@ -301,8 +274,7 @@ public class PostRepository {
     }
 
 
-
-    public boolean checkUnivIsScraped(Long postId, Long memberId){
+    public boolean checkUnivPostIsScraped(Long postId, Long memberId){
         List<UnivPostScrap> univPostScrapList = em.createQuery("select ups from UnivPostScrap ups join ups.univPost up join ups.member m where up.id = :postId and m.id = :memberId", UnivPostScrap.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
@@ -313,8 +285,6 @@ public class PostRepository {
             return false;
         }
     }
-
-
 
 
     //parentCommentId 가 null 인 댓글만 가져오기 (commentLike 는? )
@@ -341,9 +311,6 @@ public class PostRepository {
 
     /**
      * 댓글 좋아요
-     * @param commentId
-     * @param memberId
-     * @return
      */
     public boolean checkUnivCommentIsLiked(Long commentId, Long memberId) {
         List<UnivCommentLike> univCommentLikes = em.createQuery("select ucl from UnivCommentLike ucl join ucl.univComment uc join ucl.member m where uc.id = :commentId and m.id = :memberId", UnivCommentLike.class)
@@ -356,5 +323,44 @@ public class PostRepository {
             return false;
         }
     }
+
+
+
+    /**
+     * 3.10 mentionId로 댓글 찾기
+     */
+    public UnivComment findUnivComment(Long mentionId) {
+        return em.find(UnivComment.class, mentionId);
+    }
+
+
+
+    /**
+     * 전체 게시판 검색 기능
+     * @param keyword
+     * @return totalPosts
+     */
+    public List<TotalPost> searchTotalPostWithKeyword(String keyword) {
+
+        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%') order by tp.createdAt desc" , TotalPost.class)
+                .setParameter("keyword",keyword)
+                .getResultList();
+        return totalPosts;
+
+    }
+
+
+    /**
+     * 학교 게시판 검색 기능
+     * @param keyword
+     * @return totalPosts
+     */
+    public List<UnivPost> searchUnivPostWithKeyword(String keyword) {
+        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%') order by up.createdAt desc", UnivPost.class)
+                .setParameter("keyword", keyword)
+                .getResultList();
+        return univPosts;
+    }
+
 
 }

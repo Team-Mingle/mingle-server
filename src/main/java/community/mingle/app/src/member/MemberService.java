@@ -28,26 +28,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
 
-    @Transactional
-    public void  deleteMember() throws BaseException {
-        Long userIdByJwt = jwtService.getUserIdx();
-        Member member;
-        member = memberRepository.findMember(userIdByJwt);
-        if (member == null) {
-            throw new BaseException(USER_NOT_EXIST);
-        }
-
-        try {
-            member.deleteMember();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
-        }
-
-    }
-
-
+    /**
+     * 2.1 닉네임 수정
+     */
     public void modifyNickname(String nickname) throws BaseException {
 
         Long userIdByJwt = jwtService.getUserIdx();
@@ -65,30 +48,10 @@ public class MemberService {
     }
 
 
-    public List<UnivPost> getUnivScraps() throws BaseException {
-        Long userIdByJwt = jwtService.getUserIdx();
-        Member member = memberRepository.findMember(userIdByJwt);
 
-        try {
-            List<UnivPost> scraps = memberRepository.findUnivScraps(member.getId());
-            return scraps;
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    public List<TotalPost> getTotalScraps() throws BaseException {
-        Long userIdByJwt = jwtService.getUserIdx();
-        Member member = memberRepository.findMember(userIdByJwt);
-
-        try {
-            List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId());
-            return scraps;
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
+    /**
+     * 2.3 내가 쓴 글 조회
+     */
     public List<TotalPost> getTotalPosts() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
@@ -99,6 +62,9 @@ public class MemberService {
         }
     }
 
+    /**
+     * 2.4
+     */
     public List<UnivPost> getUnivPosts() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
@@ -109,6 +75,10 @@ public class MemberService {
         }
     }
 
+
+    /**
+     * 2.5 내가 쓴 댓글 조회
+     */
     public List<TotalPost> getTotalComments() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
@@ -119,6 +89,10 @@ public class MemberService {
         }
     }
 
+
+    /**
+     * 2.6
+     */
     public List<UnivPost> getUnivComments() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
@@ -130,7 +104,60 @@ public class MemberService {
     }
 
     /**
-     * report API
+     * 2.7 univ 스크랩
+     */
+    public List<UnivPost> getUnivScraps(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+
+        try {
+            List<UnivPost> scraps = memberRepository.findUnivScraps(member.getId(), postId);
+            return scraps;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    /**
+     * 2.8 전체 스크랩
+     */
+    public List<TotalPost> getTotalScraps(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+
+        try {
+            List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId(), postId);
+            return scraps;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 2.9 유저 삭제
+     */
+    @Transactional
+    public void  deleteMember() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member;
+        member = memberRepository.findMember(userIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        try {
+            member.deleteMember();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    /**
+     * 2.10 report API
      */
     @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {

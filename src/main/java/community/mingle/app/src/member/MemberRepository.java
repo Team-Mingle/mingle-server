@@ -2,20 +2,15 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Report;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivComment;
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
-import community.mingle.app.src.member.model.ReportRequest;
-import community.mingle.app.src.member.model.UnivPostScrapDTO;
+import community.mingle.app.src.domain.Total.*;
+import community.mingle.app.src.domain.Univ.*;
+import community.mingle.app.src.member.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static community.mingle.app.src.domain.PostStatus.INACTIVE;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,45 +19,17 @@ public class MemberRepository {
     private final EntityManager em;
 
 
+    /**
+     * 2.X 유저 조회
+     */
     public Member findMember(Long userIdByJwt) {
         return em.find(Member.class, userIdByJwt);
     }
 
-    public List<UnivPostScrapDTO> findScraps(Long id) {
-        List resultList = em.createQuery("select m.univPostScraps, m.totalPostScraps from Member m where m.id = :id")
-                .setParameter("id", id)
-                .getResultList();
-        return resultList;
-    }
 
-    public List<UnivPostScrapDTO> findScraps1(Long id) {
-        List resultList = em.createQuery("select UnivPostScrap ,TotalPostScrap from UnivPostScrap us , TotalPostScrap ts where us.member.id = :id and ts.member.id = :id order by us.createdAt, ts.createdAt desc")
-                .setParameter("id", id)
-                .getResultList();
-        return resultList;
-    }
-
-    public List<UnivPostScrap> findUnivScraps1(Long memberId) {
-        List<UnivPostScrap> resultList = em.createQuery("select us from UnivPostScrap us join us.member m where m.id = :id order by us.createdAt desc", UnivPostScrap.class)
-                .setParameter("id", memberId)
-                .getResultList();
-        return resultList;
-    }
-
-    public List<UnivPost> findUnivScraps(Long memberId) { // join fetch 안했을경우 : likeCount: size()
-        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p where m.id = :id order by p.createdAt desc", UnivPost.class)
-                .setParameter("id", memberId)
-                .getResultList();
-        return resultList;
-    }
-
-    public List<TotalPost> findTotalScraps(Long memberId) { // join fetch 안했을경우 : likeCount: size()
-        List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p where m.id = :id order by p.createdAt desc", TotalPost.class)
-                .setParameter("id", memberId)
-                .getResultList();
-        return resultList;
-    }
-
+    /**
+     * 2.3
+     */
     public List<TotalPost> findTotalPosts(Long memberId) {
         List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where m.id = :id order by p.createdAt desc", TotalPost.class)
                 .setParameter("id", memberId)
@@ -70,6 +37,9 @@ public class MemberRepository {
         return resultList;
     }
 
+    /**
+     * 2.4
+     */
     public List<UnivPost> findUnivPosts(Long memberId) {
         List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where m.id = :id order by p.createdAt desc", UnivPost.class)
                 .setParameter("id", memberId)
@@ -77,6 +47,9 @@ public class MemberRepository {
         return resultList;
     }
 
+    /**
+     * 2.5
+     */
     public List<TotalPost> findTotalComments(Long memberId) {
         List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where m.id = :id order by c.createdAt desc ", TotalPost.class)
                 .setParameter("id", memberId)
@@ -84,12 +57,45 @@ public class MemberRepository {
         return resultList;
     }
 
+    /**
+     * 2.6
+     */
     public List<UnivPost> findUnivComments(Long memberId) {
         List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where m.id = :id order by c.createdAt desc ", UnivPost.class)
                 .setParameter("id", memberId)
                 .getResultList();
         return resultList;
     }
+
+
+
+    /**
+     * 2.7 내가 스크랩한 글 - 대학
+     */
+    public List<UnivPost> findUnivScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
+        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p " +
+                        "where m.id = :id and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("id", memberId)
+                .setParameter("postId", postId)
+                .setMaxResults(20)
+                .getResultList();
+        return resultList;
+    }
+
+
+    /**
+     * 2.8 내가 스크랩 한 글 - 전체
+     */
+    public List<TotalPost> findTotalScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
+        List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p" +
+                        " where m.id = :id and p.id < :postId order by p.createdAt desc", TotalPost.class)
+                .setParameter("id", memberId)
+                .setParameter("postId", postId)
+                .setMaxResults(20)
+                .getResultList();
+        return resultList;
+    }
+
 
     /**
      * report API
@@ -205,5 +211,6 @@ public class MemberRepository {
 //                .getResultList();
 //        return resultList;
 //    }
+
 
 }

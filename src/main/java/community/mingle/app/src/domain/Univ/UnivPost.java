@@ -1,11 +1,10 @@
 package community.mingle.app.src.domain.Univ;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import community.mingle.app.src.domain.*;
 
 import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.post.model.PatchUpdatePostRequest;
-
-import community.mingle.app.src.domain.Total.TotalPostScrap;
 
 import community.mingle.app.src.post.model.PostCreateRequest;
 import lombok.*;
@@ -71,15 +70,20 @@ public class UnivPost {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+//    @JsonProperty("isAnonymous")
     @Column(name = "is_anonymous")
-    private boolean isAnonymous;
+    private Boolean isAnonymous;
+
+
+    @Column(name = "view_count", columnDefinition = "integer default 0", nullable = false)
+    private int viewCount;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum")
     private PostStatus status;
 
 
-    public static UnivPost createUnivPost (Member member, Category category, PostCreateRequest req){
+    public static UnivPost createUnivPost (Member member, Category category, PostCreateRequest req) {
         UnivPost univPost = new UnivPost();
         univPost.setMember(member);
         univPost.setUnivName(member.getUniv());
@@ -88,7 +92,7 @@ public class UnivPost {
         univPost.setContent(req.getContent());
         univPost.createdAt = LocalDateTime.now();
         univPost.updatedAt = LocalDateTime.now();
-        univPost.setAnonymous(req.isAnonymous());
+        univPost.setIsAnonymous(req.getIsAnonymous());
         univPost.status = PostStatus.ACTIVE;
         return univPost;
     }
@@ -113,5 +117,15 @@ public class UnivPost {
     public void deleteUnivPost (){
         this.deletedAt = LocalDateTime.now();
         this.status = PostStatus.INACTIVE;
+    }
+
+
+    public void updateView() {
+        if (viewCount == 0) {
+            this.viewCount = 1;
+        } else{
+            this.viewCount = viewCount + 1;
+        }
+
     }
 }

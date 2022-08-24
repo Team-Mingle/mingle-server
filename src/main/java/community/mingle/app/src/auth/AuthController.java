@@ -100,6 +100,7 @@ public class AuthController {
     @ResponseBody
     @PostMapping("checkemail") // (POST) 127.0.0.1:9000/users
     public BaseResponse<String> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
+        System.out.println("email=" + postUserEmailRequest.getEmail());
 
         if (postUserEmailRequest.getEmail().isEmpty()) {
             return new BaseResponse<>(EMAIL_EMPTY_ERROR);
@@ -387,6 +388,8 @@ public class AuthController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+    //검증 api
+    //
 
 }
 

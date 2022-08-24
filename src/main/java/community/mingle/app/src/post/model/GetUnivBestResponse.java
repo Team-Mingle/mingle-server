@@ -25,6 +25,11 @@ public class GetUnivBestResponse {
         title = p.getTitle();
         contents = p.getContent();
         nickname = p.getMember().getNickname();
+        if (p.getIsAnonymous() == true) {
+            this.nickname = "글쓴이";
+        } else {
+            this.nickname = p.getMember().getNickname();
+        }
         likeCount = p.getUnivPostLikes().size();
         commentCount = p.getUnivComments().size();
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
