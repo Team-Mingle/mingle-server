@@ -1,7 +1,11 @@
 package community.mingle.app.config.handler;
 
+import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.config.TokenHelper;
+import community.mingle.app.config.newexception.BadRequestException;
 import community.mingle.app.config.security.CustomUserDetailsService;
+import community.mingle.app.utils.RedisService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +27,8 @@ public class JwtHandler {
 
     private String type = "Bearer";
 //    private final CustomUserDetailsService customUserDetailsService;
+
+    private final RedisService redisService;
 
     @Value("${jwt.key.access}") // 3
     private String accessKey;
@@ -80,6 +86,24 @@ public class JwtHandler {
 
 
     /**
+     * refresh Token 재발급
+     */
+    public Optional<Claims> checkRefreshToken(String key, String refreshToken, String email) throws BaseException { // userId = 암호화된 email
+        String redisRefreshToken = redisService.getValues(email);
+        if (!refreshToken.equals(redisRefreshToken)) {
+            throw new BadRequestException("토큰 재발급에 실패하였습니다.");
+        }
+
+        try {
+            return Optional.of(Jwts.parser().setSigningKey(key.getBytes()).parseClaimsJws(untype(refreshToken)).getBody());
+        } catch (BadRequestException e) {
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+//            return Optional.empty();
+        }
+    }
+
+
+    /**
      * validateToken
      */
 //    public Authentication validateToken(HttpServletRequest request, String token) {
@@ -128,7 +152,10 @@ public class JwtHandler {
 //                .parseClaimsJws(untype(token));
 //    }
 
-    public String untype(String token) {
+    public String untype(String token) throws BadRequestException{
+        if (token.length() < 6) {
+            throw new BadRequestException("토큰을 입력해주세요.");
+        }
         return token.substring(type.length());
     }
 

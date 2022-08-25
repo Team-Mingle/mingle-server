@@ -394,9 +394,9 @@ public class AuthController {
      * access Token 재발급 By refresh Token
      **/
     @PostMapping("refresh-token")
-    public BaseResponse<ReissueAccessTokenDTO> reissueAccessToken(@RequestHeader(value = "Authorization") String refreshToken) {
+    public BaseResponse<ReissueAccessTokenDTO> reissueAccessToken(@RequestHeader(value = "Authorization") String refreshToken, @RequestBody TokenReIssueDTO tokenReIssueDTO ) {
         try {
-            return new BaseResponse<>(authService.reissueAccessToken(refreshToken));
+            return new BaseResponse<>(authService.reissueAccessToken(refreshToken, tokenReIssueDTO.getEmail()));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

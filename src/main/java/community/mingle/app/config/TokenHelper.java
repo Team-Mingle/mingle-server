@@ -64,12 +64,12 @@ public class TokenHelper {
 
 
 
-    public Optional<PrivateClaims> accessParse(String token) {
-        return jwtHandler.parse(accessKey, token).map(claims -> convert(claims));
-    }
+//    public Optional<PrivateClaims> accessParse(String token) {
+//        return jwtHandler.parse(accessKey, token).map(claims -> convert(claims));
+//    }
 
-    public Optional<PrivateClaims> refreshParse(String token) {
-        return jwtHandler.parse(refreshKey, token).map(claims -> convert(claims));
+    public Optional<PrivateClaims> refreshParse(String token, String email) throws BaseException {
+        return jwtHandler.checkRefreshToken(refreshKey, token, email).map(claims -> convert(claims));
     }
 
     private PrivateClaims convert(Claims claims) {
@@ -115,6 +115,4 @@ public class TokenHelper {
         private String memberId;
         private String roleTypes;
     }
-
-
 }
