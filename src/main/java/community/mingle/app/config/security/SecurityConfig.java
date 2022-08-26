@@ -4,6 +4,8 @@ package community.mingle.app.config.security;
 import community.mingle.app.config.CustomAccessDeniedHandler;
 import community.mingle.app.config.CustomAuthenticationEntryPoint;
 //import community.mingle.app.src.auth.TokenService;
+import community.mingle.app.config.TokenHelper;
+import community.mingle.app.config.handler.JwtHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +37,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 public class SecurityConfig {
 //    private final TokenService tokenService;
-    private final CustomUserDetailsService userDetailService;
+
+//    private final CustomUserDetailsService userDetailService;
+
+//    private final JwtHandler jwtHandler;
+
+    private final TokenHelper tokenHelper;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -60,7 +67,7 @@ public class SecurityConfig {
 //                .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(userDetailService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(tokenHelper), UsernamePasswordAuthenticationFilter.class);
 //                .authorizeHttpRequests((authz) -> authz.anyRequest().authenticated()).httpBasic(withDefaults());
         return http.build();
     }

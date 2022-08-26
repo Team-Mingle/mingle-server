@@ -339,7 +339,7 @@ public class AuthService {
     public ReissueAccessTokenDTO reissueAccessToken(String rToken, String email) throws BaseException{
 
         //orElseThrow 알아보기
-        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.refreshParse(rToken).orElseThrow();
+        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.refreshParse(rToken, email).orElseThrow();
         String accessToken = accessTokenHelper.createAccessToken(privateClaims);
         //refreshToken로 재발급
         String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, email);
