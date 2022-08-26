@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReissueAccessTokenDTO {
     private String accessToken;
+    private String refreshToken;
 
 }

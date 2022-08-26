@@ -61,7 +61,7 @@ public class TokenHelper {
     }
 
     public Optional<PrivateClaims> refreshParse(String token) {
-        return jwtHandler.parse(refreshKey, token).map(this::convert);
+        return jwtHandler.parse(refreshKey, token).map(claims -> convert(claims));
     }
 
     private PrivateClaims convert(Claims claims) {
