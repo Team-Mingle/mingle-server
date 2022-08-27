@@ -19,6 +19,7 @@ public class PostCreateRequest {
     private String title;
     private String content;
     private Boolean isAnonymous;
+    private Boolean isFileAttached;
     private List<MultipartFile> multipartFile;
 
 }

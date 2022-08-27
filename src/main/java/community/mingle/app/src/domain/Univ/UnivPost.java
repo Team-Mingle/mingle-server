@@ -74,6 +74,8 @@ public class UnivPost {
     @Column(name = "is_anonymous")
     private Boolean isAnonymous;
 
+    @Column(name = "is_fileattached")
+    private Boolean isFileAttached;
 
     @Column(name = "view_count", columnDefinition = "integer default 0", nullable = false)
     private int viewCount;
@@ -93,6 +95,7 @@ public class UnivPost {
         univPost.createdAt = LocalDateTime.now();
         univPost.updatedAt = LocalDateTime.now();
         univPost.setIsAnonymous(req.getIsAnonymous());
+        univPost.setIsFileAttached(req.getIsFileAttached());
         univPost.status = PostStatus.ACTIVE;
         return univPost;
     }

@@ -14,6 +14,8 @@ public class TotalPostDto {
     private String title;
     private String content;
     private String nickname;
+
+    private boolean isFileAttached;
     private int likeCount;
     private int scrapCount;
     private int commentCount;
@@ -34,6 +36,7 @@ public class TotalPostDto {
         } else{
             this.nickname = totalPost.getMember().getNickname();
         }
+        this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
         this.commentCount = totalPost.getTotalPostComments().size();

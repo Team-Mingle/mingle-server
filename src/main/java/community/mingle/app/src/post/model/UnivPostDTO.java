@@ -14,6 +14,7 @@ public class UnivPostDTO {
     private String title;
     private String content;
     private String nickname;
+    private boolean isFileAttached;
     private int likeCount;
     private int scrapCount;
     private int commentCount;
@@ -36,6 +37,7 @@ public class UnivPostDTO {
         } else {
             this.nickname = u.getMember().getNickname();
         }
+        this.isFileAttached = u.getIsFileAttached();
         likeCount = u.getUnivPostLikes().size();
         scrapCount = u.getUnivPostScraps().size();
         commentCount = u.getUnivComments().size();

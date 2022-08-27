@@ -11,6 +11,7 @@ public class GetTotalPostsResponse {
     private String title;
     private String contents;
     private String nickname;
+    private boolean isFileAttached;
     private int likeCount;
     private int commentCount;
     private String createdTime;
@@ -27,10 +28,15 @@ public class GetTotalPostsResponse {
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }
+
+        this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.commentCount = totalPost.getTotalPostComments().size();
         this.createdTime = convertLocaldatetimeToTime(totalPost.getCreatedAt());
-//        this.postImgUrl = totalPost.getTotalPostComments().get(0);
+
+        if(totalPost.getIsFileAttached() == true) {
+            this.postImgUrl = totalPost.getTotalPostImages().get(0).getImgUrl();
+        }
     }
 
 }
