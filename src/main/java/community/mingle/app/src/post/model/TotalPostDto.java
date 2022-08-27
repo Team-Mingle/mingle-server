@@ -1,8 +1,10 @@
 package community.mingle.app.src.post.model;
 
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostImage;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
@@ -26,6 +28,7 @@ public class TotalPostDto {
 
     private final int viewCount;
 
+    private List<String> postImgUrl = new ArrayList<>();
 
     public TotalPostDto(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped) {
         this.totalPostId = totalPost.getId();
@@ -45,6 +48,13 @@ public class TotalPostDto {
         this.isScraped = isScraped;
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
         this.viewCount =  totalPost.getViewCount();
+
+        if(totalPost.getIsFileAttached() == true) {
+            List<TotalPostImage> totalPostImages = totalPost.getTotalPostImages();
+            for (int i = 0, n=totalPostImages.size(); i < n; i++) {
+                this.postImgUrl.add(totalPostImages.get(i).getImgUrl());
+            }
+        }
 
     }
 }

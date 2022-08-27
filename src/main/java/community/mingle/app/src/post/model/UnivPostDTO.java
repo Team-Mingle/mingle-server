@@ -1,8 +1,11 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.Univ.UnivPostImage;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
@@ -25,7 +28,8 @@ public class UnivPostDTO {
 
     private final int viewCount;
 
-    //private List<PostImgDTO> postImgUrls;
+    private List<String> postImgUrl = new ArrayList<>();
+
 
 
     public UnivPostDTO(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped) {
@@ -46,5 +50,12 @@ public class UnivPostDTO {
         this.isScraped = isScraped;
         createdTime = convertLocaldatetimeToTime(u.getCreatedAt());
         this.viewCount =  u.getViewCount();
+
+        if(u.getIsFileAttached() == true) {
+            List<UnivPostImage> univPostImages = u.getUnivPostImages();
+            for (int i = 0, n=univPostImages.size(); i < n; i++) {
+                this.postImgUrl.add(univPostImages.get(i).getImgUrl());
+            }
+        }
     }
 }
