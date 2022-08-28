@@ -1,4 +1,4 @@
-package community.mingle.app.config.newexception;
+package community.mingle.app.config.exception;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

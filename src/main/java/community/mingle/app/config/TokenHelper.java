@@ -2,7 +2,7 @@ package community.mingle.app.config;
 
 
 import community.mingle.app.config.handler.JwtHandler;
-import community.mingle.app.config.newexception.BadRequestException;
+import community.mingle.app.config.exception.BadRequestException;
 import community.mingle.app.config.security.CustomAuthenticationToken;
 import community.mingle.app.config.security.CustomUserDetails;
 import community.mingle.app.config.security.CustomUserDetailsService;
@@ -12,9 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +61,7 @@ public class TokenHelper {
     }
 
 
-    public Optional<PrivateClaims> refreshParse(String token, String email) throws BaseException {
+    public Optional<PrivateClaims> parseRefreshToken(String token, String email) throws BaseException {
         return jwtHandler.checkRefreshToken(refreshKey, token, email).map(claims -> convert(claims));
     }
 
@@ -71,13 +69,9 @@ public class TokenHelper {
         return new PrivateClaims(claims.get(MEMBER_ID, String.class), claims.get(ROLE_TYPES, String.class));
     }
 
-    //추출
-//    public Optional<PrivateClaims> parseToken(String token) {
-//        return jwtHandler.parseToken(accessKey, token).map(claims -> convert(claims));
-//    }
 
     /**
-     * validateToken
+     * validate ACCESS Token
      * doFilter 에서 쓰임
      */
     public Authentication validateToken(HttpServletRequest request, String token) throws BadRequestException {
@@ -96,15 +90,17 @@ public class TokenHelper {
             request.setAttribute(exception, "JWT compact of handler are invalid");
         } catch (JwtException e) {
             e.printStackTrace();
-            request.setAttribute(exception, "토큰을 확인해주세요.");
-//            return Optional.empty();
+            request.setAttribute(exception, "토큰을 확인해주세요."); //추가
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute(exception, "exception");
+            request.setAttribute(exception, "general exception"); //추가
         }
         return null;
     }
 
+    /**
+     * loadUserByUsername 으로 UserDetail 반환
+     */
     private Authentication getAuthentication(String token) {
         CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(token);
         return new CustomAuthenticationToken(userDetails, userDetails.getAuthorities());

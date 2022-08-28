@@ -14,11 +14,15 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
+
+    /**
+     * 인가용 , 나중에 추가
+     */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-//        throw new RuntimeException();
-        response.sendRedirect("/exception/access-denied");
-//        response.setStatus(SC_FORBIDDEN);
+////        throw new RuntimeException();
+//        response.sendRedirect("/exception/access-denied");
+////        response.setStatus(SC_FORBIDDEN);
 
     }
 }

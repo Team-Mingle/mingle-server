@@ -1,7 +1,7 @@
 
 package community.mingle.app.config.security;
 
-import community.mingle.app.config.CustomAccessDeniedHandler;
+//import community.mingle.app.config.CustomAccessDeniedHandler;
 import community.mingle.app.config.CustomAuthenticationEntryPoint;
 //import community.mingle.app.src.auth.TokenService;
 import community.mingle.app.config.TokenHelper;

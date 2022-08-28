@@ -403,39 +403,5 @@ public class AuthController {
         }
     }
 
-    //검증 api
-    //
-
 }
-
-    //안쓰임
-//     * 1.5 비밀번호 검증 API
-//     */
-//    @Operation(summary = "1.10 Password Reset API", description = "1.10 비밀번호 초기화 API")
-
-//    @Parameters({
-//            @Parameter(name = "email", description = "인증코드가 전송된 이메일", example = "example@mingle.com"),
-//            @Parameter(name = "code", description = "이메일로 발송된 인증코드", example = "495032")
-//    })
-//    @ResponseBody
-//    @PostMapping("pwd") //Get 인데 Body 로 받을수 있나?
-//    public BaseResponse<String> verifyPwd(@RequestBody PostPwdRequest postPwdRequest) {
-//        try {
-//            if (postPwdRequest.getPwd().length() == 0) {
-//                return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
-//            }
-//            if (postPwdRequest.getPwd().length() < 8) {
-//                return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
-//            }
-//            if (!isRegexPassword(postPwdRequest.getPwd())) {
-//                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
-//            }
-//            authService.verifyPwd(postPwdRequest);
-//            String result = "비밀번호 인증에 성공하였습니다.";
-//            return new BaseResponse<>(result);
-//
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
 

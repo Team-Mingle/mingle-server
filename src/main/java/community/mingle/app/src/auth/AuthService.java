@@ -241,12 +241,6 @@ public class AuthService {
             throw new BaseException(FAILED_TO_LOGIN);
         }
 
-        //JWT 로 찾은 user_id 랑 email 로 찾은 user_id 랑 같은지 검증 (할필요 없음, 로그인은 header 안 씀)
-//        Long userIdxByJwt = Service.getUserIdx();
-//        if (member.getId() != userIdxByJwt) {
-//            throw new BaseException(INVALID_USER_JWT);
-//        }
-
         if (!(member.getPwd().equals(encryptPwd))) {
             throw new BaseException(FAILED_TO_LOGIN);
         }
@@ -254,10 +248,6 @@ public class AuthService {
         try {
             Long memberId = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
             String memberRole = member.getRole();
-//            String accessToken = tokenService.createAccessToken(String.valueOf(userIdx));
-//            String refreshToken = tokenService.createRefreshToken(String.valueOf(userIdx));
-//            String jwt = jwtService.createJwt(userIdx);
-//            String refreshJwt = jwtService.createRefreshJwt(userIdx);
             TokenHelper.PrivateClaims privateClaims = createPrivateClaims(memberId, memberRole);
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
             String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
@@ -332,36 +322,20 @@ public class AuthService {
         }
     }
 
+
     /**
      * 1.12 refresh token으로 access Token 발급
      */
-
     public ReissueAccessTokenDTO reissueAccessToken(String rToken, String email) throws BaseException{
 
         //orElseThrow 알아보기
-        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.refreshParse(rToken, email).orElseThrow();
+        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.parseRefreshToken(rToken, email).orElseThrow();
         String accessToken = accessTokenHelper.createAccessToken(privateClaims);
-        //refreshToken로 재발급
+        //refreshToken 으로 재발급
         String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, email);
         return new ReissueAccessTokenDTO(accessToken, refreshToken);
-
-//        validateRefreshToken(rToken);
-//        String subject = tokenService.extractRefreshTokenSubject(rToken);
-//        String accessToken = tokenService.createAccessToken(subjec    t);
-//        return new ReissueAccessTokenDTO(accessToken);
     }
 
-//    public RefreshTokenResponse refreshToken(String rToken) {
-//        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.parse(rToken).orElseThrow(RefreshTokenFailureException::new);
-//        String accessToken = accessTokenHelper.createToken(privateClaims);
-//        return new RefreshTokenResponse(accessToken);
-//    }
-//
-//    private void validateRefreshToken(String rToken) throws BaseException{
-//        if (!tokenService.validateRefreshToken(rToken)) {
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
 
     /**
      * PrivateClaim 발급
