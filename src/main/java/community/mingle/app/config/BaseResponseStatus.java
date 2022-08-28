@@ -50,7 +50,7 @@ public enum BaseResponseStatus {
     ALREADY_REPORTED(false, 2021, "이미 신고한 컨텐츠입니다."),
 //    DELETE_USER_NOTEXIST(false,2020,"삭제할 유저가 존재하지 않습니다."),
 //    POSTS_USERS_EXISTS_NICKNAME(false, 5030, "중복된 닉네임입니다."),
-    DELETE_FAIL_USER(false, 1000, "유저 삭제를 실패하였습니다."),
+//    DELETE_FAIL_USER(false, 1000, "유저 삭제를 실패하였습니다."),
 
     /** 3. /posts  */
 //    POST_INVALID_CONTENTS(false,2030,"내용의 글자수를 확인해주세요."),
@@ -73,7 +73,8 @@ public enum BaseResponseStatus {
     /** 1. /auth  */
 
     FAILED_TO_SIGNUP(false, 3010, "회원가입에 실패하였습니다."),
-    FAILED_TO_LOGIN(false,3011,"존재하지 않는 이메일이거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false,3011,"일치하는 이메일이나 비밀번호를 찾지 못했습니다.\n" +
+            "띄어쓰기나 잘못된 글자가 있는지 확인해 주세요."),
     FAILED_TO_CREATEJWT(false, 3012, "JWT 발급에 실패하였습니다."),
     FAILED_TO_CHANGEPWD(false, 3013, "비밀번호 변경에 실패하였습니다."),
     FAILED_TO_GET_TERMS(false, 3014, "개인정보처리방침을 가져오는데 실패하였습니다"),

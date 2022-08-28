@@ -9,7 +9,7 @@ import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import community.mingle.app.src.post.model.PostCreateResponse;
 import community.mingle.app.src.post.model.*;
-import community.mingle.app.utils.S3Service;
+//import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import community.mingle.app.src.domain.Member;
@@ -31,7 +31,7 @@ public class PostService {
     private final JwtService jwtService;
     private final PostRepository postRepository;
 
-    private final S3Service s3Service;
+//    private final S3Service s3Service;
 
 
     /**
@@ -142,66 +142,65 @@ public class PostService {
     /**
      * 3.6 통합 게시물 작성 API
      */
-    @Transactional
-
-    public PostCreateResponse createTotalPost(PostCreateRequest postCreateRequest) throws BaseException {
-        Member member;
-        Category category;
-        Long memberIdByJwt = jwtService.getUserIdx();
-        member = postRepository.findMemberbyId(memberIdByJwt);
-        if (member == null) {
-            throw new BaseException(USER_NOT_EXIST);
-        }
-        try {
-            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
-        } catch (Exception exception) {
-            throw new BaseException(INVALID_POST_CATEGORY);
-        }
-        try {
-            TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
-            Long id = postRepository.save(totalPost);
-            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
-            for (String fileName: fileNameList) {
-                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
-                postRepository.save(totalPostImage);
-            }
-            return new PostCreateResponse(id, fileNameList);
-        } catch (Exception e) {
-            throw new BaseException(CREATE_FAIL_POST);
-        }
-    }
-
-    /**
-     * 3.7 학교 게시물 작성 API
-     */
-    @Transactional
-    public PostCreateResponse createUnivPost(PostCreateRequest postCreateRequest) throws BaseException {
-        Member member;
-        Category category;
-        Long memberIdByJwt = jwtService.getUserIdx();
-        member = postRepository.findMemberbyId(memberIdByJwt);
-        if (member == null) {
-            throw new BaseException(USER_NOT_EXIST);
-        }
-        try {
-            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
-        } catch (Exception exception) {
-            throw new BaseException(INVALID_POST_CATEGORY);
-        }
-        try {
-            UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
-            Long id = postRepository.save(univPost);
-            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
-            for (String fileName: fileNameList) {
-                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost,fileName);
-                postRepository.save(univPostImage);
-            }
-            return new PostCreateResponse(id, fileNameList);
-
-        } catch (Exception e) {
-            throw new BaseException(CREATE_FAIL_POST);
-        }
-    }
+//    @Transactional
+//    public PostCreateResponse createTotalPost(PostCreateRequest postCreateRequest) throws BaseException {
+//        Member member;
+//        Category category;
+//        Long memberIdByJwt = jwtService.getUserIdx();
+//        member = postRepository.findMemberbyId(memberIdByJwt);
+//        if (member == null) {
+//            throw new BaseException(USER_NOT_EXIST);
+//        }
+//        try {
+//            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+//        } catch (Exception exception) {
+//            throw new BaseException(INVALID_POST_CATEGORY);
+//        }
+//        try {
+//            TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
+//            Long id = postRepository.save(totalPost);
+//            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+//            for (String fileName: fileNameList) {
+//                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
+//                postRepository.save(totalPostImage);
+//            }
+//            return new PostCreateResponse(id, fileNameList);
+//        } catch (Exception e) {
+//            throw new BaseException(CREATE_FAIL_POST);
+//        }
+//    }
+//
+//    /**
+//     * 3.7 학교 게시물 작성 API
+//     */
+//    @Transactional
+//    public PostCreateResponse createUnivPost(PostCreateRequest postCreateRequest) throws BaseException {
+//        Member member;
+//        Category category;
+//        Long memberIdByJwt = jwtService.getUserIdx();
+//        member = postRepository.findMemberbyId(memberIdByJwt);
+//        if (member == null) {
+//            throw new BaseException(USER_NOT_EXIST);
+//        }
+//        try {
+//            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+//        } catch (Exception exception) {
+//            throw new BaseException(INVALID_POST_CATEGORY);
+//        }
+//        try {
+//            UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
+//            Long id = postRepository.save(univPost);
+//            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+//            for (String fileName: fileNameList) {
+//                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost,fileName);
+//                postRepository.save(univPostImage);
+//            }
+//            return new PostCreateResponse(id, fileNameList);
+//
+//        } catch (Exception e) {
+//            throw new BaseException(CREATE_FAIL_POST);
+//        }
+//    }
 
 
     /**

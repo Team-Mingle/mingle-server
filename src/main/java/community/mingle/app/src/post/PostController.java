@@ -185,48 +185,48 @@ public class    PostController {
     /**
      * 3.6 통합 게시물 작성 API
      */
-    @Operation(summary = "3.6 createTotalPosts API", description = "3.6 통합 게시물 생성 API")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
-    @PostMapping("/total")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-    })
-    public BaseResponse<PostCreateResponse> createTotalPost (@ModelAttribute PostCreateRequest postCreateRequest){
-        try{
-            return new BaseResponse<>(postService.createTotalPost(postCreateRequest));
-        }catch (BaseException exception){
-            return new BaseResponse<>(exception.getStatus());
-    } }
-
-
-
-
-    /**
-     * 3.7 학교 게시물 작성 API
-     */
-    @Operation(summary = "3.7 createUnivPosts API", description = "3.7 학교 게시물 생성 API")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
-    @PostMapping("/univ")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-    })
-
-    public BaseResponse<PostCreateResponse> createUnivPost (@ModelAttribute PostCreateRequest postCreateRequest){
-        try{
-            return new BaseResponse<>(postService.createUnivPost(postCreateRequest));
-        }catch (BaseException exception){
-            exception.printStackTrace();
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
+//    @Operation(summary = "3.6 createTotalPosts API", description = "3.6 통합 게시물 생성 API")
+//    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+//    @PostMapping("/total")
+//    @ApiResponses ({
+//            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+//    })
+//    public BaseResponse<PostCreateResponse> createTotalPost (@ModelAttribute PostCreateRequest postCreateRequest){
+//        try{
+//            return new BaseResponse<>(postService.createTotalPost(postCreateRequest));
+//        }catch (BaseException exception){
+//            return new BaseResponse<>(exception.getStatus());
+//    } }
+//
+//
+//
+//
+//    /**
+//     * 3.7 학교 게시물 작성 API
+//     */
+//    @Operation(summary = "3.7 createUnivPosts API", description = "3.7 학교 게시물 생성 API")
+//    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+//    @PostMapping("/univ")
+//    @ApiResponses ({
+//            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
+//            @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+//    })
+//
+//    public BaseResponse<PostCreateResponse> createUnivPost (@ModelAttribute PostCreateRequest postCreateRequest){
+//        try{
+//            return new BaseResponse<>(postService.createUnivPost(postCreateRequest));
+//        }catch (BaseException exception){
+//            exception.printStackTrace();
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
 
 
     /**
