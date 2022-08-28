@@ -41,6 +41,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     }
 
+
+    /**
+     * JWT 에서 Claim 추출 후 UserDetail 반환
+     * @param parsedToken
+     * @return
+     */
     private CustomUserDetails convert(String parsedToken) {
         Optional<TokenHelper.PrivateClaims> privateClaims = jwtHandler.parseToken(parsedToken);
         return new CustomUserDetails(privateClaims.get().getMemberId(), new SimpleGrantedAuthority(privateClaims.get().getRoleTypes()));

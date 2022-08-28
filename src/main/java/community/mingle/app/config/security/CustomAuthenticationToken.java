@@ -12,6 +12,11 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
     private CustomUserDetails principal;
 
 
+    /**
+     * Authenticated 된 UserDetail
+     * @param principal
+     * @param authorities
+     */
     public CustomAuthenticationToken(CustomUserDetails principal, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
 //        this.type = type;

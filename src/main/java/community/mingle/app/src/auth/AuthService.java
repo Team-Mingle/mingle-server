@@ -333,7 +333,7 @@ public class AuthService {
     }
 
     /**
-     * refresh token으로 access Token 발급
+     * 1.12 refresh token으로 access Token 발급
      */
 
     public ReissueAccessTokenDTO reissueAccessToken(String rToken, String email) throws BaseException{

@@ -2,6 +2,7 @@ package community.mingle.app.config;
 
 
 import community.mingle.app.config.handler.JwtHandler;
+import community.mingle.app.config.newexception.BadRequestException;
 import community.mingle.app.config.security.CustomAuthenticationToken;
 import community.mingle.app.config.security.CustomUserDetails;
 import community.mingle.app.config.security.CustomUserDetailsService;
@@ -63,18 +64,8 @@ public class TokenHelper {
     }
 
 
-
-//<<<<<<< HEAD
-//    public Optional<PrivateClaims> refreshParse(String token) {
-//        return jwtHandler.parse(refreshKey, token).map(claims -> convert(claims));
-//=======
-//    public Optional<PrivateClaims> accessParse(String token) {
-//        return jwtHandler.parse(accessKey, token).map(claims -> convert(claims));
-//    }
-
     public Optional<PrivateClaims> refreshParse(String token, String email) throws BaseException {
         return jwtHandler.checkRefreshToken(refreshKey, token, email).map(claims -> convert(claims));
-//>>>>>>> 6c0c810f33103bcb6e0dd9e54fe6b32a8f080a5f
     }
 
     private PrivateClaims convert(Claims claims) {
@@ -89,13 +80,14 @@ public class TokenHelper {
     /**
      * validateToken
      */
-    public Authentication validateToken(HttpServletRequest request, String token) {
+    public Authentication validateToken(HttpServletRequest request, String token) throws BadRequestException {
         String exception = "exception";
 
         try {
             Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(jwtHandler.untype(token));
-            return getAuthentication(token);
-
+            return getAuthentication(token); //loadByUserName 후 Authentication 형식인 CustomAuthenticationToken 반환 !!
+        } catch (BadRequestException e) {
+            request.setAttribute(exception, "토큰을 입력해주세요. (앞에 Bearer 포함)");
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
             request.setAttribute(exception, "토큰의 형식을 확인하세요");
         } catch (ExpiredJwtException e) {
