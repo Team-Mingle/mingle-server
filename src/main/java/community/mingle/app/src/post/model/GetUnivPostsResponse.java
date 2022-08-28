@@ -21,7 +21,11 @@ public class GetUnivPostsResponse {
         this.univPostIdx = univPost.getId();
         this.title = univPost.getTitle();
         this.contents = univPost.getContent();
-        this.nickname = univPost.getMember().getNickname();
+        if (univPost.getIsAnonymous() == true) {
+            this.nickname = "글쓴이";
+        } else {
+            this.nickname = univPost.getMember().getNickname();
+        }
         this.likeCount = univPost.getUnivPostLikes().size();
         this.commentCount = univPost.getUnivComments().size();
         this.createdTime = convertLocaldatetimeToTime(univPost.getCreatedAt());

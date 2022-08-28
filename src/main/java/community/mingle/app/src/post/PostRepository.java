@@ -5,7 +5,10 @@ import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -102,6 +105,14 @@ public class PostRepository {
         return univPost.getId();
     }
 
+    public void save(TotalPostImage totalPostImage) {
+        em.persist(totalPostImage);
+    }
+
+    public void save(UnivPostImage univPostImage) {
+        em.persist(univPostImage);
+    }
+
 
     public Category findCategoryById(int id) { //쿼리문에서 나는 에러는 if else 로 잡아서 null 로 보낼 수 없다.
         Category category = em.createQuery("select c from Category c where c.id = :id", Category.class)
@@ -124,6 +135,7 @@ public class PostRepository {
                 .getResultList();
         return allTotalComments;
     }
+
 
     public List<UnivComment> findAllUnivComment(Long postId) {
         List<UnivComment> allUnivComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id", UnivComment.class)
@@ -320,5 +332,44 @@ public class PostRepository {
             return false;
         }
     }
+
+
+
+    /**
+     * 3.10 mentionId로 댓글 찾기
+     */
+    public UnivComment findUnivComment(Long mentionId) {
+        return em.find(UnivComment.class, mentionId);
+    }
+
+
+
+    /**
+     * 전체 게시판 검색 기능
+     * @param keyword
+     * @return totalPosts
+     */
+    public List<TotalPost> searchTotalPostWithKeyword(String keyword) {
+
+        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%') order by tp.createdAt desc" , TotalPost.class)
+                .setParameter("keyword",keyword)
+                .getResultList();
+        return totalPosts;
+
+    }
+
+
+    /**
+     * 학교 게시판 검색 기능
+     * @param keyword
+     * @return totalPosts
+     */
+    public List<UnivPost> searchUnivPostWithKeyword(String keyword) {
+        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%') order by up.createdAt desc", UnivPost.class)
+                .setParameter("keyword", keyword)
+                .getResultList();
+        return univPosts;
+    }
+
 
 }

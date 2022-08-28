@@ -28,10 +28,14 @@ public class CommentService {
     public Long createTotalComment(PostTotalCommentRequest postTotalCommentRequest) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
 
-        try {
-            TotalPost post = commentRepository.findTotalPostbyId(postTotalCommentRequest.getPostId());
-            Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
+        TotalPost post = commentRepository.findTotalPostbyId(postTotalCommentRequest.getPostId());
+        if (post == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+
+        try {
+            Member member = commentRepository.findMemberbyId(memberIdByJwt);
             Long anonymousId;
 
             if (postTotalCommentRequest.isAnonymous() == true) {
@@ -50,7 +54,6 @@ public class CommentService {
             return id;
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -64,26 +67,31 @@ public class CommentService {
         Long memberIdByJwt = jwtService.getUserIdx();
 
         UnivPost univPost = commentRepository.findUnivPostById(request.getPostId());
-        Member member = commentRepository.findMemberbyId(memberIdByJwt);
-
-        Long anonymousId;
-
-        if (request.isAnonymous() == true) {
-            anonymousId = commentRepository.findUnivAnonymousId(univPost, memberIdByJwt);
-            System.out.println("true");
-        } else {
-            System.out.println("false");
-            anonymousId = null;
+        if (univPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
         }
 
-        //댓글 생성
-        UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.isAnonymous(), anonymousId);
+        try {
+            Member member = commentRepository.findMemberbyId(memberIdByJwt);
+            Long anonymousId;
 
-//        UnivComment savedComment = commentRepository.saveUnivComment(comment);
-//        Long id = savedComment.getId();
+            if (request.isAnonymous() == true) {
+                anonymousId = commentRepository.findUnivAnonymousId(univPost, memberIdByJwt);
+                System.out.println("true");
+            } else {
+                System.out.println("false");
+                anonymousId = null;
+            }
 
-        commentRepository.saveUnivComment(comment);
-        return comment.getId();
+            //댓글 생성
+            UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.getMentionId(), request.isAnonymous(), anonymousId);
+
+            commentRepository.saveUnivComment(comment);
+            return comment.getId();
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 
 

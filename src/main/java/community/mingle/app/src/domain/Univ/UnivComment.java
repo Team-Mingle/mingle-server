@@ -44,6 +44,7 @@ public class UnivComment {
     @Column(name = "anonymous_id")
     private Long anonymousId;
 
+
     /**
      * 양방향 3.10 추가
      */
@@ -54,7 +55,6 @@ public class UnivComment {
     /** 익명방법? */
     @Column(name = "is_anonymous")
     private boolean isAnonymous;
-
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -73,16 +73,17 @@ public class UnivComment {
         this.status = PostStatus.REPORTED;
     }
 
-    public void modifyInactiveStatus() {
-        this.status = PostStatus.INACTIVE;
-    }
+//    public void modifyInactiveStatus() {
+//        this.status = PostStatus.INACTIVE; //update 문으로 변경
+//    }
 
-    public static UnivComment createComment(UnivPost univPost, Member member, String content, Long parentCommentId, boolean isAnonymous, Long anonymousId) {
+    public static UnivComment createComment(UnivPost univPost, Member member, String content, Long parentCommentId, Long mentionId, boolean isAnonymous, Long anonymousId) {
         UnivComment univComment = new UnivComment();
         univComment.setUnivPost(univPost);
         univComment.setMember(member);
         univComment.setContent(content);
         univComment.setParentCommentId(parentCommentId);
+        univComment.setMentionId(mentionId);
         univComment.setAnonymous(isAnonymous);
         univComment.setAnonymousId(anonymousId);
         univComment.createdAt = LocalDateTime.now();

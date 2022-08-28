@@ -22,7 +22,11 @@ public class GetTotalPostsResponse {
         this.totalPostIdx = totalPost.getId();
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
-        this.nickname = totalPost.getMember().getNickname();
+        if (totalPost.getIsAnonymous() == true) {
+            this.nickname = "글쓴이";
+        } else {
+            this.nickname = totalPost.getMember().getNickname();
+        }
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.commentCount = totalPost.getTotalPostComments().size();
         this.createdTime = convertLocaldatetimeToTime(totalPost.getCreatedAt());
