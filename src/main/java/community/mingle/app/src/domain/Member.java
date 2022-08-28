@@ -37,6 +37,8 @@ public class Member {
     private String email; //regex 추가
     private String pwd; //regex 추가
 
+    private String role;
+
 
     /** 학교게시판*/
     @OneToMany(mappedBy = "member")
@@ -77,7 +79,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
 //    @Column(name = "status",columnDefinition = "ENUM('ACTIVE','INACTIVE','REPORTED','ADMIN", nullable = false)
     @Column(columnDefinition = "enum")
-    private Userstatus status;
+    private UserStatus status;
 
 
     //== 생성 메서드 ==// -> constructor 역할.
@@ -90,7 +92,8 @@ public class Member {
         member.agreedAt = LocalDateTime.now();
         member.createdAt = LocalDateTime.now();
         member.updatedAt = LocalDateTime.now();
-        member.status = Userstatus.ACTIVE;
+        member.status = UserStatus.ACTIVE;
+        member.role = "USER";
 
         return member;
     }
@@ -98,7 +101,7 @@ public class Member {
 
     public void deleteMember() {
         this.deletedAt = LocalDateTime.now();
-        this.status = Userstatus.INACTIVE;
+        this.status = UserStatus.INACTIVE;
 
     }
 
@@ -110,7 +113,7 @@ public class Member {
     }
 
     public void modifyReportStatus() {
-        this.status = Userstatus.REPORTED;
+        this.status = UserStatus.REPORTED;
     }
 
 

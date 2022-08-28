@@ -20,6 +20,8 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 @RequiredArgsConstructor
 public class JwtService {
 
+    String type = "Bearer";
+
 
     /*
     JWT 생성
@@ -33,7 +35,19 @@ public class JwtService {
                 .setHeaderParam("type","jwt")
                 .claim("userIdx",userIdx)
                 .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)))
+                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60)))
+                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
+                .compact();
+    }
+
+    public String createRefreshJwt(Long userIdx) {
+        Date now = new Date();
+        return Jwts.builder()
+                .setIssuer("mingle.community")
+                .setHeaderParam("type","jwt")
+                .claim("userIdx",userIdx)
+                .setIssuedAt(now)
+                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60)))
                 .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
                 .compact();
     }
@@ -44,7 +58,7 @@ public class JwtService {
      */
     public String getJwt(){ //resolveToken
         HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-        return request.getHeader("X-ACCESS-TOKEN");
+        return request.getHeader("Authorization");
     }
 
 //    public boolean checkClaim(String jwt) {
@@ -71,8 +85,9 @@ public class JwtService {
     @throws BaseException
      */
     public Long getUserIdx() throws BaseException{
+
         //1. JWT 추출
-        String accessToken = getJwt();
+        String accessToken = untype(getJwt());
 
 
 
@@ -91,7 +106,17 @@ public class JwtService {
         }
 
         // 3. userIdx 추출
-        return claims.getBody().get("userIdx",Long.class);
+//        return claims.getBody().get("userIdx",Long.class);
+        return Long.valueOf(claims.getBody().getSubject());
+    }
+
+    private String untype(String token) throws BaseException{
+        try {
+            return token.substring(type.length());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 
     //jwt 로 인증정보를 조회

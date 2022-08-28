@@ -1,29 +1,21 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
-
 import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import community.mingle.app.src.post.model.PostCreateResponse;
-
 import community.mingle.app.src.post.model.*;
-
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Univ.UnivPost;
-
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -130,6 +122,8 @@ public class PostService {
 //        } catch (Exception e) {
 //            throw new BaseException(EMPTY_JWT);
 //        }
+
+
         Member member;
 //        try {
         member = postRepository.findMemberbyId(memberIdByJwt);
@@ -258,7 +252,7 @@ public class PostService {
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                         .collect(Collectors.toList());
                 List<TotalCocommentDto> coCommentDtos = coComments.stream()
-                        .map(p -> new TotalCocommentDto(p, tc, memberIdByJwt))
+                        .map(p -> new TotalCocommentDto(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt))
                         .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);

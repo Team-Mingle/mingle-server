@@ -38,14 +38,11 @@ public class UnivComment {
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
-    @Column(name = "anonymous_id")
-    private Long anonymousId;
-
-    /**
-     * 3.9 3.10 게시물상세 댓글 추가
-     */
     @Column(name = "mention_id")
     private Long mentionId;
+
+    @Column(name = "anonymous_id")
+    private Long anonymousId;
 
 
     /**

@@ -20,14 +20,14 @@ public class TotalCocommentDto {
     private String createdAt;
     private boolean isLiked;
 
-    public TotalCocommentDto(TotalComment coComment, TotalComment comment, Long memberId) {
+    public TotalCocommentDto(TotalComment coComment, TotalComment mention, Long memberId) {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
 
-        if (comment.isAnonymous() == true) {
-            this.mention = "익명 "+comment.getAnonymousId();
+        if (mention.isAnonymous() == true) {
+            this.mention = "익명 "+mention.getAnonymousId();
         }else{
-            this.mention = comment.getMember().getNickname();
+            this.mention = mention.getMember().getNickname();
         }
 
         if (coComment.getStatus() == PostStatus.REPORTED) {

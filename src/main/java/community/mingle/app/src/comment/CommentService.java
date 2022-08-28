@@ -46,7 +46,7 @@ public class CommentService {
             }
 
             //댓글 생성
-            TotalComment comment = TotalComment.createComment(post, member, postTotalCommentRequest.getContent(), postTotalCommentRequest.getParentCommentId(), postTotalCommentRequest.isAnonymous(), anonymousId);
+            TotalComment comment = TotalComment.createComment(post, member, postTotalCommentRequest.getContent(), postTotalCommentRequest.getParentCommentId(), postTotalCommentRequest.getMentionId(), postTotalCommentRequest.isAnonymous(), anonymousId);
 
             TotalComment savedComment = commentRepository.saveTotalComment(comment);
             Long id = savedComment.getId();

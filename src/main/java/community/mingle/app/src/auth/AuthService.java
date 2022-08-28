@@ -1,6 +1,8 @@
 package community.mingle.app.src.auth;
 
+import antlr.Token;
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.security.auth.RefreshFailedException;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -32,6 +36,11 @@ public class AuthService {
     private final RedisUtil redisUtil;
     private final AuthRepository authRepository;
     private final JwtService jwtService;
+//    private final TokenService tokenService;
+
+    private final TokenHelper accessTokenHelper;
+    private final TokenHelper refreshTokenHelper;
+
 
     @Value("${spring.mail.username}")
     private  String from;
@@ -232,20 +241,17 @@ public class AuthService {
             throw new BaseException(FAILED_TO_LOGIN);
         }
 
-        //JWT 로 찾은 user_id 랑 email 로 찾은 user_id 랑 같은지 검증 (할필요 없음, 로그인은 header 안 씀)
-//        Long userIdxByJwt = Service.getUserIdx();
-//        if (member.getId() != userIdxByJwt) {
-//            throw new BaseException(INVALID_USER_JWT);
-//        }
-
         if (!(member.getPwd().equals(encryptPwd))) {
             throw new BaseException(FAILED_TO_LOGIN);
         }
 
         try {
-            Long userIdx = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
-            String jwt = jwtService.createJwt(userIdx);
-            return new PostLoginResponse(userIdx, jwt); //비교해서 이상이 없다면 jwt를 발급
+            Long memberId = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
+            String memberRole = member.getRole();
+            TokenHelper.PrivateClaims privateClaims = createPrivateClaims(memberId, memberRole);
+            String accessToken = accessTokenHelper.createAccessToken(privateClaims);
+            String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
+            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_CREATEJWT);
         }
@@ -315,4 +321,28 @@ public class AuthService {
             throw new BaseException(EMAIL_SEND_FAIL);
         }
     }
+
+
+    /**
+     * 1.12 refresh token으로 access Token 발급
+     */
+    public ReissueAccessTokenDTO reissueAccessToken(String rToken, String email) throws BaseException{
+
+        //orElseThrow 알아보기
+        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.parseRefreshToken(rToken, email).orElseThrow();
+        String accessToken = accessTokenHelper.createAccessToken(privateClaims);
+        //refreshToken 으로 재발급
+        String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, email);
+        return new ReissueAccessTokenDTO(accessToken, refreshToken);
+    }
+
+
+    /**
+     * PrivateClaim 발급
+     */
+
+    public TokenHelper.PrivateClaims createPrivateClaims(Long memberId, String memberRole) {
+        return new TokenHelper.PrivateClaims(String.valueOf(memberId), memberRole);
+    }
+
 }
