@@ -29,8 +29,7 @@ public class TokenHelper {
     private final JwtHandler jwtHandler;
     private final CustomUserDetailsService customUserDetailsService;
     private final RedisService redisService;
-//    private final String key;
-//    private final long maxAgeSeconds;
+
 
     @Value("${jwt.max-age.access}") // 1
     private Long accessTokenMaxAgeSeconds;
@@ -44,9 +43,9 @@ public class TokenHelper {
     @Value("${jwt.key.refresh}") // 4
     private String refreshKey;
 
-//    private static final String SEP = ",";
     private static final String ROLE_TYPES = "ROLE_TYPES";
     private static final String MEMBER_ID = "MEMBER_ID";
+
 
     public String createAccessToken(PrivateClaims privateClaims) {
         return jwtHandler.createToken(accessKey,
@@ -79,6 +78,7 @@ public class TokenHelper {
 
     /**
      * validateToken
+     * doFilter 에서 쓰임
      */
     public Authentication validateToken(HttpServletRequest request, String token) throws BadRequestException {
         String exception = "exception";
@@ -94,8 +94,13 @@ public class TokenHelper {
             request.setAttribute(exception, "토큰이 만료되었습니다.");
         } catch (IllegalArgumentException e) {
             request.setAttribute(exception, "JWT compact of handler are invalid");
-//        } catch (JwtException e) {
+        } catch (JwtException e) {
+            e.printStackTrace();
+            request.setAttribute(exception, "토큰을 확인해주세요.");
 //            return Optional.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute(exception, "exception");
         }
         return null;
     }
