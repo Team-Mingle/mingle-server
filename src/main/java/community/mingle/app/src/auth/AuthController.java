@@ -7,6 +7,8 @@ import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import io.swagger.v3.oas.annotations.Operation;
 import community.mingle.app.utils.JwtService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -394,7 +396,7 @@ public class AuthController {
      * access Token 재발급 By refresh Token
      **/
     @PostMapping("refresh-token")
-
+    @Parameter(name = "Authorization", required = true, description = "Access Token", in = ParameterIn.HEADER)
     public BaseResponse<ReissueAccessTokenDTO> reissueAccessToken(@RequestHeader(value = "Authorization") String refreshToken, @RequestBody TokenReIssueDTO tokenReIssueDTO ) {
         try {
             return new BaseResponse<>(authService.reissueAccessToken(refreshToken, tokenReIssueDTO.getEmail()));

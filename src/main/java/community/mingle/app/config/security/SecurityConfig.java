@@ -58,6 +58,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
 //                .antMatchers("/**").permitAll()
+//                .antMatchers("/v3/api-docs/**").permitAll()
+//                .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/**").permitAll()
                 .antMatchers("/post/**").access("@memberGuard.check()")

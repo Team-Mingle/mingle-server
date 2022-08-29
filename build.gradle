@@ -65,30 +65,22 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter')
 	implementation('org.springframework.boot:spring-boot-starter-web')
 
-	//명세서
-//	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 
-//<<<<<<< HEAD
-//	implementation 'io.springfox:springfox-boot-starter:3.0.0'
-//	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
-//=======
-//>>>>>>> 2d2c252c23b3820543db375698b79b1fccd7751e
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
 
 	//firebase
 	implementation 'com.google.firebase:firebase-admin:6.8.1'
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 
 
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
 
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
 	//s3설정 추가
-//	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 
 }
