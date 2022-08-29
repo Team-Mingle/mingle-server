@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Tag(name = "member", description = "유저 관련 API")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content (schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+})
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -33,7 +38,6 @@ public class MemberController {
     @PatchMapping("/nickname")
     @Operation(summary = "2.1 modifyNickname API", description = "2.1 닉네임 수정 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2017", description = "중복된 닉네임입니다.", content = @Content(schema = @Schema(hidden = true))),
