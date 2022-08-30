@@ -6,10 +6,18 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.comment.model.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
+import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.utils.JwtService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
@@ -18,7 +26,7 @@ public class CommentService {
 
     private final JwtService jwtService;
     private final CommentRepository commentRepository;
-
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
      * 4.1 전체게시판 댓글 작성 api
@@ -51,6 +59,7 @@ public class CommentService {
             TotalComment savedComment = commentRepository.saveTotalComment(comment);
             Long id = savedComment.getId();
 
+            sendTotalPush(post, postTotalCommentRequest, member);
             return id;
 
         } catch (Exception e) {
@@ -58,6 +67,35 @@ public class CommentService {
         }
     }
 
+
+    public void sendTotalPush(TotalPost post, PostTotalCommentRequest postTotalCommentRequest, Member creatorMember) throws IOException {
+        Member postMember = post.getMember();
+        Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
+        Member mentionMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getMentionId()).getMember();
+        String messageTitle = "광장";
+        if (parentMember == null) {
+            if (postMember.getId() == creatorMember.getId()) {
+                return;
+            }
+            else {
+                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent());
+            }
+        } else if (parentMember != null) {
+            Map<Member, String> map = new HashMap<>();
+            map.put(postMember, "postMemberId");
+            map.put(parentMember, "parentMemberId");
+            map.put(mentionMember, "mentionMemberId");
+            map.put(creatorMember, "creatorMemberId");
+            for (Member member : map.keySet()) {
+                if (map.get(member) == "creatorMemberId") {
+                    continue;
+                }else{
+                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent());
+                }
+            }
+        }
+
+    }
 
     /**
      * 4.2 학교 댓글 작성 api
