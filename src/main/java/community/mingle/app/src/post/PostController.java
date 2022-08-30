@@ -619,13 +619,16 @@ public class    PostController {
      * 학교 게시판 검색 기능
      */
     @Operation(summary = "UnlikeTotalPost API", description = "통합 게시물 스크랩 취소 api")
-    //@Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @Parameter(name = "Authorization", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @GetMapping("univ/search")
     @ApiResponses ({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요. (앞에 Bearer 포함)", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", description = "토큰의 형식을 확인하세요", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", description = "JWT compact of handler are invalid", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", description = "토큰을 확인해주세요", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", description = "general exception", content = @Content (schema = @Schema(hidden = true)))
     })
     public BaseResponse<List<SearchUnivPost>> searchUnivPost(@RequestParam(value="keyword") String keyword) {
         try {

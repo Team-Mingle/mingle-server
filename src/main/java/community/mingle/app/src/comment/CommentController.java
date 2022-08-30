@@ -55,7 +55,7 @@ public class CommentController {
     /**
      * 4.3  통합 게시물 댓글 좋아요 api
      */
-    @Operation(summary = "3.05 likesTotalComment api", description = "3.05 통합 게시물 댓글 좋아요 api")
+    @Operation(summary = "4.3 likesTotalComment api", description = "4.3 통합 게시물 댓글 좋아요 api")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @PostMapping("/total/likes")
     @ApiResponses({
@@ -77,7 +77,7 @@ public class CommentController {
     /**
      * 4.4  학교 게시물 댓글 좋아요 api
      */
-    @Operation(summary = "3.06 likesUnivComment  api", description = "학교 게시물 댓글 좋아요 api")
+    @Operation(summary = "4.04 likesUnivComment api", description = "학교 게시물 댓글 좋아요 api")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @PostMapping("/univ/likes")
     @ApiResponses({
@@ -98,7 +98,7 @@ public class CommentController {
     /**
      * 4.5 통합 게시물 좋아요  취소 api
      */
-    @Operation(summary = "UnlikeTotalComment API", description = "통합 게시물 댓글 취소 api")
+    @Operation(summary = "4.05 UnlikeTotalComment API", description = "통합 게시물 댓글 좋아요 취소 api")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @DeleteMapping("/total/unlike")
     @ApiResponses ({
@@ -121,7 +121,8 @@ public class CommentController {
     /**
      * 4.6 학교 게시물 댓글 좋아요 취소 api
      */
-    @Operation(summary = "UnlikeUnivComment API", description = "통합 게시물 댓글 취소 api")
+
+    @Operation(summary = "4.06 UnlikeUnivComment API", description = "학교 게시물 댓글 좋아요 취소 api")
     @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @DeleteMapping("/univ/unlike")
     @ApiResponses ({

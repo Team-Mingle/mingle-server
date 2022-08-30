@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+
 public class SwaggerConfig {
 
     @Bean
@@ -23,4 +24,6 @@ public class SwaggerConfig {
                         .description("Mingle 프로젝트 API 명세서입니다.")
                         .version("v0.0.1"));
     }
+
+
 }
