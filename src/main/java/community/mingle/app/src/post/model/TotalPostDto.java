@@ -36,7 +36,7 @@ public class TotalPostDto {
         this.content = totalPost.getContent();
         if (totalPost.getIsAnonymous() == true) {
             this.nickname = "글쓴이";
-        } else{
+        } else {
             this.nickname = totalPost.getMember().getNickname();
         }
         this.isFileAttached = totalPost.getIsFileAttached();
@@ -47,14 +47,15 @@ public class TotalPostDto {
         this.isLiked = isLiked;
         this.isScraped = isScraped;
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
-        this.viewCount =  totalPost.getViewCount();
+        this.viewCount = totalPost.getViewCount();
 
-        if(totalPost.getIsFileAttached() == true) {
+        if (totalPost.getIsFileAttached() == true) {
             List<TotalPostImage> totalPostImages = totalPost.getTotalPostImages();
-            for (int i = 0, n=totalPostImages.size(); i < n; i++) {
-                this.postImgUrl.add(totalPostImages.get(i).getImgUrl());
+
+            for (TotalPostImage pi : totalPostImages) {
+                this.postImgUrl.add(pi.getImgUrl());
             }
         }
-
     }
+
 }

@@ -53,8 +53,8 @@ public class UnivPostDTO {
 
         if(u.getIsFileAttached() == true) {
             List<UnivPostImage> univPostImages = u.getUnivPostImages();
-            for (int i = 0, n=univPostImages.size(); i < n; i++) {
-                this.postImgUrl.add(univPostImages.get(i).getImgUrl());
+            for (UnivPostImage pi : univPostImages) {
+                this.postImgUrl.add(pi.getImgUrl());
             }
         }
     }

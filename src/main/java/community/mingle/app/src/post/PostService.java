@@ -166,13 +166,22 @@ public class PostService {
         try {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
             Long id = postRepository.save(totalPost);
-            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+
+            List<String> fileNameList;
+
+            if(postCreateRequest.getMultipartFile().isEmpty()) {
+                fileNameList = new ArrayList<>();
+            } else {
+            fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
             for (String fileName: fileNameList) {
                 TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
                 postRepository.save(totalPostImage);
+                }
             }
+
             return new PostCreateResponse(id, fileNameList);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
