@@ -45,6 +45,7 @@ public class SecurityConfig {
     private final TokenHelper tokenHelper;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 //http basic 인증방법 비활성화
                 .httpBasic().disable()
@@ -56,19 +57,20 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+//                .antMatchers("/**").permitAll()
+//                .antMatchers("/v3/api-docs/**").permitAll()
+//                .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/post/**").access("@memberGuard.check()")
-                .antMatchers(HttpMethod.POST, "/post/**").access("@memberGuard.check()")
-                .antMatchers(HttpMethod.PATCH, "/post/**").access("@memberGuard.check()")
-                .antMatchers(HttpMethod.DELETE, "/post/**").access("@memberGuard.check()")
+                .antMatchers("/post/**").access("@memberGuard.check()")
+                .antMatchers("/member/**").access("@memberGuard.check()")
+                .antMatchers("/comment/**").access("@memberGuard.check()")
                 .and()
 //                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
 //                .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(tokenHelper), UsernamePasswordAuthenticationFilter.class);
-//                .authorizeHttpRequests((authz) -> authz.anyRequest().authenticated()).httpBasic(withDefaults());
         return http.build();
     }
 

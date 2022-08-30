@@ -21,7 +21,6 @@ import static org.springframework.http.server.RequestPath.parse;
 public class JwtHandler {
 
     private String type = "Bearer";
-//    private final CustomUserDetailsService customUserDetailsService;
 
     private final RedisService redisService;
 

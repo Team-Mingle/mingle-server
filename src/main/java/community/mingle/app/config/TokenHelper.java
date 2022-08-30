@@ -81,19 +81,19 @@ public class TokenHelper {
             Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(jwtHandler.untype(token));
             return getAuthentication(token); //loadByUserName 후 Authentication 형식인 CustomAuthenticationToken 반환 !!
         } catch (BadRequestException e) {
-            request.setAttribute(exception, "토큰을 입력해주세요. (앞에 Bearer 포함)");
+            request.setAttribute(exception, "토큰을 입력해주세요. (앞에 'Bearer ' 포함)");
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
-            request.setAttribute(exception, "토큰의 형식을 확인하세요");
+            request.setAttribute(exception, "잘못된 토큰입니다."); //토큰의 형식을 확인하세요
         } catch (ExpiredJwtException e) {
             request.setAttribute(exception, "토큰이 만료되었습니다.");
         } catch (IllegalArgumentException e) {
-            request.setAttribute(exception, "JWT compact of handler are invalid");
-        } catch (JwtException e) {
-            e.printStackTrace();
-            request.setAttribute(exception, "토큰을 확인해주세요."); //추가
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute(exception, "general exception"); //추가
+            request.setAttribute(exception, "토큰을 입력해주세요.");
+//        } catch (JwtException e) {
+//            e.printStackTrace();
+//            request.setAttribute(exception, "토큰을 확인해주세요."); //추가
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            request.setAttribute(exception, "general exception"); //추가
         }
         return null;
     }
