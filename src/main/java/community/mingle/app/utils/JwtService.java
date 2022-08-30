@@ -61,34 +61,39 @@ public class JwtService {
         }
     }
 
-    /*
-    JWT 생성
-    @param userIdx
-    @return String
-     */
-    public String createJwt(Long userIdx) {
-        Date now = new Date();
-        return Jwts.builder()
-                .setIssuer("mingle.community")
-                .setHeaderParam("type","jwt")
-                .claim("userIdx",userIdx)
-                .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60)))
-                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
-                .compact();
-    }
 
-    public String createRefreshJwt(Long userIdx) {
-        Date now = new Date();
-        return Jwts.builder()
-                .setIssuer("mingle.community")
-                .setHeaderParam("type","jwt")
-                .claim("userIdx",userIdx)
-                .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60)))
-                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
-                .compact();
-    }
+    /**
+     * 주어진거
+     */
+//
+//    /*
+//    JWT 생성
+//    @param userIdx
+//    @return String
+//     */
+//    public String createJwt(Long userIdx) {
+//        Date now = new Date();
+//        return Jwts.builder()
+//                .setIssuer("mingle.community")
+//                .setHeaderParam("type","jwt")
+//                .claim("userIdx",userIdx)
+//                .setIssuedAt(now)
+//                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60)))
+//                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
+//                .compact();
+//    }
+//
+//    public String createRefreshJwt(Long userIdx) {
+//        Date now = new Date();
+//        return Jwts.builder()
+//                .setIssuer("mingle.community")
+//                .setHeaderParam("type","jwt")
+//                .claim("userIdx",userIdx)
+//                .setIssuedAt(now)
+//                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60)))
+//                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
+//                .compact();
+//    }
 
 
 
@@ -96,8 +101,6 @@ public class JwtService {
 //
 //        //1. JWT 추출
 //        String accessToken = untype(getJwt());
-//
-//
 //
 //        if(accessToken == null || accessToken.length() == 0) {
 //            throw new BaseException(EMPTY_JWT);

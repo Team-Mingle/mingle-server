@@ -11,7 +11,7 @@ public class PostLoginResponse {
 //    private String email;
     private Long userId;
     private String email;
-    private String jwt;
-    private String refreshJwt;
+    private String accessToken;
+    private String refreshToken;
 
 }
