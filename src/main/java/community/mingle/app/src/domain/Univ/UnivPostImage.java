@@ -41,4 +41,8 @@ public class UnivPostImage {
         univPostImage.createdAt = LocalDateTime.now();
         return univPostImage;
     }
+
+    public void deleteUnivImage (){
+        this.deletedAt = LocalDateTime.now();
+    }
 }

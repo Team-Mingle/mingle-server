@@ -119,6 +119,7 @@ public class PostController {
             return new BaseResponse<>(result);
 
         } catch (BaseException e) {
+            e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
     }
