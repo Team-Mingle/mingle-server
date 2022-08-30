@@ -63,20 +63,11 @@ public class PostRepository {
     /**
      * 2.4 광장 게시판 api
      */
-    public List<TotalPost> findTotalPost(int category) {
-        return em.createQuery("select p from TotalPost p where p.category.id = :category order by p.createdAt desc", TotalPost.class)
-                .setParameter("category", category)
-                .getResultList();
-    }
-
-    /**
-     * 2.4 페이징 테스트
-     */
-    public List<TotalPost> findTotalPostByPaging(int category, Long postId) {
+    public List<TotalPost> findTotalPost(int category, Long postId) {
         return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where c.id = :categoryId and p.id < :postId order by p.createdAt desc ", TotalPost.class)
                 .setParameter("categoryId", category)
                 .setParameter("postId", postId)
-                .setMaxResults(3)
+                .setMaxResults(50)
                 .getResultList();
     }
 
@@ -84,9 +75,10 @@ public class PostRepository {
     /**
      * 2.5 학교 게시판 api
      */
-    public List<UnivPost> findUnivPost(int category) {
-        return em.createQuery("select u from UnivPost u where u.category.id = :category order by u.createdAt desc", UnivPost.class)
-                .setParameter("category", category)
+    public List<UnivPost> findUnivPost(int category, Long postId) {
+        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where c.id = :categoryId and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("categoryId", category)
+                .setParameter("postId", postId)
                 .getResultList();
     }
 

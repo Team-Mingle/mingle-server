@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Tag(name = "member", description = "유저 관련 API")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content (schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+})
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -33,9 +38,6 @@ public class MemberController {
     @PatchMapping("/nickname")
     @Operation(summary = "2.1 modifyNickname API", description = "2.1 닉네임 수정 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2017", description = "중복된 닉네임입니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2020", description = "닉네임 수정에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
     })
@@ -55,6 +57,7 @@ public class MemberController {
     /**
      * 2.3 내가 쓴 글 조회 - 통합 api
      */
+    @Operation(summary = "2.2 getMyTotalPosts API", description = "2.2 내가 쓴 전체 게시글 조회 API")
     @GetMapping("/posts/total")
     public BaseResponse<List<TotalMyPostDTO>> getTotalPosts() {
         try {
@@ -71,6 +74,7 @@ public class MemberController {
     /**
      * 2.4 내가 쓴 글 조회 - 학교 api
      */
+    @Operation(summary = "2.3 getMyUnivPosts API", description = "2.3 내가 쓴 학교 게시글 조회 API")
     @GetMapping("/posts/univ")
     public BaseResponse<List<UnivMyPostDTO>> getUnivPosts() {
         try {
@@ -87,6 +91,7 @@ public class MemberController {
     /**
      * 2.5 내가 쓴 댓글 조회 - 전체 api
      */
+    @Operation(summary = "2.4 getMyTotalComments API", description = "2.4 내가 쓴 전체 댓글 조회 API")
     @GetMapping("/comments/total")
     public BaseResponse<List<TotalMyCommentDTO>> getTotalComments() {
         try {
@@ -100,9 +105,11 @@ public class MemberController {
         }
     }
 
+
     /**
-     * 2.6 내가 쓴 댓글 조회 - 전체 api
+     * 2.6 내가 쓴 댓글 조회 - 학교 api
      */
+    @Operation(summary = "2.5 getMyUnivComments API", description = "2.4 내가 쓴 학교 댓글 조회 API")
     @GetMapping("/comments/univ")
     public BaseResponse<List<UnivMyCommentDTO>> getUnivComments() {
         try {
@@ -117,11 +124,33 @@ public class MemberController {
     }
 
 
+    /**
+     * 2.7 내가 스크랩 한 글 (전체) API
+     */
+    @GetMapping("/scraps/total")
+    @Operation(summary = "2.7 getMyTotalScraps API", description = "2.7 내가 스크랩 한 전체 게시글 API")
+    public BaseResponse<List<TotalPostScrapDTO>> getTotalScraps(@RequestParam Long postId) {
+        try {
+            List<TotalPost> totalPosts = memberService.getTotalScraps(postId);
+            List<TotalPostScrapDTO> result = totalPosts.stream()
+                    .map(post -> new TotalPostScrapDTO(post))
+                    .collect(Collectors.toList());
+
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
 
     /**
-     * 2.7 내가 스크랩 한 글 (대학) API
+     * 2.8 내가 스크랩 한 글 (대학) API
+     * 에러: 없을시 Validation
+     * postId 받는거 수정하기
      */
     @GetMapping("/scraps/univ")
+    @Operation(summary = "2.7 getMyUnivScraps API", description = "2.7 내가 스크랩 한 학교 게시글 API")
     public BaseResponse<List<UnivPostScrapDTO>> getUnivScraps(@RequestParam Long postId) {
         try {
             List<UnivPost> univPosts = memberService.getUnivScraps(postId);
@@ -138,35 +167,11 @@ public class MemberController {
 
 
     /**
-     * 2.8 내가 스크랩 한 글 (전체) API
-     */
-    @GetMapping("/scraps/total")
-    public BaseResponse<List<TotalPostScrapDTO>> getTotalScraps(@RequestParam Long postId) {
-        try {
-            List<TotalPost> totalPosts = memberService.getTotalScraps(postId);
-            List<TotalPostScrapDTO> result = totalPosts.stream()
-                    .map(post -> new TotalPostScrapDTO(post))
-                    .collect(Collectors.toList());
-
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
-
-
-    /**
      * 2.9 유저 삭제 API
      */
     @PatchMapping("/delete")
-    @Operation(summary = "2.6  deleteMemberIdx API", description = "2.6 유저 삭제 API")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER)
-    @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
-    })
+    @Operation(summary = "2.9  deleteMember API", description = "2.9 유저 삭제 API")
+    @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true)))
     public BaseResponse<String> deleteMember() {
         try {
             memberService.deleteMember();
@@ -183,6 +188,7 @@ public class MemberController {
      * 2.10 신고 API
      */
     @PostMapping("/report")
+    @Operation(summary = "2.10  createReport API", description = "2.10 신고 API")
     public BaseResponse<ReportDTO> createReport(@RequestBody ReportRequest reportRequest) {
         try {
             Member reportedMember = memberService.findReportedMember(reportRequest);

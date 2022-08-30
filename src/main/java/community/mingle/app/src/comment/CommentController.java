@@ -9,22 +9,28 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "comment", description = "댓글 관련 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content (schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+})
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
-    private final JwtService jwtService;
-    private final CommentRepository commentRepository;
 
     /**
      * 4.1 전체 게시판 댓글 작성 api
      */
+    @Operation(summary = "4.1 createTotalComment api", description = "4.1 전체 게시판 댓글 작성 api")
     @PostMapping("/total")
     public BaseResponse<Long> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
         try {
@@ -40,6 +46,7 @@ public class CommentController {
     /**
      * 4.2  학교 게시판 댓글 작성 api
      */
+    @Operation(summary = "4.2 createUnivComment api", description = "4.2 학교 게시판 댓글 작성 api")
     @PostMapping("/univ")
     public BaseResponse<Long> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
         try {
@@ -56,14 +63,7 @@ public class CommentController {
      * 4.3  통합 게시물 댓글 좋아요 api
      */
     @Operation(summary = "4.3 likesTotalComment api", description = "4.3 통합 게시물 댓글 좋아요 api")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
     @PostMapping("/total/likes")
-    @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
-    })
     public BaseResponse<PostCommentLikesTotalResponse> likesTotalComment (@RequestParam Long commentIdx){
         try{
             return new BaseResponse<>(commentService.likesTotalComment(commentIdx));
@@ -77,15 +77,8 @@ public class CommentController {
     /**
      * 4.4  학교 게시물 댓글 좋아요 api
      */
-    @Operation(summary = "4.04 likesUnivComment api", description = "학교 게시물 댓글 좋아요 api")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @Operation(summary = "4.4 likesUnivComment api", description = "학교 게시물 댓글 좋아요 api")
     @PostMapping("/univ/likes")
-    @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
-    })
     public BaseResponse<PostCommentLikesUnivResponse> likesUnivComment (@RequestParam Long commentIdx){
         try{
             return new BaseResponse<>(commentService.likesUnivComment(commentIdx));
@@ -96,17 +89,10 @@ public class CommentController {
 
 
     /**
-     * 4.5 통합 게시물 좋아요  취소 api
+     * 4.5 통합 게시물 좋아요 취소 api
      */
-    @Operation(summary = "4.05 UnlikeTotalComment API", description = "통합 게시물 댓글 좋아요 취소 api")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @Operation(summary = "4.5 UnlikeTotalComment API", description = "통합 게시물 댓글 좋아요 취소 api")
     @DeleteMapping("/total/unlike")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
-    })
     public BaseResponse<String> unlikeTotalComment (@RequestParam Long commentIdx){
         try{
             commentService.unlikeTotalComment(commentIdx);
@@ -121,16 +107,8 @@ public class CommentController {
     /**
      * 4.6 학교 게시물 댓글 좋아요 취소 api
      */
-
-    @Operation(summary = "4.06 UnlikeUnivComment API", description = "학교 게시물 댓글 좋아요 취소 api")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @Operation(summary = "4.6 UnlikeUnivComment API", description = "학교 게시물 댓글 좋아요 취소 api")
     @DeleteMapping("/univ/unlike")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
-    })
     public BaseResponse<String> unlikeUnivComment (@RequestParam Long commentIdx){
         try{
             commentService.unlikeUnivComment(commentIdx);
@@ -145,15 +123,8 @@ public class CommentController {
     /**
      * 4.7 통합 게시물 댓글 삭제 api
      */
-    @Operation(summary = "4.07 deleteTotalComment API", description = "4.07 통합 게시물 댓글 삭제 API")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @Operation(summary = "4.7 deleteTotalComment API", description = "4.7 통합 게시물 댓글 삭제 API")
     @PatchMapping("/total/status/{id}")
-    @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2001", description = "JWT를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2002", description = "유효하지 않은 JWT입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true)))
-    })
     public BaseResponse<String> deleteTotalComment (@PathVariable Long id){
 
         try{
@@ -170,10 +141,8 @@ public class CommentController {
     /**
      * 4.8 학교 게시물 댓글 삭제 api
      */
-    @Operation(summary = "4.08 deleteUnivComment API", description = "4.08 학교 게시물 댓글 삭제 API")
-    @Parameter(name = "X-ACCESS-TOKEN", required = true, description = "유저의 JWT", in = ParameterIn.HEADER) //swagger
+    @Operation(summary = "4.8 deleteUnivComment API", description = "4.8 학교 게시물 댓글 삭제 API")
     @PatchMapping("/univ/status/{id}")
-
     public BaseResponse<String> deleteUnivComment (@PathVariable Long id){
             try {
                 commentService.deleteUnivComment(id);
