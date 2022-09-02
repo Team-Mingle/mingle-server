@@ -9,6 +9,7 @@ import community.mingle.app.src.domain.UnivName;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Getter
@@ -19,6 +20,8 @@ public class PostCreateRequest {
     private String title;
     private String content;
     private Boolean isAnonymous;
+
+    @Nullable
     private List<MultipartFile> multipartFile;
 
 }
