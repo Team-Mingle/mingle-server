@@ -12,9 +12,12 @@ public class GetUnivPostsResponse {
     private String title;
     private String contents;
     private String nickname;
+    private boolean isFileAttached;
     private int likeCount;
     private int commentCount;
     private String createdTime;
+
+    private String univImgUrl;
 
 
     public GetUnivPostsResponse(UnivPost univPost) {
@@ -26,9 +29,14 @@ public class GetUnivPostsResponse {
         } else {
             this.nickname = univPost.getMember().getNickname();
         }
+        this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
         this.commentCount = univPost.getUnivComments().size();
         this.createdTime = convertLocaldatetimeToTime(univPost.getCreatedAt());
+
+        if(univPost.getIsFileAttached() == true) {
+            this.univImgUrl = univPost.getUnivPostImages().get(0).getImgUrl();
+        }
     }
 
 }
