@@ -16,6 +16,7 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -121,13 +122,24 @@ public class PostService {
         try {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
             Long id = postRepository.save(totalPost);
-            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
-            for (String fileName: fileNameList) {
-                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
-                postRepository.save(totalPostImage);
+
+            List<String> fileNameList = null;
+
+            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
+                if(image.isEmpty()) {
+                    break;
+                }
+                else {
+                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+                    for (String fileName: fileNameList) {
+                        TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
+                        postRepository.save(totalPostImage);
+                    }
+                }
             }
             return new PostCreateResponse(id, fileNameList);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
@@ -153,13 +165,19 @@ public class PostService {
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
-            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
-            for (String fileName: fileNameList) {
-                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost,fileName);
-                postRepository.save(univPostImage);
+            List<String> fileNameList = null;
+            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
+                if (image.isEmpty()) {
+                    break;
+                } else {
+                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+                    for (String fileName : fileNameList) {
+                        UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
+                        postRepository.save(univPostImage);
+                    }
+                }
             }
             return new PostCreateResponse(id, fileNameList);
-
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
@@ -374,8 +392,16 @@ public class PostService {
         }
         try {
             List<TotalComment> totalComments = postRepository.findAllTotalComment(id);
+            List<TotalPostImage> totalPostImages = postRepository.findAllTotalImage(id);
             for (TotalComment c : totalComments) {
                 c.deleteTotalComment();
+            }
+            for (TotalPostImage pi: totalPostImages) {
+                pi.deleteTotalImage();
+
+                String imgUrl = pi.getImgUrl();
+                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/total/")+11);
+                s3Service.deleteFile(fileName, "total");
             }
             totalPost.deleteTotalPost();
         } catch (Exception e) {
@@ -406,10 +432,21 @@ public class PostService {
         }
         try {
             List<UnivComment> univComments = postRepository.findAllUnivComment(id);
+            List<UnivPostImage> univPostImages = postRepository.findAllUnivImage(id);
             for (UnivComment c : univComments) {
                 c.deleteUnivComment();
             }
+
+            for (UnivPostImage pi: univPostImages) {
+                pi.deleteUnivImage();
+
+                String imgUrl = pi.getImgUrl();
+                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/univ/")+10);
+                s3Service.deleteFile(fileName, "univ");
+            }
             univPost.deleteUnivPost();
+
+
         } catch (Exception e) {
             throw new BaseException(DELETE_FAIL_POST);
         }

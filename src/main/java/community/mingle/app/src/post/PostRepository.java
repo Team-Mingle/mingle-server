@@ -128,12 +128,26 @@ public class PostRepository {
         return allTotalComments;
     }
 
+    public List<TotalPostImage> findAllTotalImage(Long postId) {
+        List<TotalPostImage> allTotalImages = em.createQuery("select pi from TotalPostImage pi where pi.totalPost.id = :id", TotalPostImage.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allTotalImages;
+    }
+
 
     public List<UnivComment> findAllUnivComment(Long postId) {
         List<UnivComment> allUnivComments = em.createQuery("select c from UnivComment c where c.univPost.id = :id", UnivComment.class)
                 .setParameter("id", postId)
                 .getResultList();
         return allUnivComments;
+    }
+
+    public List<UnivPostImage> findAllUnivImage(Long postId) {
+        List<UnivPostImage> allUnivImages = em.createQuery("select pi from UnivPostImage pi where pi.univPost.id = :id", UnivPostImage.class)
+                .setParameter("id", postId)
+                .getResultList();
+        return allUnivImages;
     }
 
 

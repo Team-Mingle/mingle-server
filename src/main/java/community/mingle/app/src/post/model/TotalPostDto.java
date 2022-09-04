@@ -1,8 +1,10 @@
 package community.mingle.app.src.post.model;
 
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostImage;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
@@ -14,6 +16,8 @@ public class TotalPostDto {
     private String title;
     private String content;
     private String nickname;
+
+    private boolean isFileAttached;
     private int likeCount;
     private int scrapCount;
     private int commentCount;
@@ -24,6 +28,7 @@ public class TotalPostDto {
 
     private final int viewCount;
 
+    private List<String> postImgUrl = new ArrayList<>();
 
     public TotalPostDto(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped) {
         this.totalPostId = totalPost.getId();
@@ -31,9 +36,10 @@ public class TotalPostDto {
         this.content = totalPost.getContent();
         if (totalPost.getIsAnonymous() == true) {
             this.nickname = "글쓴이";
-        } else{
+        } else {
             this.nickname = totalPost.getMember().getNickname();
         }
+        this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
         this.commentCount = totalPost.getTotalPostComments().size();
@@ -41,7 +47,15 @@ public class TotalPostDto {
         this.isLiked = isLiked;
         this.isScraped = isScraped;
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
-        this.viewCount =  totalPost.getViewCount();
+        this.viewCount = totalPost.getViewCount();
 
+        if (totalPost.getIsFileAttached() == true) {
+            List<TotalPostImage> totalPostImages = totalPost.getTotalPostImages();
+
+            for (TotalPostImage pi : totalPostImages) {
+                this.postImgUrl.add(pi.getImgUrl());
+            }
+        }
     }
+
 }
