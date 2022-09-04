@@ -16,6 +16,7 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -122,18 +123,20 @@ public class PostService {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
             Long id = postRepository.save(totalPost);
 
-            List<String> fileNameList;
+            List<String> fileNameList = null;
 
-            if(postCreateRequest.getMultipartFile().isEmpty()) {
-                fileNameList = new ArrayList<>();
-            } else {
-            fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
-            for (String fileName: fileNameList) {
-                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
-                postRepository.save(totalPostImage);
+            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
+                if(image.isEmpty()) {
+                    break;
+                }
+                else {
+                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+                    for (String fileName: fileNameList) {
+                        TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
+                        postRepository.save(totalPostImage);
+                    }
                 }
             }
-
             return new PostCreateResponse(id, fileNameList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -162,13 +165,19 @@ public class PostService {
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
-            List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
-            for (String fileName: fileNameList) {
-                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost,fileName);
-                postRepository.save(univPostImage);
+            List<String> fileNameList = null;
+            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
+                if (image.isEmpty()) {
+                    break;
+                } else {
+                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+                    for (String fileName : fileNameList) {
+                        UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
+                        postRepository.save(univPostImage);
+                    }
+                }
             }
             return new PostCreateResponse(id, fileNameList);
-
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
