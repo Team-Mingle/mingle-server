@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.util.List;
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
 public class UnivCommentDTO {
@@ -50,7 +51,7 @@ public class UnivCommentDTO {
             isMyComment = true;
         }
 
-        createdTime = convertLocaldatetimeToTime(c.getCreatedAt());
+        createdTime = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;
     }
 }

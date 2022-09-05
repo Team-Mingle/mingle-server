@@ -8,6 +8,7 @@ import lombok.Getter;
 import java.util.List;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
 public class TotalCommentDto {
@@ -42,7 +43,7 @@ public class TotalCommentDto {
             this.nickname = totalComment.getMember().getNickname();
         }
 
-        this.createdAt = convertLocaldatetimeToTime(totalComment.getCreatedAt());
+        this.createdAt = convertToDateAndTime(totalComment.getCreatedAt());
 
         for (TotalCommentLike tcl : totalComment.getTotalCommentLikes()) {
             if (tcl.getMember().getId() == memberId) {
