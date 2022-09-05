@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
 public class TotalPostDto {
@@ -46,7 +47,7 @@ public class TotalPostDto {
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
-        this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
+        this.createdAt = convertToDateAndTime(totalPost.getCreatedAt());
         this.viewCount = totalPost.getViewCount();
 
         if (totalPost.getIsFileAttached() == true) {

@@ -6,6 +6,7 @@ import community.mingle.app.src.domain.Univ.UnivCommentLike;
 import lombok.Getter;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
 public class UnivCoCommentDTO {
@@ -67,7 +68,7 @@ public class UnivCoCommentDTO {
             isMyComment = true;
         }
 
-        this.createdTime = convertLocaldatetimeToTime(cc.getCreatedAt());
+        this.createdTime = convertToDateAndTime(cc.getCreatedAt());
 
     }
 
