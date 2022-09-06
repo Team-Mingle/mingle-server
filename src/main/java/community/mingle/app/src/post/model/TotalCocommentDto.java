@@ -7,6 +7,7 @@ import community.mingle.app.src.domain.Total.TotalPostLike;
 import lombok.Getter;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
 public class TotalCocommentDto {
@@ -45,7 +46,7 @@ public class TotalCocommentDto {
         } else{
             this.nickname = coComment.getMember().getNickname();
         }
-        this.createdAt = convertLocaldatetimeToTime(coComment.getCreatedAt());
+        this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
 
         for (TotalCommentLike tpl : coComment.getTotalCommentLikes()) {
             if (tpl.getMember().getId() == memberId) {

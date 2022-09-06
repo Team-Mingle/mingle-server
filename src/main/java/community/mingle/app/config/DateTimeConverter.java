@@ -1,6 +1,7 @@
 package community.mingle.app.config;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class DateTimeConverter {
@@ -33,5 +34,12 @@ public class DateTimeConverter {
         diffTime = diffTime / 12;
         return diffTime + "년 전";
     }
+
+
+    public static String convertToDateAndTime(LocalDateTime localDateTime) {
+        String dateFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm"));
+        return dateFormat;
+    }
+
 
 }

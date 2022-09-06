@@ -1,11 +1,5 @@
 package community.mingle.app.src.post.model;
 
-import community.mingle.app.src.auth.AuthRepository;
-import community.mingle.app.src.domain.Category;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.UnivName;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 

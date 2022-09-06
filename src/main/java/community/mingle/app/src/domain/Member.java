@@ -43,7 +43,6 @@ public class Member {
     private String fcmToken;
 
 
-
     /** 학교게시판*/
     @OneToMany(mappedBy = "member")
     private List<UnivPost> univPosts = new ArrayList<>();
