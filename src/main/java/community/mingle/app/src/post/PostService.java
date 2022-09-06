@@ -1,10 +1,12 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.src.comment.model.PostUnivCommentRequest;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
+import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.src.post.model.PatchUpdatePostRequest;
 import community.mingle.app.src.post.model.PostCreateRequest;
 import community.mingle.app.src.post.model.PostCreateResponse;
@@ -18,8 +20,11 @@ import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -32,6 +37,8 @@ public class PostService {
     private final PostRepository postRepository;
 
     private final S3Service s3Service;
+
+    private final FirebaseCloudMessageService fcmService;
 
 
     /**
@@ -124,13 +131,13 @@ public class PostService {
 
             List<String> fileNameList;
 
-            if(postCreateRequest.getMultipartFile().isEmpty()) {
+            if (postCreateRequest.getMultipartFile().isEmpty()) {
                 fileNameList = new ArrayList<>();
             } else {
-            fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
-            for (String fileName: fileNameList) {
-                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
-                postRepository.save(totalPostImage);
+                fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+                for (String fileName : fileNameList) {
+                    TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, fileName);
+                    postRepository.save(totalPostImage);
                 }
             }
 
@@ -163,8 +170,8 @@ public class PostService {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
             List<String> fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
-            for (String fileName: fileNameList) {
-                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost,fileName);
+            for (String fileName : fileNameList) {
+                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
                 postRepository.save(univPostImage);
             }
             return new PostCreateResponse(id, fileNameList);
@@ -179,11 +186,12 @@ public class PostService {
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
-    public TotalPost getTotalPost(Long id) throws BaseException{
+    public TotalPost getTotalPost(Long id) throws BaseException {
 
         TotalPost totalPost = postRepository.getTotalPostbyId(id);
         return totalPost;
     }
+
     @Transactional(readOnly = true)
     public TotalPostDto getTotalPostDto(TotalPost totalPost) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -387,11 +395,11 @@ public class PostService {
             for (TotalComment c : totalComments) {
                 c.deleteTotalComment();
             }
-            for (TotalPostImage pi: totalPostImages) {
+            for (TotalPostImage pi : totalPostImages) {
                 pi.deleteTotalImage();
 
                 String imgUrl = pi.getImgUrl();
-                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/total/")+11);
+                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/total/") + 11);
                 s3Service.deleteFile(fileName, "total");
             }
             totalPost.deleteTotalPost();
@@ -428,11 +436,11 @@ public class PostService {
                 c.deleteUnivComment();
             }
 
-            for (UnivPostImage pi: univPostImages) {
+            for (UnivPostImage pi : univPostImages) {
                 pi.deleteUnivImage();
 
                 String imgUrl = pi.getImgUrl();
-                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/univ/")+10);
+                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/univ/") + 10);
                 s3Service.deleteFile(fileName, "univ");
             }
             univPost.deleteUnivPost();
@@ -445,7 +453,7 @@ public class PostService {
 
 
     /**
-     * 3.15 통합 게시물 좋아요 api
+     * 3.15 통합 게시물 좋아요 api + 인기 게시물 알림 기능
      */
     @Transactional
     public PostLikesTotalResponse likesTotalPost(Long postIdx) throws BaseException {
@@ -458,15 +466,39 @@ public class PostService {
         try {
             TotalPost totalpost = postRepository.findTotalPostById(postIdx);
             Member member = postRepository.findMemberbyId(memberIdByJwt);
+            Member postMember = postRepository.findMemberbyId(postIdx);
+            //좋아요 생성
             TotalPostLike totalPostLike = TotalPostLike.likesTotalPost(totalpost, member);
             Long id = postRepository.save(totalPostLike);
             int likeCount = totalpost.getTotalPostLikes().size();
+            // 인기 게시물 알림 보내주기
+
+
+            if (totalpost.getTotalPostLikes().size() == 10) {
+                sendTotalPostNotification(totalpost, postMember);
+            }
             return new PostLikesTotalResponse(id, likeCount);
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public void sendTotalPostNotification(TotalPost totalpost, Member postMember) throws IOException {
+        List<TotalPost> recentPost = postRepository.findTotalPostWithMemberLikeComment();
+        String title = "전체 게시글";
+
+        if (recentPost.contains(totalpost) == true){
+            String body = "인기 게시물로 지정되었어요";
+//          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+        }
+        else {
+                return;
+        }
+
+    }
+
 
 
     /**
@@ -481,13 +513,36 @@ public class PostService {
         }
         try {
             Member member = postRepository.findMemberbyId(memberIdByJwt);
+            Member postMember = postRepository.findMemberbyId(postIdx);
+
             UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
             Long id = postRepository.save(univPostLike);
             int likeCount = univpost.getUnivPostLikes().size();
+
+            // 인기 게시물 알림 보내주기 조건:3일 동안 좋아요 10개
+
+            if (univpost.getUnivPostLikes().size() == 10) {
+                sendUnivPostNotification(univpost, postMember);
+            }
             return new PostLikesUnivResponse(id, likeCount);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+
+    public void sendUnivPostNotification(UnivPost univpost, Member postMember) throws IOException {
+        List<UnivPost> recentPost = postRepository.findAllWithMemberLikeCommentCount(postMember);
+        String title = "학교 게시글";
+
+        if (recentPost.contains(univpost) == true){
+            String body = "인기 게시물로 지정되었어요";
+//          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+        }
+        else {
+            return;
+        }
+
     }
 
 

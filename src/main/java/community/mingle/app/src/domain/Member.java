@@ -39,6 +39,10 @@ public class Member {
 
     private String role;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
+
 
     /** 학교게시판*/
     @OneToMany(mappedBy = "member")
@@ -115,6 +119,7 @@ public class Member {
     public void modifyReportStatus() {
         this.status = UserStatus.REPORTED;
     }
+
 
 
 }
