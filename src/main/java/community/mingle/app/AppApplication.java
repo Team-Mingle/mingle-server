@@ -4,8 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import javax.annotation.PostConstruct;
-import java.util.TimeZone;
 
 @SpringBootApplication
 public class AppApplication {
@@ -15,9 +13,9 @@ public class AppApplication {
 		SpringApplication.run(AppApplication.class, args);
 	}
 
-	@PostConstruct
-	public void started(){
-		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-	}
+//	@PostConstruct
+//	public void started(){
+//		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+//	}
 
 }
