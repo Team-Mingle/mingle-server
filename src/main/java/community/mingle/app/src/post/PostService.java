@@ -114,9 +114,13 @@ public class PostService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-        try {
-            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
-        } catch (Exception exception) {
+//        try {
+//            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+//        } catch (Exception exception) {
+//            throw new BaseException(INVALID_POST_CATEGORY);
+//        }
+        category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+        if (category == null) {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
         try {
@@ -157,11 +161,14 @@ public class PostService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-        try {
-            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
-        } catch (Exception exception) {
+//        try {
+        category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+        if (category == null) {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
+//        } catch (Exception exception) {
+//            throw new BaseException(INVALID_POST_CATEGORY);
+//        }
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);

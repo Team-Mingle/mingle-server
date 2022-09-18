@@ -37,7 +37,7 @@ public class DateTimeConverter {
 
 
     public static String convertToDateAndTime(LocalDateTime localDateTime) {
-        String dateFormat = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm"));
+        String dateFormat = localDateTime.format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm"));
         return dateFormat;
     }
 
