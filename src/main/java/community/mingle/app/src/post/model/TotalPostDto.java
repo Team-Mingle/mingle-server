@@ -4,6 +4,7 @@ import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Total.TotalPostImage;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class TotalPostDto {
     private boolean isMyPost;
     private boolean isLiked;
     private boolean isScraped;
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     private final int viewCount;
 
@@ -47,7 +48,8 @@ public class TotalPostDto {
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
-        this.createdAt = convertToDateAndTime(totalPost.getCreatedAt());
+//        this.createdAt = convertToDateAndTime(totalPost.getCreatedAt());
+        this.createdAt = totalPost.getCreatedAt();
         this.viewCount = totalPost.getViewCount();
 
         if (totalPost.getIsFileAttached() == true) {
