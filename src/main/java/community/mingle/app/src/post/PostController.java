@@ -355,7 +355,7 @@ public class PostController {
 
 
     /**
-     * 3.15 통합 게시물 좋아요 api
+     * 3.15 통합 게시물 좋아요 api + 인기 게시물 알림
      */
     @Operation(summary = "3.15  LikesTotalPost API", description = "3.15 통합 게시물 좋아요 api")
     @PostMapping("/total/likes")
@@ -370,7 +370,7 @@ public class PostController {
 
 
     /**
-     * 3.16 학교 게시물 좋아요 api
+     * 3.16 학교 게시물 좋아요 api + 인기 게시물 알림
      */
     @Operation(summary = "3.16 LikesUnivPost API", description = "3.16 학교 게시물 좋아요 api")
     @PostMapping("/univ/likes")

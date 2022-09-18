@@ -27,6 +27,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+
     /**
      * 4.1 전체 게시판 댓글 작성 api
      */
