@@ -208,6 +208,7 @@ public class PostController {
     @GetMapping("/total/{totalPostId}/comment")
     @Operation(summary = "3.9.2 totalPostDetailComment API", description = "3.9.2 통합 게시물 상세 - 댓글 부분 API")
     public BaseResponse<List<TotalCommentDto>> totalPostDetailComment(@PathVariable Long totalPostId) {
+
         try {
             List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
             return new BaseResponse<>(totalCommentDtoList);

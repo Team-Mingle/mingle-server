@@ -3,6 +3,7 @@ package community.mingle.app.src.post;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Category;
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -201,8 +202,10 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public TotalPost getTotalPost(Long id) throws BaseException {
-
         TotalPost totalPost = postRepository.getTotalPostbyId(id);
+        if (totalPost.getStatus().equals(PostStatus.INACTIVE) || totalPost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         return totalPost;
     }
 
@@ -235,6 +238,10 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public List<TotalCommentDto> getTotalCommentList(Long id) throws BaseException {
+        TotalPost totalPost = postRepository.checkTotalPostDisabled(id);
+        if (totalPost.getStatus().equals(PostStatus.REPORTED) || totalPost.getStatus().equals(PostStatus.INACTIVE)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         Long memberIdByJwt = jwtService.getUserIdx();
         try {
             List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
@@ -268,8 +275,11 @@ public class PostService {
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
         boolean isMyPost = false, isLiked = false, isScraped = false;
+        UnivPost univPost = postRepository.getUnivPostById(postId);
+        if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         try {
-            UnivPost univPost = postRepository.getUnivPostById(postId);
             if (univPost.getMember().getId() == memberIdByJwt) {
                 isMyPost = true;
             }
@@ -292,6 +302,10 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public List<UnivCommentDTO> getUnivComments(Long postId) throws BaseException {
+        UnivPost univPost = postRepository.checkUnivPostDisabled(postId);
+        if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);

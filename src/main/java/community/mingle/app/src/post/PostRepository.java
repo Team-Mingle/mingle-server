@@ -324,6 +324,16 @@ public class PostRepository {
         return univCoCommentList;
     }
 
+    /**
+     * 댓글에 해당하는 게시판 신고 또는 삭제 여부 확인
+     */
+    public TotalPost checkTotalPostDisabled(Long postId) {
+        return em.find(TotalPost.class, postId);
+    }
+
+    public UnivPost checkUnivPostDisabled(Long postId) {
+        return em.find(UnivPost.class, postId);
+    }
 
     /**
      * 댓글 좋아요
