@@ -1,6 +1,7 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -31,8 +32,9 @@ public class MemberRepository {
      * 2.3
      */
     public List<TotalPost> findTotalPosts(Long memberId) {
-        List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where m.id = :id order by p.createdAt desc", TotalPost.class)
+        List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where m.id = :id AND p.status = :status order by p.createdAt desc", TotalPost.class)
                 .setParameter("id", memberId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .getResultList();
         return resultList;
     }
@@ -41,8 +43,9 @@ public class MemberRepository {
      * 2.4
      */
     public List<UnivPost> findUnivPosts(Long memberId) {
-        List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where m.id = :id order by p.createdAt desc", UnivPost.class)
+        List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where m.id = :id AND p.status = :status order by p.createdAt desc", UnivPost.class)
                 .setParameter("id", memberId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .getResultList();
         return resultList;
     }
@@ -51,8 +54,9 @@ public class MemberRepository {
      * 2.5
      */
     public List<TotalPost> findTotalComments(Long memberId) {
-        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where m.id = :id order by c.createdAt desc ", TotalPost.class)
+        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where m.id = :id AND p.status = :status order by c.createdAt desc ", TotalPost.class)
                 .setParameter("id", memberId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .getResultList();
         return resultList;
     }
@@ -61,8 +65,9 @@ public class MemberRepository {
      * 2.6
      */
     public List<UnivPost> findUnivComments(Long memberId) {
-        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where m.id = :id order by c.createdAt desc ", UnivPost.class)
+        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where m.id = :id AND p.status = :status order by c.createdAt desc ", UnivPost.class)
                 .setParameter("id", memberId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .getResultList();
         return resultList;
     }
@@ -74,9 +79,10 @@ public class MemberRepository {
      */
     public List<UnivPost> findUnivScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p " +
-                        "where m.id = :id and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                        "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
                 .setParameter("id", memberId)
                 .setParameter("postId", postId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(20)
                 .getResultList();
         return resultList;
