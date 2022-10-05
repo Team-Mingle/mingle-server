@@ -354,6 +354,9 @@ public class PostService {
         }
 
         totalPost = postRepository.findTotalPostById(id);
+        if (totalPost.getStatus().equals(PostStatus.INACTIVE) || totalPost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
@@ -386,6 +389,9 @@ public class PostService {
             univPost = postRepository.findUnivPostById(id);
         } catch (Exception e) {
             throw new BaseException(POST_NOT_EXIST);
+        }
+        if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
         }
         if (memberIdByJwt != univPost.getMember().getId()) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
@@ -491,8 +497,11 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(EMPTY_JWT);
         }
+        TotalPost totalpost = postRepository.findTotalPostById(postIdx);
+        if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         try {
-            TotalPost totalpost = postRepository.findTotalPostById(postIdx);
             Member member = postRepository.findMemberbyId(memberIdByJwt);
             Member postMember = postRepository.findMemberbyId(postIdx);
             //좋아요 생성
@@ -536,6 +545,10 @@ public class PostService {
     public PostLikesUnivResponse likesUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
+        if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
+
         if (univpost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
@@ -611,6 +624,9 @@ public class PostService {
         Long memberIdByJwt;
         memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postIdx);
+        if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         if (totalpost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
@@ -634,6 +650,9 @@ public class PostService {
     public PostScrapUnivResponse scrapUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
+        if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         if (univpost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
