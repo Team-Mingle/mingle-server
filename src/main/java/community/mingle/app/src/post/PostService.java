@@ -41,6 +41,30 @@ public class PostService {
 
 
     /**
+     * 유저 토큰에서 학교 추출
+     */
+    public String findUnivName() throws BaseException {
+        Member member;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = postRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+        return member.getUniv().getUnivName();
+    }
+
+//    public int findUnivId() throws BaseException {
+//        Member member;
+//        Long memberIdByJwt = jwtService.getUserIdx();
+//        member = postRepository.findMemberbyId(memberIdByJwt);
+//        if (member == null) {
+//            throw new BaseException(USER_NOT_EXIST);
+//        }
+//        return member.getUniv().getId();
+//    }
+
+
+    /**
      * 3.1 광고 배너 API
      */
     public List<Banner> findBanner() throws BaseException {

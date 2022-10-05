@@ -5,6 +5,9 @@ import lombok.Getter;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
+/**
+ * 얘 안쓰이는데 어디?
+ */
 @Getter
 public class TotalPostListDTO {
     private Long totalPostIdx;
