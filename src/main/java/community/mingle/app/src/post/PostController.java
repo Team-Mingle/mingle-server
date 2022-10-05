@@ -5,6 +5,7 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.post.model.*;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
@@ -87,7 +88,6 @@ public class PostController {
             @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<List<GetUnivBestResponse>> getUnivBest() {
-
         try {
             List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount();
             List<GetUnivBestResponse> result = univPosts.stream()
@@ -131,13 +131,16 @@ public class PostController {
      */
     @GetMapping("/univ")
     @Operation(summary = "3.5 getUnivPosts API", description = " 3.5 학교 게시판 게시물 리스트 API")
-    public BaseResponse<List<GetUnivPostsResponse>> getUnivPosts (@RequestParam int category,  @RequestParam Long postId) {
+    public BaseResponse<UnivPostListResponse> getUnivPosts (@RequestParam int category,  @RequestParam Long postId) {
         try {
-            List<UnivPost> univPosts = postService.findUnivPost(category, postId);
-            List<GetUnivPostsResponse> result = univPosts.stream()
-                    .map(u -> new GetUnivPostsResponse(u))
+            UnivName univ = postService.findUniv();
+            String univName = univ.getUnivName().substring(0,3);
+            List<UnivPost> univPosts = postService.findUnivPost(category, postId, univ.getId());
+            List<UnivPostListDTO> result = univPosts.stream()
+                    .map(u -> new UnivPostListDTO(u))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            UnivPostListResponse univPostListResponse = new UnivPostListResponse(univName, result);
+            return new BaseResponse<>(univPostListResponse);
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
