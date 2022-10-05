@@ -88,19 +88,17 @@ public enum BaseResponseStatus {
     //MODIFY_FAIL_NICKNAME(false,3022,"닉네임 수정에 실패하였습니다."),
 
     /** 3. /posts 주석 해제하고 쓰기 */
+
+    MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
+    TITLE_EMPTY_ERROR(false, 3021, "제목을 입력해주세요."),
+    DELETE_FAIL_POST(false, 3025, "게시물 삭제를 실패했습니다."),
     EMPTY_BEST_POSTS(false, 3030,"최근 3일간 올라온 베스트 게시물이 없습니다."),
     EMPTY_POSTS_LIST(false, 3031, "해당 카테고리에 게시물이 없습니다."),
     INVALID_POST_CATEGORY(false, 3032, "유효하지 않은 카테고리 입니다."),
     CREATE_FAIL_POST(false, 3033, "게시물 생성에 실패하였습니다."),
-
     POST_NOT_EXIST(false, 3035, "게시물이 존재하지 않습니다."),
-
+    REPORTED_DELETED_POST(false, 3036, "삭제되거나 신고된 게시물 입니다."),
     MODIFY_NOT_AUTHORIZED(false, 3040, "게시물 수정 권한이 없습니다."),
-    MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
-    TITLE_EMPTY_ERROR(false, 3021, "제목을 입력해주세요."),
-
-    DELETE_FAIL_POST(false, 3025, "게시물 삭제를 실패했습니다."),
-
     UPLOAD_FAIL_IMAGE(false, 3070, "이미지 업로드에 실패했습니다"),
     INVALID_IMAGE_FORMAT(false, 3071,"잘못된 형식의 파일입니다"),
     INVALID_IMAGE(false, 3072,"유효하지 않은 이미지입니다"),

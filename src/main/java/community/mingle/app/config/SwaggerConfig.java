@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 
 @Configuration
+
 public class SwaggerConfig {
 
     /**
@@ -43,22 +44,6 @@ public class SwaggerConfig {
                 .addSecurityItem(addSecurityItem)
                 .info(info);
     }
-
-
-//    @Bean
-//    public GroupedOpenApi publicApi() {
-//        return GroupedOpenApi.builder()
-//                .group("mingle")
-//                .pathsToMatch("/auth/**", "/post/**")
-//                .build();
-//    }
-//    @Bean
-//    public OpenAPI springShopOpenAPI() {
-//        return new OpenAPI()
-//                .info(new Info().title("Mingle API")
-//                        .description("Mingle 프로젝트 API 명세서입니다.")
-//                        .version("v0.0.1"));
-//    }
 
 
 }
