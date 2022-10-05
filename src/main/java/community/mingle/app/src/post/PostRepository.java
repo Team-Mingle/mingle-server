@@ -372,8 +372,9 @@ public class PostRepository {
      */
     public List<TotalPost> searchTotalPostWithKeyword(String keyword) {
 
-        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%') order by tp.createdAt desc" , TotalPost.class)
+        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status order by tp.createdAt desc" , TotalPost.class)
                 .setParameter("keyword",keyword)
+                .setParameter("status", PostStatus.ACTIVE)
                 .getResultList();
         return totalPosts;
 
@@ -386,8 +387,9 @@ public class PostRepository {
      * @return totalPosts
      */
     public List<UnivPost> searchUnivPostWithKeyword(String keyword) {
-        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%') order by up.createdAt desc", UnivPost.class)
+        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE (up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%')) AND up.status = :status order by up.createdAt desc", UnivPost.class)
                 .setParameter("keyword", keyword)
+                .setParameter("status", PostStatus.ACTIVE)
                 .getResultList();
         return univPosts;
     }
