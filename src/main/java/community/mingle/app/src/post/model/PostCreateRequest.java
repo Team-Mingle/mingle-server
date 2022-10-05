@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Getter
-@Data
+@AllArgsConstructor
 public class PostCreateRequest {
 
     private int categoryId;
