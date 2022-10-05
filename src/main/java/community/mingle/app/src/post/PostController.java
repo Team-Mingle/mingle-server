@@ -5,6 +5,7 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.post.model.*;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
@@ -132,8 +133,9 @@ public class PostController {
     @Operation(summary = "3.5 getUnivPosts API", description = " 3.5 학교 게시판 게시물 리스트 API")
     public BaseResponse<UnivPostListResponse> getUnivPosts (@RequestParam int category,  @RequestParam Long postId) {
         try {
-            List<UnivPost> univPosts = postService.findUnivPost(category, postId);
-            String univName = postService.findUnivName().substring(0,3);
+            UnivName univ = postService.findUniv();
+            String univName = univ.getUnivName().substring(0,3);
+            List<UnivPost> univPosts = postService.findUnivPost(category, postId, univ.getId());
             List<UnivPostListDTO> result = univPosts.stream()
                     .map(u -> new UnivPostListDTO(u))
                     .collect(Collectors.toList());

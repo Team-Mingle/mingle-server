@@ -78,9 +78,10 @@ public class PostRepository {
     /**
      * 2.5 학교 게시판 api
      */
-    public List<UnivPost> findUnivPost(int category, Long postId) {
-        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status = :status and c.id = :categoryId and p.id < :postId order by p.createdAt desc", UnivPost.class)
+    public List<UnivPost> findUnivPost(int category, Long postId, int univId) {
+        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status = :status and p.univName.id = :univId and c.id = :categoryId and p.id < :postId order by p.createdAt desc", UnivPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
+                .setParameter("univId", univId)
                 .setParameter("categoryId", category)
                 .setParameter("postId", postId)
                 .getResultList();

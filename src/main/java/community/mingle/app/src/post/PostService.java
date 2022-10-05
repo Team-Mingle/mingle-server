@@ -1,9 +1,7 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Category;
-import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -14,7 +12,6 @@ import community.mingle.app.src.post.model.*;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,14 +40,14 @@ public class PostService {
     /**
      * 유저 토큰에서 학교 추출
      */
-    public String findUnivName() throws BaseException {
+    public UnivName findUniv() throws BaseException {
         Member member;
         Long memberIdByJwt = jwtService.getUserIdx();
         member = postRepository.findMemberbyId(memberIdByJwt);
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-        return member.getUniv().getUnivName();
+        return member.getUniv();
     }
 
 //    public int findUnivId() throws BaseException {
@@ -122,8 +119,8 @@ public class PostService {
     /**
      * 3.5 학교 게시판 리스트 API
      */
-    public List<UnivPost> findUnivPost(int category, Long postId) throws BaseException {
-        List<UnivPost> getUnivAll = postRepository.findUnivPost(category, postId);
+    public List<UnivPost> findUnivPost(int category, Long postId, int univId) throws BaseException {
+        List<UnivPost> getUnivAll = postRepository.findUnivPost(category, postId, univId);
         if (getUnivAll.size() == 0) {
             throw new BaseException(EMPTY_POSTS_LIST);
         }
