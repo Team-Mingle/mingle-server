@@ -9,5 +9,4 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest //괄호?
 public class AuthControllerTest {
 
-
 }

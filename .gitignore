@@ -44,3 +44,5 @@ src/main/resources/application.yml
 
 ##Secret##
 src/main/java/community/mingle/app/config/secret
+
+src/test/java/community/mingle/app/controller

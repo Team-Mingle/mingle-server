@@ -396,4 +396,9 @@ public class PostRepository {
     }
 
 
+    public List<Category> getPostCategory() {
+        List<Category> categoryList = em.createQuery("select c from Category c", Category.class)
+                .getResultList();
+        return categoryList;
+    }
 }

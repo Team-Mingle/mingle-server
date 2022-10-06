@@ -2,7 +2,9 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.auth.model.GetUnivListResponse;
 import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.UnivName;
@@ -39,6 +41,7 @@ public class PostController {
      * 3.1 광고 배너 API
      */
     @GetMapping("/banner")
+    @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
     @Operation(summary = "3.1 getBanner API", description = "3.1 홈 화면 배너 리스트 API")
     public BaseResponse<List<GetBannerResponse>> getBanner(){
         try {
@@ -183,6 +186,22 @@ public class PostController {
         }catch (BaseException exception){
             exception.printStackTrace();
             return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    /**
+     * 3.8 게시물 카테고리 불러오기 API
+     */
+    @Operation(summary = "3.8 getPostCategory API", description = "3.8 게시물 카테고리 불러오기 API")
+    @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
+    @GetMapping("/category")
+    public BaseResponse<List<GetPostCategoryResponse>> getPostCategory() {
+        try {
+            List<GetPostCategoryResponse> categoryList = postService.getPostCategory();
+            return new BaseResponse<>(categoryList);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 

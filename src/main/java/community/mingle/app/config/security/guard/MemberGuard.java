@@ -20,6 +20,6 @@ public class MemberGuard {
     private boolean hasAuthority() {
 //        Long memberId = authHelper.extractMemberId();
         Set<String> memberRoles = authHelper.extractMemberRoles();
-        return memberRoles.contains("USER");
+        return memberRoles.contains("USER") || memberRoles.contains("ADMIN");
     }
 }
