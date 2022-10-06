@@ -62,6 +62,23 @@ public class JwtService {
     }
 
 
+
+
+    public String getUserAuthority() throws BaseException{
+        //1. JWT 추출
+        String accessToken = untype(getJwt());
+        // 2. 권한 추출
+        return String.valueOf(
+                Jwts.parser()
+                        .setSigningKey(accessKey.getBytes())
+                        .parseClaimsJws(accessToken)
+                        .getBody().get("ROLE_TYPES", String.class));
+    }
+
+
+
+
+
     /**
      * 주어진거
      */

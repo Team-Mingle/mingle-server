@@ -218,6 +218,30 @@ public class PostService {
     }
 
 
+
+    /**
+     * 3.8 카테고리
+     *
+     * @return
+     */
+    public List<GetPostCategoryResponse> getPostCategory() throws BaseException {
+        try {
+            String authority = jwtService.getUserAuthority();
+            List<Category> postCategory = postRepository.getPostCategory();
+            List<GetPostCategoryResponse> result = postCategory.stream()
+                    .map(m -> new GetPostCategoryResponse(m))
+                    .collect(Collectors.toList());
+            if (authority.equals("USER")) {
+                result.remove(4);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
     /**
      * 3.9.1 통합 게시물 상세 - 게시물 API
      */
@@ -776,5 +800,6 @@ public class PostService {
         }
         return searchUnivPostLists;
     }
+
 
 }
