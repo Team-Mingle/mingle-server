@@ -140,40 +140,32 @@ public class PostService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-//        try {
-//            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
-//        } catch (Exception exception) {
-//            throw new BaseException(INVALID_POST_CATEGORY);
-//        }
+
         category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
         if (category == null) {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
+
         try {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
             Long id = postRepository.save(totalPost);
-
             List<String> fileNameList = null;
 
-            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
-                if(image.isEmpty()) {
-                    break;
-                }
-                else {
-                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
-                    for (String fileName: fileNameList) {
-                        TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
-                        postRepository.save(totalPostImage);
-                    }
+            if (postCreateRequest.getMultipartFile()==null || postCreateRequest.getMultipartFile().isEmpty()) {
+                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, null);
+                postRepository.save(totalPostImage);
+            } else {
+                fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
+                for (String fileName: fileNameList) {
+                    TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
+                    postRepository.save(totalPostImage);
                 }
             }
             return new PostCreateResponse(id, fileNameList);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
-
 
     /**
      * 3.7 학교 게시물 작성 API
@@ -187,28 +179,25 @@ public class PostService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-//        try {
+
         category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
         if (category == null) {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
-//        } catch (Exception exception) {
-//            throw new BaseException(INVALID_POST_CATEGORY);
-//        }
+
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
-
             List<String> fileNameList = null;
-            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
-                if (image.isEmpty()) {
-                    break;
-                } else {
-                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
-                    for (String fileName : fileNameList) {
-                        UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
-                        postRepository.save(univPostImage);
-                    }
+
+            if (postCreateRequest.getMultipartFile()==null || postCreateRequest.getMultipartFile().isEmpty()) {
+                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, null);
+                postRepository.save(univPostImage);
+            } else {
+                fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+                for (String fileName : fileNameList) {
+                    UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
+                    postRepository.save(univPostImage);
                 }
             }
             return new PostCreateResponse(id, fileNameList);
