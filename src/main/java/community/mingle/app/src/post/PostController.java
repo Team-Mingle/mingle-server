@@ -2,9 +2,7 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.auth.model.GetUnivListResponse;
 import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.UnivName;
@@ -43,11 +41,11 @@ public class PostController {
     @GetMapping("/banner")
     @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
     @Operation(summary = "3.1 getBanner API", description = "3.1 홈 화면 배너 리스트 API")
-    public BaseResponse<List<GetBannerResponse>> getBanner(){
+    public BaseResponse<List<BannerResponse>> getBanner(){
         try {
             List<Banner> banner = postService.findBanner();
-            List<GetBannerResponse> result = banner.stream()
-                    .map(m -> new GetBannerResponse(m))
+            List<BannerResponse> result = banner.stream()
+                    .map(m -> new BannerResponse(m))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 
@@ -66,11 +64,11 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<GetTotalBestPostsResponse>> getTotalBest() {
+    public BaseResponse<List<BestTotalPostResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
             List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment();
-            List<GetTotalBestPostsResponse> result = totalPosts.stream()
-                    .map(m -> new GetTotalBestPostsResponse(m))
+            List<BestTotalPostResponse> result = totalPosts.stream()
+                    .map(m -> new BestTotalPostResponse(m))
                     .collect(Collectors.toList());
 
             return new BaseResponse<>(result);
@@ -90,11 +88,11 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<GetUnivBestResponse>> getUnivBest() {
+    public BaseResponse<List<BestUnivPostResponse>> getUnivBest() {
         try {
             List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount();
-            List<GetUnivBestResponse> result = univPosts.stream()
-                    .map(p -> new GetUnivBestResponse(p))
+            List<BestUnivPostResponse> result = univPosts.stream()
+                    .map(p -> new BestUnivPostResponse(p))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 
@@ -113,13 +111,14 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3032", description = "해당 카테고리에 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<List<GetTotalPostsResponse>> getTotalPosts (@RequestParam int category, @RequestParam Long postId) {
+    public BaseResponse<TotalPostListResponse> getTotalPosts (@RequestParam int category, @RequestParam Long postId) {
         try {
             List<TotalPost> totalPosts = postService.findTotalPost(category, postId);
-            List<GetTotalPostsResponse> result = totalPosts.stream()
-                    .map(p -> new GetTotalPostsResponse(p))
+            List<TotalPostListDTO> result = totalPosts.stream()
+                    .map(p -> new TotalPostListDTO(p))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            TotalPostListResponse totalPostListResponse = new TotalPostListResponse(null, result);
+            return new BaseResponse<>(totalPostListResponse);
 
         } catch (BaseException e) {
             e.printStackTrace();
@@ -161,9 +160,9 @@ public class PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostCreateResponse> createTotalPost (@ModelAttribute PostCreateRequest postCreateRequest){
+    public BaseResponse<CreatePostResponse> createTotalPost (@ModelAttribute CreatePostRequest createPostRequest){
         try{
-            return new BaseResponse<>(postService.createTotalPost(postCreateRequest));
+            return new BaseResponse<>(postService.createTotalPost(createPostRequest));
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
     } }
@@ -180,9 +179,9 @@ public class PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostCreateResponse> createUnivPost (@ModelAttribute PostCreateRequest postCreateRequest){
+    public BaseResponse<CreatePostResponse> createUnivPost (@ModelAttribute CreatePostRequest createPostRequest){
         try{
-            return new BaseResponse<>(postService.createUnivPost(postCreateRequest));
+            return new BaseResponse<>(postService.createUnivPost(createPostRequest));
         }catch (BaseException exception){
             exception.printStackTrace();
             return new BaseResponse<>(exception.getStatus());
@@ -196,9 +195,9 @@ public class PostController {
     @Operation(summary = "3.8 getPostCategory API", description = "3.8 게시물 카테고리 불러오기 API")
     @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
     @GetMapping("/category")
-    public BaseResponse<List<GetPostCategoryResponse>> getPostCategory() {
+    public BaseResponse<List<PostCategoryResponse>> getPostCategory() {
         try {
-            List<GetPostCategoryResponse> categoryList = postService.getPostCategory();
+            List<PostCategoryResponse> categoryList = postService.getPostCategory();
             return new BaseResponse<>(categoryList);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -211,13 +210,12 @@ public class PostController {
      */
     @GetMapping("/total/{totalPostId}")
     @Operation(summary = "3.9.1 totalPostDetail API", description = "3.9.1 통합 게시물 상세 - 게시물 부분 API")
-    public BaseResponse<TotalPostDto> totalPostDetail(@PathVariable Long totalPostId) {
+    public BaseResponse<TotalPostResponse> totalPostDetail(@PathVariable Long totalPostId) { //dto->response
         try {
             TotalPost totalPost = postService.getTotalPost(totalPostId);
             postService.updateView(totalPostId);
-            TotalPostDto totalPostDto = postService.getTotalPostDto(totalPost);
-
-            return new BaseResponse<>(totalPostDto);
+            TotalPostResponse totalPostResponse = postService.getTotalPostDto(totalPost); //메소드이름 좀 맞추자
+            return new BaseResponse<>(totalPostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -229,11 +227,11 @@ public class PostController {
      */
     @GetMapping("/total/{totalPostId}/comment")
     @Operation(summary = "3.9.2 totalPostDetailComment API", description = "3.9.2 통합 게시물 상세 - 댓글 부분 API")
-    public BaseResponse<List<TotalCommentDto>> totalPostDetailComment(@PathVariable Long totalPostId) {
+    public BaseResponse<List<TotalCommentResponse>> totalPostDetailComment(@PathVariable Long totalPostId) {
 
         try {
-            List<TotalCommentDto> totalCommentDtoList = postService.getTotalCommentList(totalPostId);
-            return new BaseResponse<>(totalCommentDtoList);
+            List<TotalCommentResponse> totalCommentResponseList = postService.getTotalCommentList(totalPostId);
+            return new BaseResponse<>(totalCommentResponseList);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -246,13 +244,13 @@ public class PostController {
      */
     @GetMapping("/univ/{univPostId}")
     @Operation(summary = "3.10.1 getUnivPost API", description = "3.10 학교 게시물 상세 - 게시물 API")
-    public BaseResponse<UnivPostDTO> getUnivPost(@PathVariable Long univPostId) {
+    public BaseResponse<UnivPostResponse> getUnivPost(@PathVariable Long univPostId) {
         try {
 //            UnivPost univPost = postService.getUnivPost(univPostId);
 //            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
             postService.updateViewUniv(univPostId);
-            UnivPostDTO univPostDTO = postService.getUnivPost(univPostId);
-            return new BaseResponse<>(univPostDTO);
+            UnivPostResponse univPostResponse = postService.getUnivPost(univPostId);
+            return new BaseResponse<>(univPostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -264,10 +262,10 @@ public class PostController {
      */
     @GetMapping("/univ/{univPostId}/comment")
     @Operation(summary = "3.10.2 getUnivPostComment API", description = "3.10.2 학교 게시물 상세 - 댓글 API")
-    public BaseResponse<List<UnivCommentDTO>> univPostComment(@PathVariable Long univPostId) {
+    public BaseResponse<List<UnivCommentResponse>> univPostComment(@PathVariable Long univPostId) { //dto -> response
         try {
-            List<UnivCommentDTO> univCommentDTOList = postService.getUnivComments(univPostId);
-            return new BaseResponse<>(univCommentDTOList);
+            List<UnivCommentResponse> univCommentResponseList = postService.getUnivComments(univPostId);
+            return new BaseResponse<>(univCommentResponseList);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -287,13 +285,13 @@ public class PostController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3040", description = "게시물 수정 권한이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<String> updateTotalPost (@PathVariable Long id, @RequestBody @Valid PatchUpdatePostRequest patchUpdatePostRequest){
+    public BaseResponse<String> updateTotalPost (@PathVariable Long id, @RequestBody @Valid UpdatePostRequest updatePostRequest){
         //empty일 경우 (title&content)
-        if (patchUpdatePostRequest.getTitle().length() == 0) {
+        if (updatePostRequest.getTitle().length() == 0) {
             return new BaseResponse<>(TITLE_EMPTY_ERROR);
         }
         try{
-            postService.updateTotalPost(id, patchUpdatePostRequest);
+            postService.updateTotalPost(id, updatePostRequest);
             String result = "게시물 수정에 성공하였습니다.";
             return new BaseResponse<>(result);
 
@@ -315,13 +313,13 @@ public class PostController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3040", description = "게시물 수정 권한이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<String> updateUnivPost (@PathVariable Long id, @RequestBody @Valid PatchUpdatePostRequest patchUpdatePostRequest){
+    public BaseResponse<String> updateUnivPost (@PathVariable Long id, @RequestBody @Valid UpdatePostRequest updatePostRequest){
         //empty일 경우 (title&content)
-        if (patchUpdatePostRequest.getTitle().length() == 0) {
+        if (updatePostRequest.getTitle().length() == 0) {
             return new BaseResponse<>(TITLE_EMPTY_ERROR);
         }
         try{
-            postService.updateUnivPost(id, patchUpdatePostRequest);
+            postService.updateUnivPost(id, updatePostRequest);
             String result = "게시물 수정에 성공하였습니다.";
             return new BaseResponse<>(result);
         }catch (BaseException exception){
@@ -382,7 +380,7 @@ public class PostController {
      */
     @Operation(summary = "3.15  LikesTotalPost API", description = "3.15 통합 게시물 좋아요 api")
     @PostMapping("/total/likes")
-    public BaseResponse<PostLikesTotalResponse> likesTotalPost (@RequestParam Long postIdx){
+    public BaseResponse<LikeTotalPostResponse> likesTotalPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.likesTotalPost(postIdx));
         }catch (BaseException exception){
@@ -397,7 +395,7 @@ public class PostController {
      */
     @Operation(summary = "3.16 LikesUnivPost API", description = "3.16 학교 게시물 좋아요 api")
     @PostMapping("/univ/likes")
-    public BaseResponse<PostLikesUnivResponse> likesUnivPost (@RequestParam Long postIdx){
+    public BaseResponse<LikeUnivPostResponse> likesUnivPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.likesUnivPost(postIdx));
         }catch (BaseException exception){
@@ -447,7 +445,7 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostScrapTotalResponse> scrapTotalPost (@RequestParam Long postIdx){
+    public BaseResponse<ScrapTotalPostResponse> scrapTotalPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.scrapTotalPost(postIdx));
         }catch (BaseException exception){
@@ -465,7 +463,7 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<PostScrapUnivResponse> scrapUnivPost (@RequestParam Long postIdx){
+    public BaseResponse<ScrapUnivPostResponse> scrapUnivPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.scrapUnivPost(postIdx));
         }catch (BaseException exception){
@@ -512,11 +510,11 @@ public class PostController {
      */
     @Operation(summary = "searchTotalPost API", description = "전체게시판 검색 api")
     @GetMapping("total/search")
-    public BaseResponse<List<SearchTotalPost>> searchTotalPost(@RequestParam(value="keyword") String keyword) {
+    public BaseResponse<List<SearchTotalPostResponse>> searchTotalPost(@RequestParam(value="keyword") String keyword) {
         try {
             List<TotalPost> totalPosts = postService.findAllSearch(keyword);
-            List<SearchTotalPost> result = totalPosts.stream()
-                    .map(tp -> new SearchTotalPost(tp))
+            List<SearchTotalPostResponse> result = totalPosts.stream()
+                    .map(tp -> new SearchTotalPostResponse(tp))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
         } catch (BaseException e) {
@@ -531,11 +529,11 @@ public class PostController {
      */
     @Operation(summary = "searchUnivPost API", description = "학교게시판 검색 api")
     @GetMapping("univ/search")
-    public BaseResponse<List<SearchUnivPost>> searchUnivPost(@RequestParam(value="keyword") String keyword) {
+    public BaseResponse<List<SearchUnivPostResponse>> searchUnivPost(@RequestParam(value="keyword") String keyword) {
         try {
             List<UnivPost> univPosts = postService.findUnivSearch(keyword);
-            List<SearchUnivPost> result = univPosts.stream()
-                    .map(up -> new SearchUnivPost(up))
+            List<SearchUnivPostResponse> result = univPosts.stream()
+                    .map(up -> new SearchUnivPostResponse(up))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 

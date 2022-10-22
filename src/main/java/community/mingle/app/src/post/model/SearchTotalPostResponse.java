@@ -6,7 +6,7 @@ import lombok.Getter;
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
 @Getter
-public class SearchTotalPost {
+public class SearchTotalPostResponse {
 
     private Long totalPostId;
     private String title;
@@ -16,7 +16,7 @@ public class SearchTotalPost {
 
 
 
-    public SearchTotalPost(TotalPost totalPost) {
+    public SearchTotalPostResponse(TotalPost totalPost) {
         this.totalPostId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
