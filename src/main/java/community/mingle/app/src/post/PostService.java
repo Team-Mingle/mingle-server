@@ -198,19 +198,25 @@ public class PostService {
         try {
             UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
             Long id = postRepository.save(univPost);
-
             List<String> fileNameList = null;
-            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
-                if (image.isEmpty()) {
-                    break;
-                } else {
-                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
-                    for (String fileName : fileNameList) {
-                        UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
-                        postRepository.save(univPostImage);
-                    }
+            System.out.println("겟 멀티플파일" + postCreateRequest.getMultipartFile());
+            if (postCreateRequest.getMultipartFile()==null || postCreateRequest.getMultipartFile().isEmpty()) {
+                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, null);
+                postRepository.save(univPostImage);
+            } else {
+//                for (MultipartFile image : postCreateRequest.getMultipartFile()) {
+//                    if (image.isEmpty()) {
+//                        break;
+//                    } else {
+                fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+                for (String fileName : fileNameList) {
+                    UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
+                    postRepository.save(univPostImage);
                 }
+//                    }
+//                }
             }
+
             return new PostCreateResponse(id, fileNameList);
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
