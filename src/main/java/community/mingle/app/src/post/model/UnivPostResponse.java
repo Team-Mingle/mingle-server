@@ -1,6 +1,5 @@
 package community.mingle.app.src.post.model;
 
-import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostImage;
 import lombok.Getter;
@@ -8,13 +7,12 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
-public class UnivPostDTO {
+public class UnivPostResponse {
 
-    private Long univPostId;
+    private Long postId;
     private String title;
     private String content;
     private String nickname;
@@ -25,7 +23,7 @@ public class UnivPostDTO {
     private boolean isMyPost;
     private boolean isLiked;
     private boolean isScraped;
-    private String createdTime;
+    private String createdAt;
 
     private final int viewCount;
 
@@ -33,8 +31,8 @@ public class UnivPostDTO {
 
 
 
-    public UnivPostDTO(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped) {
-        univPostId = u.getId();
+    public UnivPostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped) {
+        postId = u.getId();
         title = u.getTitle();
         content = u.getContent();
         if (u.getIsAnonymous() == true) {
@@ -49,7 +47,7 @@ public class UnivPostDTO {
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
-        createdTime = convertToDateAndTime(u.getCreatedAt());
+        createdAt = convertToDateAndTime(u.getCreatedAt());
         this.viewCount =  u.getViewCount();
 
         if(u.getIsFileAttached() == true) {

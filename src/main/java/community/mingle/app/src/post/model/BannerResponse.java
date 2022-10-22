@@ -4,11 +4,11 @@ import community.mingle.app.src.domain.Banner;
 import lombok.Getter;
 
 @Getter
-public class GetBannerResponse {
+public class BannerResponse {
     private int id;
     private String url;
 
-    public GetBannerResponse(Banner banner) {
+    public BannerResponse(Banner banner) {
         this.id = banner.getId();
         this.url = banner.getUrl();
 

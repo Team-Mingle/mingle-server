@@ -7,12 +7,12 @@ import java.util.List;
 @Getter
 public class UnivPostListResponse {
 
-    private String univName;
-    private List<UnivPostListDTO> univPostListDTO;
+    private String boardName;
+    private List<UnivPostListDTO> postListDTO;
 
 
-    public UnivPostListResponse(String univName, List<UnivPostListDTO> univPostListDTOList) {
-        this.univName = univName;
-        this.univPostListDTO = univPostListDTOList;
+    public UnivPostListResponse(String univName, List<UnivPostListDTO> univPostListDTO) {
+        this.boardName = univName;
+        this.postListDTO = univPostListDTO;
     }
 }

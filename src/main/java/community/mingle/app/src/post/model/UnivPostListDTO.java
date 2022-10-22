@@ -9,20 +9,19 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 @Getter
 public class UnivPostListDTO {
 
-    private Long univPostIdx;
+    private Long postId;
     private String title;
     private String contents;
     private String nickname;
     private boolean isFileAttached;
     private int likeCount;
     private int commentCount;
-    private String createdTime;
-
+    private String createdAt;
     private String univImgUrl;
 
 
     public UnivPostListDTO(UnivPost univPost) {
-        this.univPostIdx = univPost.getId();
+        this.postId = univPost.getId();
         this.title = univPost.getTitle();
         this.contents = univPost.getContent();
         if (univPost.getIsAnonymous() == true) {
@@ -33,8 +32,7 @@ public class UnivPostListDTO {
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
         this.commentCount = univPost.getUnivComments().size();
-        this.createdTime = convertLocaldatetimeToTime(univPost.getCreatedAt());
-
+        this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
         if(univPost.getIsFileAttached() == true) {
             this.univImgUrl = univPost.getUnivPostImages().get(0).getImgUrl();
         }
