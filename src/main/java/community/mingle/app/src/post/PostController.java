@@ -6,6 +6,8 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.src.home.model.HomeBestTotalPostResponse;
+import community.mingle.app.src.home.model.HomeBestUnivPostResponse;
 import community.mingle.app.src.post.model.*;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
@@ -64,11 +66,11 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<BestTotalPostResponse>> getTotalBest() {
+    public BaseResponse<List<HomeBestTotalPostResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
             List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment();
-            List<BestTotalPostResponse> result = totalPosts.stream()
-                    .map(m -> new BestTotalPostResponse(m))
+            List<HomeBestTotalPostResponse> result = totalPosts.stream()
+                    .map(m -> new HomeBestTotalPostResponse(m))
                     .collect(Collectors.toList());
 
             return new BaseResponse<>(result);
@@ -88,11 +90,11 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<BestUnivPostResponse>> getUnivBest() {
+    public BaseResponse<List<HomeBestUnivPostResponse>> getUnivBest() {
         try {
             List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount();
-            List<BestUnivPostResponse> result = univPosts.stream()
-                    .map(p -> new BestUnivPostResponse(p))
+            List<HomeBestUnivPostResponse> result = univPosts.stream()
+                    .map(p -> new HomeBestUnivPostResponse(p))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 
@@ -179,7 +181,7 @@ public class PostController {
             @ApiResponse(responseCode = "3032", description = "유효하지 않은 카테고리 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<CreatePostResponse> createUnivPost (@ModelAttribute CreatePostRequest createPostRequest){
+    public BaseResponse<CreatePostResponse> createUnivPost (@ModelAttribute @Valid CreatePostRequest createPostRequest){
         try{
             return new BaseResponse<>(postService.createUnivPost(createPostRequest));
         }catch (BaseException exception){
@@ -541,6 +543,8 @@ public class PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+
 
 
 

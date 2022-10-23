@@ -1,4 +1,4 @@
-package community.mingle.app.src.post.model;
+package community.mingle.app.src.home.model;
 
 import community.mingle.app.src.domain.Total.TotalPost;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Getter;
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
 @Getter
-public class BestTotalPostResponse {
+public class HomeBestTotalPostResponse {
     private Long postId;
     private String title;
     private String contents;
@@ -16,7 +16,7 @@ public class BestTotalPostResponse {
     private String createdAt;
 
 
-    public BestTotalPostResponse(TotalPost totalPost) {
+    public HomeBestTotalPostResponse(TotalPost totalPost) {
         this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();

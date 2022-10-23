@@ -75,7 +75,7 @@ public class PostService {
 
 
     /**
-     * 3.2 홍콩 배스트 게시판 API
+     * 3.2 전체 배스트 게시판 API
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException {
         List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
@@ -213,6 +213,7 @@ public class PostService {
             }
             return new CreatePostResponse(id, fileNameList);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }

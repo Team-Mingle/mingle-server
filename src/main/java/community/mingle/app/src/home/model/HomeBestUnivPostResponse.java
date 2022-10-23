@@ -1,4 +1,4 @@
-package community.mingle.app.src.post.model;
+package community.mingle.app.src.home.model;
 
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 
 @Getter
 //@AllArgsConstructor
-public class BestUnivPostResponse {
+public class HomeBestUnivPostResponse {
 
     private Long postId;
     private String title;
@@ -18,7 +18,7 @@ public class BestUnivPostResponse {
     private String createdAt;
 
 
-    public BestUnivPostResponse(UnivPost p) {
+    public HomeBestUnivPostResponse(UnivPost p) {
         postId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
