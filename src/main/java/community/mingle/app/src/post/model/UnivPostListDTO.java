@@ -17,7 +17,7 @@ public class UnivPostListDTO {
     private int likeCount;
     private int commentCount;
     private String createdAt;
-    private String univImgUrl;
+    private String postImgUrl;
 
 
     public UnivPostListDTO(UnivPost univPost) {
@@ -34,7 +34,7 @@ public class UnivPostListDTO {
         this.commentCount = univPost.getUnivComments().size();
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
         if(univPost.getIsFileAttached() == true) {
-            this.univImgUrl = univPost.getUnivPostImages().get(0).getImgUrl();
+            this.postImgUrl = univPost.getUnivPostImages().get(0).getImgUrl();
         }
     }
 

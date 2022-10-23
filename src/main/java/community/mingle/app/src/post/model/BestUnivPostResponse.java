@@ -9,18 +9,17 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 //@AllArgsConstructor
 public class BestUnivPostResponse {
 
-    private Long univPostIdx;
+    private Long postId;
     private String title;
     private String contents;
     private String nickname;
     private int likeCount;
     private int commentCount;
-//    private LocalDateTime createdTime;
     private String createdAt;
 
 
     public BestUnivPostResponse(UnivPost p) {
-        univPostIdx = p.getId();
+        postId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
         nickname = p.getMember().getNickname();

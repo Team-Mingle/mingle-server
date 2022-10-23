@@ -91,7 +91,14 @@ public class TotalPost {
         totalPost.createdAt = LocalDateTime.now();
         totalPost.updatedAt = LocalDateTime.now();
         totalPost.setIsAnonymous(req.getIsAnonymous());
-        totalPost.setIsFileAttached(req.getIsFileAttached());
+//        totalPost.setIsFileAttached(req.getIsFileAttached());
+        if (req.getMultipartFile()==null || req.getMultipartFile().isEmpty()) {
+            totalPost.setIsFileAttached(false);
+        } else if (!(req.getMultipartFile().isEmpty()) || req.getMultipartFile() != null) {
+            totalPost.setIsFileAttached(true);
+        } else {
+            totalPost.setIsFileAttached(false);
+        }
         totalPost.status = PostStatus.ACTIVE;
         return totalPost;
     }
