@@ -253,6 +253,8 @@ public class AuthService {
             String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
             return new PostLoginResponse(memberId, postLoginRequest.getEmail(), accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e);
             throw new BaseException(FAILED_TO_CREATEJWT);
         }
     }

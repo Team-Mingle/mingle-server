@@ -94,7 +94,11 @@ public class UnivPost {
         univPost.updatedAt = LocalDateTime.now();
         univPost.setIsAnonymous(req.getIsAnonymous());
 //        univPost.setIsFileAttached(req.getIsFileAttached());
+<<<<<<< HEAD
 //
+=======
+
+>>>>>>> ccc9465f44235ca8fa2ffc7512f9efae6e7f2aac
 //        System.out.println(req.getMultipartFile().isEmpty()); //포스트맨으로 실행 시, false
 //        System.out.println(req.getMultipartFile().get(0)); // 뭐가있다
 //        System.out.println(req.getMultipartFile() == null); //널도 아니다 false
@@ -104,7 +108,8 @@ public class UnivPost {
 //        } else {
 //            univPost.setIsFileAttached(true);
 //        }
-//
+
+//      //Better logic below
         if (req.getMultipartFile() != null && !(req.getMultipartFile().isEmpty())) {
             univPost.setIsFileAttached(true);
         }

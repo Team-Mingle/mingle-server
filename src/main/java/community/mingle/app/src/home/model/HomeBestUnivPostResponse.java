@@ -13,21 +13,24 @@ public class HomeBestUnivPostResponse {
     private String title;
     private String contents;
     private String nickname;
+    private boolean isFileAttached;
     private int likeCount;
     private int commentCount;
     private String createdAt;
+//    private String postImgUrl;
 
 
     public HomeBestUnivPostResponse(UnivPost p) {
+
         postId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
-        nickname = p.getMember().getNickname();
         if (p.getIsAnonymous() == true) {
             this.nickname = "글쓴이";
         } else {
             this.nickname = p.getMember().getNickname();
         }
+        this.isFileAttached = p.getIsFileAttached();
         likeCount = p.getUnivPostLikes().size();
         commentCount = p.getUnivComments().size();
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
