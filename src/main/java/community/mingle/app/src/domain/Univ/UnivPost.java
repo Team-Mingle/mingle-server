@@ -93,7 +93,14 @@ public class UnivPost {
         univPost.createdAt = LocalDateTime.now();
         univPost.updatedAt = LocalDateTime.now();
         univPost.setIsAnonymous(req.getIsAnonymous());
-        univPost.setIsFileAttached(req.getIsFileAttached());
+//        univPost.setIsFileAttached(req.getIsFileAttached());
+        if (req.getMultipartFile()==null || req.getMultipartFile().isEmpty()) {
+            univPost.setIsFileAttached(false);
+        } else if (!(req.getMultipartFile().isEmpty()) || req.getMultipartFile() != null) {
+            univPost.setIsFileAttached(true);
+        } else {
+            univPost.setIsFileAttached(false);
+        }
         univPost.status = PostStatus.ACTIVE;
         return univPost;
     }

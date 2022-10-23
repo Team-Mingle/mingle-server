@@ -15,7 +15,6 @@ public class BestUnivPostResponse {
     private String nickname;
     private int likeCount;
     private int commentCount;
-//    private LocalDateTime createdTime;
     private String createdAt;
 
 
