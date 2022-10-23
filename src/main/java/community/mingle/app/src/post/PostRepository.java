@@ -37,7 +37,7 @@ public class PostRepository {
                 .setParameter("status", PostStatus.ACTIVE)
 //                .setParameter("localDateTime", LocalDateTime.now().minusDays(3))
                 .setParameter("postId", postId)
-                .setMaxResults(500) //수정 필요
+                .setMaxResults(50) //수정 필요
                 .getResultList();
 
         return recentTotalPosts;
@@ -57,7 +57,7 @@ public class PostRepository {
 //                .setParameter("localDateTime", (LocalDateTime.now().minusDays(3))) //최근 3일중 likeCount 로 정렬. 좋아요 수가 같으면 최신순으로 정렬.
                 .setParameter("univId", member.getUniv().getId()) //어디 학교인지
                 .setParameter("postId", postId)
-                .setMaxResults(500)
+                .setMaxResults(50)
                 .getResultList();
     }
 
