@@ -7,28 +7,29 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 
 @Getter
 //@AllArgsConstructor
-public class BestUnivPostResponse {
+public class BestUnivPostDTO {
 
-    private Long univPostIdx;
+    private Long postId;
     private String title;
     private String contents;
     private String nickname;
+    private boolean isFileAttached;
     private int likeCount;
     private int commentCount;
-//    private LocalDateTime createdTime;
     private String createdAt;
+//    private String postImgUrl;
 
 
-    public BestUnivPostResponse(UnivPost p) {
-        univPostIdx = p.getId();
+    public BestUnivPostDTO(UnivPost p) {
+        postId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
-        nickname = p.getMember().getNickname();
         if (p.getIsAnonymous() == true) {
             this.nickname = "글쓴이";
         } else {
             this.nickname = p.getMember().getNickname();
         }
+        this.isFileAttached = p.getIsFileAttached();
         likeCount = p.getUnivPostLikes().size();
         commentCount = p.getUnivComments().size();
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());

@@ -62,16 +62,16 @@ public class PostController {
     @GetMapping("/total/best")
     @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3030", description = "아직 인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<BestTotalPostResponse>> getTotalBest() {
+    public BaseResponse<BestTotalPostListResponse> getTotalBest(@RequestParam Long postId) {
         try { //JWT로 해당 유저인지 확인 필요
-            List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment();
-            List<BestTotalPostResponse> result = totalPosts.stream()
-                    .map(m -> new BestTotalPostResponse(m))
+            List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment(postId);
+            List<BestTotalPostDTO> result = totalPosts.stream()
+                    .map(m -> new BestTotalPostDTO(m))
                     .collect(Collectors.toList());
-
-            return new BaseResponse<>(result);
+            BestTotalPostListResponse bestTotalPostListResponse = new BestTotalPostListResponse(null, result);
+            return new BaseResponse<>(bestTotalPostListResponse);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -86,15 +86,19 @@ public class PostController {
     @GetMapping("/univ/best")
     @Operation(summary = "3.3 getUnivBest Posts API", description = "3.3 학교 베스트 게시물 리스트 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3030", description = "아직 인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<List<BestUnivPostResponse>> getUnivBest() {
+    public BaseResponse<BestUnivPostListResponse> getUnivBest(@RequestParam Long postId) {
         try {
-            List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount();
-            List<BestUnivPostResponse> result = univPosts.stream()
-                    .map(p -> new BestUnivPostResponse(p))
+            UnivName univ = postService.findUniv();
+            String univName = univ.getUnivName().substring(0,3);
+            List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount(postId);
+            List<BestUnivPostDTO> result = univPosts.stream()
+                    .map(p -> new BestUnivPostDTO(p))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            BestUnivPostListResponse bestUnivPostListResponse = new BestUnivPostListResponse(univName, result);
+            return new BaseResponse<>(bestUnivPostListResponse);
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

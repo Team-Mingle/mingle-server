@@ -15,7 +15,7 @@ public class TotalPostListDTO {
     private int likeCount;
     private int commentCount;
     private String createdAt;
-    private String postImgUrl;
+//    private String postImgUrl;
 
 
     public TotalPostListDTO(TotalPost totalPost) {
@@ -31,9 +31,9 @@ public class TotalPostListDTO {
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.commentCount = totalPost.getTotalPostComments().size();
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
-        if(totalPost.getIsFileAttached() == true) {
-            this.postImgUrl = totalPost.getTotalPostImages().get(0).getImgUrl(); //없는데 true여서 가져오려햇는데 어레이리스트 0번째가 없어서 인덱스에러남 이래서 디비에 막넣으면안됨 ;;
-        }
+//        if(totalPost.getIsFileAttached() == true) {
+//            this.postImgUrl = totalPost.getTotalPostImages().get(0).getImgUrl(); //없는데 true여서 가져오려햇는데 어레이리스트 0번째가 없어서 인덱스에러남 이래서 디비에 막넣으면안됨 ;;
+//        }
     }
 
 }
