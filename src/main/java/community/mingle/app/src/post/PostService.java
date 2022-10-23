@@ -5,9 +5,9 @@ import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
-import community.mingle.app.src.post.model.PatchUpdatePostRequest;
-import community.mingle.app.src.post.model.PostCreateRequest;
-import community.mingle.app.src.post.model.PostCreateResponse;
+import community.mingle.app.src.post.model.UpdatePostRequest;
+import community.mingle.app.src.post.model.CreatePostRequest;
+import community.mingle.app.src.post.model.CreatePostResponse;
 import community.mingle.app.src.post.model.*;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.utils.JwtService;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -77,8 +77,8 @@ public class PostService {
     /**
      * 3.2 홍콩 배스트 게시판 API
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException {
-        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
+    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId) throws BaseException {
+        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(postId);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -89,14 +89,14 @@ public class PostService {
     /**
      * 3.3 학교 베스트 게시판 API
      */
-    public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
+    public List<UnivPost> findAllWithMemberLikeCommentCount(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
         if (member == null) {
             throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
         }
-        List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member);
+        List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member, postId);
         if (univPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -132,7 +132,7 @@ public class PostService {
      * 3.6 통합 게시물 작성 API
      */
     @Transactional
-    public PostCreateResponse createTotalPost(PostCreateRequest postCreateRequest) throws BaseException {
+    public CreatePostResponse createTotalPost(CreatePostRequest createPostRequest) throws BaseException {
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -140,46 +140,43 @@ public class PostService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-//        try {
-//            category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
-//        } catch (Exception exception) {
-//            throw new BaseException(INVALID_POST_CATEGORY);
-//        }
-        category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+
+        category = postRepository.findCategoryById(createPostRequest.getCategoryId());
         if (category == null) {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
-        try {
-            TotalPost totalPost = TotalPost.createTotalPost(member, category, postCreateRequest);
-            Long id = postRepository.save(totalPost);
 
+        try {
+            TotalPost totalPost = TotalPost.createTotalPost(member, category, createPostRequest);
+            Long id = postRepository.save(totalPost); // <- 이미지 파일 생성 실패시 글만 세이브되는 상황 방지는 못하지만 postId가 필요하기때문에 여기 있어야함.
             List<String> fileNameList = null;
 
-            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
-                if(image.isEmpty()) {
-                    break;
-                }
-                else {
-                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "total");
-                    for (String fileName: fileNameList) {
-                        TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
+            if (createPostRequest.getMultipartFile()==null || createPostRequest.getMultipartFile().isEmpty()) {
+                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, null);
+                postRepository.save(totalPostImage);
+            } else {
+                try {
+                    fileNameList = s3Service.uploadFile(createPostRequest.getMultipartFile(), "total");
+                    for (String fileName : fileNameList) {
+                        TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, fileName);
                         postRepository.save(totalPostImage);
                     }
+                } catch (Exception e) { // 이미지 파일 생성 실패시 글만 세이브되는 상황 방지 (postImgUrl being null) - 위에서 세이브 된 글을 아예 지움
+                    postRepository.deleteTotalPost(id);
+                    throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }
-            return new PostCreateResponse(id, fileNameList);
+            return new CreatePostResponse(id, fileNameList);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
-
 
     /**
      * 3.7 학교 게시물 작성 API
      */
     @Transactional
-    public PostCreateResponse createUnivPost(PostCreateRequest postCreateRequest) throws BaseException {
+    public CreatePostResponse createUnivPost(CreatePostRequest createPostRequest) throws BaseException {
         Member member;
         Category category;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -187,31 +184,33 @@ public class PostService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-//        try {
-        category = postRepository.findCategoryById(postCreateRequest.getCategoryId());
+
+        category = postRepository.findCategoryById(createPostRequest.getCategoryId());
         if (category == null) {
             throw new BaseException(INVALID_POST_CATEGORY);
         }
-//        } catch (Exception exception) {
-//            throw new BaseException(INVALID_POST_CATEGORY);
-//        }
-        try {
-            UnivPost univPost = UnivPost.createUnivPost(member, category, postCreateRequest);
-            Long id = postRepository.save(univPost);
 
+        try {
+            UnivPost univPost = UnivPost.createUnivPost(member, category, createPostRequest);
+            Long id = postRepository.save(univPost);
             List<String> fileNameList = null;
-            for (MultipartFile image : postCreateRequest.getMultipartFile()) {
-                if (image.isEmpty()) {
-                    break;
-                } else {
-                    fileNameList = s3Service.uploadFile(postCreateRequest.getMultipartFile(), "univ");
+
+            if (createPostRequest.getMultipartFile()== null || createPostRequest.getMultipartFile().isEmpty()) {
+                UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, null);
+                postRepository.save(univPostImage);
+            } else {
+                try {
+                    fileNameList = s3Service.uploadFile(createPostRequest.getMultipartFile(), "univ");
                     for (String fileName : fileNameList) {
                         UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
                         postRepository.save(univPostImage);
                     }
+                } catch (Exception e) {
+                    postRepository.deleteUnivPost(id);
+                    throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }
-            return new PostCreateResponse(id, fileNameList);
+            return new CreatePostResponse(id, fileNameList);
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
@@ -221,15 +220,14 @@ public class PostService {
 
     /**
      * 3.8 카테고리
-     *
      * @return
      */
-    public List<GetPostCategoryResponse> getPostCategory() throws BaseException {
+    public List<PostCategoryResponse> getPostCategory() throws BaseException {
         try {
             String authority = jwtService.getUserAuthority();
             List<Category> postCategory = postRepository.getPostCategory();
-            List<GetPostCategoryResponse> result = postCategory.stream()
-                    .map(m -> new GetPostCategoryResponse(m))
+            List<PostCategoryResponse> result = postCategory.stream()
+                    .map(m -> new PostCategoryResponse(m))
                     .collect(Collectors.toList());
             if (authority.equals("USER")) {
                 result.remove(4);
@@ -255,7 +253,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public TotalPostDto getTotalPostDto(TotalPost totalPost) throws BaseException {
+    public TotalPostResponse getTotalPostDto(TotalPost totalPost) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         boolean isMyPost = false;
         boolean isLiked = false;
@@ -273,16 +271,16 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-        TotalPostDto totalPostDto = new TotalPostDto(totalPost, isMyPost, isLiked, isScraped);
+        TotalPostResponse totalPostResponse = new TotalPostResponse(totalPost, isMyPost, isLiked, isScraped);
 
-        return totalPostDto;
+        return totalPostResponse;
     }
 
     /**
      * 3.9.2 통합 게시물 상세 - 댓글 API
      */
     @Transactional(readOnly = true)
-    public List<TotalCommentDto> getTotalCommentList(Long id) throws BaseException {
+    public List<TotalCommentResponse> getTotalCommentList(Long id) throws BaseException {
         TotalPost totalPost = postRepository.checkTotalPostDisabled(id);
         if (totalPost.getStatus().equals(PostStatus.REPORTED) || totalPost.getStatus().equals(PostStatus.INACTIVE)) {
             throw new BaseException(REPORTED_DELETED_POST);
@@ -291,20 +289,20 @@ public class PostService {
         try {
             List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
             List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
-            List<TotalCommentDto> totalCommentDtoList = new ArrayList<>();
+            List<TotalCommentResponse> totalCommentResponseList = new ArrayList<>();
             for (TotalComment tc : totalCommentList) {
                 List<TotalComment> coComments = totalCocommentList.stream()
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                         .collect(Collectors.toList());
-                List<TotalCocommentDto> coCommentDtos = coComments.stream()
-                        .map(p -> new TotalCocommentDto(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt))
+                List<TotalCoCommentDTO> coCommentDtos = coComments.stream()
+                        .map(p -> new TotalCoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt))
                         .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
-                TotalCommentDto totalCommentDto = new TotalCommentDto(tc, coCommentDtos, memberIdByJwt);
-                totalCommentDtoList.add(totalCommentDto);
+                TotalCommentResponse totalCommentResponse = new TotalCommentResponse(tc, coCommentDtos, memberIdByJwt);
+                totalCommentResponseList.add(totalCommentResponse);
             }
-            return totalCommentDtoList;
+            return totalCommentResponseList;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -315,7 +313,7 @@ public class PostService {
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
-    public UnivPostDTO getUnivPost(Long postId) throws BaseException {
+    public UnivPostResponse getUnivPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
@@ -334,8 +332,8 @@ public class PostService {
             if (postRepository.checkUnivPostIsScraped(postId, memberIdByJwt) == true) {
                 isScraped = true;
             }
-            UnivPostDTO univPostDTO = new UnivPostDTO(univPost, isMyPost, isLiked, isScraped);
-            return univPostDTO;
+            UnivPostResponse univPostResponse = new UnivPostResponse(univPost, isMyPost, isLiked, isScraped);
+            return univPostResponse;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -346,7 +344,7 @@ public class PostService {
      * 3.10.2 학교 게시물 상세 - 댓글 API
      */
     @Transactional(readOnly = true)
-    public List<UnivCommentDTO> getUnivComments(Long postId) throws BaseException {
+    public List<UnivCommentResponse> getUnivComments(Long postId) throws BaseException {
         UnivPost univPost = postRepository.checkUnivPostDisabled(postId);
         if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
             throw new BaseException(REPORTED_DELETED_POST);
@@ -359,7 +357,7 @@ public class PostService {
             List<UnivComment> univComments = postRepository.getUnivComments(postId); //댓글
             List<UnivComment> univCoComments = postRepository.getUnivCoComments(postId); //대댓글
             //2. 댓글 + 대댓글 DTO 생성
-            List<UnivCommentDTO> univCommentDTOList = new ArrayList<>();
+            List<UnivCommentResponse> univCommentResponseList = new ArrayList<>();
             //3. 댓글 리스트 돌면서 댓글 하나당 대댓글 리스트 넣어서 합쳐주기
             for (UnivComment c : univComments) {
                 //parentComment 하나당 해당하는 UnivComment 타입의 대댓글 찾아서 리스트 만들기
@@ -375,10 +373,10 @@ public class PostService {
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
                 //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
                 //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
-                UnivCommentDTO univCommentDTO = new UnivCommentDTO(c, coCommentDTO, memberIdByJwt);
-                univCommentDTOList.add(univCommentDTO);
+                UnivCommentResponse univCommentResponse = new UnivCommentResponse(c, coCommentDTO, memberIdByJwt);
+                univCommentResponseList.add(univCommentResponse);
             }
-            return univCommentDTOList;
+            return univCommentResponseList;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -389,7 +387,7 @@ public class PostService {
      * 3.11 통합 게시물 수정 API
      */
     @Transactional
-    public void updateTotalPost(Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
+    public void updateTotalPost(Long id, UpdatePostRequest updatePostRequest) throws BaseException {
         Member member;
         TotalPost totalPost;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -411,7 +409,7 @@ public class PostService {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
-            totalPost.updateTotalPost(patchUpdatePostRequest);
+            totalPost.updateTotalPost(updatePostRequest);
         } catch (Exception e) {
             throw new BaseException(MODIFY_FAIL_POST);
         }
@@ -422,7 +420,7 @@ public class PostService {
      * 3.12 학교 게시물 수정 API
      */
     @Transactional
-    public void updateUnivPost(Long id, PatchUpdatePostRequest patchUpdatePostRequest) throws BaseException {
+    public void updateUnivPost(Long id, UpdatePostRequest updatePostRequest) throws BaseException {
         Member member;
         UnivPost univPost;
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -442,7 +440,7 @@ public class PostService {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
-            univPost.updateUnivPost(patchUpdatePostRequest);
+            univPost.updateUnivPost(updatePostRequest);
         } catch (Exception e) {
             throw new BaseException(MODIFY_FAIL_POST);
         }
@@ -451,6 +449,7 @@ public class PostService {
 
     /**
      * 3.13 통합 게시물 삭제 API
+     * 확인 필요 10/23
      */
     @Transactional
     public void deleteTotalPost(Long id) throws BaseException {
@@ -535,7 +534,7 @@ public class PostService {
      * 3.15 통합 게시물 좋아요 api + 인기 게시물 알림 기능
      */
     @Transactional
-    public PostLikesTotalResponse likesTotalPost(Long postIdx) throws BaseException {
+    public LikeTotalPostResponse likesTotalPost(Long postIdx) throws BaseException {
         Long memberIdByJwt;
         try {
             memberIdByJwt = jwtService.getUserIdx();
@@ -559,7 +558,7 @@ public class PostService {
             if (totalpost.getTotalPostLikes().size() == 10) {
                 sendTotalPostNotification(totalpost, postMember);
             }
-            return new PostLikesTotalResponse(id, likeCount);
+            return new LikeTotalPostResponse(id, likeCount);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -568,16 +567,16 @@ public class PostService {
     }
 
     public void sendTotalPostNotification(TotalPost totalpost, Member postMember) throws IOException {
-        List<TotalPost> recentPost = postRepository.findTotalPostWithMemberLikeComment();
-        String title = "전체 게시글";
-
-        if (recentPost.contains(totalpost) == true){
-            String body = "인기 게시물로 지정되었어요";
-//          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
-        }
-        else {
-                return;
-        }
+//        List<TotalPost> recentPost = postRepository.findTotalPostWithMemberLikeComment();
+//        String title = "전체 게시글";
+//
+//        if (recentPost.contains(totalpost) == true){
+//            String body = "인기 게시물로 지정되었어요";
+////          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+//        }
+//        else {
+//                return;
+//        }
 
     }
 
@@ -587,7 +586,7 @@ public class PostService {
      * 3.16 학교 게시물 좋아요 api
      */
     @Transactional
-    public PostLikesUnivResponse likesUnivPost(Long postIdx) throws BaseException {
+    public LikeUnivPostResponse likesUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
         if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
@@ -610,24 +609,28 @@ public class PostService {
             if (univpost.getUnivPostLikes().size() == 10) {
                 sendUnivPostNotification(univpost, postMember);
             }
-            return new PostLikesUnivResponse(id, likeCount);
+            return new LikeUnivPostResponse(id, likeCount);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
 
+    /**
+     * 알림 보내기
+     * //10/23 베스트 로직 바뀌면서 수정 필요
+     */
     public void sendUnivPostNotification(UnivPost univpost, Member postMember) throws IOException {
-        List<UnivPost> recentPost = postRepository.findAllWithMemberLikeCommentCount(postMember);
+        //List<UnivPost> recentPost = postRepository.findAllWithMemberLikeCommentCount(postMember);
         String title = "학교 게시글";
 
-        if (recentPost.contains(univpost) == true){
-            String body = "인기 게시물로 지정되었어요";
-//          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
-        }
-        else {
-            return;
-        }
+//        if (recentPost.contains(univpost) == true){
+//            String body = "인기 게시물로 지정되었어요";
+////          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+//        }
+//        else {
+//            return;
+//        }
 
     }
 
@@ -665,7 +668,7 @@ public class PostService {
      * 3.19 통합 게시물 스크랩 api
      */
     @Transactional
-    public PostScrapTotalResponse scrapTotalPost(Long postIdx) throws BaseException {
+    public ScrapTotalPostResponse scrapTotalPost(Long postIdx) throws BaseException {
         Long memberIdByJwt;
         memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postIdx);
@@ -681,7 +684,7 @@ public class PostService {
             TotalPostScrap totalPostScrap = TotalPostScrap.scrapTotalPost(totalpost, member);
             Long id = postRepository.save(totalPostScrap);
             int scrapCount = totalpost.getTotalPostScraps().size();
-            return new PostScrapTotalResponse(id, scrapCount);
+            return new ScrapTotalPostResponse(id, scrapCount);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -692,7 +695,7 @@ public class PostService {
      * 3.20 학교 게시물 스크랩 api
      */
     @Transactional
-    public PostScrapUnivResponse scrapUnivPost(Long postIdx) throws BaseException {
+    public ScrapUnivPostResponse scrapUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
         if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
@@ -706,7 +709,7 @@ public class PostService {
             UnivPostScrap univPostScrap = UnivPostScrap.scrapUnivPost(univpost, member);
             Long id = postRepository.save(univPostScrap);
             int scrapCount = univpost.getUnivPostScraps().size();
-            return new PostScrapUnivResponse(id, scrapCount);
+            return new ScrapUnivPostResponse(id, scrapCount);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

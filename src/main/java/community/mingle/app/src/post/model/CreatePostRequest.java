@@ -7,13 +7,13 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class PostCreateRequest {
+public class CreatePostRequest {
 
     private int categoryId;
     private String title;
     private String content;
     private Boolean isAnonymous;
-    private Boolean isFileAttached;
+//    private Boolean isFileAttached;
     private List<MultipartFile> multipartFile;
 
 }

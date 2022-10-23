@@ -7,7 +7,7 @@ import lombok.Getter;
 @Data
 @AllArgsConstructor
 @Getter
-public class PostLikesUnivResponse {
+public class LikeUnivPostResponse {
 
     private Long id;
     private int likeCount;

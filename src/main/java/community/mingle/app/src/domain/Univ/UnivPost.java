@@ -1,12 +1,10 @@
 package community.mingle.app.src.domain.Univ;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import community.mingle.app.src.domain.*;
 
-import community.mingle.app.src.domain.Total.TotalPostImage;
-import community.mingle.app.src.post.model.PatchUpdatePostRequest;
+import community.mingle.app.src.post.model.UpdatePostRequest;
 
-import community.mingle.app.src.post.model.PostCreateRequest;
+import community.mingle.app.src.post.model.CreatePostRequest;
 import lombok.*;
 
 import javax.persistence.*;
@@ -85,7 +83,7 @@ public class UnivPost {
     private PostStatus status;
 
 
-    public static UnivPost createUnivPost (Member member, Category category, PostCreateRequest req) {
+    public static UnivPost createUnivPost (Member member, Category category, CreatePostRequest req) {
         UnivPost univPost = new UnivPost();
         univPost.setMember(member);
         univPost.setUnivName(member.getUniv());
@@ -95,12 +93,31 @@ public class UnivPost {
         univPost.createdAt = LocalDateTime.now();
         univPost.updatedAt = LocalDateTime.now();
         univPost.setIsAnonymous(req.getIsAnonymous());
-        univPost.setIsFileAttached(req.getIsFileAttached());
+//        univPost.setIsFileAttached(req.getIsFileAttached());
+
+//        System.out.println(req.getMultipartFile().isEmpty()); //포스트맨으로 실행 시, false
+//        System.out.println(req.getMultipartFile().get(0)); // 뭐가있다
+//        System.out.println(req.getMultipartFile() == null); //널도 아니다 false
+
+//        if (req.getMultipartFile()==null || req.getMultipartFile().isEmpty()) {
+//            univPost.setIsFileAttached(false);
+//        } else {
+//            univPost.setIsFileAttached(true);
+//        }
+
+//      //Better logic below
+        if (req.getMultipartFile() != null && !(req.getMultipartFile().isEmpty())) {
+            univPost.setIsFileAttached(true);
+        }
+        else {
+            univPost.setIsFileAttached(false);
+        }
+
         univPost.status = PostStatus.ACTIVE;
         return univPost;
     }
 
-    public void updateUnivPost (PatchUpdatePostRequest req){
+    public void updateUnivPost (UpdatePostRequest req){
         this.setTitle(req.getTitle());
         this.setContent(req.getContent());
         this.updatedAt = LocalDateTime.now();

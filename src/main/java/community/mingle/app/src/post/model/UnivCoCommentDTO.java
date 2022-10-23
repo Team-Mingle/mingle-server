@@ -13,13 +13,13 @@ public class UnivCoCommentDTO {
 
     private Long commentId;
     private Long parentCommentId;
-    private String nickname;
     private String mention; //멘션 추가
+    private String nickname;
     private String content;
     private int likeCount;
     private boolean isLiked;
     private boolean isMyComment;
-    private String createdTime;
+    private String createdAt;
 
 
     /**
@@ -44,7 +44,6 @@ public class UnivCoCommentDTO {
             this.mention = mention.getMember().getNickname();
         }
 
-
         if (cc.getStatus() == PostStatus.REPORTED) {
             this.content = "신고된 댓글 입니다.";
         } else if (cc.getStatus() == PostStatus.INACTIVE) {
@@ -68,7 +67,7 @@ public class UnivCoCommentDTO {
             isMyComment = true;
         }
 
-        this.createdTime = convertToDateAndTime(cc.getCreatedAt());
+        this.createdAt = convertToDateAndTime(cc.getCreatedAt());
 
     }
 

@@ -4,25 +4,18 @@ import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.post.model.PatchUpdatePostRequest;
-import community.mingle.app.src.post.model.PostCreateRequest;
-
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
+import community.mingle.app.src.post.model.UpdatePostRequest;
+import community.mingle.app.src.post.model.CreatePostRequest;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Setter
@@ -89,7 +82,7 @@ public class TotalPost {
     private PostStatus status;
 
 
-    public static TotalPost createTotalPost (Member member, Category category, PostCreateRequest req){
+    public static TotalPost createTotalPost (Member member, Category category, CreatePostRequest req){
         TotalPost totalPost = new TotalPost();
         totalPost.setMember(member);
         totalPost.setCategory(category);
@@ -98,12 +91,17 @@ public class TotalPost {
         totalPost.createdAt = LocalDateTime.now();
         totalPost.updatedAt = LocalDateTime.now();
         totalPost.setIsAnonymous(req.getIsAnonymous());
-        totalPost.setIsFileAttached(req.getIsFileAttached());
+//        totalPost.setIsFileAttached(req.getIsFileAttached());
+        if (req.getMultipartFile() != null && !(req.getMultipartFile().isEmpty())) {
+            totalPost.setIsFileAttached(true);
+        } else {
+            totalPost.setIsFileAttached(false);
+        }
         totalPost.status = PostStatus.ACTIVE;
         return totalPost;
     }
 
-    public void updateTotalPost (PatchUpdatePostRequest req){
+    public void updateTotalPost (UpdatePostRequest req){
         this.setTitle(req.getTitle());
         this.setContent(req.getContent());
         this.updatedAt = LocalDateTime.now();

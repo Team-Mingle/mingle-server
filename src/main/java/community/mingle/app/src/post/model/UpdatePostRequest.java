@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Data
-public class PatchUpdatePostRequest {
+public class UpdatePostRequest {
     private String title;
     private String content;
 }
