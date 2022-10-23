@@ -77,8 +77,8 @@ public class PostService {
     /**
      * 3.2 홍콩 배스트 게시판 API
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException {
-        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment();
+    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId) throws BaseException {
+        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(postId);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -89,14 +89,14 @@ public class PostService {
     /**
      * 3.3 학교 베스트 게시판 API
      */
-    public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
+    public List<UnivPost> findAllWithMemberLikeCommentCount(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
         if (member == null) {
             throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
         }
-        List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member);
+        List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member, postId);
         if (univPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -567,16 +567,16 @@ public class PostService {
     }
 
     public void sendTotalPostNotification(TotalPost totalpost, Member postMember) throws IOException {
-        List<TotalPost> recentPost = postRepository.findTotalPostWithMemberLikeComment();
-        String title = "전체 게시글";
-
-        if (recentPost.contains(totalpost) == true){
-            String body = "인기 게시물로 지정되었어요";
-//          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
-        }
-        else {
-                return;
-        }
+//        List<TotalPost> recentPost = postRepository.findTotalPostWithMemberLikeComment();
+//        String title = "전체 게시글";
+//
+//        if (recentPost.contains(totalpost) == true){
+//            String body = "인기 게시물로 지정되었어요";
+////          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+//        }
+//        else {
+//                return;
+//        }
 
     }
 
@@ -616,17 +616,21 @@ public class PostService {
     }
 
 
+    /**
+     * 알림 보내기
+     * //10/23 베스트 로직 바뀌면서 수정 필요
+     */
     public void sendUnivPostNotification(UnivPost univpost, Member postMember) throws IOException {
-        List<UnivPost> recentPost = postRepository.findAllWithMemberLikeCommentCount(postMember);
+        //List<UnivPost> recentPost = postRepository.findAllWithMemberLikeCommentCount(postMember);
         String title = "학교 게시글";
 
-        if (recentPost.contains(univpost) == true){
-            String body = "인기 게시물로 지정되었어요";
-//          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
-        }
-        else {
-            return;
-        }
+//        if (recentPost.contains(univpost) == true){
+//            String body = "인기 게시물로 지정되었어요";
+////          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+//        }
+//        else {
+//            return;
+//        }
 
     }
 

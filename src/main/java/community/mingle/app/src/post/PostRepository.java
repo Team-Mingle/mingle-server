@@ -32,12 +32,12 @@ public class PostRepository {
     /**
      * 2.2 전체 베스트 게시판 api
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment() {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.createdAt > :localDateTime and p.totalPostLikes.size > 10 order by p.totalPostLikes.size desc, p.createdAt desc", TotalPost.class)
+    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId) {
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.id < :postId and p.totalPostLikes.size > 10 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("localDateTime", LocalDateTime.now().minusDays(3))
-                .setFirstResult(0)
-                .setMaxResults(40)
+//                .setParameter("localDateTime", LocalDateTime.now().minusDays(3))
+                .setParameter("postId", postId)
+                .setMaxResults(500) //수정 필요
                 .getResultList();
 
         return recentTotalPosts;
@@ -47,17 +47,17 @@ public class PostRepository {
     /**
      * 2.3 학교 베스트 게시판 api
      */
-    public List<UnivPost> findAllWithMemberLikeCommentCount(Member member) {
+    public List<UnivPost> findAllWithMemberLikeCommentCount(Member member, Long postId) {
 //        LocalDateTime minusDate = LocalDateTime.now().minusDays(5);
         return em.createQuery(
 //              "select p from UnivPost p join fetch p.member join fetch p.univName u where u.id = :univId AND p.createdAt > :localDateTime order by p.univPostLikes.size desc, p.createdAt desc", UnivPost.class)
 //              "select p from UnivPost p join fetch p.member m.univName.id = :univId p.createdAt BETWEEN :timestampStart AND current_timestamp ", UnivPost.class)
-                "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId AND p.createdAt > :localDateTime and p.univPostLikes.size > 10 order by p.univPostLikes.size desc, p.createdAt desc ", UnivPost.class)
+                "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId  and p.univPostLikes.size > 5 and p.id < :postId  order by p.createdAt desc ", UnivPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("localDateTime", (LocalDateTime.now().minusDays(3))) //최근 3일중 likeCount 로 정렬. 좋아요 수가 같으면 최신순으로 정렬.
-                .setParameter("univId", member.getUniv().getId())
-                .setFirstResult(0)
-                .setMaxResults(40)
+//                .setParameter("localDateTime", (LocalDateTime.now().minusDays(3))) //최근 3일중 likeCount 로 정렬. 좋아요 수가 같으면 최신순으로 정렬.
+                .setParameter("univId", member.getUniv().getId()) //어디 학교인지
+                .setParameter("postId", postId)
+                .setMaxResults(500)
                 .getResultList();
     }
 
@@ -84,6 +84,7 @@ public class PostRepository {
                 .setParameter("univId", univId)
                 .setParameter("categoryId", category)
                 .setParameter("postId", postId)
+                .setMaxResults(50)
                 .getResultList();
     }
 
