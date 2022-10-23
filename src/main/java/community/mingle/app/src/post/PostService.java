@@ -220,7 +220,6 @@ public class PostService {
 
     /**
      * 3.8 카테고리
-     *
      * @return
      */
     public List<PostCategoryResponse> getPostCategory() throws BaseException {
