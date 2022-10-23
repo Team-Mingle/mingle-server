@@ -62,7 +62,7 @@ public class PostController {
     @GetMapping("/total/best")
     @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "3030", description = "아직 인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<BestTotalPostListResponse> getTotalBest(@RequestParam Long postId) {
         try { //JWT로 해당 유저인지 확인 필요
@@ -86,7 +86,7 @@ public class PostController {
     @GetMapping("/univ/best")
     @Operation(summary = "3.3 getUnivBest Posts API", description = "3.3 학교 베스트 게시물 리스트 API")
     @ApiResponses ({
-            @ApiResponse(responseCode = "3030", description = "아직 인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
     })
     public BaseResponse<BestUnivPostListResponse> getUnivBest(@RequestParam Long postId) {
