@@ -401,4 +401,22 @@ public class PostRepository {
                 .getResultList();
         return categoryList;
     }
+
+
+    /**
+     * 게시물 작성 에러 handle
+     */
+    public void deleteTotalPost(Long postId) {
+        TotalPost totalPost = em.find(TotalPost.class, postId);
+        em.remove(postId);
+
+    }
+
+    public void deleteUnivPost(Long postId) {
+        UnivPost univPost = em.find(UnivPost.class, postId);
+        em.remove(postId);
+
+    }
+
+
 }

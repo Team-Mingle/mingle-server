@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -147,17 +148,22 @@ public class PostService {
 
         try {
             TotalPost totalPost = TotalPost.createTotalPost(member, category, createPostRequest);
-            Long id = postRepository.save(totalPost);
+            Long id = postRepository.save(totalPost); // <- 이미지 파일 생성 실패시 글만 세이브되는 상황 방지는 못하지만 postId가 필요하기때문에 여기 있어야함.
             List<String> fileNameList = null;
 
             if (createPostRequest.getMultipartFile()==null || createPostRequest.getMultipartFile().isEmpty()) {
                 TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, null);
                 postRepository.save(totalPostImage);
             } else {
-                fileNameList = s3Service.uploadFile(createPostRequest.getMultipartFile(), "total");
-                for (String fileName: fileNameList) {
-                    TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost,fileName);
-                    postRepository.save(totalPostImage);
+                try {
+                    fileNameList = s3Service.uploadFile(createPostRequest.getMultipartFile(), "total");
+                    for (String fileName : fileNameList) {
+                        TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, fileName);
+                        postRepository.save(totalPostImage);
+                    }
+                } catch (Exception e) { // 이미지 파일 생성 실패시 글만 세이브되는 상황 방지 (postImgUrl being null) - 위에서 세이브 된 글을 아예 지움
+                    postRepository.deleteTotalPost(id);
+                    throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }
             return new CreatePostResponse(id, fileNameList);
@@ -193,10 +199,15 @@ public class PostService {
                 UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, null);
                 postRepository.save(univPostImage);
             } else {
-                fileNameList = s3Service.uploadFile(createPostRequest.getMultipartFile(), "univ");
-                for (String fileName : fileNameList) {
-                    UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
-                    postRepository.save(univPostImage);
+                try {
+                    fileNameList = s3Service.uploadFile(createPostRequest.getMultipartFile(), "univ");
+                    for (String fileName : fileNameList) {
+                        UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, fileName);
+                        postRepository.save(univPostImage);
+                    }
+                } catch (Exception e) {
+                    postRepository.deleteUnivPost(id);
+                    throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }
             return new CreatePostResponse(id, fileNameList);
@@ -439,6 +450,7 @@ public class PostService {
 
     /**
      * 3.13 통합 게시물 삭제 API
+     * 확인 필요 10/23
      */
     @Transactional
     public void deleteTotalPost(Long id) throws BaseException {
