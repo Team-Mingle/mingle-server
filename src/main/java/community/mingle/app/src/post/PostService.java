@@ -195,7 +195,7 @@ public class PostService {
             Long id = postRepository.save(univPost);
             List<String> fileNameList = null;
 
-            if (createPostRequest.getMultipartFile()==null || createPostRequest.getMultipartFile().isEmpty()) {
+            if (createPostRequest.getMultipartFile()== null || createPostRequest.getMultipartFile().isEmpty()) {
                 UnivPostImage univPostImage = UnivPostImage.createTotalPost(univPost, null);
                 postRepository.save(univPostImage);
             } else {
