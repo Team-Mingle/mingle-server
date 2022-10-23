@@ -7,7 +7,7 @@ import lombok.Getter;
 @Data
 @AllArgsConstructor
 @Getter
-public class PostScrapUnivResponse {
+public class ScrapUnivPostResponse {
 
     private Long id;
     private int scrapCount;

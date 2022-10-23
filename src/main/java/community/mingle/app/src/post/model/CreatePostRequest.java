@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class PostCreateRequest {
+public class CreatePostRequest {
 
     private int categoryId;
     private String title;

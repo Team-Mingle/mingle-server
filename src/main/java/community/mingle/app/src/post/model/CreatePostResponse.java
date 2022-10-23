@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @Getter
-public class PostScrapTotalResponse {
-
+public class CreatePostResponse {
     private Long id;
-    private int scrapCount;
-
-
+    private List<String> fileNameList;
 }

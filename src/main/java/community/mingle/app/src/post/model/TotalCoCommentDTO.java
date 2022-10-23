@@ -3,27 +3,32 @@ package community.mingle.app.src.post.model;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
-import community.mingle.app.src.domain.Total.TotalPostLike;
 import lombok.Getter;
 
-import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
-public class TotalCocommentDto {
+public class TotalCoCommentDTO {
 
     private Long commentId;
     private Long parentCommentId;
     private String mention;
+    private String nickname;
     private String content;
     private int likeCount;
-    private String nickname;
-    private String createdAt;
     private boolean isLiked;
+    private boolean isMyComment;
+    private String createdAt;
 
-    public TotalCocommentDto(TotalComment coComment, TotalComment mention, Long memberId) {
+    public TotalCoCommentDTO(TotalComment coComment, TotalComment mention, Long memberId) {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
+
+        if (coComment.isAnonymous() == true) {
+            this.nickname = "익명 "+coComment.getAnonymousId();
+        } else{
+            this.nickname = coComment.getMember().getNickname();
+        }
 
         if (mention.isAnonymous() == true) {
             this.mention = "익명 "+mention.getAnonymousId();
@@ -41,12 +46,6 @@ public class TotalCocommentDto {
 
         this.likeCount = coComment.getTotalCommentLikes().size();
 
-        if (coComment.isAnonymous() == true) {
-            this.nickname = "익명 "+coComment.getAnonymousId();
-        } else{
-            this.nickname = coComment.getMember().getNickname();
-        }
-        this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
 
         for (TotalCommentLike tpl : coComment.getTotalCommentLikes()) {
             if (tpl.getMember().getId() == memberId) {
@@ -56,5 +55,12 @@ public class TotalCocommentDto {
                 this.isLiked = false;
             }
         }
+
+        if (coComment.getMember().getId() == memberId) {
+            isMyComment = true;
+        }
+
+        this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
+
     }
 }

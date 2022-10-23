@@ -1,13 +1,12 @@
 package community.mingle.app.src.post.model;
 
-import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
 @Getter
-public class SearchUnivPost {
+public class SearchUnivPostResponse {
 
     private Long univPostId;
     private String title;
@@ -17,7 +16,7 @@ public class SearchUnivPost {
 
 
 
-    public SearchUnivPost(UnivPost univPost) {
+    public SearchUnivPostResponse(UnivPost univPost) {
         this.univPostId = univPost.getId();
         this.title = univPost.getTitle();
         this.content = univPost.getContent();

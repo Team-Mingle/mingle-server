@@ -4,21 +4,18 @@ import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Total.TotalPostImage;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
-public class TotalPostDto {
+public class TotalPostResponse {
 
-    private Long totalPostId;
+    private Long postId;
     private String title;
     private String content;
     private String nickname;
-
     private boolean isFileAttached;
     private int likeCount;
     private int scrapCount;
@@ -26,14 +23,13 @@ public class TotalPostDto {
     private boolean isMyPost;
     private boolean isLiked;
     private boolean isScraped;
-    private LocalDateTime createdAt;
-
+    private String createdAt;
     private final int viewCount;
 
     private List<String> postImgUrl = new ArrayList<>();
 
-    public TotalPostDto(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped) {
-        this.totalPostId = totalPost.getId();
+    public TotalPostResponse(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped) {
+        this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
         if (totalPost.getIsAnonymous() == true) {
@@ -48,13 +44,11 @@ public class TotalPostDto {
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
-//        this.createdAt = convertToDateAndTime(totalPost.getCreatedAt());
-        this.createdAt = totalPost.getCreatedAt();
+        this.createdAt = convertToDateAndTime(totalPost.getCreatedAt());
         this.viewCount = totalPost.getViewCount();
 
         if (totalPost.getIsFileAttached() == true) {
             List<TotalPostImage> totalPostImages = totalPost.getTotalPostImages();
-
             for (TotalPostImage pi : totalPostImages) {
                 this.postImgUrl.add(pi.getImgUrl());
             }

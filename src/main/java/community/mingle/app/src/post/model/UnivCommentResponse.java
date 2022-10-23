@@ -5,23 +5,23 @@ import community.mingle.app.src.domain.Univ.UnivCommentLike;
 import lombok.Getter;
 
 import java.util.List;
-import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+
 import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
-public class UnivCommentDTO {
+public class UnivCommentResponse {
 
     private Long commentId;
     private String nickname;
     private String content;
     private int likeCount;
-    private boolean isMyComment;
     private boolean isLiked;
-    private String createdTime;
+    private boolean isMyComment;
+    private String createdAt;
     private List<UnivCoCommentDTO> coCommentsList;
 
 
-    public UnivCommentDTO (UnivComment c, List<UnivCoCommentDTO> cc, Long memberId) {
+    public UnivCommentResponse(UnivComment c, List<UnivCoCommentDTO> cc, Long memberId) {
         commentId = c.getId();
         if (c.isAnonymous() == true) {
             this.nickname = "익명 "+c.getAnonymousId();
@@ -51,7 +51,7 @@ public class UnivCommentDTO {
             isMyComment = true;
         }
 
-        createdTime = convertToDateAndTime(c.getCreatedAt());
+        createdAt = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;
     }
 }
