@@ -218,12 +218,12 @@ public class PostRepository {
      * 3.9 통합 게시물 상세 api
      */
 
-    public TotalPost getTotalPostbyId(Long id) {
-        TotalPost totalPost = em.createQuery("select tp from TotalPost tp where tp.id = :id order by tp.createdAt desc", TotalPost.class)
-                .setParameter("id", id)
-                .getSingleResult();
-        return  totalPost;
-    }
+//    public TotalPost getTotalPostbyId(Long id) {
+//        TotalPost totalPost = em.createQuery("select tp from TotalPost tp where tp.id = :id order by tp.createdAt desc", TotalPost.class)
+//                .setParameter("id", id)
+//                .getSingleResult();
+//        return  totalPost;
+//    }
 
     public List<TotalComment> getTotalComments(Long id) {
         List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null order by tc.createdAt asc", TotalComment.class)
