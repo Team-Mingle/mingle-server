@@ -214,6 +214,10 @@ public class PostController {
      */
     @GetMapping("/total/{totalPostId}")
     @Operation(summary = "3.9.1 totalPostDetail API", description = "3.9.1 통합 게시물 상세 - 게시물 부분 API")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<TotalPostResponse> totalPostDetail(@PathVariable Long totalPostId) { //dto->response
         try {
             TotalPost totalPost = postService.getTotalPost(totalPostId);
@@ -231,6 +235,10 @@ public class PostController {
      */
     @GetMapping("/total/{totalPostId}/comment")
     @Operation(summary = "3.9.2 totalPostDetailComment API", description = "3.9.2 통합 게시물 상세 - 댓글 부분 API")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<List<TotalCommentResponse>> totalPostDetailComment(@PathVariable Long totalPostId) {
 
         try {
@@ -248,6 +256,10 @@ public class PostController {
      */
     @GetMapping("/univ/{univPostId}")
     @Operation(summary = "3.10.1 getUnivPost API", description = "3.10 학교 게시물 상세 - 게시물 API")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<UnivPostResponse> getUnivPost(@PathVariable Long univPostId) {
         try {
 //            UnivPost univPost = postService.getUnivPost(univPostId);
@@ -266,6 +278,10 @@ public class PostController {
      */
     @GetMapping("/univ/{univPostId}/comment")
     @Operation(summary = "3.10.2 getUnivPostComment API", description = "3.10.2 학교 게시물 상세 - 댓글 API")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<List<UnivCommentResponse>> univPostComment(@PathVariable Long univPostId) { //dto -> response
         try {
             List<UnivCommentResponse> univCommentResponseList = postService.getUnivComments(univPostId);

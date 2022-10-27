@@ -245,7 +245,10 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public TotalPost getTotalPost(Long id) throws BaseException {
-        TotalPost totalPost = postRepository.getTotalPostbyId(id);
+        TotalPost totalPost = postRepository.findTotalPostById(id);
+        if (totalPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
         if (totalPost.getStatus().equals(PostStatus.INACTIVE) || totalPost.getStatus().equals(PostStatus.REPORTED)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
@@ -282,6 +285,9 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<TotalCommentResponse> getTotalCommentList(Long id) throws BaseException {
         TotalPost totalPost = postRepository.checkTotalPostDisabled(id);
+        if (totalPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
         if (totalPost.getStatus().equals(PostStatus.REPORTED) || totalPost.getStatus().equals(PostStatus.INACTIVE)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
@@ -318,7 +324,10 @@ public class PostService {
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
         boolean isMyPost = false, isLiked = false, isScraped = false;
-        UnivPost univPost = postRepository.getUnivPostById(postId);
+        UnivPost univPost = postRepository.findUnivPostById(postId);
+        if (univPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
         if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
@@ -346,6 +355,9 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<UnivCommentResponse> getUnivComments(Long postId) throws BaseException {
         UnivPost univPost = postRepository.checkUnivPostDisabled(postId);
+        if (univPost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
         if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
