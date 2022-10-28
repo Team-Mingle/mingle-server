@@ -651,10 +651,11 @@ public class PostService {
      * 3.17 통합 게시물 좋아요 취소 api
      */
     @Transactional
-    public void unlikeTotal(Long likeIdx) throws BaseException {
+    public void unlikeTotal(Long postId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
             //totalPostLike.deleteLike(likeIdx);
-            postRepository.deleteTotalLike(likeIdx);
+            postRepository.deleteTotalLike(postId, memberIdByJwt);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
@@ -666,9 +667,10 @@ public class PostService {
      * 3.18 학교 게시물 좋아요 취소 api
      */
     @Transactional
-    public void unlikeUniv(Long likeIdx) throws BaseException {
+    public void unlikeUniv(Long postId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
-            postRepository.deleteUnivLike(likeIdx);
+            postRepository.deleteUnivLike(postId, memberIdByJwt);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
@@ -732,9 +734,10 @@ public class PostService {
      * 3.21 통합 게시물 스크랩 취소 api
      */
     @Transactional
-    public void deleteScrapTotal(Long scrapIdx) throws BaseException {
+    public void deleteScrapTotal(Long postId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
-            postRepository.deleteTotalScrap(scrapIdx);
+            postRepository.deleteTotalScrap(postId, memberIdByJwt);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -745,9 +748,10 @@ public class PostService {
      * 3.22 학교 게시물 스크랩 취소 api
      */
     @Transactional
-    public void deleteScrapUniv(Long scrapIdx) throws BaseException {
+    public void deleteScrapUniv(Long postId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
-            postRepository.deleteUnivScrap(scrapIdx);
+            postRepository.deleteUnivScrap(postId, memberIdByJwt);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
