@@ -180,28 +180,40 @@ public class PostRepository {
 
 
 
-    public void deleteTotalLike(Long likeIdx) {
-        TotalPostLike findLike = em.find(TotalPostLike.class, likeIdx);
+    public void deleteTotalLike(Long postId, Long memberId) {
+        TotalPostLike findLike = em.createQuery("select like from TotalPostLike like where like.totalPost.id = :postId and like.member.id = :memberId", TotalPostLike.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
         em.remove(findLike);
 
     }
 
-    public void deleteUnivLike(Long likeIdx) {
-        UnivPostLike findLike = em.find(UnivPostLike.class, likeIdx);
+    public void deleteUnivLike(Long postId, Long memberId) {
+        UnivPostLike findLike = em.createQuery("select like from UnivPostLike like where like.univPost.id = :postId and like.member.id = :memberId", UnivPostLike.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
         em.remove(findLike);
 
     }
 
 
-    public void deleteTotalScrap(Long scrapIdx) {
-        TotalPostScrap findScrap = em.find(TotalPostScrap.class, scrapIdx);
+    public void deleteTotalScrap(Long postId, Long memberId) {
+        TotalPostScrap findScrap = em.createQuery("select scrap from TotalPostScrap scrap where scrap.totalPost.id = :postId and scrap.member.id = :memberId", TotalPostScrap.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
         em.remove(findScrap);
 
     }
 
 
-    public void deleteUnivScrap(Long scrapIdx) {
-        UnivPostScrap findScrap = em.find(UnivPostScrap.class, scrapIdx);
+    public void deleteUnivScrap(Long postId, Long memberId) {
+        UnivPostScrap findScrap = em.createQuery("select scrap from UnivPostScrap scrap where scrap.univPost.id = :postId and scrap.member.id = :memberId", UnivPostScrap.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
         em.remove(findScrap);
 
     }

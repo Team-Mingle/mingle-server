@@ -411,9 +411,9 @@ public class PostController {
      */
     @Operation(summary = "3.17 UnlikeTotalPost API", description = "3.17 통합 게시물 좋아요 취소 api")
     @DeleteMapping("/total/unlike")
-    public BaseResponse<String> unlikeTotalPost (@RequestParam Long likeIdx){
+    public BaseResponse<String> unlikeTotalPost (@RequestParam Long postId){
         try{
-            postService.unlikeTotal(likeIdx);
+            postService.unlikeTotal(postId);
             String result = "좋아요가 취소되었습니다";
             return new BaseResponse<>(result);
         }catch (BaseException exception){
@@ -426,9 +426,9 @@ public class PostController {
      */
     @Operation(summary = "3.18 UnlikeUnivPost API", description = "3.18 학교 게시물 좋아요 취소 api")
     @DeleteMapping("/univ/unlike")
-    public BaseResponse<String> unlikeUnivPost (@RequestParam Long likeIdx){
+    public BaseResponse<String> unlikeUnivPost (@RequestParam Long postId){
         try{
-            postService.unlikeUniv(likeIdx);
+            postService.unlikeUniv(postId);
             String result = "좋아요가 취소되었습니다";
             return new BaseResponse<>(result);
         }catch (BaseException exception){
@@ -478,9 +478,9 @@ public class PostController {
      */
     @Operation(summary = "UnscrapTotalPost API", description = "통합 게시물 스크랩 취소 api")
     @DeleteMapping("/total/deleteScrap")
-    public BaseResponse<String> deleteScrapTotalPost (@RequestParam Long scrapIdx) {
+    public BaseResponse<String> deleteScrapTotalPost (@RequestParam Long postId) {
         try {
-            postService.deleteScrapTotal(scrapIdx);
+            postService.deleteScrapTotal(postId);
             String result = "저장이 취소되었습니다";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
@@ -495,9 +495,9 @@ public class PostController {
      */
     @Operation(summary = "UnlikeTotalPost API", description = "통합 게시물 스크랩 취소 api")
     @DeleteMapping("/univ/deleteScrap")
-    public BaseResponse<String> deleteScrapUnivPost (@RequestParam Long scrapIdx){
+    public BaseResponse<String> deleteScrapUnivPost (@RequestParam Long postId){
         try{
-            postService.deleteScrapUniv(scrapIdx);
+            postService.deleteScrapUniv(postId);
             String result = "저장이 취소되었습니다";
             return new BaseResponse<>(result);
         }catch (BaseException exception){
