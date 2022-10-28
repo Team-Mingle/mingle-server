@@ -530,13 +530,14 @@ public class PostController {
      */
     @Operation(summary = "searchTotalPost API", description = "전체게시판 검색 api")
     @GetMapping("total/search")
-    public BaseResponse<List<SearchTotalPostResponse>> searchTotalPost(@RequestParam(value="keyword") String keyword) {
+    public BaseResponse<SearchTotalPostResponse> searchTotalPost(@RequestParam(value="keyword") String keyword) {
         try {
             List<TotalPost> totalPosts = postService.findAllSearch(keyword);
-            List<SearchTotalPostResponse> result = totalPosts.stream()
-                    .map(tp -> new SearchTotalPostResponse(tp))
+            List<SearchTotalPostDTO> result = totalPosts.stream()
+                    .map(tp -> new SearchTotalPostDTO(tp))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            SearchTotalPostResponse searchTotalPostResponse = new SearchTotalPostResponse("광장", result);
+            return new BaseResponse<>(searchTotalPostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -549,13 +550,14 @@ public class PostController {
      */
     @Operation(summary = "searchUnivPost API", description = "학교게시판 검색 api")
     @GetMapping("univ/search")
-    public BaseResponse<List<SearchUnivPostResponse>> searchUnivPost(@RequestParam(value="keyword") String keyword) {
+    public BaseResponse<SearchUnivPostResponse> searchUnivPost(@RequestParam(value="keyword") String keyword) {
         try {
             List<UnivPost> univPosts = postService.findUnivSearch(keyword);
-            List<SearchUnivPostResponse> result = univPosts.stream()
-                    .map(up -> new SearchUnivPostResponse(up))
+            List<SearchUnivPostDTO> result = univPosts.stream()
+                    .map(up -> new SearchUnivPostDTO(up))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            SearchUnivPostResponse searchUnivPostResponse = new SearchUnivPostResponse("잔디밭", result);
+            return new BaseResponse<>(searchUnivPostResponse);
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

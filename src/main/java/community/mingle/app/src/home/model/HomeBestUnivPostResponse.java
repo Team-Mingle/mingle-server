@@ -13,6 +13,7 @@ public class HomeBestUnivPostResponse {
     private String title;
     private String contents;
     private String nickname;
+    private Boolean isFileAttached;
     private int likeCount;
     private int commentCount;
     private String createdAt;
@@ -28,6 +29,7 @@ public class HomeBestUnivPostResponse {
         } else {
             this.nickname = p.getMember().getNickname();
         }
+        isFileAttached = p.getIsFileAttached();
         likeCount = p.getUnivPostLikes().size();
         commentCount = p.getUnivComments().size();
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
