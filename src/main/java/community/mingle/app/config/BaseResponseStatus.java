@@ -101,6 +101,9 @@ public enum BaseResponseStatus {
     MODIFY_NOT_AUTHORIZED(false, 3040, "게시물 수정 권한이 없습니다."),
 
     DUPLICATE_LIKE(false, 3060, "이미 좋아요를 눌렀어요."),
+    DUPLICATE_SCRAP(false, 3061, "이미 스크랩을 눌렀어요."),
+    DELETED_LIKE(false, 3062, "이미 좋아요를 취소했어요."),
+    DELETED_SCRAP(false, 3063, "이미 스크랩을 취소했어요."),
 
     UPLOAD_FAIL_IMAGE(false, 3070, "이미지 업로드에 실패했습니다"),
     INVALID_IMAGE_FORMAT(false, 3071,"잘못된 형식의 파일입니다"),
