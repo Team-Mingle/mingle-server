@@ -1,6 +1,7 @@
 package community.mingle.app.src.home;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -21,8 +22,23 @@ public class HomeService {
     private final JwtService jwtService;
     private final HomeRepository homeRepository;
 
+
+
     /**
-     * 5.1 홈 전체 배스트 게시판 API
+     * 5.1 광고 배너 API
+     */
+    public List<Banner> findBanner() throws BaseException {
+        try {
+            List<Banner> banner = homeRepository.findBanner();
+            return banner;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    /**
+     * 5.2 홈 전체 배스트 게시판 API
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException {
         List<TotalPost> totalPosts = homeRepository.findTotalPostWithMemberLikeComment();
@@ -33,7 +49,7 @@ public class HomeService {
     }
 
     /**
-     * 5.2 홈 학교 베스트 게시판 API
+     * 5.3 홈 학교 베스트 게시판 API
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감

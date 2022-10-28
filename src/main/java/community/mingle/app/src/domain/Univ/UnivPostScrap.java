@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter @Setter
@@ -33,6 +35,16 @@ public class UnivPostScrap {
 
 
     public static UnivPostScrap scrapUnivPost(UnivPost univPost, Member member) {
+        List<UnivPostScrap> univPostScrapList = member.getUnivPostScraps();
+        if (univPostScrapList == null || univPostScrapList.isEmpty()) {
+        }
+        else {
+            for (UnivPostScrap univPostScrap : univPostScrapList) {
+                if (Objects.equals(univPostScrap.getUnivPost().getId(), univPost.getId())) {
+                    return null;
+                }
+            }
+        }
         UnivPostScrap univPostScrap = new UnivPostScrap();
         univPostScrap.setMember(member);
         univPostScrap.setUnivPost(univPost);

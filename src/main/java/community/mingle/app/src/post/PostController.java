@@ -35,25 +35,6 @@ public class PostController {
     private final PostService postService;
 
 
-    /**
-     * 3.1 광고 배너 API
-     */
-    @GetMapping("/banner")
-    @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
-    @Operation(summary = "3.1 getBanner API", description = "3.1 홈 화면 배너 리스트 API")
-    public BaseResponse<List<BannerResponse>> getBanner(){
-        try {
-            List<Banner> banner = postService.findBanner();
-            List<BannerResponse> result = banner.stream()
-                    .map(m -> new BannerResponse(m))
-                    .collect(Collectors.toList());
-            return new BaseResponse<>(result);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
-
 
 
     /**
@@ -377,7 +358,7 @@ public class PostController {
     @Operation(summary = "3.14 deleteUnivPost API", description = "3.14 학교 게시물 삭제 API")
     @PatchMapping("/univ/status/{id}")
     @ApiResponses ({
-            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다..",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3020", description = "게시물 수정을 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3021", description = "제목을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
@@ -399,6 +380,13 @@ public class PostController {
      * 3.15 통합 게시물 좋아요 api + 인기 게시물 알림
      */
     @Operation(summary = "3.15  LikesTotalPost API", description = "3.15 통합 게시물 좋아요 api")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     @PostMapping("/total/likes")
     public BaseResponse<LikeTotalPostResponse> likesTotalPost (@RequestParam Long postIdx){
         try{
@@ -415,10 +403,17 @@ public class PostController {
      */
     @Operation(summary = "3.16 LikesUnivPost API", description = "3.16 학교 게시물 좋아요 api")
     @PostMapping("/univ/likes")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<LikeUnivPostResponse> likesUnivPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.likesUnivPost(postIdx));
-        }catch (BaseException exception){
+        }catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
@@ -430,6 +425,9 @@ public class PostController {
      */
     @Operation(summary = "3.17 UnlikeTotalPost API", description = "3.17 통합 게시물 좋아요 취소 api")
     @DeleteMapping("/total/unlike")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3062", description = "이미 좋아요를 취소했어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<String> unlikeTotalPost (@RequestParam Long postId){
         try{
             postService.unlikeTotal(postId);
@@ -445,6 +443,9 @@ public class PostController {
      */
     @Operation(summary = "3.18 UnlikeUnivPost API", description = "3.18 학교 게시물 좋아요 취소 api")
     @DeleteMapping("/univ/unlike")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3062", description = "이미 좋아요를 취소했어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<String> unlikeUnivPost (@RequestParam Long postId){
         try{
             postService.unlikeUniv(postId);
@@ -463,7 +464,11 @@ public class PostController {
     @Operation(summary = "3.19  scrapTotalPost API", description = "3.19 통합 게시물 스크랩 api")
     @PostMapping("/total/scrap")
     @ApiResponses ({
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3061", description = "이미 스크랩을 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<ScrapTotalPostResponse> scrapTotalPost (@RequestParam Long postIdx){
         try{
@@ -481,7 +486,11 @@ public class PostController {
     @Operation(summary = "3.20  scrapUnivPost API", description = "3.20 학교 게시물 스크랩 api")
     @PostMapping("/univ/scrap")
     @ApiResponses ({
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3061", description = "이미 스크랩을 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<ScrapUnivPostResponse> scrapUnivPost (@RequestParam Long postIdx){
         try{
@@ -496,7 +505,10 @@ public class PostController {
      * 3.21 통합 게시물 스크랩 취소 api
      */
     @Operation(summary = "UnscrapTotalPost API", description = "통합 게시물 스크랩 취소 api")
-    @DeleteMapping("/total/deleteScrap")
+    @DeleteMapping("/total/deletescrap")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3063", description = "이미 스크랩을 취소했어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<String> deleteScrapTotalPost (@RequestParam Long postId) {
         try {
             postService.deleteScrapTotal(postId);
@@ -513,7 +525,10 @@ public class PostController {
      * 3.22 학교 게시물 스크랩 취소 api
      */
     @Operation(summary = "UnlikeTotalPost API", description = "통합 게시물 스크랩 취소 api")
-    @DeleteMapping("/univ/deleteScrap")
+    @DeleteMapping("/univ/deletescrap")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3063", description = "이미 스크랩을 취소했어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<String> deleteScrapUnivPost (@RequestParam Long postId){
         try{
             postService.deleteScrapUniv(postId);

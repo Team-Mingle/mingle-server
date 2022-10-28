@@ -1,5 +1,6 @@
 package community.mingle.app.src.home;
 
+import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -8,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -16,8 +16,18 @@ import java.util.List;
 public class HomeRepository {
     private final EntityManager em;
 
+
     /**
-     * 5.1 홈 전체 베스트 게시판 api
+     * 5.1 광고 배너 API
+     */
+    public List<Banner> findBanner(){
+        return em.createQuery("select b from Banner b", Banner.class)
+                .getResultList();
+    }
+
+
+    /**
+     * 5.2 홈 전체 베스트 게시판 api
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment() {
         List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.totalPostLikes.size > 10 order by p.createdAt desc", TotalPost.class)

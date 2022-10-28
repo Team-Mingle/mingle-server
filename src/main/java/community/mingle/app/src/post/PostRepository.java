@@ -20,14 +20,6 @@ public class PostRepository {
 
     private final EntityManager em;
 
-    /**
-     * 2.1 광고 배너 API
-     */
-    public List<Banner> findBanner(){
-        return em.createQuery("select b from Banner b", Banner.class)
-                .getResultList();
-    }
-
 
     /**
      * 2.2 전체 베스트 게시판 api
@@ -90,8 +82,33 @@ public class PostRepository {
 
 
     public Member findMemberbyId(Long id) {
-        return em.find(Member.class, id);
+        try {
+            return em.createQuery("select m from Member m where m.id = :id and m.status = :status", Member.class)
+                    .setParameter("id", id)
+                    .setParameter("status", UserStatus.ACTIVE)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+//        return em.find(Member.class, id);
     }
+
+    /**
+     * postID 로 유저 찾기
+     * @return
+     */
+//    public Member findMemberbyPostId(Long postId) {
+//        try {
+//            return em.createQuery("select m from Member m join UnivPost p where p.id = :id and m.status = :status", Member.class)
+//                    .setParameter("id", postId)
+//                    .setParameter("status", UserStatus.ACTIVE)
+//                    .getSingleResult();
+//        } catch (Exception e) {
+//            return null;
+//        }
+////        return em.find(Member.class, id);
+//    }
+
 
 
     public Long save(TotalPost totalPost) {
@@ -181,7 +198,7 @@ public class PostRepository {
 
 
     public void deleteTotalLike(Long postId, Long memberId) {
-        TotalPostLike findLike = em.createQuery("select like from TotalPostLike like where like.totalPost.id = :postId and like.member.id = :memberId", TotalPostLike.class)
+        TotalPostLike findLike = em.createQuery("select l from TotalPostLike l where l.totalPost.id = :postId and l.member.id = :memberId", TotalPostLike.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getSingleResult();
@@ -189,13 +206,12 @@ public class PostRepository {
 
     }
 
-    public void deleteUnivLike(Long postId, Long memberId) {
-        UnivPostLike findLike = em.createQuery("select like from UnivPostLike like where like.univPost.id = :postId and like.member.id = :memberId", UnivPostLike.class)
+    public void deleteUnivLike(Long postId, Long memberId) { //예약어..like
+        UnivPostLike findLike = em.createQuery("select l from UnivPostLike l where l.univPost.id = :postId and l.member.id = :memberId", UnivPostLike.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getSingleResult();
         em.remove(findLike);
-
     }
 
 
@@ -215,7 +231,6 @@ public class PostRepository {
                 .setParameter("memberId", memberId)
                 .getSingleResult();
         em.remove(findScrap);
-
     }
 
     /*
@@ -262,6 +277,20 @@ public class PostRepository {
             return false;
         }
     }
+
+
+    //좋아요 중복 방지...ㅋ
+//    public boolean checkIsLiked(Long postId, Long memberId) {
+//        List<TotalPostLike> totalPostLikeList = em.createQuery("select m from Member m join m.totalPosts p join p.totalPostLikes tpl where p.id = :postId and m.id = :memberId", TotalPostLike.class)
+//                .setParameter("postId", postId)
+//                .setParameter("memberId", memberId)
+//                .getResultList();
+//        if (totalPostLikeList.size() != 0) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
     public boolean checkTotalIsScraped(Long postId, Long memberId){
         List<TotalPostScrap> totalPostScrapList = em.createQuery("select tps from TotalPostScrap tps join tps.totalPost tp join tps.member m where tp.id = :postId and m.id = :memberId", TotalPostScrap.class)

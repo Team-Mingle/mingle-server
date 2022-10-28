@@ -189,12 +189,7 @@ public class CommentService {
       */
      @Transactional
      public PostCommentLikesTotalResponse likesTotalComment(Long commentIdx) throws BaseException {
-        Long memberIdByJwt;
-        try {
-            memberIdByJwt = jwtService.getUserIdx();
-        } catch (Exception e) {
-            throw new BaseException(EMPTY_JWT);
-        }
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
             TotalComment totalcomment = commentRepository.findTotalCommentById(commentIdx);
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
@@ -217,12 +212,7 @@ public class CommentService {
      */
     @Transactional
     public PostCommentLikesUnivResponse likesUnivComment(Long commentIdx) throws BaseException {
-        Long memberIdByJwt;
-        try {
-            memberIdByJwt = jwtService.getUserIdx();
-        } catch (Exception e) {
-            throw new BaseException(EMPTY_JWT);
-        }
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
             UnivComment univComment = commentRepository.findUnivCommentById(commentIdx);
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
@@ -245,7 +235,6 @@ public class CommentService {
      */
     @Transactional
     public void unlikeTotalComment(Long commentIdx) throws BaseException {
-
         try {
             commentRepository.deleteLikeTotal(commentIdx);
         } catch (Exception e) {

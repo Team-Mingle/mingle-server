@@ -1,5 +1,6 @@
 package community.mingle.app.src.domain.Total;
 
+import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter @Setter
@@ -31,16 +34,26 @@ public class TotalPostLike {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+
+
     public static TotalPostLike likesTotalPost(TotalPost totalpost, Member member) {
+
+        List<TotalPostLike> totalPostLikeList = member.getTotalPostLikes();
+        if (totalPostLikeList == null || totalPostLikeList.isEmpty()) {
+        }
+        else {
+            for (TotalPostLike totalPostLike : totalPostLikeList) {
+                if (Objects.equals(totalPostLike.getTotalPost().getId(), totalpost.getId())) {
+                    return null;
+                }
+            }
+        }
         TotalPostLike totalPostLike = new TotalPostLike();
         totalPostLike.setMember(member);
         totalPostLike.setTotalPost(totalpost);
         totalPostLike.createdAt = LocalDateTime.now();
-
         return totalPostLike;
     }
-
-
 }
 
 
