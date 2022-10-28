@@ -20,14 +20,6 @@ public class PostRepository {
 
     private final EntityManager em;
 
-    /**
-     * 2.1 광고 배너 API
-     */
-    public List<Banner> findBanner(){
-        return em.createQuery("select b from Banner b", Banner.class)
-                .getResultList();
-    }
-
 
     /**
      * 2.2 전체 베스트 게시판 api
@@ -90,7 +82,15 @@ public class PostRepository {
 
 
     public Member findMemberbyId(Long id) {
-        return em.find(Member.class, id);
+        try {
+            return em.createQuery("select m from Member m where m.id = :id and m.status = :status", Member.class)
+                    .setParameter("id", id)
+                    .setParameter("status", UserStatus.ACTIVE)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+//        return em.find(Member.class, id);
     }
 
 
@@ -250,6 +250,20 @@ public class PostRepository {
             return false;
         }
     }
+
+
+    //좋아요 중복 방지...ㅋ
+//    public boolean checkIsLiked(Long postId, Long memberId) {
+//        List<TotalPostLike> totalPostLikeList = em.createQuery("select m from Member m join m.totalPosts p join p.totalPostLikes tpl where p.id = :postId and m.id = :memberId", TotalPostLike.class)
+//                .setParameter("postId", postId)
+//                .setParameter("memberId", memberId)
+//                .getResultList();
+//        if (totalPostLikeList.size() != 0) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
     public boolean checkTotalIsScraped(Long postId, Long memberId){
         List<TotalPostScrap> totalPostScrapList = em.createQuery("select tps from TotalPostScrap tps join tps.totalPost tp join tps.member m where tp.id = :postId and m.id = :memberId", TotalPostScrap.class)

@@ -99,13 +99,17 @@ public enum BaseResponseStatus {
     POST_NOT_EXIST(false, 3035, "게시물이 존재하지 않습니다."),
     REPORTED_DELETED_POST(false, 3036, "삭제되거나 신고된 게시물 입니다."),
     MODIFY_NOT_AUTHORIZED(false, 3040, "게시물 수정 권한이 없습니다."),
+
+    DUPLICATE_LIKE(false, 3060, "이미 좋아요를 눌렀어요."),
+
     UPLOAD_FAIL_IMAGE(false, 3070, "이미지 업로드에 실패했습니다"),
     INVALID_IMAGE_FORMAT(false, 3071,"잘못된 형식의 파일입니다"),
     INVALID_IMAGE(false, 3072,"유효하지 않은 이미지입니다"),
     INVALID_IMAGE_NUMBER(false, 3073, "이미지 개수를 초과하였습니다"),
     DELETE_FAIL_IMAGE(false, 3074,"이미지 삭제에 실패했습니다"),
-    /** 4. /comment  */
 
+
+    /** 4. /comment  */
     DELETE_FAIL_COMMENT(false, 4025, "댓글 삭제를 실패했습니다."),
     COMMENT_NOT_EXIST(false, 4035, "댓글이 존재하지 않습니다."),
 

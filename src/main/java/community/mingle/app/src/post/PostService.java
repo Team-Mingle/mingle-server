@@ -61,18 +61,6 @@ public class PostService {
 //    }
 
 
-    /**
-     * 3.1 광고 배너 API
-     */
-    public List<Banner> findBanner() throws BaseException {
-        try {
-            List<Banner> banner = postRepository.findBanner();
-            return banner;
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
 
     /**
      * 3.2 홍콩 배스트 게시판 API
@@ -557,24 +545,45 @@ public class PostService {
         if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
-        try {
-            Member member = postRepository.findMemberbyId(memberIdByJwt);
-            Member postMember = postRepository.findMemberbyId(postIdx);
-            //좋아요 생성
-            TotalPostLike totalPostLike = TotalPostLike.likesTotalPost(totalpost, member);
-            Long id = postRepository.save(totalPostLike);
-            int likeCount = totalpost.getTotalPostLikes().size();
-            // 인기 게시물 알림 보내주기
 
+        Member member = postRepository.findMemberbyId(memberIdByJwt);
+        Member postMember = postRepository.findMemberbyId(postIdx);
+        if (member == null || postMember == null) { //해야할까?
+            throw new BaseException(USER_NOT_EXIST);
+        }
 
-            if (totalpost.getTotalPostLikes().size() == 10) {
-                sendTotalPostNotification(totalpost, postMember);
+//        //좋아요 중복 방지 - 1
+//        List<TotalPostLike> totalPostLikeList = member.getTotalPostLikes();
+//        for (TotalPostLike totalPostLike : totalPostLikeList) {
+//            if (totalPostLike.getTotalPost().getId() == postIdx) {
+//                throw new BaseException(DUPLICATE_LIKE);
+//            }
+//        }
+//        //좋아요 중복 방지 - 2
+//        boolean checkTotalIsLiked = postRepository.checkTotalIsLiked(postIdx, member.getId());
+//        if (checkTotalIsLiked) {
+//            throw new BaseException(DUPLICATE_LIKE);
+//        }
+
+        TotalPostLike totalPostLike = TotalPostLike.likesTotalPost(totalpost, member);
+        if (totalPostLike == null) {
+            throw new BaseException(DUPLICATE_LIKE);
+        }
+        else {
+            try {
+                //좋아요 생성 - 위에서
+                Long id = postRepository.save(totalPostLike);
+                int likeCount = totalpost.getTotalPostLikes().size();
+                // 인기 게시물 알림 보내주기
+                if (totalpost.getTotalPostLikes().size() == 10) {
+                    sendTotalPostNotification(totalpost, postMember);
+                }
+                return new LikeTotalPostResponse(id, likeCount);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new BaseException(DATABASE_ERROR);
             }
-            return new LikeTotalPostResponse(id, likeCount);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
         }
     }
 
@@ -608,22 +617,32 @@ public class PostService {
         if (univpost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        try {
-            Member member = postRepository.findMemberbyId(memberIdByJwt);
-            Member postMember = postRepository.findMemberbyId(postIdx);
 
-            UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
-            Long id = postRepository.save(univPostLike);
-            int likeCount = univpost.getUnivPostLikes().size();
+        Member member = postRepository.findMemberbyId(memberIdByJwt);
+        Member postMember = postRepository.findMemberbyId(postIdx);
+        if (member == null || postMember == null) { //해야할까?
+            throw new BaseException(USER_NOT_EXIST);
+        }
 
-            // 인기 게시물 알림 보내주기 조건:3일 동안 좋아요 10개
+        UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
+        if (univPostLike == null) {
+            throw new BaseException(DUPLICATE_LIKE);
+        }
+        else {
+            try {
+//            UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
+                Long id = postRepository.save(univPostLike);
+                int likeCount = univpost.getUnivPostLikes().size();
 
-            if (univpost.getUnivPostLikes().size() == 10) {
-                sendUnivPostNotification(univpost, postMember);
+                // 인기 게시물 알림 보내주기 조건:3일 동안 좋아요 10개
+
+                if (univpost.getUnivPostLikes().size() == 10) {
+                    sendUnivPostNotification(univpost, postMember);
+                }
+                return new LikeUnivPostResponse(id, likeCount);
+            } catch (Exception e) {
+                throw new BaseException(DATABASE_ERROR);
             }
-            return new LikeUnivPostResponse(id, likeCount);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
         }
     }
 
@@ -690,15 +709,27 @@ public class PostService {
         if (totalpost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        try {
-            Member member = postRepository.findMemberbyId(memberIdByJwt);
 
-            TotalPostScrap totalPostScrap = TotalPostScrap.scrapTotalPost(totalpost, member);
-            Long id = postRepository.save(totalPostScrap);
-            int scrapCount = totalpost.getTotalPostScraps().size();
-            return new ScrapTotalPostResponse(id, scrapCount);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+        Member member = postRepository.findMemberbyId(memberIdByJwt);
+        Member postMember = postRepository.findMemberbyId(postIdx);
+        if (member == null || postMember == null) { //해야할까?
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        TotalPostScrap totalPostScrap = TotalPostScrap.scrapTotalPost(totalpost, member);
+        if (totalPostScrap == null) {
+            throw new BaseException(DUPLICATE_LIKE);
+        }
+        else {
+            try {
+//            Member member = postRepository.findMemberbyId(memberIdByJwt);
+//                TotalPostScrap totalPostScrap = TotalPostScrap.scrapTotalPost(totalpost, member);
+                Long id = postRepository.save(totalPostScrap);
+                int scrapCount = totalpost.getTotalPostScraps().size();
+                return new ScrapTotalPostResponse(id, scrapCount);
+            } catch (Exception e) {
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 
@@ -716,14 +747,27 @@ public class PostService {
         if (univpost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        try {
-            Member member = postRepository.findMemberbyId(memberIdByJwt);
-            UnivPostScrap univPostScrap = UnivPostScrap.scrapUnivPost(univpost, member);
-            Long id = postRepository.save(univPostScrap);
-            int scrapCount = univpost.getUnivPostScraps().size();
-            return new ScrapUnivPostResponse(id, scrapCount);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+
+        Member member = postRepository.findMemberbyId(memberIdByJwt);
+        Member postMember = postRepository.findMemberbyId(postIdx);
+        if (member == null || postMember == null) { //해야할까?
+            throw new BaseException(USER_NOT_EXIST);
+        }
+
+        UnivPostScrap univPostScrap = UnivPostScrap.scrapUnivPost(univpost, member);
+        if (univPostScrap == null) {
+            throw new BaseException(DUPLICATE_LIKE);
+        }
+        else {
+            try {
+//            Member member = postRepository.findMemberbyId(memberIdByJwt);
+//                UnivPostScrap univPostScrap = UnivPostScrap.scrapUnivPost(univpost, member);
+                Long id = postRepository.save(univPostScrap);
+                int scrapCount = univpost.getUnivPostScraps().size();
+                return new ScrapUnivPostResponse(id, scrapCount);
+            } catch (Exception e) {
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 

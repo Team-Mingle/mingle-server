@@ -1,4 +1,4 @@
-package community.mingle.app.src.post.model;
+package community.mingle.app.src.home.model;
 
 import community.mingle.app.src.domain.Banner;
 import lombok.Getter;

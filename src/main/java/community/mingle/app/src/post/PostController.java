@@ -35,25 +35,6 @@ public class PostController {
     private final PostService postService;
 
 
-    /**
-     * 3.1 광고 배너 API
-     */
-    @GetMapping("/banner")
-    @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
-    @Operation(summary = "3.1 getBanner API", description = "3.1 홈 화면 배너 리스트 API")
-    public BaseResponse<List<BannerResponse>> getBanner(){
-        try {
-            List<Banner> banner = postService.findBanner();
-            List<BannerResponse> result = banner.stream()
-                    .map(m -> new BannerResponse(m))
-                    .collect(Collectors.toList());
-            return new BaseResponse<>(result);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
-
 
 
     /**
