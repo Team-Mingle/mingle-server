@@ -39,7 +39,7 @@ public class CommentService {
      */
     @Transactional
 
-    public Long createTotalComment(PostTotalCommentRequest postTotalCommentRequest) throws BaseException {
+    public PostTotalCommentResponse createTotalComment(PostTotalCommentRequest postTotalCommentRequest) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
 
 
@@ -60,14 +60,14 @@ public class CommentService {
 
             //댓글 생성
             TotalComment comment = TotalComment.createComment(post, member, postTotalCommentRequest.getContent(), postTotalCommentRequest.getParentCommentId(), postTotalCommentRequest.getMentionId(), postTotalCommentRequest.isAnonymous(), anonymousId);
-
-            TotalComment savedComment = commentRepository.saveTotalComment(comment);
-            Long id = savedComment.getId();
-
+            System.out.println(comment);
+            commentRepository.saveTotalComment(comment);
             sendTotalPush(post, postTotalCommentRequest, member);
-            return id;
+            PostTotalCommentResponse postTotalCommentResponse = new PostTotalCommentResponse(anonymousId, comment);
+            return postTotalCommentResponse;
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -75,17 +75,24 @@ public class CommentService {
 
     public void sendTotalPush(TotalPost post, PostTotalCommentRequest postTotalCommentRequest, Member creatorMember) throws IOException {
         Member postMember = post.getMember();
-        Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
-        Member mentionMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getMentionId()).getMember();
+//        Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember(); //패런츠 커멘트가 없는 놈한테도 페런츠 커멘트 아이디를 가져오려고 함 (ㅁㅊ놈)
+//        Member mentionMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getMentionId()).getMember();
         String messageTitle = "광장";
-        if (parentMember == null) {
+        if (postTotalCommentRequest.getParentCommentId() == null) {
             if (postMember.getId() == creatorMember.getId()) {
                 return;
             }
             else {
-                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent());
+//                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent());
             }
-        } else if (parentMember != null) {
+        } else if (postTotalCommentRequest.getParentCommentId()!= null) {
+            Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
+            Member mentionMember;
+            if (postTotalCommentRequest.getMentionId() == null) {
+                mentionMember = null;
+            } else {
+                mentionMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getMentionId()).getMember();
+            }
             Map<Member, String> map = new HashMap<>();
             map.put(postMember, "postMemberId");
             map.put(parentMember, "parentMemberId");
@@ -95,7 +102,7 @@ public class CommentService {
                 if (map.get(member) == "creatorMemberId") {
                     continue;
                 }else{
-                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent());
+//                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent());
                 }
             }
         }
@@ -106,7 +113,7 @@ public class CommentService {
      * 4.2 학교 댓글 작성 api
      */
     @Transactional
-    public Long createUnivComment(PostUnivCommentRequest request) throws BaseException {
+    public PostUnivCommentResponse createUnivComment(PostUnivCommentRequest request) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx(); //쓴사람
         UnivPost univPost = commentRepository.findUnivPostById(request.getPostId());
         if (univPost == null) {
@@ -124,10 +131,12 @@ public class CommentService {
             }
             //댓글 생성
             UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.getMentionId(), request.isAnonymous(), anonymousId);
+            System.out.println(request.isAnonymous());
             commentRepository.saveUnivComment(comment);
             sendUnivNotification(univPost, member, request); //알림 전송
-
-            return comment.getId();
+            System.out.println(comment.getId());
+            PostUnivCommentResponse postUnivCommentResponse = new PostUnivCommentResponse(anonymousId, comment);
+            return postUnivCommentResponse;
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
@@ -154,10 +163,11 @@ public class CommentService {
             Member parentWriter = commentRepository.findUnivCommentById(request.getParentCommentId()).getMember(); //2. parentComment 작성자 Id
             //Member mentionWriter = commentRepository.findUnivCommentById(request.getMentionId()).getMember(); //3. mention 당한사람 Id
             Member mentionWriter;
-            UnivComment mentionComment = commentRepository.findUnivCommentById(request.getMentionId());
-            if (mentionComment == null) {
+
+            if (request.getMentionId() == null) {
                 mentionWriter = null;
             } else {
+                UnivComment mentionComment = commentRepository.findUnivCommentById(request.getMentionId());
                 mentionWriter = mentionComment.getMember();
             }
 
