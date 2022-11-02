@@ -33,10 +33,10 @@ public class CommentController {
      */
     @Operation(summary = "4.1 createTotalComment api", description = "4.1 전체 게시판 댓글 작성 api")
     @PostMapping("/total")
-    public BaseResponse<Long> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
+    public BaseResponse<PostTotalCommentResponse> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
         try {
-            Long id = commentService.createTotalComment(postTotalCommentRequest);
-            return new BaseResponse<>(id);
+            PostTotalCommentResponse result = commentService.createTotalComment(postTotalCommentRequest);
+            return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -49,10 +49,10 @@ public class CommentController {
      */
     @Operation(summary = "4.2 createUnivComment api", description = "4.2 학교 게시판 댓글 작성 api")
     @PostMapping("/univ")
-    public BaseResponse<Long> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
+    public BaseResponse<PostUnivCommentResponse> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
         try {
-            Long id = commentService.createUnivComment(univCommentRequest);
-            return new BaseResponse<>(id);
+            PostUnivCommentResponse result = commentService.createUnivComment(univCommentRequest);
+            return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

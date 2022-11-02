@@ -54,7 +54,7 @@ public class CommentRepository {
          */
         List<TotalComment> totalComments = post.getTotalPostComments();
 
-        TotalComment totalCommentWithMaxAnonymousId = null;
+        TotalComment totalCommentWithMaxAnonymousId;
         try {  //게시물에서 제일 큰 id를 찾은 후 +1 한 id 를 내 댓글에 새로운 anonymousId 로 부여
             totalCommentWithMaxAnonymousId = totalComments.stream()
                     .max(Comparator.comparingLong(TotalComment::getAnonymousId))//nullPointerException
@@ -69,9 +69,8 @@ public class CommentRepository {
     }
 
 
-    public TotalComment saveTotalComment (TotalComment comment) {
+    public void saveTotalComment (TotalComment comment) {
         em.persist(comment);
-        return comment;
     }
 
 
