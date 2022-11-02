@@ -65,6 +65,7 @@ public class SecurityConfig {
                 .antMatchers("/post/**").access("@memberGuard.check()")
                 .antMatchers("/member/**").access("@memberGuard.check()")
                 .antMatchers("/comment/**").access("@memberGuard.check()")
+                .antMatchers("/home/**").access("@memberGuard.check()")
                 .and()
 //                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
 //                .and()
