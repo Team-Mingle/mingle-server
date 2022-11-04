@@ -381,7 +381,6 @@ public class PostController {
      */
     @Operation(summary = "3.15  LikesTotalPost API", description = "3.15 통합 게시물 좋아요 api")
     @ApiResponses ({
-            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
@@ -404,7 +403,6 @@ public class PostController {
     @Operation(summary = "3.16 LikesUnivPost API", description = "3.16 학교 게시물 좋아요 api")
     @PostMapping("/univ/likes")
     @ApiResponses ({
-            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),

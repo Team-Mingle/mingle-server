@@ -537,19 +537,19 @@ public class PostService {
     public LikeTotalPostResponse likesTotalPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postIdx);
-        if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
         if (totalpost == null) {
             throw new BaseException(POST_NOT_EXIST);
+        }
+        if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
         }
 
         Member member = postRepository.findMemberbyId(memberIdByJwt);
         Member postMember = totalpost.getMember(); //유저 삭제 시 게시물 삭제 넣을 시 추후에 삭제가능 이 아니라 알림위해 남겨놓기
 //        Member postMember = postRepository.findMemberbyPostId(postIdx);
-        if (member == null) { //해야할까?
-            throw new BaseException(USER_NOT_EXIST);
-        }
+//        if (member == null) { //해야할까?
+//            throw new BaseException(USER_NOT_EXIST);
+//        }
 
 //        //좋아요 중복 방지 - 1
 //        List<TotalPostLike> totalPostLikeList = member.getTotalPostLikes();
@@ -609,14 +609,12 @@ public class PostService {
     public LikeUnivPostResponse likesUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
-        if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
-
         if (univpost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-
+        if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         Member member = postRepository.findMemberbyId(memberIdByJwt);
 //        Member postMember = postRepository.findMemberbyPostId(postIdx); ??????왜한거지
         Member postMember = univpost.getMember();

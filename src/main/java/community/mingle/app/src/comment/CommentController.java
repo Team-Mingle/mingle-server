@@ -33,6 +33,10 @@ public class CommentController {
      */
     @Operation(summary = "4.1 createTotalComment api", description = "4.1 전체 게시판 댓글 작성 api")
     @PostMapping("/total")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
     public BaseResponse<Long> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
         try {
             Long id = commentService.createTotalComment(postTotalCommentRequest);
@@ -49,6 +53,10 @@ public class CommentController {
      */
     @Operation(summary = "4.2 createUnivComment api", description = "4.2 학교 게시판 댓글 작성 api")
     @PostMapping("/univ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
     public BaseResponse<Long> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
         try {
             Long id = commentService.createUnivComment(univCommentRequest);
@@ -65,6 +73,11 @@ public class CommentController {
      */
     @Operation(summary = "4.3 likesTotalComment api", description = "4.3 통합 게시물 댓글 좋아요 api")
     @PostMapping("/total/likes")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "4035", description = "댓글이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4050", description = "삭제되거나 신고된 댓글 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<PostCommentLikesTotalResponse> likesTotalComment (@RequestParam Long commentIdx){
         try{
             return new BaseResponse<>(commentService.likesTotalComment(commentIdx));
@@ -80,6 +93,11 @@ public class CommentController {
      */
     @Operation(summary = "4.4 likesUnivComment api", description = "학교 게시물 댓글 좋아요 api")
     @PostMapping("/univ/likes")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "4035", description = "댓글이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4050", description = "삭제되거나 신고된 댓글 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
     public BaseResponse<PostCommentLikesUnivResponse> likesUnivComment (@RequestParam Long commentIdx){
         try{
             return new BaseResponse<>(commentService.likesUnivComment(commentIdx));

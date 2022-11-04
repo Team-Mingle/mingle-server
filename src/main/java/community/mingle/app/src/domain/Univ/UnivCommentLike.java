@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Setter
 @Entity
 @Getter
@@ -36,6 +38,13 @@ public class UnivCommentLike {
     private LocalDateTime createdAt;
 
     public static UnivCommentLike likesUnivComment(UnivComment univComment, Member member) {
+
+        List<UnivCommentLike> univCommentLikes = univComment.getUnivCommentLikes();
+        for (UnivCommentLike univCommentLike : univCommentLikes) {
+            if (univCommentLike.getMember().equals(member)) {
+                return null;//중복.
+            }
+        }
         UnivCommentLike univCommentLike = new UnivCommentLike();
         univCommentLike.setMember(member);
         univCommentLike.setUnivComment(univComment);

@@ -4,6 +4,7 @@ package community.mingle.app.src.comment;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.comment.model.*;
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 
@@ -74,10 +76,10 @@ public class CommentService {
         }
         else {
             for (TotalComment totalPostComment : totalPostComments) {
-                if (totalPostComment.getId() == postTotalCommentRequest.getParentCommentId()) {
+                if (Objects.equals(totalPostComment.getId(), postTotalCommentRequest.getParentCommentId())) {
                     parentFlag = true;
                 }
-                if (totalPostComment.getId() == postTotalCommentRequest.getMentionId()) {
+                if (Objects.equals(totalPostComment.getId(), postTotalCommentRequest.getMentionId())) {
                     mentionFlag = true;
                 }
                 if (parentFlag == true && mentionFlag == true) {
@@ -163,10 +165,10 @@ public class CommentService {
         }
         else {
             for (UnivComment univComment : univComments) {
-                if (univComment.getId() == request.getParentCommentId()) {
+                if (Objects.equals(univComment.getId(), request.getParentCommentId())) {
                     parentFlag = true;
                 }
-                if (univComment.getId() == request.getMentionId()) {
+                if (Objects.equals(univComment.getId(), request.getMentionId())) {
                     mentionFlag = true;
                 }
                 if (parentFlag == true && mentionFlag == true) {
@@ -257,20 +259,32 @@ public class CommentService {
      @Transactional
      public PostCommentLikesTotalResponse likesTotalComment(Long commentIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-        try {
-            TotalComment totalcomment = commentRepository.findTotalCommentById(commentIdx);
-            Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
+         TotalComment totalcomment = commentRepository.findTotalCommentById(commentIdx);
+         if (totalcomment == null) {
+             throw new BaseException(COMMENT_NOT_EXIST);
+         }
+         if (totalcomment.getStatus().equals(PostStatus.INACTIVE) || totalcomment.getStatus().equals(PostStatus.REPORTED)) {
+             throw new BaseException(REPORTED_DELETED_COMMENT);
+         }
+         Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
-            TotalCommentLike totalCommentLike = TotalCommentLike.likesTotalComment(totalcomment, member);
-            Long id = commentRepository.save(totalCommentLike);
-            int likeCount = totalcomment.getTotalCommentLikes().size();
-            return new PostCommentLikesTotalResponse(id, likeCount);
+         TotalCommentLike totalCommentLike = TotalCommentLike.likesTotalComment(totalcomment, member);
+         if (totalCommentLike == null) {
+             throw new BaseException(DUPLICATE_LIKE);
+         }
+         else {
+             try {
+//            TotalCommentLike totalCommentLike = TotalCommentLike.likesTotalComment(totalcomment, member);
+                 Long id = commentRepository.save(totalCommentLike);
+                 int likeCount = totalcomment.getTotalCommentLikes().size();
+                 return new PostCommentLikesTotalResponse(id, likeCount);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
-        }
+             } catch (Exception e) {
+                 e.printStackTrace();
+                 throw new BaseException(DATABASE_ERROR);
+             }
+         }
     }
 
 
@@ -280,19 +294,28 @@ public class CommentService {
     @Transactional
     public PostCommentLikesUnivResponse likesUnivComment(Long commentIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-        try {
-            UnivComment univComment = commentRepository.findUnivCommentById(commentIdx);
-            Member member = commentRepository.findMemberbyId(memberIdByJwt);
+        UnivComment univComment = commentRepository.findUnivCommentById(commentIdx);
+        if (univComment == null) {
+            throw new BaseException(COMMENT_NOT_EXIST);
+        }
+        if (univComment.getStatus().equals(PostStatus.INACTIVE) || univComment.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_COMMENT);
+        }
+        Member member = commentRepository.findMemberbyId(memberIdByJwt);
+        UnivCommentLike univCommentLike = UnivCommentLike.likesUnivComment(univComment, member);
+        if (univCommentLike == null) {
+            throw new BaseException(DUPLICATE_LIKE);
+        }
+        else {
+            try {
+                Long id = commentRepository.save(univCommentLike);
+                int likeCount = univComment.getUnivCommentLikes().size();
+                return new PostCommentLikesUnivResponse(id, likeCount);
 
-
-            UnivCommentLike univCommentLike = UnivCommentLike.likesUnivComment(univComment, member);
-            Long id = commentRepository.save(univCommentLike);
-            int likeCount = univComment.getUnivCommentLikes().size();
-            return new PostCommentLikesUnivResponse(id, likeCount);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 
