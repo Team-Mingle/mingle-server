@@ -335,8 +335,9 @@ public class CommentService {
      */
     @Transactional
     public void unlikeTotalComment(Long commentIdx) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
-            commentRepository.deleteLikeTotal(commentIdx);
+            commentRepository.deleteLikeTotal(commentIdx, memberIdByJwt);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
@@ -349,9 +350,9 @@ public class CommentService {
      */
     @Transactional
     public void unlikeUnivComment(Long commentIdx) throws BaseException {
-
+        Long memberIdByJwt = jwtService.getUserIdx();
         try {
-            commentRepository.deleteLikeUniv(commentIdx);
+            commentRepository.deleteLikeUniv(commentIdx,memberIdByJwt);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
