@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Setter
 @Entity
 @Getter
@@ -35,6 +37,13 @@ public class TotalCommentLike {
     private LocalDateTime createdAt;
 
     public static TotalCommentLike likesTotalComment(TotalComment totalcomment, Member member) {
+        List<TotalCommentLike> totalCommentLikes = totalcomment.getTotalCommentLikes();
+        for (TotalCommentLike totalCommentLike : totalCommentLikes) {
+            if (totalCommentLike.getMember().equals(member)) {
+                return null;//중복.
+            }
+        }
+
         TotalCommentLike totalCommentLike = new TotalCommentLike();
         totalCommentLike.setMember(member);
         totalCommentLike.setTotalComment(totalcomment);

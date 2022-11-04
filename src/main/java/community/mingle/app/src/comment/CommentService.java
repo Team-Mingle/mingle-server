@@ -4,6 +4,7 @@ package community.mingle.app.src.comment;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.comment.model.*;
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -16,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 
@@ -47,6 +50,47 @@ public class CommentService {
         if (post == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
+
+
+        /*
+        1. 댓글을 달때: parent = null, mention = null.
+        2. 처음 대댓글 달때 (b) : parent = a , mention = a.
+        3. 대댓글에 대댓글 달때 (c) : parent = a, mention = b.
+
+        에러 날 케이스
+        1. 대댓글 달때: parent = null, mention = a.
+        2. 대댓글 달때: parent = a, mention = null.
+        3. 대댓글 달때: parent = 없는 id, mention = 없는 id.
+        4. 대댓글 달떄: parent나 mention이 이게시물에 달린 댓글이 아닐때.
+
+        -> 앱으로 통하는 통신만 가능하도록..?
+        -> 여태껏 디비에 잘못들어간 에러들은 다 핸들링 해야할수도
+         */
+
+        // 잘못된 parentComment / mention Id
+        List<TotalComment> totalPostComments = post.getTotalPostComments();
+        boolean parentFlag = false;
+        boolean mentionFlag = false;
+
+        if (postTotalCommentRequest.getMentionId() == null && postTotalCommentRequest.getParentCommentId() == null) {
+        }
+        else {
+            for (TotalComment totalPostComment : totalPostComments) {
+                if (Objects.equals(totalPostComment.getId(), postTotalCommentRequest.getParentCommentId())) {
+                    parentFlag = true;
+                }
+                if (Objects.equals(totalPostComment.getId(), postTotalCommentRequest.getMentionId())) {
+                    mentionFlag = true;
+                }
+                if (parentFlag == true && mentionFlag == true) {
+                    break;
+                }
+            }
+            if (parentFlag == false || mentionFlag == false) {
+                throw new BaseException(FAILED_TO_CREATECOMMENT);
+            }
+        }
+
 
         try {
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
@@ -119,6 +163,30 @@ public class CommentService {
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
+
+        //check parentCommentId, mentionId validity
+        List<UnivComment> univComments = univPost.getUnivComments();
+        boolean parentFlag = false;
+        boolean mentionFlag = false;
+        if (request.getMentionId() == null && request.getParentCommentId() == null) {
+        }
+        else {
+            for (UnivComment univComment : univComments) {
+                if (Objects.equals(univComment.getId(), request.getParentCommentId())) {
+                    parentFlag = true;
+                }
+                if (Objects.equals(univComment.getId(), request.getMentionId())) {
+                    mentionFlag = true;
+                }
+                if (parentFlag == true && mentionFlag == true) {
+                    break;
+                }
+            }
+            if (parentFlag == false || mentionFlag == false) {
+                throw new BaseException(FAILED_TO_CREATECOMMENT);
+            }
+        }
+
         try {
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
             Long anonymousId;
@@ -157,6 +225,7 @@ public class CommentService {
 //                fcmService.sendMessageTo(postWriter.getFcmToken(), title, body);
             }
         }
+
 
         //대댓글일 시
         else {
@@ -200,20 +269,32 @@ public class CommentService {
      @Transactional
      public PostCommentLikesTotalResponse likesTotalComment(Long commentIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-        try {
-            TotalComment totalcomment = commentRepository.findTotalCommentById(commentIdx);
-            Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
+         TotalComment totalcomment = commentRepository.findTotalCommentById(commentIdx);
+         if (totalcomment == null) {
+             throw new BaseException(COMMENT_NOT_EXIST);
+         }
+         if (totalcomment.getStatus().equals(PostStatus.INACTIVE) || totalcomment.getStatus().equals(PostStatus.REPORTED)) {
+             throw new BaseException(REPORTED_DELETED_COMMENT);
+         }
+         Member member = commentRepository.findMemberbyId(memberIdByJwt);
 
-            TotalCommentLike totalCommentLike = TotalCommentLike.likesTotalComment(totalcomment, member);
-            Long id = commentRepository.save(totalCommentLike);
-            int likeCount = totalcomment.getTotalCommentLikes().size();
-            return new PostCommentLikesTotalResponse(id, likeCount);
+         TotalCommentLike totalCommentLike = TotalCommentLike.likesTotalComment(totalcomment, member);
+         if (totalCommentLike == null) {
+             throw new BaseException(DUPLICATE_LIKE);
+         }
+         else {
+             try {
+//            TotalCommentLike totalCommentLike = TotalCommentLike.likesTotalComment(totalcomment, member);
+                 Long id = commentRepository.save(totalCommentLike);
+                 int likeCount = totalcomment.getTotalCommentLikes().size();
+                 return new PostCommentLikesTotalResponse(id, likeCount);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
-        }
+             } catch (Exception e) {
+                 e.printStackTrace();
+                 throw new BaseException(DATABASE_ERROR);
+             }
+         }
     }
 
 
@@ -223,19 +304,28 @@ public class CommentService {
     @Transactional
     public PostCommentLikesUnivResponse likesUnivComment(Long commentIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-        try {
-            UnivComment univComment = commentRepository.findUnivCommentById(commentIdx);
-            Member member = commentRepository.findMemberbyId(memberIdByJwt);
+        UnivComment univComment = commentRepository.findUnivCommentById(commentIdx);
+        if (univComment == null) {
+            throw new BaseException(COMMENT_NOT_EXIST);
+        }
+        if (univComment.getStatus().equals(PostStatus.INACTIVE) || univComment.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_COMMENT);
+        }
+        Member member = commentRepository.findMemberbyId(memberIdByJwt);
+        UnivCommentLike univCommentLike = UnivCommentLike.likesUnivComment(univComment, member);
+        if (univCommentLike == null) {
+            throw new BaseException(DUPLICATE_LIKE);
+        }
+        else {
+            try {
+                Long id = commentRepository.save(univCommentLike);
+                int likeCount = univComment.getUnivCommentLikes().size();
+                return new PostCommentLikesUnivResponse(id, likeCount);
 
-
-            UnivCommentLike univCommentLike = UnivCommentLike.likesUnivComment(univComment, member);
-            Long id = commentRepository.save(univCommentLike);
-            int likeCount = univComment.getUnivCommentLikes().size();
-            return new PostCommentLikesUnivResponse(id, likeCount);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 
