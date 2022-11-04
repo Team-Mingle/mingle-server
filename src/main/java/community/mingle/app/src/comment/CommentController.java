@@ -37,10 +37,10 @@ public class CommentController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<Long> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
+    public BaseResponse<PostTotalCommentResponse> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
         try {
-            Long id = commentService.createTotalComment(postTotalCommentRequest);
-            return new BaseResponse<>(id);
+            PostTotalCommentResponse result = commentService.createTotalComment(postTotalCommentRequest);
+            return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -57,10 +57,10 @@ public class CommentController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<Long> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
+    public BaseResponse<PostUnivCommentResponse> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
         try {
-            Long id = commentService.createUnivComment(univCommentRequest);
-            return new BaseResponse<>(id);
+            PostUnivCommentResponse result = commentService.createUnivComment(univCommentRequest);
+            return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
