@@ -215,6 +215,7 @@ public class CommentService {
             }
         }
 
+
         //대댓글일 시
         else {
             Member parentWriter = commentRepository.findUnivCommentById(request.getParentCommentId()).getMember(); //2. parentComment 작성자 Id
