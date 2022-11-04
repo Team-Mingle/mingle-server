@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -47,6 +48,47 @@ public class CommentService {
         if (post == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
+
+
+        /*
+        1. 댓글을 달때: parent = null, mention = null.
+        2. 처음 대댓글 달때 (b) : parent = a , mention = a.
+        3. 대댓글에 대댓글 달때 (c) : parent = a, mention = b.
+
+        에러 날 케이스
+        1. 대댓글 달때: parent = null, mention = a.
+        2. 대댓글 달때: parent = a, mention = null.
+        3. 대댓글 달때: parent = 없는 id, mention = 없는 id.
+        4. 대댓글 달떄: parent나 mention이 이게시물에 달린 댓글이 아닐때.
+
+        -> 앱으로 통하는 통신만 가능하도록..?
+        -> 여태껏 디비에 잘못들어간 에러들은 다 핸들링 해야할수도
+         */
+
+        // 잘못된 parentComment / mention Id
+        List<TotalComment> totalPostComments = post.getTotalPostComments();
+        boolean parentFlag = false;
+        boolean mentionFlag = false;
+
+        if (postTotalCommentRequest.getMentionId() == null && postTotalCommentRequest.getParentCommentId() == null) {
+        }
+        else {
+            for (TotalComment totalPostComment : totalPostComments) {
+                if (totalPostComment.getId() == postTotalCommentRequest.getParentCommentId()) {
+                    parentFlag = true;
+                }
+                if (totalPostComment.getId() == postTotalCommentRequest.getMentionId()) {
+                    mentionFlag = true;
+                }
+                if (parentFlag == true && mentionFlag == true) {
+                    break;
+                }
+            }
+            if (parentFlag == false || mentionFlag == false) {
+                throw new BaseException(FAILED_TO_CREATECOMMENT);
+            }
+        }
+
 
         try {
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
@@ -112,6 +154,30 @@ public class CommentService {
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
+
+        //check parentCommentId, mentionId validity
+        List<UnivComment> univComments = univPost.getUnivComments();
+        boolean parentFlag = false;
+        boolean mentionFlag = false;
+        if (request.getMentionId() == null && request.getParentCommentId() == null) {
+        }
+        else {
+            for (UnivComment univComment : univComments) {
+                if (univComment.getId() == request.getParentCommentId()) {
+                    parentFlag = true;
+                }
+                if (univComment.getId() == request.getMentionId()) {
+                    mentionFlag = true;
+                }
+                if (parentFlag == true && mentionFlag == true) {
+                    break;
+                }
+            }
+            if (parentFlag == false || mentionFlag == false) {
+                throw new BaseException(FAILED_TO_CREATECOMMENT);
+            }
+        }
+
         try {
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
             Long anonymousId;
