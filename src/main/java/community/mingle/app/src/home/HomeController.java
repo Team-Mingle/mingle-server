@@ -84,7 +84,7 @@ public class HomeController {
      * 5.3 홈 학교 베스트 게시판 API
      */
     @GetMapping("/univ/best")
-    @Operation(summary = "3.3 getHomeUnivBest Posts API", description = "3.3 홈화면 잔디밭 베스트 게시물 리스트 API")
+    @Operation(summary = "5.3 getHomeUnivBest Posts API", description = "5.3 홈화면 잔디밭 베스트 게시물 리스트 API")
     @ApiResponses({
             @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
@@ -103,7 +103,7 @@ public class HomeController {
 
 
     @GetMapping("/total/recent")
-    @Operation(summary = "3.4 getTotalRecentPosts API", description = "3.4 홈화면 광장 최신 게시글 API")
+    @Operation(summary = "5.4 getTotalRecentPosts API", description = "5.4 홈화면 광장 최신 게시글 API")
     @ApiResponses({
             @ApiResponse(responseCode = "3029", description = "최근 올라온 게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
@@ -121,7 +121,7 @@ public class HomeController {
 
 
     @GetMapping("/univ/recent")
-    @Operation(summary = "3.5 getUnivRecentPosts API", description = "3.5 홈화면 잔디밭 최신 게시글 API")
+    @Operation(summary = "5.5 getUnivRecentPosts API", description = "5.5 홈화면 잔디밭 최신 게시글 API")
     @ApiResponses({
             @ApiResponse(responseCode = "3029", description = "최근 올라온 게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
