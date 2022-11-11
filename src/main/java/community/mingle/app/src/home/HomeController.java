@@ -8,6 +8,7 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.home.model.HomeBestTotalPostResponse;
 import community.mingle.app.src.home.model.HomeBestUnivPostResponse;
 import community.mingle.app.src.home.model.BannerResponse;
+import community.mingle.app.src.home.model.HomeRecentPostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,10 +27,9 @@ import java.util.stream.Collectors;
 @Tag(name = "home", description = "홈 화면 베스트 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content (schema = @Schema(hidden = true))),
-        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-        @ApiResponse(responseCode = "3030", description = "최근 3일간 올라온 베스트 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
-        @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+        @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content(schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
 })
 @RestController
 @RequestMapping("/home")
@@ -39,14 +39,12 @@ public class HomeController {
     private final HomeService homeService;
 
 
-
     /**
      * 3.1 광고 배너 API
      */
     @GetMapping("/banner")
-    @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
     @Operation(summary = "5.1 getBanner API", description = "5.1 홈 화면 배너 리스트 API")
-    public BaseResponse<List<BannerResponse>> getBanner(){
+    public BaseResponse<List<BannerResponse>> getBanner() {
         try {
             List<Banner> banner = homeService.findBanner();
             List<BannerResponse> result = banner.stream()
@@ -58,7 +56,6 @@ public class HomeController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
 
     /**
@@ -87,9 +84,9 @@ public class HomeController {
      * 5.3 홈 학교 베스트 게시판 API
      */
     @GetMapping("/univ/best")
-    @Operation(summary = "3.3 getHomeUnivBest Posts API", description = "3.3 홈화면 학교 베스트 게시물 리스트 API")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
+    @Operation(summary = "3.3 getHomeUnivBest Posts API", description = "3.3 홈화면 잔디밭 베스트 게시물 리스트 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
     public BaseResponse<List<HomeBestUnivPostResponse>> getUnivBest() {
         try {
@@ -101,6 +98,42 @@ public class HomeController {
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+    @GetMapping("/total/recent")
+    @Operation(summary = "3.4 getTotalRecentPosts API", description = "3.4 홈화면 광장 최신 게시글 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3029", description = "최근 올라온 게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<List<HomeRecentPostResponse>> getTotalRecentPosts() {
+        try {
+            List<TotalPost> totalPosts = homeService.findTotalRecentPosts();
+            List<HomeRecentPostResponse> result = totalPosts.stream()
+                    .map(m -> new HomeRecentPostResponse(m))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    @GetMapping("/univ/recent")
+    @Operation(summary = "3.5 getUnivRecentPosts API", description = "3.5 홈화면 잔디밭 최신 게시글 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3029", description = "최근 올라온 게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<List<HomeRecentPostResponse>> getUnivRecentPosts() {
+        try {
+            List<UnivPost> univPosts = homeService.findUnivRecentPosts();
+            List<HomeRecentPostResponse> result = univPosts.stream()
+                    .map(m -> new HomeRecentPostResponse(m))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
         }
     }
 

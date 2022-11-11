@@ -450,14 +450,12 @@ public class PostRepository {
      */
     public void deleteTotalPost(Long postId) {
         TotalPost totalPost = em.find(TotalPost.class, postId);
-        em.remove(postId);
-
+        em.remove(totalPost);
     }
 
     public void deleteUnivPost(Long postId) {
         UnivPost univPost = em.find(UnivPost.class, postId);
-        em.remove(postId);
-
+        em.remove(univPost);
     }
 
 

@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static community.mingle.app.config.BaseResponseStatus.DATABASE_ERROR;
-import static community.mingle.app.config.BaseResponseStatus.EMPTY_BEST_POSTS;
+import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -64,4 +63,37 @@ public class HomeService {
         }
         return univPosts;
     }
+
+    /**
+     * 5.4 홈 전체 최신 게시글 api
+     */
+    public List<TotalPost> findTotalRecentPosts() throws BaseException {
+        List<TotalPost> totalPosts = homeRepository.findTotalRecentPosts();
+        if (totalPosts.size() == 0) {
+            throw new BaseException(EMPTY_RECENT_POSTS);
+        }
+        return totalPosts;
+    }
+
+    /**
+     * 5.5 홈 학교 최신 게시글 api
+     */
+    public List<UnivPost> findUnivRecentPosts() throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        Member member = homeRepository.findMemberbyId(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+        List<UnivPost> univPosts;
+        try {
+          univPosts = homeRepository.findUnivRecentPosts(member);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+        if (univPosts.size() == 0) {
+            throw new BaseException(EMPTY_RECENT_POSTS);
+        }
+        return univPosts;
+    }
+
 }

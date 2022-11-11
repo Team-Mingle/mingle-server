@@ -139,9 +139,9 @@ public class PostService {
             Long id = postRepository.save(totalPost); // <- 이미지 파일 생성 실패시 글만 세이브되는 상황 방지는 못하지만 postId가 필요하기때문에 여기 있어야함.
             List<String> fileNameList = null;
 
-            if (createPostRequest.getMultipartFile()==null || createPostRequest.getMultipartFile().isEmpty()) {
-                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, null);
-                postRepository.save(totalPostImage);
+            if (createPostRequest.getMultipartFile()==null || createPostRequest.getMultipartFile().isEmpty()) { //postman으로 할 시 둘다 충족이 안됨. 앱으로 할때만
+                TotalPostImage totalPostImage = TotalPostImage.createTotalPost(totalPost, null); //그래서 isFileAttached = true로 받아들여서 사진생성하려함
+                postRepository.save(totalPostImage); //그래서 에러남 ㅠ
             } else {
                 try {
                     fileNameList = s3Service.uploadFile(createPostRequest.getMultipartFile(), "total");
@@ -151,11 +151,13 @@ public class PostService {
                     }
                 } catch (Exception e) { // 이미지 파일 생성 실패시 글만 세이브되는 상황 방지 (postImgUrl being null) - 위에서 세이브 된 글을 아예 지움
                     postRepository.deleteTotalPost(id);
+                    e.printStackTrace();
                     throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }
             return new CreatePostResponse(id, fileNameList);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
@@ -200,6 +202,7 @@ public class PostService {
             }
             return new CreatePostResponse(id, fileNameList);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }

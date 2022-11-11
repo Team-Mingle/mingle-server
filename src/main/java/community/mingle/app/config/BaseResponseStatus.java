@@ -92,6 +92,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
     TITLE_EMPTY_ERROR(false, 3021, "제목을 입력해주세요."),
     DELETE_FAIL_POST(false, 3025, "게시물 삭제를 실패했습니다."),
+    EMPTY_RECENT_POSTS(false, 3029, "최근 올라온 게시글이 없어요."), //홈화면 최신글 api
     EMPTY_BEST_POSTS(false, 3030,"인기 게시물이 없어요."),
     EMPTY_POSTS_LIST(false, 3031, "해당 카테고리에 게시물이 없습니다."),
     INVALID_POST_CATEGORY(false, 3032, "유효하지 않은 카테고리 입니다."),
@@ -105,6 +106,10 @@ public enum BaseResponseStatus {
     DELETED_LIKE(false, 3062, "이미 좋아요를 취소했어요."),
     DELETED_SCRAP(false, 3063, "이미 스크랩을 취소했어요."),
 
+
+    /**
+     * 이미지 업로드
+     */
     UPLOAD_FAIL_IMAGE(false, 3070, "이미지 업로드에 실패했습니다"),
     INVALID_IMAGE_FORMAT(false, 3071,"잘못된 형식의 파일입니다"),
     INVALID_IMAGE(false, 3072,"유효하지 않은 이미지입니다"),

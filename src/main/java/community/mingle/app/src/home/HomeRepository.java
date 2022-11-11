@@ -16,6 +16,10 @@ import java.util.List;
 public class HomeRepository {
     private final EntityManager em;
 
+    public Member findMemberbyId(Long id) {
+        return em.find(Member.class, id);
+    }
+
 
     /**
      * 5.1 광고 배너 API
@@ -35,20 +39,13 @@ public class HomeRepository {
                 .setFirstResult(0)
                 .setMaxResults(4)
                 .getResultList();
-
         return recentTotalPosts;
     }
 
-
     /**
-     * 5.2 홈 학교 베스트 게시판 api
-     * @param id
-     * @return
+     * 5.3 홈 학교 베스트 게시판 api
+     * @param member
      */
-    public Member findMemberbyId(Long id) {
-        return em.find(Member.class, id);
-    }
-
     public List<UnivPost> findAllWithMemberLikeCommentCount(Member member) {
         return em.createQuery(
                         "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId  and p.univPostLikes.size > 5 order by p.createdAt desc ", UnivPost.class)
@@ -58,4 +55,29 @@ public class HomeRepository {
                 .setMaxResults(4)
                 .getResultList();
     }
+
+    /**
+     * 5.4 홈 전체 최신 게시글 api
+     */
+    public List<TotalPost> findTotalRecentPosts() {
+        return em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status order by p.createdAt desc", TotalPost.class)
+                .setParameter("status", PostStatus.ACTIVE)
+                .setFirstResult(0)
+                .setMaxResults(4)
+                .getResultList();
+    }
+
+    /**
+     * 5.5 홈 학교 최신 게시글 api
+     * @param member
+     */
+    public List<UnivPost> findUnivRecentPosts(Member member) {
+        return em.createQuery("select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId order by p.createdAt desc ", UnivPost.class)
+                .setParameter("status", PostStatus.ACTIVE)
+                .setParameter("univId", member.getUniv().getId()) //어디 학교인지
+                .setFirstResult(0)
+                .setMaxResults(4)
+                .getResultList();
+    }
+
 }
