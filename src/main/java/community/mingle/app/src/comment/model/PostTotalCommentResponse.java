@@ -13,7 +13,7 @@ public class PostTotalCommentResponse {
 
     public PostTotalCommentResponse(Long anonymousId, TotalComment totalComment) {
         this.commentId = totalComment.getId();
-        if (anonymousId == null) {
+        if (anonymousId == 0) {
             this.nickname = totalComment.getMember().getNickname();
         } else{
             this.nickname = "익명 " + anonymousId;

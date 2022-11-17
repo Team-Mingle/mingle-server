@@ -14,7 +14,7 @@ public class PostUnivCommentResponse {
 
     public PostUnivCommentResponse(Long anonymousId, UnivComment univComment) {
         this.commentId = univComment.getId();
-        if (anonymousId == null) {
+        if (anonymousId == 0) {
             this.nickname = univComment.getMember().getNickname();
         } else{
             this.nickname = "익명 " + anonymousId;
