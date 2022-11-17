@@ -41,7 +41,7 @@ public class TotalPostLike {
         List<TotalPostLike> totalPostLikeList = member.getTotalPostLikes();
         if (totalPostLikeList == null || totalPostLikeList.isEmpty()) {
         }
-        else {
+        else { //좋아요 중복 방지
             for (TotalPostLike totalPostLike : totalPostLikeList) {
                 if (Objects.equals(totalPostLike.getTotalPost().getId(), totalpost.getId())) {
                     return null;

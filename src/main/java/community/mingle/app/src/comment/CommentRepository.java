@@ -1,5 +1,7 @@
 package community.mingle.app.src.comment;
 
+import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.*;
+
+import static community.mingle.app.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,7 +39,7 @@ public class CommentRepository {
     /**
      * 4.1 익명 몇 인지 찾기 (anonymousId)
      */
-    public Long findTotalAnonymousId(TotalPost post, Long memberIdByJwt ) {
+    public Long findTotalAnonymousId(TotalPost post, Long memberIdByJwt ) throws BaseException {
         Long newAnonymousId;
 
         /**
@@ -53,16 +57,17 @@ public class CommentRepository {
          * case 2: 댓글 단 이력이 없고 익명 댓글을 달고싶을때: anonymousId 부여받음
          */
         List<TotalComment> totalComments = post.getTotalPostComments();
-
         TotalComment totalCommentWithMaxAnonymousId;
+
         try {  //게시물에서 제일 큰 id를 찾은 후 +1 한 id 를 내 댓글에 새로운 anonymousId 로 부여
+            // 닉네임으로 단 사람만 있을 경우에도 그냥 0+1 을 해줘서 1을 부여해줌
             totalCommentWithMaxAnonymousId = totalComments.stream()
                     .max(Comparator.comparingLong(TotalComment::getAnonymousId))//nullPointerException
                     .get();
             newAnonymousId = totalCommentWithMaxAnonymousId.getAnonymousId() + 1;
             return newAnonymousId;
 
-        } catch (Exception e) {  //게시물에 기존 익명 id 가 아예 없을때: id 로 1 부여
+        } catch (NoSuchElementException e) {  //게시물에 기존 익명 id 가 아예 없을때: id 로 1 부여 --> 댓글이 아예 없을때
             newAnonymousId = Long.valueOf(1);
         }
         return newAnonymousId;
@@ -89,7 +94,6 @@ public class CommentRepository {
                 .getResultList();
         if (univCommentsByMember.size() != 0) {
            newAnonymousId = univCommentsByMember.get(0).getAnonymousId();
-            System.out.println("=======Existing AnonymousId=========");
            return newAnonymousId;
         }
 
@@ -101,22 +105,15 @@ public class CommentRepository {
                     .max(Comparator.comparingLong(UnivComment::getAnonymousId))//NullPointerException
                     .get(); //NoSuchElementException
             newAnonymousId = univCommentWithMaxAnonymousId.getAnonymousId() + 1;
-            System.out.println("===========NewAnonymousId==============");
             return newAnonymousId;
 
-        } catch (NullPointerException e) {
-            System.out.println("=================NullPointerException=================");
-            newAnonymousId = Long.valueOf(1);
-            return newAnonymousId;
-
+//        } catch (NullPointerException e) {
+//            newAnonymousId = Long.valueOf(1);
+//            return newAnonymousId;
         } catch (NoSuchElementException e) {
-            System.out.println("=================NoSuchElementException=================");
             newAnonymousId = Long.valueOf(1);
-            return newAnonymousId;
         }
-//        } catch (Exception e) { // missing return statement 에러
-//            e.printStackTrace();
-//        }
+        return newAnonymousId;
     }
 
     public void saveUnivComment(UnivComment univComment) {

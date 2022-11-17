@@ -221,7 +221,11 @@ public class PostService {
                     .map(m -> new PostCategoryResponse(m))
                     .collect(Collectors.toList());
             if (authority.equals("USER")) {
-                result.remove(4);
+                result.remove(4); //학생회
+                result.remove(3); //밍글소식
+            }
+            if (authority.equals("KSA")) {
+                result.remove(3);
             }
             return result;
         } catch (Exception e) {

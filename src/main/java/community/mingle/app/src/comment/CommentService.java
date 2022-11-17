@@ -99,7 +99,7 @@ public class CommentService {
             if (postTotalCommentRequest.isAnonymous() == true) {
                 anonymousId = commentRepository.findTotalAnonymousId(post, memberIdByJwt);
             } else {
-                anonymousId = null;
+                anonymousId = Long.valueOf(0); // null -> 0 으로 수정
             }
 
             //댓글 생성
@@ -195,7 +195,7 @@ public class CommentService {
                 System.out.println("true");
             } else {
                 System.out.println("false");
-                anonymousId = null;
+                anonymousId = Long.valueOf(0); // null -> 0 으로 수정
             }
             //댓글 생성
             UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.getMentionId(), request.isAnonymous(), anonymousId);

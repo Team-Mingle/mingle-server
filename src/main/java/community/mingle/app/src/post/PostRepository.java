@@ -279,18 +279,18 @@ public class PostRepository {
     }
 
 
-    //좋아요 중복 방지...ㅋ
-//    public boolean checkIsLiked(Long postId, Long memberId) {
-//        List<TotalPostLike> totalPostLikeList = em.createQuery("select m from Member m join m.totalPosts p join p.totalPostLikes tpl where p.id = :postId and m.id = :memberId", TotalPostLike.class)
-//                .setParameter("postId", postId)
-//                .setParameter("memberId", memberId)
-//                .getResultList();
-//        if (totalPostLikeList.size() != 0) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
+    //좋아요 중복 방지...
+    public boolean checkIsLiked(Long postId, Long memberId) { //모든 totalPostLikeList 를 뒤짐
+        List<TotalPostLike> totalPostLikeList = em.createQuery("select m from Member m join m.totalPosts p join p.totalPostLikes tpl where p.id = :postId and m.id = :memberId", TotalPostLike.class)
+                .setParameter("postId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (totalPostLikeList.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public boolean checkTotalIsScraped(Long postId, Long memberId){
         List<TotalPostScrap> totalPostScrapList = em.createQuery("select tps from TotalPostScrap tps join tps.totalPost tp join tps.member m where tp.id = :postId and m.id = :memberId", TotalPostScrap.class)
