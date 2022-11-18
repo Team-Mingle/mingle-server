@@ -476,18 +476,26 @@ public class PostService {
         }
         try {
             List<TotalComment> totalComments = postRepository.findAllTotalComment(id);
-            List<TotalPostImage> totalPostImages = postRepository.findAllTotalImage(id);
-            for (TotalComment c : totalComments) {
-                c.deleteTotalComment();
+            if (totalComments != null) {
+                for (TotalComment c : totalComments) {
+                    c.deleteTotalComment();
+                }
             }
-            for (TotalPostImage pi : totalPostImages) {
-                pi.deleteTotalImage();
+            List<TotalPostImage> totalPostImages = postRepository.findAllTotalImage(id);
+            if (totalPostImages != null && totalPost.getIsFileAttached() == true) {
+                for (TotalPostImage pi : totalPostImages) {
+                    pi.deleteTotalImage();
 
-                String imgUrl = pi.getImgUrl();
-                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/total/") + 11);
-                s3Service.deleteFile(fileName, "total");
+                    String imgUrl = pi.getImgUrl();
+                    String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/total/") + 11);
+                    s3Service.deleteFile(fileName, "total");
+                }
             }
             totalPost.deleteTotalPost();
+
+        } catch (BaseException b) {
+            b.printStackTrace();
+            throw new BaseException(DELETE_FAIL_IMAGE);
         } catch (Exception e) {
             throw new BaseException(DELETE_FAIL_POST);
         }
@@ -514,24 +522,32 @@ public class PostService {
         if (memberIdByJwt != univPost.getMember().getId()) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
+
         try {
             List<UnivComment> univComments = postRepository.findAllUnivComment(id);
-            List<UnivPostImage> univPostImages = postRepository.findAllUnivImage(id);
-            for (UnivComment c : univComments) {
-                c.deleteUnivComment();
+            if (univComments != null) {
+                for (UnivComment c : univComments) {
+                    c.deleteUnivComment(); //inactive
+                }
             }
 
-            for (UnivPostImage pi : univPostImages) {
-                pi.deleteUnivImage();
+            List<UnivPostImage> univPostImages = postRepository.findAllUnivImage(id); //사진 삭제
+            if (univPostImages != null && univPost.getIsFileAttached() == true) {
+                for (UnivPostImage pi : univPostImages) {
+                    pi.deleteUnivImage();
 
-                String imgUrl = pi.getImgUrl();
-                String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/univ/") + 10);
-                s3Service.deleteFile(fileName, "univ");
+                    String imgUrl = pi.getImgUrl();
+                    String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/univ/") + 10);
+                    s3Service.deleteFile(fileName, "univ");
+                }
             }
             univPost.deleteUnivPost();
 
-
+        } catch (BaseException b) {
+//            b.printStackTrace();
+            throw new BaseException(DELETE_FAIL_IMAGE);
         } catch (Exception e) {
+//            e.printStackTrace();
             throw new BaseException(DELETE_FAIL_POST);
         }
     }
