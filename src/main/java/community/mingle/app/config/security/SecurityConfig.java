@@ -1,11 +1,8 @@
 
 package community.mingle.app.config.security;
 
-//import community.mingle.app.config.CustomAccessDeniedHandler;
 import community.mingle.app.config.CustomAuthenticationEntryPoint;
-//import community.mingle.app.src.auth.TokenService;
 import community.mingle.app.config.TokenHelper;
-import community.mingle.app.config.handler.JwtHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +59,7 @@ public class SecurityConfig {
 //                .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/ping").permitAll()
                 .antMatchers("/post/**").access("@memberGuard.check()")
                 .antMatchers("/member/**").access("@memberGuard.check()")
                 .antMatchers("/comment/**").access("@memberGuard.check()")
