@@ -22,7 +22,7 @@ public class BestTotalPostDTO {
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
         if (totalPost.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }

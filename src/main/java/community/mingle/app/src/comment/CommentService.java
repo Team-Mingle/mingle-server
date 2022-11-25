@@ -95,8 +95,9 @@ public class CommentService {
         try {
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
             Long anonymousId;
-
-            if (postTotalCommentRequest.isAnonymous() == true) {
+            if (Objects.equals(member.getId(), post.getMember().getId())) { //댓쓴이가 author 일때
+                anonymousId = Long.valueOf(0); //isAnonymous = true, but AnonymousNo is 0
+            } else if (postTotalCommentRequest.isAnonymous() == true) {
                 anonymousId = commentRepository.findTotalAnonymousId(post, memberIdByJwt);
             } else {
                 anonymousId = Long.valueOf(0); // null -> 0 으로 수정
@@ -107,7 +108,7 @@ public class CommentService {
             System.out.println(comment);
             commentRepository.saveTotalComment(comment);
             sendTotalPush(post, postTotalCommentRequest, member);
-            PostTotalCommentResponse postTotalCommentResponse = new PostTotalCommentResponse(anonymousId, comment);
+            PostTotalCommentResponse postTotalCommentResponse = new PostTotalCommentResponse(anonymousId, comment, post.getMember().getId());
             return postTotalCommentResponse;
 
         } catch (Exception e) {
@@ -190,20 +191,23 @@ public class CommentService {
         try {
             Member member = commentRepository.findMemberbyId(memberIdByJwt);
             Long anonymousId;
-            if (request.isAnonymous() == true) {
-                anonymousId = commentRepository.findUnivAnonymousId(univPost, memberIdByJwt);
-                System.out.println("true");
-            } else {
-                System.out.println("false");
-                anonymousId = Long.valueOf(0); // null -> 0 으로 수정
+            if (Objects.equals(member.getId(), univPost.getMember().getId())) { //댓쓴이가 author 일때
+                anonymousId = Long.valueOf(0); //isAnonymous = true, but AnonymousNo is 0
             }
+            else if (request.isAnonymous() == true) {
+            anonymousId = commentRepository.findUnivAnonymousId(univPost, memberIdByJwt);
+            System.out.println("true");
+        } else {
+            System.out.println("false");
+            anonymousId = Long.valueOf(0); // null -> 0 으로 수정
+        }
             //댓글 생성
             UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.getMentionId(), request.isAnonymous(), anonymousId);
             System.out.println(request.isAnonymous());
             commentRepository.saveUnivComment(comment);
             sendUnivNotification(univPost, member, request); //알림 전송
             System.out.println(comment.getId());
-            PostUnivCommentResponse postUnivCommentResponse = new PostUnivCommentResponse(anonymousId, comment);
+            PostUnivCommentResponse postUnivCommentResponse = new PostUnivCommentResponse(anonymousId, comment, univPost.getMember().getId());
             return postUnivCommentResponse;
         } catch (Exception e) {
             e.printStackTrace();

@@ -42,6 +42,8 @@ public class CommentRepository {
     public Long findTotalAnonymousId(TotalPost post, Long memberIdByJwt ) throws BaseException {
         Long newAnonymousId;
 
+
+
         /**
          * case 1: 해당 게시글 커멘츠가 멤버가 있는지 없는지 확인하고 있으면 그 전 id 부여
          */

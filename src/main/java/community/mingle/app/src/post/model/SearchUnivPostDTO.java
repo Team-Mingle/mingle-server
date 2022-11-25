@@ -30,7 +30,7 @@ public class SearchUnivPostDTO {
         this.title = univPost.getTitle();
         this.contents = univPost.getContent();
         if (univPost.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else{
             this.nickname = univPost.getMember().getNickname();
         }

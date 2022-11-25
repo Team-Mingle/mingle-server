@@ -25,7 +25,7 @@ public class BestUnivPostDTO {
         title = p.getTitle();
         contents = p.getContent();
         if (p.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = p.getMember().getNickname();
         }

@@ -36,7 +36,7 @@ public class UnivPostResponse {
         title = u.getTitle();
         content = u.getContent();
         if (u.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = u.getMember().getNickname();
         }

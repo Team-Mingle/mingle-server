@@ -33,7 +33,7 @@ public class TotalPostResponse {
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
         if (totalPost.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }

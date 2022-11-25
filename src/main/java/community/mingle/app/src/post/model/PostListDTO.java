@@ -29,7 +29,7 @@ public class PostListDTO {
         this.contents = totalPost.getContent();
         this.nickname = totalPost.getMember().getNickname();
         if (totalPost.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }
@@ -48,7 +48,7 @@ public class PostListDTO {
         this.contents = univPost.getContent();
         this.nickname = univPost.getMember().getNickname();
         if (univPost.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = univPost.getMember().getNickname();
         }
