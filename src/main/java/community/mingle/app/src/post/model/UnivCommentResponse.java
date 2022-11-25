@@ -17,11 +17,14 @@ public class UnivCommentResponse {
     private int likeCount;
     private boolean isLiked;
     private boolean isMyComment;
+    private boolean isCommentFromAuthor;
+    private boolean isCommentDeleted;
+    private boolean isCommentReported;
     private String createdAt;
     private List<UnivCoCommentDTO> coCommentsList;
 
 
-    public UnivCommentResponse(UnivComment c, List<UnivCoCommentDTO> cc, Long memberId) {
+    public UnivCommentResponse(UnivComment c, List<UnivCoCommentDTO> cc, Long memberId, Long authorId) {
         commentId = c.getId();
         if (c.isAnonymous() == true) {
             this.nickname = "익명 "+c.getAnonymousId();
@@ -52,6 +55,28 @@ public class UnivCommentResponse {
         if (c.getMember().getId() == memberId) {
             isMyComment = true;
         }
+        if (c.getMember().getId() == memberId) {
+            isMyComment = true;
+        }
+
+        if (c.getMember().getId() == authorId ){
+            isCommentFromAuthor = true;
+        } else {
+            isCommentFromAuthor = false;
+        }
+
+        if (c.getStatus() == PostStatus.INACTIVE) {
+            isCommentDeleted = true;
+        } else {
+            isCommentDeleted = false;
+        }
+
+        if (c.getStatus() == PostStatus.REPORTED) {
+            isCommentReported = true;
+        } else {
+            isCommentReported = false;
+        }
+
 
         createdAt = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;

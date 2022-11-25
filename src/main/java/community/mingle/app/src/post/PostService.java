@@ -300,7 +300,7 @@ public class PostService {
                         .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
-                TotalCommentResponse totalCommentResponse = new TotalCommentResponse(tc, coCommentDtos, memberIdByJwt);
+                TotalCommentResponse totalCommentResponse = new TotalCommentResponse(tc, coCommentDtos, memberIdByJwt, totalPost.getMember().getId());
                 totalCommentResponseList.add(totalCommentResponse);
             }
             return totalCommentResponseList;
@@ -380,7 +380,7 @@ public class PostService {
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
                 //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
                 //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
-                UnivCommentResponse univCommentResponse = new UnivCommentResponse(c, coCommentDTO, memberIdByJwt);
+                UnivCommentResponse univCommentResponse = new UnivCommentResponse(c, coCommentDTO, memberIdByJwt, univPost.getMember().getId());
                 univCommentResponseList.add(univCommentResponse);
             }
             return univCommentResponseList;
