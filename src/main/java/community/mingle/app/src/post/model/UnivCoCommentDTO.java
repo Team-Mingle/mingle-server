@@ -45,9 +45,9 @@ public class UnivCoCommentDTO {
         }
 
         if (cc.getStatus() == PostStatus.REPORTED) {
-            this.content = "신고된 댓글 입니다.";
+            this.content = "신고된 댓글입니다.";
         } else if (cc.getStatus() == PostStatus.INACTIVE) {
-            this.content = "삭제된 댓글 입니다.";
+            this.content = "삭제된 댓글입니다.";
         } else {
             this.content = cc.getContent();
         }

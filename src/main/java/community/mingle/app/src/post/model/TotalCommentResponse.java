@@ -34,10 +34,10 @@ public class TotalCommentResponse {
 
         if (totalComment.getStatus() == PostStatus.REPORTED) {
             content = "신고된 댓글입니다";
-            nickname = "(알 수 없음)";
+            nickname = "(비공개됨)";
         } else if (totalComment.getStatus() == PostStatus.INACTIVE) {
             content = "삭제된 댓글입니다";
-            nickname = "(알 수 없음)";
+            nickname = "(비공개됨)";
         } else {
             content = totalComment.getContent();
         }

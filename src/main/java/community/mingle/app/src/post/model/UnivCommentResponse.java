@@ -30,9 +30,11 @@ public class UnivCommentResponse {
         }
 
         if (c.getStatus() == PostStatus.REPORTED) {
-            content = "신고된 댓글 입니다.";
+            content = "신고된 댓글입니다.";
+            nickname = "(비공개됨)";
         } else if (c.getStatus() == PostStatus.INACTIVE) {
-            content = "삭제된 댓글 입니다.";
+            content = "삭제된 댓글입니다.";
+            nickname = "(비공개됨)";
         } else {
             content = c.getContent();
         }
