@@ -23,7 +23,7 @@ public class HomeRecentPostResponse {
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
         if (totalPost.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }
@@ -39,7 +39,7 @@ public class HomeRecentPostResponse {
         contents = p.getContent();
         nickname = p.getMember().getNickname();
         if (p.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = p.getMember().getNickname();
         }

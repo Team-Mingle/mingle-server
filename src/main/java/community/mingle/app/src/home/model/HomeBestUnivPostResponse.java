@@ -25,7 +25,7 @@ public class HomeBestUnivPostResponse {
         contents = p.getContent();
         nickname = p.getMember().getNickname();
         if (p.getIsAnonymous() == true) {
-            this.nickname = "글쓴이";
+            this.nickname = "익명";
         } else {
             this.nickname = p.getMember().getNickname();
         }
