@@ -5,6 +5,8 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.Getter;
 
+import java.util.Objects;
+
 import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
 @Getter
@@ -18,9 +20,15 @@ public class TotalCoCommentDTO {
     private int likeCount;
     private boolean isLiked;
     private boolean isMyComment;
+    //11/25 추가
+    private boolean isCommentFromAuthor;
+    private boolean isCommentDeleted;
+    private boolean isCommentReported;
     private String createdAt;
 
-    public TotalCoCommentDTO(TotalComment coComment, TotalComment mention, Long memberId) {
+    public TotalCoCommentDTO(TotalComment coComment, TotalComment mention, Long memberId, Long authorId) {
+        Long coCommentWriter = coComment.getMember().getId();
+
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
 
@@ -37,9 +45,11 @@ public class TotalCoCommentDTO {
         }
 
         if (coComment.getStatus() == PostStatus.REPORTED) {
-            this.content = "신고된 댓글입니다";
+            this.content = "신고된 댓글입니다.";
+            nickname = "(비공개됨)";
         } else if (coComment.getStatus() == PostStatus.INACTIVE) {
-            this.content = "삭제된 댓글입니다";
+            this.content = "삭제된 댓글입니다.";
+            nickname = "(비공개됨)";
         } else {
             this.content = coComment.getContent();
         }
@@ -56,10 +66,24 @@ public class TotalCoCommentDTO {
             }
         }
 
-        if (coComment.getMember().getId() == memberId) {
+        if (Objects.equals(coCommentWriter, memberId)) {
             isMyComment = true;
         }
-
+        if (Objects.equals(coCommentWriter, authorId)){
+            isCommentFromAuthor = true;
+        } else {
+            isCommentFromAuthor = false;
+        }
+        if (coComment.getStatus() == PostStatus.INACTIVE) {
+            isCommentDeleted = true;
+        } else {
+            isCommentDeleted = false;
+        }
+        if (coComment.getStatus() == PostStatus.REPORTED) {
+            isCommentReported = true;
+        } else {
+            isCommentReported = false;
+        }
         this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
 
     }

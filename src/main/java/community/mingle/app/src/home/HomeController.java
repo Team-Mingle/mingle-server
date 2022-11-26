@@ -40,7 +40,7 @@ public class HomeController {
 
 
     /**
-     * 3.1 광고 배너 API
+     * 5.1 광고 배너 API
      */
     @GetMapping("/banner")
     @Operation(summary = "5.1 getBanner API", description = "5.1 홈 화면 배너 리스트 API")

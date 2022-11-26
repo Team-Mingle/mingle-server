@@ -296,7 +296,7 @@ public class PostService {
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                         .collect(Collectors.toList());
                 List<TotalCoCommentDTO> coCommentDtos = coComments.stream()
-                        .map(p -> new TotalCoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt))
+                        .map(p -> new TotalCoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
                         .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
@@ -375,7 +375,7 @@ public class PostService {
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
-                        .map(cc -> new UnivCoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt))
+                        .map(cc -> new UnivCoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
                         .collect(Collectors.toList());
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
                 //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);

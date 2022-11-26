@@ -6,6 +6,7 @@ import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 
 import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
@@ -30,6 +31,7 @@ public class TotalCommentResponse {
 
     public TotalCommentResponse(TotalComment totalComment, List<TotalCoCommentDTO> totalCoCommentDTOList, Long memberId, Long authorId) {
         commentId = totalComment.getId();
+        Long commentWriter = totalComment.getMember().getId();
 
         if (totalComment.isAnonymous() == true) {
             nickname = "익명 "+totalComment.getAnonymousId();
@@ -58,11 +60,11 @@ public class TotalCommentResponse {
             }
         }
 
-        if (totalComment.getMember().getId() == memberId) {
+        if (Objects.equals(commentWriter, memberId)) {
             isMyComment = true;
         }
 
-        if (totalComment.getMember().getId() == authorId ){
+        if (Objects.equals(commentWriter, authorId)){
             isCommentFromAuthor = true;
         } else {
             isCommentFromAuthor = false;
