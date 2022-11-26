@@ -294,6 +294,7 @@ public class PostService {
             for (TotalComment tc : totalCommentList) {
                 List<TotalComment> coComments = totalCocommentList.stream()
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE))
                         .collect(Collectors.toList());
 
                 //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
@@ -376,6 +377,7 @@ public class PostService {
                 //parentComment 하나당 해당하는 UnivComment 타입의 대댓글 찾아서 리스트 만들기
                 List<UnivComment> CoCommentList = univCoComments.stream()
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) // 더 추가: 대댓글 active 인거만 가져오기
                         .collect(Collectors.toList());
 
                 //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
