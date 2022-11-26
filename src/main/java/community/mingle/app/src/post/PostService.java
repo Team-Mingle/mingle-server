@@ -372,9 +372,14 @@ public class PostService {
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
                         .collect(Collectors.toList());
 
+                //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
+                if ((c.getStatus() == PostStatus.INACTIVE || c.getStatus() == PostStatus.REPORTED ) && CoCommentList.size() == 0) {
+                    continue;
+                }
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
                         .map(cc -> new UnivCoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
                         .collect(Collectors.toList());
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
