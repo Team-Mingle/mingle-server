@@ -295,7 +295,13 @@ public class PostService {
                 List<TotalComment> coComments = totalCocommentList.stream()
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                         .collect(Collectors.toList());
+
+                //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
+                if ((tc.getStatus() == PostStatus.INACTIVE || tc.getStatus() == PostStatus.REPORTED ) && coComments.size() == 0) {
+                    continue;
+                }
                 List<TotalCoCommentDTO> coCommentDtos = coComments.stream()
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
                         .map(p -> new TotalCoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
                         .collect(Collectors.toList());
 
