@@ -77,8 +77,17 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Copy Secret
+          env:
+            CREATE_SECRET: ${{secrets.MINGLE_APPLICATION_YML}}
+            CREATE_SECRET_DIR: src/main/resources
+            CREATE_SECRET_DIR_FILE_NAME: application.yml
+          run: echo $CREATE_SECRET | base64 --decode > $CREATE_SECRET_DIR/$CREATE_SECRET_DIR_FILE_NAME
+
       - name: Build with Gradle
         run: ./gradlew build
       #      - name: Docker build
