@@ -2,7 +2,6 @@ package community.mingle.app.utils;
 
 
 import community.mingle.app.config.exception.BadRequestException;
-import community.mingle.app.config.secret.Secret;
 import community.mingle.app.config.BaseException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
