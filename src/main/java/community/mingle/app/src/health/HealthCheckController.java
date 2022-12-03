@@ -31,4 +31,10 @@ public class HealthCheckController {
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("pong!");
     }
+
+    @GetMapping("/cicd")
+    public ResponseEntity<String> cicdTest() {
+        return ResponseEntity.ok("CI/CD Success !!");
+    }
+
 }
