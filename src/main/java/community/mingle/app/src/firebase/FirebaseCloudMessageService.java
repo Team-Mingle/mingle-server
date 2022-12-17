@@ -15,7 +15,7 @@ import java.util.List;
 public class FirebaseCloudMessageService {
 
     //***자리에 프로젝트 이름-프로젝트 ID 형태를 받아와야됨
-    private final String API_URL = "https://fcm.googleapis.com/v1/projects/***/messages:send";
+    private final String API_URL = "https://fcm.googleapis.com/v1/projects/mingle-348a1/messages:send";
     private final ObjectMapper objectMapper;
 
     public void sendMessageTo(String targetToken, String title, String body) throws IOException{

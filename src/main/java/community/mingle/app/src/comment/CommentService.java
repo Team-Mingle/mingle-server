@@ -174,9 +174,10 @@ public class CommentService {
         boolean mentionFlag = false;
         if (request.getMentionId() == null && request.getParentCommentId() == null) {
         }
+        //새로운 댓글의 부모댓글이나 맨션 댓글 id가 제대로 들어왔는지 확인하는 로직
         else {
             for (UnivComment univComment : univComments) {
-                if (Objects.equals(univComment.getId(), request.getParentCommentId())) {
+                if (Objects.equals(univComment.getId(), request.getParentCommentId())){
                     parentFlag = true;
                 }
                 if (Objects.equals(univComment.getId(), request.getMentionId())) {

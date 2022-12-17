@@ -655,19 +655,22 @@ public class PostService {
             throw new BaseException(USER_NOT_EXIST);
         }
 
+        //좋아요 중복 방지
         UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
         if (univPostLike == null) {
             throw new BaseException(DUPLICATE_LIKE);
         }
+
         else {
             try {
 //            UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
                 Long id = postRepository.save(univPostLike);
+                //이게 persist가 되자마자 바로 univpost에서 좋아요 갯수가 동기화 되는지 확인 필요
                 int likeCount = univpost.getUnivPostLikes().size();
 
-                // 인기 게시물 알림 보내주기 조건:3일 동안 좋아요 10개
+                // 인기 게시물 알림 보내주기 조건:좋아요 5개
 
-                if (univpost.getUnivPostLikes().size() == 10) {
+                if (univpost.getUnivPostLikes().size() == 5) {
                     sendUnivPostNotification(univpost, postMember);
                 }
                 return new LikeUnivPostResponse(id, likeCount);
