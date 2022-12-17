@@ -23,7 +23,7 @@ public class PostUnivCommentResponse {
         this.commentId = univComment.getId();
         if (univComment.isAnonymous() == false) {
             this.nickname = univComment.getMember().getNickname();
-        } else if (univComment.isAnonymous() && anonymousId != 0){
+        } else if (univComment.isAnonymous() && anonymousId != 0L){
             this.nickname = "익명 " + anonymousId;
         } else if (!univComment.isAnonymous() && Objects.equals(commentWriter, authorId)) {
             this.nickname = univComment.getMember().getNickname() + "(글쓴이)";
