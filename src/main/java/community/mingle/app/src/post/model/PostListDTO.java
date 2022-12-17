@@ -1,8 +1,14 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
@@ -34,7 +40,10 @@ public class PostListDTO {
             this.nickname = totalPost.getMember().getNickname();
         }
         this.likeCount = totalPost.getTotalPostLikes().size();
-        this.commentCount = totalPost.getTotalPostComments().size();
+        /** 댓글 개수*/
+        List<TotalComment> commentList = totalPost.getTotalPostComments();
+        List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
+        this.commentCount = activeComments.size();
         this.createdTime = convertLocaldatetimeToTime(totalPost.getCreatedAt());
         if(totalPost.getIsFileAttached() == true) {
             this.postImgUrl = totalPost.getTotalPostImages().get(0).getImgUrl();
@@ -54,7 +63,10 @@ public class PostListDTO {
         }
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
-        this.commentCount = univPost.getUnivComments().size();
+        /** 댓글 개수*/
+        List<UnivComment> commentList = univPost.getUnivComments();
+        List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
+        this.commentCount = activeComments.size();
         this.createdTime = convertLocaldatetimeToTime(univPost.getCreatedAt());
         if(univPost.getIsFileAttached() == true) {
             this.postImgUrl = univPost.getUnivPostImages().get(0).getImgUrl();

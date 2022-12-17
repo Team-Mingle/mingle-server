@@ -1,11 +1,14 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Total.TotalPostImage;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime;
 
@@ -40,7 +43,10 @@ public class TotalPostResponse {
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
-        this.commentCount = totalPost.getTotalPostComments().size();
+        /** 댓글 개수*/
+        List<TotalComment> commentList = totalPost.getTotalPostComments();
+        List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
+        this.commentCount = activeComments.size();
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;

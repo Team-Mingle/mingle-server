@@ -36,7 +36,6 @@ public class BestUnivPostDTO {
         }
         this.isFileAttached = p.getIsFileAttached();
         likeCount = p.getUnivPostLikes().size();
-//        commentCount = p.getUnivComments().size();
         /** 댓글 개수*/
         List<UnivComment> commentList = p.getUnivComments();
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
