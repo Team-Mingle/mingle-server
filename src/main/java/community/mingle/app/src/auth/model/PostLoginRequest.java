@@ -8,4 +8,5 @@ import lombok.Setter;
 public class PostLoginRequest {
     private String email;
     private String pwd;
+    private String fcmToken;
 }

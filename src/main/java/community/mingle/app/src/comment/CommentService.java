@@ -120,6 +120,8 @@ public class CommentService {
 
     public void sendTotalPush(TotalPost post, PostTotalCommentRequest postTotalCommentRequest, Member creatorMember) throws IOException {
         Member postMember = post.getMember();
+
+        //이거 두개는 원래 죽어있는게 맞겠지? 아ㅏ그르네
 //        Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember(); //패런츠 커멘트가 없는 놈한테도 페런츠 커멘트 아이디를 가져오려고 함 (ㅁㅊ놈)
 //        Member mentionMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getMentionId()).getMember();
         String messageTitle = "광장";
@@ -128,7 +130,8 @@ public class CommentService {
                 return;
             }
             else {
-//                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent());
+                //이게 방금 살린거
+                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent());
             }
         } else if (postTotalCommentRequest.getParentCommentId()!= null) {
             Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
@@ -147,7 +150,7 @@ public class CommentService {
                 if (map.get(member) == "creatorMemberId") {
                     continue;
                 }else{
-//                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent());
+                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent());
                 }
             }
         }
@@ -226,7 +229,7 @@ public class CommentService {
                 return;
             } else {
                 String body = "새로운 댓글이 달렸어요: " + request.getContent();
-//                fcmService.sendMessageTo(postWriter.getFcmToken(), title, body);
+                fcmService.sendMessageTo(postWriter.getFcmToken(), title, body);
             }
         }
 
@@ -260,7 +263,7 @@ public class CommentService {
                 String token = member.getFcmToken();
                 String body = "새로운 대댓글이 달렸어요: " + request.getContent();
                 System.out.println(body);
-//                fcmService.sendMessageTo(token, title, body);
+                fcmService.sendMessageTo(token, title, body);
             }
         }
     }

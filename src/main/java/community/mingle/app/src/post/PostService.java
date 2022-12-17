@@ -622,18 +622,15 @@ public class PostService {
         }
     }
 
-    public void sendTotalPostNotification(TotalPost totalpost, Member postMember) throws IOException {
-//        List<TotalPost> recentPost = postRepository.findTotalPostWithMemberLikeComment();
-//        String title = "전체 게시글";
-//
-//        if (recentPost.contains(totalpost) == true){
-//            String body = "인기 게시물로 지정되었어요";
-////          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
-//        }
-//        else {
-//                return;
-//        }
-
+    public void sendTotalPostNotification(TotalPost totalpost, Member postMember) throws IOException, BaseException{
+        List<TotalPost> recentPost = postRepository.findAllBestTotalPost(totalpost.getId());
+        if (recentPost == null) {
+            throw new BaseException(DATABASE_ERROR);
+        } else if (recentPost.contains(totalpost) == true) {
+            String title = "전체 게시글";
+            String body = "인기 게시물로 지정되었어요";
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+        }
     }
 
 
@@ -685,18 +682,15 @@ public class PostService {
      * 알림 보내기
      * //10/23 베스트 로직 바뀌면서 수정 필요
      */
-    public void sendUnivPostNotification(UnivPost univpost, Member postMember) throws IOException {
-        //List<UnivPost> recentPost = postRepository.findAllWithMemberLikeCommentCount(postMember);
-        String title = "학교 게시글";
-
-//        if (recentPost.contains(univpost) == true){
-//            String body = "인기 게시물로 지정되었어요";
-////          fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
-//        }
-//        else {
-//            return;
-//        }
-
+    public void sendUnivPostNotification(UnivPost univpost, Member postMember) throws IOException, BaseException {
+        List<UnivPost> recentPost = postRepository.findAllUnivBestPost(postMember, univpost.getId());
+        if (recentPost == null) {
+            throw new BaseException(DATABASE_ERROR);
+        } else if (recentPost.contains(univpost) == true) {
+            String title = "학교 게시글";
+            String body = "인기 게시물로 지정되었어요";
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+        }
     }
 
 

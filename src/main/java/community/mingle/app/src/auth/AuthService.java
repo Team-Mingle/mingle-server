@@ -251,6 +251,7 @@ public class AuthService {
             TokenHelper.PrivateClaims privateClaims = createPrivateClaims(memberId, memberRole);
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
             String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
+            member.setFcmToken(postLoginRequest.getFcmToken());
             return new PostLoginResponse(memberId, postLoginRequest.getEmail(), accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             e.printStackTrace();
