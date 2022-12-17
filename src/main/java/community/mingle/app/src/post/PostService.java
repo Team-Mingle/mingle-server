@@ -874,7 +874,7 @@ public class PostService {
      * 전체 게시판 검색 기능
      */
     @Transactional
-    public List<TotalPost> findAllSearch(String keyword)  throws BaseException {
+    public List<TotalPost> findAllSearch(String keyword) throws BaseException {
         List<TotalPost> searchTotalPostLists = postRepository.searchTotalPostWithKeyword(keyword);
         if (searchTotalPostLists.size() == 0) {
             throw new BaseException(POST_NOT_EXIST);

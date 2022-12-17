@@ -32,17 +32,37 @@ public class TotalCoCommentDTO {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
 
-        if (coComment.isAnonymous() == true) {
-            this.nickname = "익명 "+coComment.getAnonymousId();
-        } else{
+        if (coComment.isAnonymous() == false) {
             this.nickname = coComment.getMember().getNickname();
+        } else if (coComment.isAnonymous() && coComment.getAnonymousId() != 0L){
+            this.nickname = "익명 " + coComment.getAnonymousId();
+        } else if (!coComment.isAnonymous() && Objects.equals(coCommentWriter, authorId)) {
+            this.nickname = coComment.getMember().getNickname() + "(글쓴이)";
+        } else if (coComment.isAnonymous() && Objects.equals(coCommentWriter, authorId)) {
+            this.nickname = "익명(글쓴이)";
         }
+//        if (coComment.isAnonymous() == true) {
+//            this.nickname = "익명 "+coComment.getAnonymousId();
+//        } else{
+//            this.nickname = coComment.getMember().getNickname();
+//        }
 
-        if (mention.isAnonymous() == true) {
-            this.mention = "익명 "+mention.getAnonymousId();
-        }else{
+        Long mentionWriter = mention.getMember().getId();
+
+        if (mention.isAnonymous() == false) {
             this.mention = mention.getMember().getNickname();
+        } else if (mention.isAnonymous() && mention.getAnonymousId() != 0L){
+            this.mention = "익명 " + mention.getAnonymousId();
+        } else if (!mention.isAnonymous() && Objects.equals(mentionWriter, authorId)) {
+            this.mention = mention.getMember().getNickname() + "(글쓴이)";
+        } else if (mention.isAnonymous() && Objects.equals(mentionWriter, authorId)) {
+            this.mention = "익명(글쓴이)";
         }
+//        if (mention.isAnonymous() == true) {
+//            this.mention = "익명 "+mention.getAnonymousId();
+//        }else{
+//            this.mention = mention.getMember().getNickname();
+//        }
 
         if (coComment.getStatus() == PostStatus.REPORTED) {
             this.content = "신고된 댓글입니다.";

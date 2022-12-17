@@ -1,8 +1,13 @@
 package community.mingle.app.src.post.model;
 
 
+import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
@@ -31,7 +36,12 @@ public class UnivPostListDTO {
         }
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
-        this.commentCount = univPost.getUnivComments().size();
+
+        /** 댓글 개수*/
+        List<UnivComment> commentList = univPost.getUnivComments();
+        List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
+        this.commentCount = activeComments.size();
+
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
 //        if(univPost.getIsFileAttached() == true) {
 //            this.postImgUrl = univPost.getUnivPostImages().get(0).getImgUrl();
