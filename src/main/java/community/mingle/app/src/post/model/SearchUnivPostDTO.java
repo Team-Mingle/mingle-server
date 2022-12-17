@@ -41,7 +41,6 @@ public class SearchUnivPostDTO {
         }
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
-//        this.commentCount = univPost.getUnivComments().size();
         /** 댓글 개수*/
         List<UnivComment> commentList = univPost.getUnivComments();
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());

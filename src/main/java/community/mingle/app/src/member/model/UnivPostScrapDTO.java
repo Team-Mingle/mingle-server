@@ -1,8 +1,13 @@
 package community.mingle.app.src.member.model;
 
+import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
@@ -25,7 +30,10 @@ public class UnivPostScrapDTO {
         contents = p.getContent();
         nickname = p.getMember().getNickname();
         likeCount = p.getUnivPostLikes().size();
-        commentCount = p.getUnivComments().size();
+        /** 댓글 개수*/
+        List<UnivComment> commentList = p.getUnivComments();
+        List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
+        this.commentCount = activeComments.size();
         createdTime = convertLocaldatetimeToTime(p.getCreatedAt());
     }
 

@@ -41,7 +41,6 @@ public class SearchTotalPostDTO {
         }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
-//        this.commentCount = totalPost.getTotalPostComments().size();
         /** 댓글 개수*/
         List<TotalComment> commentList = totalPost.getTotalPostComments();
         List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
