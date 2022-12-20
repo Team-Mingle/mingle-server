@@ -3,8 +3,10 @@ package community.mingle.app.src.member;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
+import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.TotalComment;
@@ -271,6 +273,65 @@ public class MemberService {
         }
 
     }
+
+
+    //알림 리스트
+    public List<TotalNotification> getTotalNotifications() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        try {
+            List<TotalNotification> notificationDTO = memberRepository.getTotalNotification(userIdByJwt);
+            return notificationDTO;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<UnivNotification> getUnivNotifications() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        try {
+            List<UnivNotification> notificationDTO = memberRepository.getUnivNotification(userIdByJwt);
+            return notificationDTO;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //알림 읽음 여부
+    @Transactional
+    public void  readNotification(Long notificationId) throws BaseException {
+        UnivNotification univNotification;
+        TotalNotification totalNotification;
+        univNotification = memberRepository.findUnivNotification(notificationId);
+        totalNotification = memberRepository.findTotalNotification(notificationId);
+
+        try {
+            univNotification.readNotification();
+            totalNotification.readNotification();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+//    public List<NotificationDTO> sortNotifications(List<NotificationDTO> final_result)  throws BaseException {
+//        try { //sort
+//
+//
+//
+//
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//        return final_result;
+//    }
+
+
+
 
 
 }

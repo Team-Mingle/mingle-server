@@ -210,6 +210,60 @@ public class MemberRepository {
     }
 
 
+    /**알림 리스트
+     * 유저 아이디로 total , univ 둘 다 가져오고 20개 자르기
+     * 문제: 두 개를 합치는 로직
+     * join fetch 에러 뜸
+     * */
+
+    public List<UnivNotification> getUnivNotification(Long userIdByJwt) {
+        List<UnivNotification> getUnivNotification = em.createQuery("select n from UnivNotification n where n.member.id = :userIdByJwt order by n.createdAt desc", UnivNotification.class)
+                .setParameter("userIdByJwt",userIdByJwt)
+                .getResultList();
+        return getUnivNotification;
+    }
+
+
+    public List<TotalNotification> getTotalNotification(Long userIdByJwt) {
+        List<TotalNotification> resultList = em.createQuery("select t from TotalNotification t where t.member.id = :userIdByJwt order by t.createdAt desc", TotalNotification.class)
+                .setParameter("userIdByJwt",userIdByJwt)
+                .getResultList();
+        return resultList;
+    }
+
+
+
+    /**알림 읽음 여부**/
+
+    public UnivNotification findUnivNotification(Long notificationId) {
+        UnivNotification readUnivNotification = em.createQuery("select n from UnivNotification n where n.id = :notificationId", UnivNotification.class)
+                .setParameter("notificationId", notificationId)
+                .getSingleResult();
+        return readUnivNotification;
+    }
+    public TotalNotification findTotalNotification(Long notificationId) {
+        TotalNotification readTotalNotification = em.createQuery("select t from TotalNotification t where t.id = :notificationId", TotalNotification.class)
+                .setParameter("notificationId", notificationId)
+                .getSingleResult();
+        return readTotalNotification;
+    }
+
+
+    public void saveUnivNotification(UnivNotification univNotification){
+        em.persist(univNotification);
+    }
+    public void saveTotalNotification(TotalNotification totalNotification){
+        em.persist(totalNotification);
+    }
+
+
+
+
+
+
+
+
+
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberId) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ
 //        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join fetch us.univPost p where m.id = :id order by us.createdAt desc", UnivPost.class)

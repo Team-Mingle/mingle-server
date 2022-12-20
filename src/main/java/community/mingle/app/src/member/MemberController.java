@@ -3,6 +3,8 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.domain.Total.TotalNotification;
+import community.mingle.app.src.domain.Univ.UnivNotification;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import community.mingle.app.src.domain.Member;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Tag(name = "member", description = "유저 관련 API")
 @ApiResponses(value = {
@@ -200,5 +203,62 @@ public class MemberController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+
+    /**
+     * 알림 리스트 보여주기 API
+     **/
+    @GetMapping("/notification")
+    @Operation(summary = " getNotification API", description = " 알림창 리스트 API")
+    public BaseResponse<List<NotificationDTO>> getNotification() {
+        try {
+            //return (BaseResponse<List<NotificationDTO>>) memberService.CombineNotification();
+
+
+            List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
+            List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
+
+            List<NotificationDTO> result = totalNotificationList.stream()
+                    .map(t-> new NotificationDTO(t))
+                    .collect(Collectors.toList());
+
+            List<NotificationDTO> result_2 = univNotificationList.stream()
+                    .map(n-> new NotificationDTO(n))
+                    .collect(Collectors.toList());
+
+            List<NotificationDTO> final_result = Stream.concat(result.stream(), result_2.stream())
+                    .collect(Collectors.toList());
+
+            //List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
+
+            return new BaseResponse<>(final_result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+
+
+
+    /**
+     * 알림 읽었을 때  API
+     **/
+    @PatchMapping("/notification/notificationId")
+    @Operation(summary = " readNotification API", description = " 알림 읽음 여부 API")
+    public BaseResponse<String> readNotification(@RequestParam Long notificationId) {
+        try {
+            memberService.readNotification(notificationId);
+            String result = "알림을 확인하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
+
+
+
 
 }
