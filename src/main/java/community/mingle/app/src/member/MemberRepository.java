@@ -241,6 +241,8 @@ public class MemberRepository {
                 .getSingleResult();
         return readUnivNotification;
     }
+
+
     public TotalNotification findTotalNotification(Long notificationId) {
         TotalNotification readTotalNotification = em.createQuery("select t from TotalNotification t where t.id = :notificationId", TotalNotification.class)
                 .setParameter("notificationId", notificationId)

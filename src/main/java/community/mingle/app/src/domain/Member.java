@@ -1,13 +1,7 @@
 package community.mingle.app.src.domain;
 
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Total.TotalPostLike;
-import community.mingle.app.src.domain.Total.TotalPostScrap;
-import community.mingle.app.src.domain.Univ.UnivComment;
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostLike;
-import community.mingle.app.src.domain.Univ.UnivPostScrap;
+import community.mingle.app.src.domain.Total.*;
+import community.mingle.app.src.domain.Univ.*;
 import lombok.*;
 /** Setter 주의 */
 
@@ -71,6 +65,14 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<TotalComment> totalComments = new ArrayList<>();
+
+    /**알림 */
+    @OneToMany(mappedBy = "member")
+    private List<TotalNotification> totalNotifications= new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<UnivNotification> univNotifications= new ArrayList<>();
+
 
 
     private LocalDateTime agreedAt;

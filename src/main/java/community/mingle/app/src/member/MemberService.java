@@ -10,6 +10,8 @@ import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.member.model.NotificationDTO;
+import community.mingle.app.src.member.model.NotificationRequest;
 import community.mingle.app.src.member.model.ReportDTO;
 import community.mingle.app.src.member.model.ReportRequest;
 import community.mingle.app.utils.JwtService;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -298,16 +301,18 @@ public class MemberService {
 
     //알림 읽음 여부
     @Transactional
-    public void  readNotification(Long notificationId) throws BaseException {
-        UnivNotification univNotification;
-        TotalNotification totalNotification;
-        univNotification = memberRepository.findUnivNotification(notificationId);
-        totalNotification = memberRepository.findTotalNotification(notificationId);
-
+    public void  readNotification(NotificationRequest notificationRequest) throws BaseException {
         try {
-            univNotification.readNotification();
-            totalNotification.readNotification();
-
+            if (notificationRequest.getTableId() == 1){
+                TotalNotification totalNotification;
+                totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
+                totalNotification.readNotification();
+            }
+            else if (notificationRequest.getTableId() == 2) {
+                UnivNotification univNotification;
+                univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
+               univNotification.readNotification();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
@@ -315,22 +320,15 @@ public class MemberService {
     }
 
 
-//    public List<NotificationDTO> sortNotifications(List<NotificationDTO> final_result)  throws BaseException {
-//        try { //sort
-//
-//
-//
-//
-//
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//        return final_result;
-//    }
+    public List<NotificationDTO> sortNotifications(List<NotificationDTO> final_result) {
+
+        Collections.sort(final_result, new NotificationDTOComparator());
+
+        final_result.forEach(item-> System.out.println( item.getCreatedTime() ));
 
 
+        return final_result;
+    }
 
 
 

@@ -35,11 +35,9 @@ public class TotalNotification {
     @JoinColumn(name = "comment_id")
     private TotalComment totalComment;
 
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum",  name = "notification_type")
     private NotificationType notificationType;
-
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum" ,  name = "board_type")

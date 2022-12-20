@@ -212,8 +212,6 @@ public class MemberController {
     @Operation(summary = " getNotification API", description = " 알림창 리스트 API")
     public BaseResponse<List<NotificationDTO>> getNotification() {
         try {
-            //return (BaseResponse<List<NotificationDTO>>) memberService.CombineNotification();
-
 
             List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
             List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
@@ -229,14 +227,13 @@ public class MemberController {
             List<NotificationDTO> final_result = Stream.concat(result.stream(), result_2.stream())
                     .collect(Collectors.toList());
 
-            //List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
+            List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
 
-            return new BaseResponse<>(final_result);
+            return new BaseResponse<>(notifications);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
 
 
@@ -246,17 +243,17 @@ public class MemberController {
      **/
     @PatchMapping("/notification/notificationId")
     @Operation(summary = " readNotification API", description = " 알림 읽음 여부 API")
-    public BaseResponse<String> readNotification(@RequestParam Long notificationId) {
+    public BaseResponse<String> readNotification(@RequestBody NotificationRequest notificationRequest) {
         try {
-            memberService.readNotification(notificationId);
+            memberService.readNotification(notificationRequest);
             String result = "알림을 확인하였습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
+
         }
 
     }
-
 
 
 
