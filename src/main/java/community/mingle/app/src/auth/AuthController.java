@@ -6,20 +6,20 @@ import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.utils.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
+
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +45,8 @@ public class AuthController {
     private final AuthService authService;
     private final AuthRepository authRepository;
     private final JwtService jwtService;
+    private final RedisService redisService;
+    private final RedisTemplate redisTemplate;
 
 
     /**
@@ -404,6 +406,14 @@ public class AuthController {
     public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) {
         Member member = authRepository.findMemberById(fcmTokenRequest.getMemberId());
         member.setFcmToken(fcmTokenRequest.getFcmToken());
+    }
+
+    /**
+     * 1.14 로그아웃 api
+     */
+    @PostMapping("logout")
+    public void logout(@RequestBody LogoutRequest logoutRequest) throws BaseException {
+        authService.logout(logoutRequest);
     }
 
 }

@@ -9,8 +9,10 @@ import lombok.Getter;
 @Data
 public class PostLoginResponse {
 //    private String email;
-    private Long userId;
+    private Long memberId;
     private String email;
+    private String nickName;
+    private String univName;
     private String accessToken;
     private String refreshToken;
 
