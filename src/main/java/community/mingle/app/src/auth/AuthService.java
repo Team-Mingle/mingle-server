@@ -350,10 +350,10 @@ public class AuthService {
 
     /**
      *1.14 logout api
-     * @param logoutRequest
      */
-    public void logout(LogoutRequest logoutRequest) throws BaseException {
-        Member member = authRepository.findMemberById(logoutRequest.getMemberId());
+    public void logout() throws BaseException {
+        Long userIdx = jwtService.getUserIdx();
+        Member member = authRepository.findMemberById(userIdx);
         try {
             redisUtil.deleteData(member.getEmail());
         } catch (Exception e) {

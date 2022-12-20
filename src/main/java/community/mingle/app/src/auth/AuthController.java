@@ -403,8 +403,9 @@ public class AuthController {
 //            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true)))
 //    })
     @PatchMapping("fcmtoken")
-    public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) {
-        Member member = authRepository.findMemberById(fcmTokenRequest.getMemberId());
+    public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) throws BaseException {
+        Long userIdx = jwtService.getUserIdx();
+        Member member = authRepository.findMemberById(userIdx);
         member.setFcmToken(fcmTokenRequest.getFcmToken());
     }
 
@@ -412,8 +413,8 @@ public class AuthController {
      * 1.14 로그아웃 api
      */
     @PostMapping("logout")
-    public void logout(@RequestBody LogoutRequest logoutRequest) throws BaseException {
-        authService.logout(logoutRequest);
+    public void logout() throws BaseException {
+        authService.logout();
     }
 
 }

@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FcmTokenRequest {
-    private Long memberId;
+//    private Long memberId;
     private String fcmToken;
 }
