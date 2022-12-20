@@ -101,9 +101,10 @@ public class MemberRepository {
      */
     public List<TotalPost> findTotalScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p" +
-                        " where m.id = :id and p.id < :postId order by p.createdAt desc", TotalPost.class)
+                        " where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
                 .setParameter("id", memberId)
                 .setParameter("postId", postId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
@@ -119,6 +120,7 @@ public class MemberRepository {
                         "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
                 .setParameter("id", memberId)
                 .setParameter("postId", postId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
@@ -133,6 +135,7 @@ public class MemberRepository {
                         "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
                 .setParameter("id", memberId)
                 .setParameter("postId", postId)
+                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;

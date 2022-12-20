@@ -3,6 +3,7 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.post.model.TotalPostListDTO;
 import community.mingle.app.src.post.model.TotalPostListResponse;
@@ -54,16 +55,20 @@ public class MemberController {
         }
     }
 
-
-
     /**
      * 2.2 내가 쓴 글 조회 - 통합 api
      */
     @Operation(summary = "2.2 getMyTotalPosts API", description = "2.2 내가 쓴 전체 게시글 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @GetMapping("/posts/total")
     public BaseResponse<MyPagePostResponse> getMyTotalPosts (@RequestParam Long postId) {
         try {
             List<TotalPost> totalPosts = memberService.getTotalPosts(postId);
+            if (totalPosts.isEmpty()) {
+                throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
+            }
             List<MyPagePostDTO> result = totalPosts.stream()
                     .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
@@ -79,12 +84,18 @@ public class MemberController {
      * 2.3 내가 쓴 글 조회 - 학교 api
      */
     @Operation(summary = "2.3 getMyUnivPosts API", description = "2.3 내가 쓴 학교 게시글 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @GetMapping("/posts/univ")
     public BaseResponse<MyPagePostResponse> getMyUnivPosts (@RequestParam Long postId) {
         try {
             UnivName univ = memberService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = memberService.getUnivPosts(postId);
+            if (univPosts.isEmpty()) {
+                throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
+            }
             List<MyPagePostDTO> result = univPosts.stream()
                     .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
@@ -99,10 +110,16 @@ public class MemberController {
      * 2.4 내가 쓴 댓글 조회 - 전체 api
      */
     @Operation(summary = "2.4 getMyTotalComments API", description = "2.4 내가 쓴 전체 댓글 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @GetMapping("/comments/total")
     public BaseResponse<MyPagePostResponse> getTotalComments(@RequestParam Long postId) {
         try {
             List<TotalPost> totalComments = memberService.getTotalComments(postId);
+            if (totalComments.isEmpty()) {
+                throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
+            }
             List<MyPagePostDTO> result = totalComments.stream()
                     .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
@@ -118,12 +135,18 @@ public class MemberController {
      * 2.5 내가 쓴 댓글 조회 - 학교 api
      */
     @Operation(summary = "2.5 getMyUnivComments API", description = "2.4 내가 쓴 학교 댓글 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @GetMapping("/comments/univ")
     public BaseResponse<MyPagePostResponse> getUnivComments(@RequestParam Long postId) {
         try {
             UnivName univ = memberService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univComments = memberService.getUnivComments(postId);
+            if (univComments.isEmpty()) {
+                throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
+            }
             List<MyPagePostDTO> result = univComments.stream()
                     .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
@@ -139,10 +162,16 @@ public class MemberController {
      * 2.6 내가 스크랩 한 글 (전체) API
      */
     @GetMapping("/scraps/total")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @Operation(summary = "2.6 getMyTotalScraps API", description = "2.6 내가 스크랩 한 전체 게시글 API")
     public BaseResponse<MyPagePostResponse> getTotalScraps(@RequestParam Long postId) {
         try {
             List<TotalPost> totalPosts = memberService.getTotalScraps(postId);
+            if (totalPosts.isEmpty()) {
+                throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
+            }
             List<MyPagePostDTO> result = totalPosts.stream()
                     .map(post -> new MyPagePostDTO(post))
                     .collect(Collectors.toList());
@@ -161,12 +190,18 @@ public class MemberController {
      * postId 받는거 수정하기
      */
     @GetMapping("/scraps/univ")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @Operation(summary = "2.7 getMyUnivScraps API", description = "2.7 내가 스크랩 한 학교 게시글 API")
     public BaseResponse<MyPagePostResponse> getUnivScraps(@RequestParam Long postId) {
         try {
             UnivName univ = memberService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = memberService.getUnivScraps(postId);
+            if (univPosts.isEmpty()) {
+                throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
+            }
             List<MyPagePostDTO> result = univPosts.stream()
                     .map(post -> new MyPagePostDTO(post))
                     .collect(Collectors.toList());
@@ -182,10 +217,16 @@ public class MemberController {
      * 2.8 내가 좋아요 한 글 (대학) API
      */
     @GetMapping("/likes/total")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @Operation(summary = "2.8 getMyTotalLikePosts API", description = "2.8 내가 좋아요한 전체 게시글 API")
     public BaseResponse<MyPagePostResponse> getTotalLikes(@RequestParam Long postId) {
         try {
             List<TotalPost> totalPosts = memberService.getTotalLikes(postId);
+            if (totalPosts.isEmpty()) {
+                throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
+            }
             List<MyPagePostDTO> result = totalPosts.stream()
                     .map(post -> new MyPagePostDTO(post))
                     .collect(Collectors.toList());
@@ -200,6 +241,9 @@ public class MemberController {
      * 2.9 내가 좋아요 한 글 (대학) API
      */
     @GetMapping("/likes/univ")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
     @Operation(summary = "2.9 getMyUnivLikePosts API", description = "2.9 내가 좋아요한 학교 게시글 API")
     public BaseResponse<MyPagePostResponse> getUnivLikes(@RequestParam Long postId) {
         try {

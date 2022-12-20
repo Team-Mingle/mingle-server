@@ -130,6 +130,7 @@ public class MemberService {
             List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId(), postId);
             return scraps;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -145,6 +146,7 @@ public class MemberService {
             List<TotalPost> likes = memberRepository.findTotalLikes(member.getId(), postId);
             return likes;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
