@@ -78,6 +78,7 @@ public class Member {
     private LocalDateTime agreedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
     private LocalDateTime deletedAt;
 
 
@@ -113,7 +114,6 @@ public class Member {
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
-
 
     //== 비즈니스 로직 ==//
     //닉네임 수정

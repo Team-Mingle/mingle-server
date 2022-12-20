@@ -5,8 +5,8 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Univ.UnivNotification;
+import community.mingle.app.src.domain.UnivName;
 import io.swagger.v3.oas.annotations.*;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -45,7 +45,6 @@ public class MemberController {
             @ApiResponse(responseCode = "2020", description = "닉네임 수정에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
     })
     public BaseResponse<String> modifyNickname(@RequestBody PatchNicknameRequest patchNicknameRequest) {
-
         try {
             memberService.modifyNickname(patchNicknameRequest.getNickname());
             return new BaseResponse<>("닉네임 변경에 성공하였습니다.");
@@ -58,51 +57,57 @@ public class MemberController {
 
 
     /**
-     * 2.3 내가 쓴 글 조회 - 통합 api
+     * 2.2 내가 쓴 글 조회 - 통합 api
      */
     @Operation(summary = "2.2 getMyTotalPosts API", description = "2.2 내가 쓴 전체 게시글 조회 API")
     @GetMapping("/posts/total")
-    public BaseResponse<List<TotalMyPostDTO>> getTotalPosts() {
+    public BaseResponse<MyPagePostResponse> getMyTotalPosts (@RequestParam Long postId) {
         try {
-            List<TotalPost> totalPosts = memberService.getTotalPosts();
-            List<TotalMyPostDTO> result = totalPosts.stream()
-                    .map(p -> new TotalMyPostDTO(p))
+            List<TotalPost> totalPosts = memberService.getTotalPosts(postId);
+            List<MyPagePostDTO> result = totalPosts.stream()
+                    .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
+            return new BaseResponse<>(myPagePostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
 
+
     /**
-     * 2.4 내가 쓴 글 조회 - 학교 api
+     * 2.3 내가 쓴 글 조회 - 학교 api
      */
     @Operation(summary = "2.3 getMyUnivPosts API", description = "2.3 내가 쓴 학교 게시글 조회 API")
     @GetMapping("/posts/univ")
-    public BaseResponse<List<UnivMyPostDTO>> getUnivPosts() {
+    public BaseResponse<MyPagePostResponse> getMyUnivPosts (@RequestParam Long postId) {
         try {
-            List<UnivPost> univPosts = memberService.getUnivPosts();
-            List<UnivMyPostDTO> result = univPosts.stream()
-                    .map(p -> new UnivMyPostDTO(p))
+            UnivName univ = memberService.findUniv();
+            String univName = univ.getUnivName().substring(0,3);
+            List<UnivPost> univPosts = memberService.getUnivPosts(postId);
+            List<MyPagePostDTO> result = univPosts.stream()
+                    .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
+            return new BaseResponse<>(myPagePostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
 
     /**
-     * 2.5 내가 쓴 댓글 조회 - 전체 api
+     * 2.4 내가 쓴 댓글 조회 - 전체 api
      */
     @Operation(summary = "2.4 getMyTotalComments API", description = "2.4 내가 쓴 전체 댓글 조회 API")
     @GetMapping("/comments/total")
-    public BaseResponse<List<TotalMyCommentDTO>> getTotalComments() {
+    public BaseResponse<MyPagePostResponse> getTotalComments(@RequestParam Long postId) {
         try {
-            List<TotalPost> totalComments = memberService.getTotalComments();
-            List<TotalMyCommentDTO> result = totalComments.stream()
-                    .map(p -> new TotalMyCommentDTO(p))
+            List<TotalPost> totalComments = memberService.getTotalComments(postId);
+            List<MyPagePostDTO> result = totalComments.stream()
+                    .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
+            return new BaseResponse<>(myPagePostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -110,17 +115,20 @@ public class MemberController {
 
 
     /**
-     * 2.6 내가 쓴 댓글 조회 - 학교 api
+     * 2.5 내가 쓴 댓글 조회 - 학교 api
      */
     @Operation(summary = "2.5 getMyUnivComments API", description = "2.4 내가 쓴 학교 댓글 조회 API")
     @GetMapping("/comments/univ")
-    public BaseResponse<List<UnivMyCommentDTO>> getUnivComments() {
+    public BaseResponse<MyPagePostResponse> getUnivComments(@RequestParam Long postId) {
         try {
-            List<UnivPost> univComments = memberService.getUnivComments();
-            List<UnivMyCommentDTO> result = univComments.stream()
-                    .map(p -> new UnivMyCommentDTO(p))
+            UnivName univ = memberService.findUniv();
+            String univName = univ.getUnivName().substring(0,3);
+            List<UnivPost> univComments = memberService.getUnivComments(postId);
+            List<MyPagePostDTO> result = univComments.stream()
+                    .map(p -> new MyPagePostDTO(p))
                     .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
+            return new BaseResponse<>(myPagePostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -128,18 +136,18 @@ public class MemberController {
 
 
     /**
-     * 2.7 내가 스크랩 한 글 (전체) API
+     * 2.6 내가 스크랩 한 글 (전체) API
      */
     @GetMapping("/scraps/total")
-    @Operation(summary = "2.7 getMyTotalScraps API", description = "2.7 내가 스크랩 한 전체 게시글 API")
-    public BaseResponse<List<TotalPostScrapDTO>> getTotalScraps(@RequestParam Long postId) {
+    @Operation(summary = "2.6 getMyTotalScraps API", description = "2.6 내가 스크랩 한 전체 게시글 API")
+    public BaseResponse<MyPagePostResponse> getTotalScraps(@RequestParam Long postId) {
         try {
             List<TotalPost> totalPosts = memberService.getTotalScraps(postId);
-            List<TotalPostScrapDTO> result = totalPosts.stream()
-                    .map(post -> new TotalPostScrapDTO(post))
+            List<MyPagePostDTO> result = totalPosts.stream()
+                    .map(post -> new MyPagePostDTO(post))
                     .collect(Collectors.toList());
-
-            return new BaseResponse<>(result);
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
+            return new BaseResponse<>(myPagePostResponse);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -148,20 +156,22 @@ public class MemberController {
 
 
     /**
-     * 2.8 내가 스크랩 한 글 (대학) API
+     * 2.7 내가 스크랩 한 글 (대학) API
      * 에러: 없을시 Validation
      * postId 받는거 수정하기
      */
     @GetMapping("/scraps/univ")
     @Operation(summary = "2.7 getMyUnivScraps API", description = "2.7 내가 스크랩 한 학교 게시글 API")
-    public BaseResponse<List<UnivPostScrapDTO>> getUnivScraps(@RequestParam Long postId) {
+    public BaseResponse<MyPagePostResponse> getUnivScraps(@RequestParam Long postId) {
         try {
+            UnivName univ = memberService.findUniv();
+            String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = memberService.getUnivScraps(postId);
-            List<UnivPostScrapDTO> result = univPosts.stream()
-                    .map(post -> new UnivPostScrapDTO(post))
+            List<MyPagePostDTO> result = univPosts.stream()
+                    .map(post -> new MyPagePostDTO(post))
                     .collect(Collectors.toList());
-
-            return new BaseResponse<>(result);
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
+            return new BaseResponse<>(myPagePostResponse);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }

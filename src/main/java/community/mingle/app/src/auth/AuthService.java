@@ -252,7 +252,7 @@ public class AuthService {
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
             String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
             member.setFcmToken(postLoginRequest.getFcmToken());
-            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
+            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), member.getNickname(),member.getUniv().getUnivName() ,accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e);
@@ -340,12 +340,25 @@ public class AuthService {
     }
 
 
+
     /**
      * PrivateClaim 발급
      */
-
     public TokenHelper.PrivateClaims createPrivateClaims(Long memberId, String memberRole) {
         return new TokenHelper.PrivateClaims(String.valueOf(memberId), memberRole);
     }
 
+    /**
+     *1.14 logout api
+     * @param logoutRequest
+     */
+    public void logout(LogoutRequest logoutRequest) throws BaseException {
+        Member member = authRepository.findMemberById(logoutRequest.getMemberId());
+        try {
+            redisUtil.deleteData(member.getEmail());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
 }
