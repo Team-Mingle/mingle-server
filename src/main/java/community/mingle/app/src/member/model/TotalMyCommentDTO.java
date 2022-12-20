@@ -12,16 +12,17 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 
 @Getter
 public class TotalMyCommentDTO {
-    private Long totalPostId;
+    private Long postId;
     private String title;
     private String contents;
     private String nickname;
+    private boolean isFileAttached;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 
     public TotalMyCommentDTO(TotalPost p) {
-        this.totalPostId = p.getId();
+        this.postId = p.getId();
         this.title = p.getTitle();
         this.contents = p.getContent();
         if (p.getIsAnonymous() == true) {
