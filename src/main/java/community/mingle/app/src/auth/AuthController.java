@@ -3,22 +3,23 @@ package community.mingle.app.src.auth;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.model.*;
+import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.utils.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
+
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,10 @@ import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 public class AuthController {
     //    @Autowired
     private final AuthService authService;
+    private final AuthRepository authRepository;
     private final JwtService jwtService;
+    private final RedisService redisService;
+    private final RedisTemplate redisTemplate;
 
 
     /**
@@ -378,7 +382,7 @@ public class AuthController {
     }
 
     /**
-     * access Token 재발급 By refresh Token
+     * 1.12 access Token 재발급 By refresh Token
      **/
     @Operation(summary = "1.12 reissueAccessToken api", description = "1.12 AccessToken, RefreshToken 재발급 API")
     @PostMapping("refresh-token")
@@ -389,6 +393,27 @@ public class AuthController {
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
+    }
+
+    /**
+     * 1.13 fcm Token 리프레시 api
+     */
+    @Operation(summary = "1.13 fcm token refresh api", description = "1.13 fcm Token 리프레시 api")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true)))
+//    })
+    @PatchMapping("fcmtoken")
+    public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) {
+        Member member = authRepository.findMemberById(fcmTokenRequest.getMemberId());
+        member.setFcmToken(fcmTokenRequest.getFcmToken());
+    }
+
+    /**
+     * 1.14 로그아웃 api
+     */
+    @PostMapping("logout")
+    public void logout(@RequestBody LogoutRequest logoutRequest) throws BaseException {
+        authService.logout(logoutRequest);
     }
 
 }
