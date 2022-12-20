@@ -97,6 +97,7 @@ public enum BaseResponseStatus {
     EMPTY_POSTS_LIST(false, 3031, "해당 카테고리에 게시물이 없습니다."),
     INVALID_POST_CATEGORY(false, 3032, "유효하지 않은 카테고리 입니다."),
     CREATE_FAIL_POST(false, 3033, "게시물 생성에 실패하였습니다."),
+    EMPTY_MYPOST_LIST(false, 3034, "게시글이 없어요"),
     POST_NOT_EXIST(false, 3035, "게시물이 존재하지 않습니다."),
     REPORTED_DELETED_POST(false, 3036, "삭제되거나 신고된 게시물 입니다."),
     MODIFY_NOT_AUTHORIZED(false, 3040, "게시물 수정 권한이 없습니다."),
@@ -105,6 +106,7 @@ public enum BaseResponseStatus {
     DUPLICATE_SCRAP(false, 3061, "이미 스크랩을 눌렀어요."),
     DELETED_LIKE(false, 3062, "이미 좋아요를 취소했어요."),
     DELETED_SCRAP(false, 3063, "이미 스크랩을 취소했어요."),
+
 
 
     /**
