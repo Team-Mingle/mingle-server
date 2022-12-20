@@ -404,14 +404,7 @@ public class AuthController {
     })
     @PatchMapping("fcmtoken")
     public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) throws BaseException {
-        Long userIdx = jwtService.getUserIdx();
-        try {
-            Member member = authRepository.findMemberById(userIdx);
-            member.setFcmToken(fcmTokenRequest.getFcmToken());
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-
+        authService.refreshFcmToken(fcmTokenRequest);
     }
 
     /**
