@@ -8,6 +8,7 @@ import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.member.model.ReportDTO;
 import community.mingle.app.src.member.model.ReportRequest;
 import community.mingle.app.utils.JwtService;
@@ -52,10 +53,10 @@ public class MemberService {
     /**
      * 2.3 내가 쓴 글 조회
      */
-    public List<TotalPost> getTotalPosts() throws BaseException {
+    public List<TotalPost> getTotalPosts(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
-            List<TotalPost> posts = memberRepository.findTotalPosts(userIdByJwt);
+            List<TotalPost> posts = memberRepository.findTotalPosts(userIdByJwt, postId);
             return posts;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
@@ -65,10 +66,10 @@ public class MemberService {
     /**
      * 2.4
      */
-    public List<UnivPost> getUnivPosts() throws BaseException {
+    public List<UnivPost> getUnivPosts(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
-            List<UnivPost> posts = memberRepository.findUnivPosts(userIdByJwt);
+            List<UnivPost> posts = memberRepository.findUnivPosts(userIdByJwt, postId);
             return posts;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
@@ -79,10 +80,10 @@ public class MemberService {
     /**
      * 2.5 내가 쓴 댓글 조회
      */
-    public List<TotalPost> getTotalComments() throws BaseException {
+    public List<TotalPost> getTotalComments(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
-            List<TotalPost> comments = memberRepository.findTotalComments(userIdByJwt);
+            List<TotalPost> comments = memberRepository.findTotalComments(userIdByJwt, postId);
             return comments;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
@@ -93,10 +94,10 @@ public class MemberService {
     /**
      * 2.6
      */
-    public List<UnivPost> getUnivComments() throws BaseException {
+    public List<UnivPost> getUnivComments(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
-            List<UnivPost> comments = memberRepository.findUnivComments(userIdByJwt);
+            List<UnivPost> comments = memberRepository.findUnivComments(userIdByJwt, postId);
             return comments;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
@@ -125,7 +126,6 @@ public class MemberService {
     public List<TotalPost> getTotalScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         Member member = memberRepository.findMember(userIdByJwt);
-
         try {
             List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId(), postId);
             return scraps;
@@ -273,4 +273,13 @@ public class MemberService {
     }
 
 
+    public UnivName findUniv() throws BaseException {
+        Member member;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = memberRepository.findMember(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+        return member.getUniv();
+    }
 }
