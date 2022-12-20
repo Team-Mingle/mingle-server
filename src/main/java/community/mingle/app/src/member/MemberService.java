@@ -134,8 +134,41 @@ public class MemberService {
         }
     }
 
+
     /**
-     * 2.9 유저 삭제
+     * 2.9 잔체 좋아요 게시물
+     */
+    public List<TotalPost> getTotalLikes(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+        try {
+            List<TotalPost> likes = memberRepository.findTotalLikes(member.getId(), postId);
+            return likes;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 2.10 학교 좋아요 게시물
+     */
+    public List<UnivPost> getUnivLikes(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+        try {
+            List<UnivPost> likes = memberRepository.findUnivLikes(member.getId(), postId);
+            return likes;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 2.11 유저 삭제
      */
     @Transactional
     public void  deleteMember() throws BaseException {
@@ -157,7 +190,7 @@ public class MemberService {
 
 
     /**
-     * 2.10 report API
+     * 2.12 report API
      */
     @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
@@ -282,4 +315,6 @@ public class MemberService {
         }
         return member.getUniv();
     }
+
+
 }

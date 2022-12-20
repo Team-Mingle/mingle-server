@@ -178,12 +178,52 @@ public class MemberController {
     }
 
 
+    /**
+     * 2.8 내가 좋아요 한 글 (대학) API
+     */
+    @GetMapping("/likes/total")
+    @Operation(summary = "2.8 getMyTotalLikePosts API", description = "2.8 내가 좋아요한 전체 게시글 API")
+    public BaseResponse<MyPagePostResponse> getTotalLikes(@RequestParam Long postId) {
+        try {
+            List<TotalPost> totalPosts = memberService.getTotalLikes(postId);
+            List<MyPagePostDTO> result = totalPosts.stream()
+                    .map(post -> new MyPagePostDTO(post))
+                    .collect(Collectors.toList());
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
+            return new BaseResponse<>(myPagePostResponse);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
     /**
-     * 2.9 유저 삭제 API
+     * 2.9 내가 좋아요 한 글 (대학) API
+     */
+    @GetMapping("/likes/univ")
+    @Operation(summary = "2.9 getMyUnivLikePosts API", description = "2.9 내가 좋아요한 학교 게시글 API")
+    public BaseResponse<MyPagePostResponse> getUnivLikes(@RequestParam Long postId) {
+        try {
+            UnivName univ = memberService.findUniv();
+            String univName = univ.getUnivName().substring(0,3);
+            List<UnivPost> univPosts = memberService.getUnivLikes(postId);
+            List<MyPagePostDTO> result = univPosts.stream()
+                    .map(post -> new MyPagePostDTO(post))
+                    .collect(Collectors.toList());
+            MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
+            return new BaseResponse<>(myPagePostResponse);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+
+
+    /**
+     * 2.10 유저 삭제 API
      */
     @PatchMapping("/delete")
-    @Operation(summary = "2.9  deleteMember API", description = "2.9 유저 삭제 API")
+    @Operation(summary = "2.10 deleteMember API", description = "2.10 유저 삭제 API")
     @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true)))
     public BaseResponse<String> deleteMember() {
         try {
@@ -198,10 +238,10 @@ public class MemberController {
 
 
     /**
-     * 2.10 신고 API
+     * 2.11 신고 API
      */
     @PostMapping("/report")
-    @Operation(summary = "2.10  createReport API", description = "2.10 신고 API")
+    @Operation(summary = "2.11  createReport API", description = "2.11 신고 API")
     public BaseResponse<ReportDTO> createReport(@RequestBody ReportRequest reportRequest) {
         try {
             Member reportedMember = memberService.findReportedMember(reportRequest);

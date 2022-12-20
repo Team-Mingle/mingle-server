@@ -110,6 +110,36 @@ public class MemberRepository {
     }
 
 
+
+    /**
+     * 2.9 내가 좋아요 한 광장 글
+     */
+    public List<TotalPost> findTotalLikes(Long memberId, Long postId) {
+        List<TotalPost> resultList = em.createQuery("select p from TotalPostLike us join us.member m join us.totalPost p " +
+                        "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
+                .setParameter("id", memberId)
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
+        return resultList;
+    }
+
+
+    /**
+     * 2.10 내가 좋아요 한 잔디밭 글
+     */
+    public List<UnivPost> findUnivLikes(Long memberId, Long postId) {
+        List<UnivPost> resultList = em.createQuery("select p from UnivPostLike us join us.member m join us.univPost p " +
+                        "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
+                .setParameter("id", memberId)
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
+        return resultList;
+    }
+
+
+
     /**
      * report API
      */
