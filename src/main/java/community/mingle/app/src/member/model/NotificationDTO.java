@@ -36,7 +36,7 @@ public class NotificationDTO {
         this.notificationIdx= n.getId();
         this.memberIdx = n.getMember().getId();
         this.postIdx = n.getUnivPost().getId();
-        this.commentIdx= n.getUnivComment().getId();
+        this.commentIdx= n.getUnivComment().getId(); // <-여기 id 가 없을수도 있음. 그리고 커멘트 본문을 보여줘야함
         this.notificationType= n.getNotificationType();
         this.boardType = n.getBoardType();
         this.isRead = n.getIsRead();
