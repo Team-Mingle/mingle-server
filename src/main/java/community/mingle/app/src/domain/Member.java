@@ -112,7 +112,6 @@ public class Member {
         this.fcmToken = fcmToken;
     }
 
-
     //== 비즈니스 로직 ==//
     //닉네임 수정
     public void modifyNickname(String nickname) {

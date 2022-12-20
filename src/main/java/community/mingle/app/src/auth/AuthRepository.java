@@ -62,6 +62,11 @@ public class AuthRepository {
         // No entity found for query; nested exception is javax.persistence.NoResultException: No entity found for query
     }
 
+    public Member findMemberById(Long id) {
+        Member member = em.find(Member.class, id);
+        return member;
+    }
+
     public Member findMemberByEmail(String email) {
         List<Member> m = em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
