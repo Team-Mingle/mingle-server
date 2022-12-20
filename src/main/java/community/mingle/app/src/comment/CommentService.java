@@ -113,6 +113,9 @@ public class CommentService {
             sendTotalPush(post, postTotalCommentRequest, member);
             //알림 저장
             TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, member,comment);
+            if (member.getTotalNotifications().size() > 20) {
+                member.getTotalNotifications().remove(0);
+            }
             memberRepository.saveTotalNotification(totalNotification);
 
 
@@ -223,8 +226,9 @@ public class CommentService {
             //알림 저장
             UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, member,comment);
             memberRepository.saveUnivNotification(univNotification);
-
-
+            if (member.getTotalNotifications().size() > 20) {
+                member.getTotalNotifications().remove(0);
+            }
             PostUnivCommentResponse postUnivCommentResponse = new PostUnivCommentResponse(anonymousId, comment, univPost.getMember().getId());
             return postUnivCommentResponse;
         } catch (Exception e) {

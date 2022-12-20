@@ -210,13 +210,21 @@ public class MemberController {
      **/
     @GetMapping("/notification")
     @Operation(summary = " getNotification API", description = " 알림창 리스트 API")
-    public BaseResponse<List<NotificationDTO>> getNotification() {
+    public BaseResponse<List<NotificationDTOResult>> getNotification() {
         try {
 
             List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
             List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
 
-            List<NotificationDTO> result = totalNotificationList.stream()
+//            /**
+//             * 수정
+//             */
+//            List<MyNotification> final_result = Stream.concat(result.stream(), result_2.stream())
+//                    .collect(Collectors.toList());
+//
+
+
+            List<NotificationDTO> result_1 = totalNotificationList.stream()
                     .map(t-> new NotificationDTO(t))
                     .collect(Collectors.toList());
 
@@ -224,12 +232,15 @@ public class MemberController {
                     .map(n-> new NotificationDTO(n))
                     .collect(Collectors.toList());
 
-            List<NotificationDTO> final_result = Stream.concat(result.stream(), result_2.stream())
+            List<NotificationDTO> final_result = Stream.concat(result_1.stream(), result_2.stream())
                     .collect(Collectors.toList());
 
             List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
+            List<NotificationDTOResult> result = notifications.stream()
+                    .map(n-> new NotificationDTOResult(n))
+                    .collect(Collectors.toList());
 
-            return new BaseResponse<>(notifications);
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }

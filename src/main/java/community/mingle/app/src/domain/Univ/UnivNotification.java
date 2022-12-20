@@ -71,7 +71,7 @@ public class UnivNotification {
         univNotification.createdAt = LocalDateTime.now();
         univNotification.isRead = false;
         univNotification.boardType = BoardType.잔디밭;
-        univNotification.notificationType = NotificationType.댓글;
+        univNotification.notificationType = NotificationType.인기;
         return univNotification;
 
     }

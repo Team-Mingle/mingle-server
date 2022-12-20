@@ -322,10 +322,15 @@ public class MemberService {
 
     public List<NotificationDTO> sortNotifications(List<NotificationDTO> final_result) {
 
-        Collections.sort(final_result, new NotificationDTOComparator());
+        Collections.sort(final_result, new NotificationDTOComparator().reversed());
 
-        final_result.forEach(item-> System.out.println( item.getCreatedTime() ));
+        final_result.forEach(item-> System.out.println( item.getCreatedTime()));
 
+        if (final_result.size() <= 20) {
+            return final_result;
+        } else {
+            final_result.subList(0, 20);
+        } 
 
         return final_result;
     }

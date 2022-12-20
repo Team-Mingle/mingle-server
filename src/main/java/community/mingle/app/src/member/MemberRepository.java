@@ -219,6 +219,7 @@ public class MemberRepository {
     public List<UnivNotification> getUnivNotification(Long userIdByJwt) {
         List<UnivNotification> getUnivNotification = em.createQuery("select n from UnivNotification n where n.member.id = :userIdByJwt order by n.createdAt desc", UnivNotification.class)
                 .setParameter("userIdByJwt",userIdByJwt)
+                .setMaxResults(20)
                 .getResultList();
         return getUnivNotification;
     }
@@ -227,6 +228,7 @@ public class MemberRepository {
     public List<TotalNotification> getTotalNotification(Long userIdByJwt) {
         List<TotalNotification> resultList = em.createQuery("select t from TotalNotification t where t.member.id = :userIdByJwt order by t.createdAt desc", TotalNotification.class)
                 .setParameter("userIdByJwt",userIdByJwt)
+                .setMaxResults(20)
                 .getResultList();
         return resultList;
     }
