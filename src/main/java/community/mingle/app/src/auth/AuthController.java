@@ -399,21 +399,24 @@ public class AuthController {
      * 1.13 fcm Token 리프레시 api
      */
     @Operation(summary = "1.13 fcm token refresh api", description = "1.13 fcm Token 리프레시 api")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true)))
-//    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
+    })
     @PatchMapping("fcmtoken")
-    public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) {
-        Member member = authRepository.findMemberById(fcmTokenRequest.getMemberId());
-        member.setFcmToken(fcmTokenRequest.getFcmToken());
+    public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) throws BaseException {
+        authService.refreshFcmToken(fcmTokenRequest);
     }
 
     /**
      * 1.14 로그아웃 api
      */
+    @Operation(summary = "1.14 logout api", description = "1.14 logout api")
+    @ApiResponses({
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
+    })
     @PostMapping("logout")
-    public void logout(@RequestBody LogoutRequest logoutRequest) throws BaseException {
-        authService.logout(logoutRequest);
+    public void logout() throws BaseException {
+        authService.logout();
     }
 
 }

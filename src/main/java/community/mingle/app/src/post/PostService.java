@@ -638,7 +638,7 @@ public class PostService {
         } else if (recentPost.contains(totalpost) == true) {
             String title = "전체 게시글";
             String body = "인기 게시물로 지정되었어요";
-            fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, 1, totalpost.getId());
         }
     }
 
@@ -710,7 +710,7 @@ public class PostService {
         } else if (recentPost.contains(univpost) == true) {
             String title = "학교 게시글";
             String body = "인기 게시물로 지정되었어요";
-            fcmService.sendMessageTo(postMember.getFcmToken(), title, body);
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, 3, univpost.getId());
         }
     }
 

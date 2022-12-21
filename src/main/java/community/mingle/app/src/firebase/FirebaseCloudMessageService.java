@@ -18,8 +18,8 @@ public class FirebaseCloudMessageService {
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/mingle-348a1/messages:send";
     private final ObjectMapper objectMapper;
 
-    public void sendMessageTo(String targetToken, String title, String body) throws IOException{
-        String message = makeMessage(targetToken, title, body);
+    public void sendMessageTo(String targetToken, String title, String body, int tableId, Long postId) throws IOException{
+        String message = makeMessage(targetToken, title, body, tableId, postId);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
@@ -30,10 +30,13 @@ public class FirebaseCloudMessageService {
         System.out.println(response.body().string());
     }
 
-    private String makeMessage(String targetToken, String title, String body) throws com.fasterxml.jackson.core.JsonProcessingException {
+    private String makeMessage(String targetToken, String title, String body, int tableId, Long postId) throws com.fasterxml.jackson.core.JsonProcessingException {
 
-        FcmMessage fcmMessage = FcmMessage.builder().message(FcmMessage.Message.builder().token(targetToken)
-                        .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).build()).build())
+        FcmMessage fcmMessage = FcmMessage.builder()
+                .message(FcmMessage.Message.builder().token(targetToken)
+                        .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).build())
+                        .data(FcmMessage.Data.builder().tableId(tableId).postId(postId).build())
+                        .build())
                 .validate_only(false).build();
         return objectMapper.writeValueAsString(fcmMessage);
     }

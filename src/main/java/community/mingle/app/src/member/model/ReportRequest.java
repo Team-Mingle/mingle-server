@@ -6,6 +6,6 @@ import lombok.Getter;
 public class ReportRequest {
     private int tableId;
     private Long contentId;
-    private int type;
-    private String reason;
+//    private int type;
+//    private String reason;
 }

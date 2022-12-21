@@ -135,12 +135,47 @@ public class MemberService {
             List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId(), postId);
             return scraps;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
+
     /**
-     * 2.9 유저 삭제
+     * 2.9 잔체 좋아요 게시물
+     */
+    public List<TotalPost> getTotalLikes(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+        try {
+            List<TotalPost> likes = memberRepository.findTotalLikes(member.getId(), postId);
+            return likes;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 2.10 학교 좋아요 게시물
+     */
+    public List<UnivPost> getUnivLikes(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+        try {
+            List<UnivPost> likes = memberRepository.findUnivLikes(member.getId(), postId);
+            return likes;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 2.11 유저 삭제
      */
     @Transactional
     public void  deleteMember() throws BaseException {
@@ -162,7 +197,7 @@ public class MemberService {
 
 
     /**
-     * 2.10 report API
+     * 2.12 report API
      */
     @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
@@ -198,7 +233,7 @@ public class MemberService {
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
-            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId, reportRequest.getType(), reportRequest.getReason());
+            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId);
             Long reportId = memberRepository.reportSave(report);
             //reportDTO에 reportId를 담아서 반환해 줌 (신고가 잘 저장됐다는 뜻)
             ReportDTO reportDTO = new ReportDTO(reportId);
@@ -346,4 +381,6 @@ public class MemberService {
         }
         return member.getUniv();
     }
+
+
 }
