@@ -35,6 +35,22 @@ public class NotificationDTOResult {
         this.notificationIdx= t.getNotificationIdx();
         this.memberIdx = t.getMemberIdx();
 
+        if (t.getBoardType().equals(BoardType.광장)) {
+            if (t.getTotalComment().isPresent()) {
+                this.content = t.getTotalComment().get().getContent();//댓글
+            } else {
+                this.content = t.getTotalPost().getTitle(); //인기게시물
+            }
+        }
+        else if (t.getBoardType().equals(BoardType.잔디밭)) {
+            System.out.println("실행");
+            if (t.getUnivComment().isPresent()) { //댓글
+                this.content = t.getUnivComment().get().getContent();
+            } else {
+                this.content = t.getUnivPost().getTitle();   //인기게시물
+            }
+        }
+
 //        if (boardType.equals(BoardType.광장)) {
 //            if (Objects.isNull(t.getTotalComment())) {
 //                this.content = t.getTotalComment().getContent();//댓글
@@ -43,24 +59,7 @@ public class NotificationDTOResult {
 //                this.content = t.getTotalPost().getTitle(); //인기게시물
 //            }
 //        }
-        System.out.println(t.getBoardType());
-        if (boardType.equals(BoardType.광장)) {
-            if (t.getTotalComment().isPresent()) {
-                this.content = t.getTotalComment().get().getContent();//댓글
-            } else {
-                this.content = t.getTotalPost().getTitle(); //인기게시물
-//                this.content = ofNullable(t.getTotalComment().orElse(null));
-            }
-        }
-        else if (boardType.equals(BoardType.잔디밭)) {
-            System.out.println(t.getUnivComment().get().getContent());
-            if (t.getUnivComment().isPresent()) { //댓글
-                this.content = t.getUnivComment().get().getContent();
-            } else {
-                System.out.println(t.getUnivPost().getTitle());
-                this.content = t.getUnivPost().getTitle();   //인기게시물
-            }
-        }
+
 //        else if (boardType.equals(BoardType.잔디밭)) {
 ////            if (t.getUnivComment() != null) { //댓글
 //            if (Objects.isNull(t.getUnivComment())) {
@@ -69,6 +68,7 @@ public class NotificationDTOResult {
 //                this.content = t.getUnivPost().getTitle();   //인기게시물
 //            }
 //        }
+
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
         this.isRead = t.isRead();
