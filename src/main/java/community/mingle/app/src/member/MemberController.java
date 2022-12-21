@@ -298,4 +298,18 @@ public class MemberController {
         }
     }
 
+
+
+    /**
+     * 2.12 로그아웃 api
+     */
+    @Operation(summary = "2.12 logout api", description = "2.12 logout api")
+    @ApiResponses({
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
+    })
+    @PostMapping("logout")
+    public void logout() throws BaseException {
+        memberService.logout();
+    }
+
 }

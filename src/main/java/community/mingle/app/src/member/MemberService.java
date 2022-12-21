@@ -2,6 +2,7 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
+import community.mingle.app.src.auth.RedisUtil;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.TableType;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -28,6 +29,7 @@ public class MemberService {
     private final JwtService jwtService;
     private final AuthRepository authRepository;
     private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
 
 
     /**
@@ -317,6 +319,20 @@ public class MemberService {
             throw new BaseException(USER_NOT_EXIST);
         }
         return member.getUniv();
+    }
+
+
+    /**
+     * 2.12 로그아웃 api
+     */
+    public void logout() throws BaseException {
+        Long userIdx = jwtService.getUserIdx();
+        Member member = authRepository.findMemberById(userIdx);
+        try {
+            redisUtil.deleteData(member.getEmail());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 
 
