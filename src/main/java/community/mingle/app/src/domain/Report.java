@@ -20,7 +20,8 @@ public class Report {
     @Column(name ="report_id")
     private Long reportId;
 
-    @Column(name = "table_id")
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum",  name = "table_id")
     private int tableId;
 
     @Column(name = "content_id")
