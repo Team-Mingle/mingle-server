@@ -35,7 +35,7 @@ public class CommentController {
     @PostMapping("/total")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다", content = @Content (schema = @Schema(hidden = true)))
     })
     public BaseResponse<PostTotalCommentResponse> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
         try {
