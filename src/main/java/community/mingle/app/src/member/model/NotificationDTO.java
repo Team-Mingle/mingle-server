@@ -17,11 +17,17 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 public class NotificationDTO {
 
     private Long notificationIdx;
-    private Long memberIdx;
 
+    private Long memberIdx;
+    //post en
     private Long postIdx;
 
+
+    private int tableId;
+
+    //comment
     private Long commentIdx;
+    private String content;
 
     private NotificationType notificationType;
 
@@ -34,6 +40,7 @@ public class NotificationDTO {
 
     public NotificationDTO(UnivNotification n) {
         this.notificationIdx= n.getId();
+        this.tableId = n.getTableId();
         this.memberIdx = n.getMember().getId();
         this.postIdx = n.getUnivPost().getId();
         this.commentIdx= n.getUnivComment().getId(); // <-여기 id 가 없을수도 있음. 그리고 커멘트 본문을 보여줘야함
@@ -48,9 +55,10 @@ public class NotificationDTO {
 
     public NotificationDTO(TotalNotification t) {
         this.notificationIdx= t.getId();
+        this.tableId = t.getTableId();
         this.memberIdx = t.getMember().getId();
         this.postIdx = t.getTotalPost().getId();
-        this.commentIdx= t.getTotalComment().getId();
+        this.commentIdx = t.getTotalComment().getId();
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
         this.isRead = t.getIsRead();

@@ -32,6 +32,8 @@ dependencies {
 	//이메일
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+//	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation "redis.clients:jedis:3.3.0"
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.2'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-security'

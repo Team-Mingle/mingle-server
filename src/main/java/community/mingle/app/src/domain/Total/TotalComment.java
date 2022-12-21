@@ -34,7 +34,6 @@ public class TotalComment {
     private String content;
 
 
-
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
@@ -46,6 +45,11 @@ public class TotalComment {
      */
     @OneToMany(mappedBy = "totalComment")
     private List<TotalCommentLike> totalCommentLikes = new ArrayList<>();
+
+    /**알림 */
+    @OneToMany(mappedBy = "totalComment")
+    private List<TotalNotification> totalNotifications = new ArrayList<>();
+
 
     /** 익명방법? */
     @Column(name = "is_anonymous")

@@ -2,8 +2,10 @@ package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
+import community.mingle.app.src.auth.RedisUtil;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalNotification;
+import community.mingle.app.src.domain.TableType;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivNotification;
@@ -32,6 +34,7 @@ public class MemberService {
     private final JwtService jwtService;
     private final AuthRepository authRepository;
     private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
 
 
     /**
@@ -135,12 +138,47 @@ public class MemberService {
             List<TotalPost> scraps = memberRepository.findTotalScraps(member.getId(), postId);
             return scraps;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
+
     /**
-     * 2.9 유저 삭제
+     * 2.9 잔체 좋아요 게시물
+     */
+    public List<TotalPost> getTotalLikes(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+        try {
+            List<TotalPost> likes = memberRepository.findTotalLikes(member.getId(), postId);
+            return likes;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 2.10 학교 좋아요 게시물
+     */
+    public List<UnivPost> getUnivLikes(Long postId) throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(userIdByJwt);
+        try {
+            List<UnivPost> likes = memberRepository.findUnivLikes(member.getId(), postId);
+            return likes;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    /**
+     * 2.11 유저 삭제
      */
     @Transactional
     public void  deleteMember() throws BaseException {
@@ -162,20 +200,20 @@ public class MemberService {
 
 
     /**
-     * 2.10 report API
+     * 2.12 report API
      */
     @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
         Member reportedMember = null;
         //나중에 case문으로 바꿀 수 있는지 확인
         try {
-            if (reportRequest.getTableId() == 1) {
+            if (reportRequest.getTableId() == TableType.TotalPost) {
                 reportedMember = memberRepository.findReportedTotalPostMember(reportRequest.getContentId());
-            } else if (reportRequest.getTableId() == 2) {
+            } else if (reportRequest.getTableId() == TableType.TotalComment) {
                 reportedMember = memberRepository.findReportedTotalCommentMember(reportRequest.getContentId());
-            } else if (reportRequest.getTableId() == 3) {
+            } else if (reportRequest.getTableId() == TableType.UnivPost) {
                 reportedMember = memberRepository.findReportedUnivPostMember(reportRequest.getContentId());
-            } else if (reportRequest.getTableId() == 4) {
+            } else if (reportRequest.getTableId() == TableType.UnivComment) {
                 reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContentId());
             }
             return reportedMember;
@@ -198,7 +236,7 @@ public class MemberService {
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
-            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId, reportRequest.getType(), reportRequest.getReason());
+            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId);
             Long reportId = memberRepository.reportSave(report);
             //reportDTO에 reportId를 담아서 반환해 줌 (신고가 잘 저장됐다는 뜻)
             ReportDTO reportDTO = new ReportDTO(reportId);
@@ -230,7 +268,7 @@ public class MemberService {
             Long contentCount = memberRepository.countContentReport(reportRequest);
             if (contentCount == 3) {
                 //total post
-                if (reportRequest.getTableId() == 1) {
+                if (reportRequest.getTableId() == TableType.TotalPost) {
                     //신고 된 total post 찾음
                     TotalPost reportedTotalPost = memberRepository.findReportedTotalPost(reportRequest.getContentId());
                     //해당 total post에 딸린 total comments들도 찾음
@@ -243,7 +281,7 @@ public class MemberService {
                 }
 
                 //total comment
-                else if (reportRequest.getTableId() == 2) {
+                else if (reportRequest.getTableId() == TableType.TotalComment) {
                     //신고 된 total comment를 찾음
                     TotalComment reportedTotalComment = memberRepository.findReportedTotalCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
@@ -251,7 +289,7 @@ public class MemberService {
                 }
 
                 //univ post
-                else if (reportRequest.getTableId() == 3) {
+                else if (reportRequest.getTableId() == TableType.UnivPost) {
                     //신고 된 univ post를 찾음
                     UnivPost reportedUnivPost = memberRepository.findReportedUnivPost(reportRequest.getContentId());
                     //해당 univ post에 딸린 univ comments들도 찾음
@@ -264,7 +302,7 @@ public class MemberService {
                 }
 
                 //univ comment
-                else if (reportRequest.getTableId() == 4) {
+                else if (reportRequest.getTableId() == TableType.UnivComment) {
                     //신고 된 univ comment를 찾음
                     UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
@@ -346,4 +384,20 @@ public class MemberService {
         }
         return member.getUniv();
     }
+
+
+    /**
+     * 2.12 로그아웃 api
+     */
+    public void logout() throws BaseException {
+        Long userIdx = jwtService.getUserIdx();
+        Member member = authRepository.findMemberById(userIdx);
+        try {
+            redisUtil.deleteData(member.getEmail());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

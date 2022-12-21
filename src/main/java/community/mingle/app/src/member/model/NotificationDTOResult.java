@@ -21,8 +21,7 @@ public class NotificationDTOResult {
     private Long memberIdx;
 
     private Long postIdx;
-
-    private Long commentIdx;
+    private String content;
 
     private NotificationType notificationType;
 
@@ -36,13 +35,20 @@ public class NotificationDTOResult {
         this.notificationIdx= t.getNotificationIdx();
         this.memberIdx = t.getMemberIdx();
         this.postIdx = t.getPostIdx();
-        this.commentIdx = t.getCommentIdx();
+        //
+        if (t.getCommentIdx() = null){
+
+        }
+        this.content = t.getCommentIdx()
+
+
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
         this.isRead = t.isRead();
         this.createdTime =convertLocaldatetimeToTime(t.getCreatedTime());
 
     }
+
 
 }
 

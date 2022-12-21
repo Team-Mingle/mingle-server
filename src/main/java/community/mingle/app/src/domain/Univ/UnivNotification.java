@@ -73,6 +73,7 @@ public class UnivNotification {
         univNotification.setMember(member);
         univNotification.tableId = 2;
         univNotification.setUnivPost(univpost);
+        univNotification.setUnivComment(null);
         univNotification.createdAt = LocalDateTime.now();
         univNotification.isRead = false;
         univNotification.boardType = BoardType.잔디밭;

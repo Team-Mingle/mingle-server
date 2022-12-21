@@ -349,16 +349,34 @@ public class AuthService {
     }
 
     /**
-     *1.14 logout api
-     * @param logoutRequest
+     * 1.13 fcm token refresh api
      */
-    public void logout(LogoutRequest logoutRequest) throws BaseException {
-        Member member = authRepository.findMemberById(logoutRequest.getMemberId());
+    @Transactional
+    public void refreshFcmToken(FcmTokenRequest fcmTokenRequest) throws BaseException {
+        Long userIdx = jwtService.getUserIdx();
         try {
-            redisUtil.deleteData(member.getEmail());
+            Member member = authRepository.findMemberById(userIdx);
+            member.setFcmToken(fcmTokenRequest.getFcmToken());
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-
     }
+
+
+
+//    /**
+//     *1.14 logout api
+//     */
+//    public void logout() throws BaseException {
+//        Long userIdx = jwtService.getUserIdx();
+//        Member member = authRepository.findMemberById(userIdx);
+//        try {
+//            redisUtil.deleteData(member.getEmail());
+//        } catch (Exception e) {
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//
+//    }
+
+
 }
