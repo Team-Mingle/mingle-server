@@ -407,17 +407,19 @@ public class AuthController {
         authService.refreshFcmToken(fcmTokenRequest);
     }
 
-    /**
-     * 1.14 로그아웃 api
-     */
-    @Operation(summary = "1.14 logout api", description = "1.14 logout api")
-    @ApiResponses({
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
-    })
-    @PostMapping("logout")
-    public void logout() throws BaseException {
-        authService.logout();
-    }
+
+
+//    /**
+//     * 1.14 로그아웃 api
+//     */
+//    @Operation(summary = "1.14 logout api", description = "1.14 logout api")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
+//    })
+//    @PostMapping("logout")
+//    public void logout() throws BaseException {
+//        authService.logout();
+//    }
 
 }
 

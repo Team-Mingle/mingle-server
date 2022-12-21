@@ -21,8 +21,9 @@ public class Report {
     private Long reportId;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum",  name = "table_id")
-    private int tableId;
+    @Column(columnDefinition = "enum", name = "table_id")
+//    @Column(name = "table_id")
+    private TableType tableId;
 
     @Column(name = "content_id")
     private Long contentId;
@@ -45,7 +46,7 @@ public class Report {
     @Column(columnDefinition = "enum")
     private ReportStatus status;
 
-    public static Report createReport (int tableId, Long contentId, Long reportedMemberId, Long reporterMemberId) {
+    public static Report createReport (TableType tableId, Long contentId, Long reportedMemberId, Long reporterMemberId) {
         Report report = new Report();
         report.setTableId(tableId);
         report.setContentId(contentId);

@@ -17,11 +17,17 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 public class NotificationDTO {
 
     private Long notificationIdx;
-    private Long memberIdx;
 
+    private Long memberIdx;
+    //post en
     private Long postIdx;
 
+
+    private int tableId;
+
+    //comment
     private Long commentIdx;
+    private String content;
 
     private NotificationType notificationType;
 
@@ -34,9 +40,10 @@ public class NotificationDTO {
 
     public NotificationDTO(UnivNotification n) {
         this.notificationIdx= n.getId();
+        this.tableId = n.getTableId();
         this.memberIdx = n.getMember().getId();
         this.postIdx = n.getUnivPost().getId();
-        this.commentIdx= n.getUnivComment().getId();
+        this.commentIdx = n.getUnivComment().getId();
         this.notificationType= n.getNotificationType();
         this.boardType = n.getBoardType();
         this.isRead = n.getIsRead();
@@ -48,9 +55,10 @@ public class NotificationDTO {
 
     public NotificationDTO(TotalNotification t) {
         this.notificationIdx= t.getId();
+        this.tableId = t.getTableId();
         this.memberIdx = t.getMember().getId();
         this.postIdx = t.getTotalPost().getId();
-        this.commentIdx= t.getTotalComment().getId();
+        this.commentIdx = t.getTotalComment().getId();
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
         this.isRead = t.getIsRead();

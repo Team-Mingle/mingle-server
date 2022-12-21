@@ -5,6 +5,7 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.comment.model.*;
 import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.TableType;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -142,7 +143,7 @@ public class CommentService {
             }
             else {
                 //이게 방금 살린거
-                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent(), 1, post.getId());
+                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
             }
         } else if (postTotalCommentRequest.getParentCommentId()!= null) {
             Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
@@ -161,7 +162,7 @@ public class CommentService {
                 if (map.get(member) == "creatorMemberId") {
                     continue;
                 }else{
-                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent(), 1, post.getId());
+                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
                 }
             }
         }
@@ -248,7 +249,7 @@ public class CommentService {
                 return;
             } else {
                 String body = "새로운 댓글이 달렸어요: " + request.getContent();
-                fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, 3, univPost.getId());
+                fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, TableType.UnivPost, univPost.getId());
             }
         }
 
@@ -282,7 +283,7 @@ public class CommentService {
                 String token = member.getFcmToken();
                 String body = "새로운 대댓글이 달렸어요: " + request.getContent();
                 System.out.println(body);
-                fcmService.sendMessageTo(token, title, body, 3, univPost.getId());
+                fcmService.sendMessageTo(token, title, body, TableType.UnivPost, univPost.getId());
             }
         }
     }

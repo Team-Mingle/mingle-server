@@ -2,6 +2,7 @@ package community.mingle.app.src.firebase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
+import community.mingle.app.src.domain.TableType;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.springframework.core.io.ClassPathResource;
@@ -18,8 +19,8 @@ public class FirebaseCloudMessageService {
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/mingle-348a1/messages:send";
     private final ObjectMapper objectMapper;
 
-    public void sendMessageTo(String targetToken, String title, String body, int tableId, Long postId) throws IOException{
-        String message = makeMessage(targetToken, title, body, tableId, postId);
+    public void sendMessageTo(String targetToken, String title, String body, TableType tableType, Long postId) throws IOException{
+        String message = makeMessage(targetToken, title, body, tableType, postId);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
@@ -30,12 +31,12 @@ public class FirebaseCloudMessageService {
         System.out.println(response.body().string());
     }
 
-    private String makeMessage(String targetToken, String title, String body, int tableId, Long postId) throws com.fasterxml.jackson.core.JsonProcessingException {
+    private String makeMessage(String targetToken, String title, String body, TableType tableType, Long postId) throws com.fasterxml.jackson.core.JsonProcessingException {
 
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder().token(targetToken)
                         .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).build())
-                        .data(FcmMessage.Data.builder().tableId(tableId).postId(postId).build())
+                        .data(FcmMessage.Data.builder().tableId(String.valueOf(tableType)).postId(String.valueOf(postId)).build())
                         .build())
                 .validate_only(false).build();
         return objectMapper.writeValueAsString(fcmMessage);

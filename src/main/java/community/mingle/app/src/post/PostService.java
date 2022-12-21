@@ -615,6 +615,7 @@ public class PostService {
                 if (totalpost.getTotalPostLikes().size() == 10) {
                     sendTotalPostNotification(totalpost, postMember);
                     //알림 저장
+                    //문제 --> comment 가져오지 않는다
                     TotalNotification totalNotification = TotalNotification.saveTotalPostNotification(totalpost, member);
                     memberRepository.saveTotalNotification(totalNotification);
                     if (member.getTotalNotifications().size() > 20) {
@@ -638,7 +639,7 @@ public class PostService {
         } else if (recentPost.contains(totalpost) == true) {
             String title = "전체 게시글";
             String body = "인기 게시물로 지정되었어요";
-            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, 1, totalpost.getId());
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.TotalPost, totalpost.getId());
         }
     }
 
@@ -710,7 +711,7 @@ public class PostService {
         } else if (recentPost.contains(univpost) == true) {
             String title = "학교 게시글";
             String body = "인기 게시물로 지정되었어요";
-            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, 3, univpost.getId());
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.UnivPost, univpost.getId());
         }
     }
 

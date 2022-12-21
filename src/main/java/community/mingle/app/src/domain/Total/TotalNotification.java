@@ -70,6 +70,7 @@ public class TotalNotification {
         totalNotification.setMember(member);
         totalNotification.tableId = 1;
         totalNotification.setTotalPost(totalpost);
+        totalNotification.setTotalComment(null);
         totalNotification.createdAt = LocalDateTime.now();
         totalNotification.isRead = false;
         totalNotification.boardType = BoardType.광장;
