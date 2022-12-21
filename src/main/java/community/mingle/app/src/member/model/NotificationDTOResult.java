@@ -2,6 +2,7 @@ package community.mingle.app.src.member.model;
 
 
 import community.mingle.app.src.domain.BoardType;
+import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.NotificationType;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalNotification;
@@ -22,18 +23,20 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 @AllArgsConstructor
 public class NotificationDTOResult {
 
-    private Long notificationIdx;
-    private Long memberIdx;
-    private String content;
+    private Long notificationId;
+//    private Long memberId;
     private NotificationType notificationType;
+    private String content;
     private BoardType boardType;
+    private String category;
     private boolean isRead;
-    private String createdTime;
+
+//    private String createdTime;
 
 
     public NotificationDTOResult(NotificationDTO t) {
-        this.notificationIdx= t.getNotificationIdx();
-        this.memberIdx = t.getMemberIdx();
+        this.notificationId= t.getNotificationId();
+//        this.memberId = t.getMemberId();
 
         if (t.getBoardType().equals(BoardType.광장)) {
             if (t.getTotalComment().isPresent()) {
@@ -50,29 +53,10 @@ public class NotificationDTOResult {
                 this.content = t.getUnivPost().getTitle();   //인기게시물
             }
         }
-
-//        if (boardType.equals(BoardType.광장)) {
-//            if (Objects.isNull(t.getTotalComment())) {
-//                this.content = t.getTotalComment().getContent();//댓글
-//                this.content = ofNullable(t.getTotalComment().orElse(null));
-//            } else {
-//                this.content = t.getTotalPost().getTitle(); //인기게시물
-//            }
-//        }
-
-//        else if (boardType.equals(BoardType.잔디밭)) {
-////            if (t.getUnivComment() != null) { //댓글
-//            if (Objects.isNull(t.getUnivComment())) {
-//                this.content = t.getUnivComment().get();
-//            } else {
-//                this.content = t.getUnivPost().getTitle();   //인기게시물
-//            }
-//        }
-
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
         this.isRead = t.isRead();
-        this.createdTime =convertLocaldatetimeToTime(t.getCreatedTime());
+//        this.createdTime =convertLocaldatetimeToTime(t.getCreatedTime());
 
     }
 

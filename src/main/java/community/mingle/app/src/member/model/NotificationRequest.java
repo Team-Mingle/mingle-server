@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class NotificationRequest {
-    private int tableId; // 1 = total , 2 = univ
+//    private int tableId; // 1 = total , 2 = univ
+    private String tableType;
     private Long notificationId;
 }

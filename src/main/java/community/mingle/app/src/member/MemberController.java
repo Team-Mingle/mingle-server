@@ -227,14 +227,6 @@ public class MemberController {
             List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
             List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
 
-//            /**
-//             * 수정
-//             */
-//            List<MyNotification> final_result = Stream.concat(result.stream(), result_2.stream())
-//                    .collect(Collectors.toList());
-//
-
-
             List<NotificationDTO> result_1 = totalNotificationList.stream()
                     .map(t-> new NotificationDTO(t))
                     .collect(Collectors.toList());
