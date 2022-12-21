@@ -83,13 +83,15 @@ public class AuthRepository {
         List<Member> duplicatedNickname= em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)
                 .setParameter("nickname", nickname)
                 .getResultList();
-        if (duplicatedNickname.size() != 0) {
+        if (duplicatedNickname.size() == 0){
+            return false;
+        } else {
             return true;
         }
-        else if (duplicatedNickname.size() == 0){
-            return false;
-        }
-        else return false;
+//        if (duplicatedNickname.size() != 0) {
+//            return true;
+//        }
+//        else return false;
     }
 
     public boolean findEmail (String email) {

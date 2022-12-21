@@ -35,15 +35,14 @@ public class MemberService {
     /**
      * 2.1 닉네임 수정
      */
+    @Transactional
     public void modifyNickname(String nickname) throws BaseException {
-
         Long userIdByJwt = jwtService.getUserIdx();
         Member member = memberRepository.findMember(userIdByJwt);
 
-        if (authRepository.findNickname(nickname) == true) {
+        if (authRepository.findNickname(nickname)) {
             throw new BaseException(USER_EXISTS_NICKNAME);
         }
-
         try {
             member.modifyNickname(nickname);
         } catch (Exception e) {
