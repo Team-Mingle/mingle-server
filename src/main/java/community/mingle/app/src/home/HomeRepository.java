@@ -4,7 +4,9 @@ import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,10 +18,6 @@ import java.util.List;
 public class HomeRepository {
     private final EntityManager em;
 
-    public Member findMemberbyId(Long id) {
-        return em.find(Member.class, id);
-    }
-
 
     /**
      * 5.1 광고 배너 API
@@ -29,6 +27,25 @@ public class HomeRepository {
                 .getResultList();
     }
 
+    public Member findMemberbyId(Long id) {
+        try {
+            return em.createQuery("select m from Member m where m.id = :id and m.status = :status", Member.class)
+                    .setParameter("id", id)
+                    .setParameter("status", UserStatus.ACTIVE)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+//        return em.find(Member.class, id);
+    }
+
+    public int save(Banner banner) {
+        em.persist(banner);
+        return banner.getId();
+    }
+    public void save(TotalPostImage totalPostImage) {
+        em.persist(totalPostImage);
+    }
 
     /**
      * 5.2 홈 전체 베스트 게시판 api

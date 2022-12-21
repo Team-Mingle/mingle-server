@@ -37,6 +37,7 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
 
+    public static final String cloudFrontDomain = "https://d2xbxo9g2f57e.cloudfront.net/";
     public List<String> uploadFile(List<MultipartFile> multipartFile, String dirName) throws BaseException {
         List<String> fileNameList = new ArrayList<>();
 
@@ -54,7 +55,8 @@ public class S3Service {
             try(InputStream inputStream = file.getInputStream()) {
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
-                fileNameList.add(amazonS3.getUrl(bucket, fileName).toString());
+                //fileNameList.add(amazonS3.getUrl(bucket, fileName).toString());
+                fileNameList.add(cloudFrontDomain+fileName);
             } catch(Exception e) {
                 e.printStackTrace();
                 throw new BaseException(UPLOAD_FAIL_IMAGE);
