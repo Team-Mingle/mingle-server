@@ -257,8 +257,6 @@ public class MemberController {
     }
 
 
-
-
     /**
      * 알림 읽었을 때  API
      **/

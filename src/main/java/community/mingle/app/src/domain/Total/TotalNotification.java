@@ -27,6 +27,9 @@ public class TotalNotification {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "table_id")
+    private int tableId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private TotalPost totalPost;
@@ -53,6 +56,7 @@ public class TotalNotification {
     public static TotalNotification saveTotalNotification(TotalPost totalPost, Member member, TotalComment totalComment){
         TotalNotification totalNotification = new TotalNotification();
         totalNotification.setMember(member);
+        totalNotification.tableId = 1;
         totalNotification.setTotalPost(totalPost);
         totalNotification.setTotalComment(totalComment);
         totalNotification.createdAt = LocalDateTime.now();
@@ -64,6 +68,7 @@ public class TotalNotification {
     public static TotalNotification saveTotalPostNotification(TotalPost totalpost, Member member){
         TotalNotification totalNotification = new TotalNotification();
         totalNotification.setMember(member);
+        totalNotification.tableId = 1;
         totalNotification.setTotalPost(totalpost);
         totalNotification.createdAt = LocalDateTime.now();
         totalNotification.isRead = false;

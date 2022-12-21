@@ -217,11 +217,9 @@ public class MemberRepository {
     }
 
 
-    /**알림 리스트
-     * 유저 아이디로 total , univ 둘 다 가져오고 20개 자르기
-     * 문제: 두 개를 합치는 로직
-     * join fetch 에러 뜸
-     * */
+    /**
+     * 알림 리스트
+     **/
 
     public List<UnivNotification> getUnivNotification(Long userIdByJwt) {
         List<UnivNotification> getUnivNotification = em.createQuery("select n from UnivNotification n where n.member.id = :userIdByJwt order by n.createdAt desc", UnivNotification.class)
