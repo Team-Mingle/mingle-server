@@ -27,6 +27,9 @@ public class UnivNotification {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "table_id")
+    private int tableId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private UnivPost univPost;
@@ -55,6 +58,7 @@ public class UnivNotification {
     public static UnivNotification saveUnivNotification(UnivPost univPost, Member member, UnivComment univComment){
         UnivNotification univNotification = new UnivNotification();
         univNotification.setMember(member);
+        univNotification.tableId = 2;
         univNotification.setUnivPost(univPost);
         univNotification.setUnivComment(univComment);
         univNotification.createdAt = LocalDateTime.now();
@@ -67,6 +71,7 @@ public class UnivNotification {
     public static UnivNotification saveUnivTotalNotification(UnivPost univpost, Member member) {
         UnivNotification univNotification = new UnivNotification();
         univNotification.setMember(member);
+        univNotification.tableId = 2;
         univNotification.setUnivPost(univpost);
         univNotification.createdAt = LocalDateTime.now();
         univNotification.isRead = false;
