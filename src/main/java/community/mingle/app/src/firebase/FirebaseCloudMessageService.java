@@ -35,7 +35,7 @@ public class FirebaseCloudMessageService {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder().token(targetToken)
                         .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).build())
-                        .data(FcmMessage.Data.builder().tableId(tableId).postId(postId).build())
+                        .data(FcmMessage.Data.builder().tableId(String.valueOf(tableId)).postId(String.valueOf(postId)).build())
                         .build())
                 .validate_only(false).build();
         return objectMapper.writeValueAsString(fcmMessage);

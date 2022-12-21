@@ -35,8 +35,8 @@ public class FcmMessage {
     @AllArgsConstructor
     @Getter
     public static class Data {
-        private int tableId;
-        private Long postId;
+        private String tableId;
+        private String postId;
     }
 
 }
