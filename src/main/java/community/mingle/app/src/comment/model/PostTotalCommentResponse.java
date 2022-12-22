@@ -18,7 +18,7 @@ public class PostTotalCommentResponse {
         Long commentWriter = totalComment.getMember().getId();
 
         this.commentId = totalComment.getId();
-        if (totalComment.isAnonymous() == false) {
+        if (totalComment.isAnonymous() == false && !(Objects.equals(commentWriter, authorId))) {
             this.nickname = totalComment.getMember().getNickname();
         } else if (totalComment.isAnonymous() && anonymousId != 0L){
             this.nickname = "익명 " + anonymousId;

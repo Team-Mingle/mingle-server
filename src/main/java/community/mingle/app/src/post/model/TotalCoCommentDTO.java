@@ -32,7 +32,7 @@ public class TotalCoCommentDTO {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
 
-        if (coComment.isAnonymous() == false) {
+        if (coComment.isAnonymous() == false && !(Objects.equals(coCommentWriter, authorId))) {
             this.nickname = coComment.getMember().getNickname();
         } else if (coComment.isAnonymous() && coComment.getAnonymousId() != 0L){
             this.nickname = "익명 " + coComment.getAnonymousId();
@@ -58,11 +58,6 @@ public class TotalCoCommentDTO {
         } else if (mention.isAnonymous() && Objects.equals(mentionWriter, authorId)) {
             this.mention = "익명(글쓴이)";
         }
-//        if (mention.isAnonymous() == true) {
-//            this.mention = "익명 "+mention.getAnonymousId();
-//        }else{
-//            this.mention = mention.getMember().getNickname();
-//        }
 
         if (coComment.getStatus() == PostStatus.REPORTED) {
             this.content = "신고된 댓글입니다.";

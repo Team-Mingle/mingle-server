@@ -95,11 +95,12 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @ResponseBody
-    @PostMapping("checkemail") // (POST) 127.0.0.1:9000/users
+    @PostMapping("checkemail")
     public BaseResponse<String> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
         System.out.println("email=" + postUserEmailRequest.getEmail());
 
@@ -111,8 +112,8 @@ public class AuthController {
             return new BaseResponse<>(EMAIL_FORMAT_ERROR);
         }
         try {
-            String result = authService.verifyEmail(postUserEmailRequest);
-            return new BaseResponse<>(result);
+            authService.verifyEmail(postUserEmailRequest);
+            return new BaseResponse<>("이메일 확인 성공");
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -248,6 +249,7 @@ public class AuthController {
             @ApiResponse(responseCode = "2017", description = "이미 존재하는 닉네임입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2018", description = "존재하지 않는 학교 id 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3010", description = "회원가입에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
@@ -274,7 +276,6 @@ public class AuthController {
         if (!isRegexPassword(postSignupRequest.getPwd())) {
             return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
         }
-
         try {
             PostSignupResponse postSignupResponse = authService.createMember(postSignupRequest);
             return new BaseResponse<>(postSignupResponse);
@@ -294,8 +295,10 @@ public class AuthController {
             @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3011", description = "존재하지 않는 이메일이거나 비밀번호가 틀렸습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3012", description = "JWT 발급에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3018", description = "신고된 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
     @PostMapping("login")
     public BaseResponse<PostLoginResponse> logIn(@RequestBody PostLoginRequest postLoginRequest) {
@@ -410,19 +413,6 @@ public class AuthController {
         }
     }
 
-
-
-//    /**
-//     * 1.14 로그아웃 api
-//     */
-//    @Operation(summary = "1.14 logout api", description = "1.14 logout api")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
-//    })
-//    @PostMapping("logout")
-//    public void logout() throws BaseException {
-//        authService.logout();
-//    }
 
 }
 

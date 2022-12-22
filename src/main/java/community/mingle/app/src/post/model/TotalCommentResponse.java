@@ -34,7 +34,7 @@ public class TotalCommentResponse {
         Long commentWriter = totalComment.getMember().getId();
 
         this.commentId = totalComment.getId();
-        if (totalComment.isAnonymous() == false) {
+        if (totalComment.isAnonymous() == false && !(Objects.equals(commentWriter, authorId))) {
             this.nickname = totalComment.getMember().getNickname();
         } else if (totalComment.isAnonymous() && totalComment.getAnonymousId() != 0L){
             this.nickname = "익명 " + totalComment.getAnonymousId();
@@ -43,12 +43,6 @@ public class TotalCommentResponse {
         } else if ((totalComment.isAnonymous() && Objects.equals(commentWriter, authorId))){
             this.nickname = "익명(글쓴이)";
         }
-//        if (totalComment.isAnonymous() == true) {
-//            nickname = "익명 "+totalComment.getAnonymousId();
-//        } else {
-//            nickname = totalComment.getMember().getNickname();
-//        }
-
         if (totalComment.getStatus() == PostStatus.REPORTED) {
             content = "신고된 댓글입니다.";
             nickname = "(비공개됨)";

@@ -7,6 +7,7 @@ import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.src.domain.UserStatus;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import javax.security.auth.RefreshFailedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -76,24 +78,20 @@ public class AuthService {
      * 1.3 이메일 입력 & 중복검사 API
      */
     @Transactional
-    public String verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
-
+    public void verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
         try {
             String email = new SHA256().encrypt(postUserEmailRequest.getEmail());
             postUserEmailRequest.setEmail(email);
         } catch (Exception ignored) {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
-
-        try {
-            if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
-                throw new BaseException(USER_EXISTS_EMAIL);
-            }
-        } catch (Exception e) {
+        if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
+            if (authRepository.findMember(postUserEmailRequest.getEmail()).getStatus().equals(UserStatus.INACTIVE)) {
+                throw new BaseException(USER_DELETED_ERROR);
+            } else {
             throw new BaseException(USER_EXISTS_EMAIL);
+            }
         }
-
-        return null;
     }
 
 
@@ -167,16 +165,13 @@ public class AuthService {
     public PostSignupResponse createMember(PostSignupRequest postSignupRequest) throws BaseException {
 
         //닉네임 중복검사 먼저
-
         if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
             throw new BaseException(USER_EXISTS_NICKNAME);
         }
-
-//        없는 univId 일때 추가
+        //없는 univId 일때 추가
         if (authRepository.findUniv(postSignupRequest.getUnivId()) == null) {
             throw new BaseException(INVALID_UNIV_ID);
         }
-
         //이메일 암호화
         String email;
         try {
@@ -185,7 +180,6 @@ public class AuthService {
         } catch (Exception ignored) {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
-
         //비밀번호 암호화
         String pwd;
         try {
@@ -196,9 +190,12 @@ public class AuthService {
         }
 
         //이메일 중복검사
-        /** 얘를 try catch 밖으로 빼니 콘솔에 에러 문구가 안뜸. (??) */
-        if ((authRepository.findEmail(email) == true)) {
+        if ((authRepository.findEmail(email) == true)) {  //탈퇴 유저 재가입 방지
+            if (authRepository.findMember(email).getStatus().equals(UserStatus.INACTIVE)) {
+                throw new BaseException(USER_DELETED_ERROR);
+            } else {
             throw new BaseException(USER_EXISTS_EMAIL);
+            }
         }
 
         //로직
@@ -228,7 +225,6 @@ public class AuthService {
         } catch (Exception ignored) {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
-
         //비밀번호 암호화
         String encryptPwd;
         try {
@@ -237,19 +233,25 @@ public class AuthService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
-        Member member;
-
-        member = authRepository.findMemberByEmail(postLoginRequest.getEmail());
-        if (member == null) {
+        Member member = authRepository.findMemberByEmail(postLoginRequest.getEmail()); //이메일로 유저 찾기
+        //탈퇴 유저 재로그인 방지
+//        if (!(Objects.isNull(member.getDeletedAt())) && (member.getRole().equals(UserStatus.INACTIVE))) {
+//        if (member.getRole().equals(UserStatus.INACTIVE.toString())) {
+        if (member.getStatus().equals(UserStatus.INACTIVE)) {
+            throw new BaseException(USER_DELETED_ERROR);
+        } //신고 유저 로그인 방지
+//        if (member.getRole().equals(UserStatus.REPORTED.name())) {
+        if (member.getStatus().equals(UserStatus.REPORTED)) {
+            throw new BaseException(USER_REPORTED_ERROR);
+        }
+        if (member == null) { //없는 유저
+            throw new BaseException(FAILED_TO_LOGIN);
+        } //비밀번호 불일치
+        if (!(member.getPwd().equals(encryptPwd))) { //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
             throw new BaseException(FAILED_TO_LOGIN);
         }
-
-        if (!(member.getPwd().equals(encryptPwd))) {
-            throw new BaseException(FAILED_TO_LOGIN);
-        }
-
-        try {
-            Long memberId = member.getId(); //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
+        try { //토큰 발급
+            Long memberId = member.getId();
             String memberRole = member.getRole();
             TokenHelper.PrivateClaims privateClaims = createPrivateClaims(memberId, memberRole);
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
@@ -366,20 +368,6 @@ public class AuthService {
     }
 
 
-
-//    /**
-//     *1.14 logout api
-//     */
-//    public void logout() throws BaseException {
-//        Long userIdx = jwtService.getUserIdx();
-//        Member member = authRepository.findMemberById(userIdx);
-//        try {
-//            redisUtil.deleteData(member.getEmail());
-//        } catch (Exception e) {
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//
-//    }
 
 
 }

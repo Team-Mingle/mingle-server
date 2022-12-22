@@ -41,12 +41,12 @@ public class UnivCoCommentDTO {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
 
-        if (coComment.isAnonymous() == false) {
-            this.nickname = coComment.getMember().getNickname();
-        } else if (coComment.isAnonymous() && coComment.getAnonymousId() != 0L){
+        if (!coComment.isAnonymous() && Objects.equals(coCommentWriter, authorId)) {
+            this.nickname = coComment.getMember().getNickname()+ "(글쓴이)";
+        } else if (coComment.isAnonymous() && coComment.getAnonymousId() != 0L) {
             this.nickname = "익명 " + coComment.getAnonymousId();
-        } else if (!coComment.isAnonymous() && Objects.equals(coCommentWriter, authorId)) {
-            this.nickname = coComment.getMember().getNickname() + "(글쓴이)";
+        } else if (coComment.isAnonymous() == false) {
+            this.nickname = coComment.getMember().getNickname();
         } else if (coComment.isAnonymous() && Objects.equals(coCommentWriter, authorId)) {
             this.nickname = "익명(글쓴이)";
         }

@@ -225,6 +225,7 @@ public class MemberService {
             throw new BaseException(USER_MISMATCH_ERROR);
         }
         try {
+            redisUtil.deleteData(member.getEmail()); //추가
             member.deleteMember();
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -406,7 +407,6 @@ public class MemberService {
     }
 
 
-
     public List<NotificationDTO> sortNotifications(List<NotificationDTO> final_result) {
         Collections.sort(final_result, new NotificationDTOComparator().reversed());
         if (final_result.size() <= 20) {
@@ -419,8 +419,6 @@ public class MemberService {
 
 
 
-
-
     /**
      * 2.14 로그아웃 api
      */
@@ -429,7 +427,8 @@ public class MemberService {
         Long userIdx = jwtService.getUserIdx();
         Member member = authRepository.findMemberById(userIdx);
         try {
-            redisUtil.deleteData(member.getEmail());
+            redisUtil.deleteData(member.getEmail()); //refreshToken 삭제
+            member.setFcmToken(null); //fcmToken 초기화
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
