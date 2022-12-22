@@ -264,14 +264,21 @@ public class MemberController {
     }
 
 
-
     /**
      * 2.10 유저 탈퇴 API
      */
     @PatchMapping("/delete")
     @Operation(summary = "2.10  deleteMember API", description = "2.10 유저 탈퇴 API")
-    @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true)))
-    public BaseResponse<String> deleteMember(DeleteMemberRequest deleteMemberRequest) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3011", description = "존재하지 않는 이메일이거나 비밀번호가 틀렸습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3016", description = "입력하신 정보가 사용자 정보와 맞지 않습니다..", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<String> deleteMember(@RequestBody DeleteMemberRequest deleteMemberRequest) {
         try {
             if (deleteMemberRequest.getEmail().isEmpty()) {
                 return new BaseResponse<>(EMAIL_EMPTY_ERROR);
@@ -280,12 +287,13 @@ public class MemberController {
                 return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
             }
             memberService.deleteMember(deleteMemberRequest);
-            return new BaseResponse<>("탉퇴에 성공했습니다.");
+            return new BaseResponse<>("탈퇴에 성공했습니다.");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
 
     }
+
 
 
 

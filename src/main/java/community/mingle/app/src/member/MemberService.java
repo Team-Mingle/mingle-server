@@ -219,31 +219,17 @@ public class MemberService {
         //유저 삭제
         Long userIdByJwt = jwtService.getUserIdx();
         Member memberByJwt =  memberRepository.findMember(userIdByJwt);
-        if (memberByJwt.equals(member)) {
+        if (!(memberByJwt.equals(member))) {
             throw new BaseException(USER_MISMATCH_ERROR);
         }
         try {
             member.deleteMember();
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
-//    @Transactional
-//    public void  deleteMember() throws BaseException {
-//        Long userIdByJwt = jwtService.getUserIdx();
-//        Member member;
-//        member = memberRepository.findMember(userIdByJwt);
-//        if (member == null) {
-//            throw new BaseException(USER_NOT_EXIST);
-//        }
-//        try {
-//            member.deleteMember();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
+
 
 
     /**
