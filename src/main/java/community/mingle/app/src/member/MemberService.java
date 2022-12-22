@@ -1,8 +1,10 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
+import community.mingle.app.src.auth.model.PostLoginResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -10,11 +12,9 @@ import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.member.model.NotificationDTO;
-import community.mingle.app.src.member.model.NotificationRequest;
-import community.mingle.app.src.member.model.ReportDTO;
-import community.mingle.app.src.member.model.ReportRequest;
+import community.mingle.app.src.member.model.*;
 import community.mingle.app.utils.JwtService;
+import community.mingle.app.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -190,23 +190,46 @@ public class MemberService {
     /**
      * 2.10 유저 삭제
      */
+
     @Transactional
-    public void  deleteMember() throws BaseException {
-        Long userIdByJwt = jwtService.getUserIdx();
-        Member member;
-        member = memberRepository.findMember(userIdByJwt);
+    public void deleteMember(DeleteMemberRequest deleteMemberRequest) throws BaseException {
+        //로그인 확인
+        String email; //이메일 암호화
+        try {
+            email = new SHA256().encrypt(deleteMemberRequest.getEmail());
+            deleteMemberRequest.setEmail(email);
+        } catch (Exception ignored) {
+            throw new BaseException(EMAIL_ENCRYPTION_ERROR);
+        }
+        //비밀번호 암호화
+        String encryptPwd;
+        try {
+            encryptPwd = new SHA256().encrypt(deleteMemberRequest.getPwd());
+        } catch (Exception exception) {
+            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+        }
+        Member member = authRepository.findMemberByEmail(deleteMemberRequest.getEmail());
         if (member == null) {
-            throw new BaseException(USER_NOT_EXIST);
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
+        if (!(member.getPwd().equals(encryptPwd))) {
+            throw new BaseException(FAILED_TO_LOGIN);
         }
 
+        //유저 삭제
+        Long userIdByJwt = jwtService.getUserIdx();
+        Member memberByJwt =  memberRepository.findMember(userIdByJwt);
+        if (!(memberByJwt.equals(member))) {
+            throw new BaseException(USER_MISMATCH_ERROR);
+        }
         try {
             member.deleteMember();
-
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 
 
     /**
@@ -401,6 +424,7 @@ public class MemberService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 
 
 }
