@@ -32,7 +32,7 @@ public class TotalCoCommentDTO {
         this.commentId = coComment.getId();
         this.parentCommentId = coComment.getParentCommentId();
 
-        if (coComment.isAnonymous() == false) {
+        if (coComment.isAnonymous() == false && !(Objects.equals(coCommentWriter, authorId))) {
             this.nickname = coComment.getMember().getNickname();
         } else if (coComment.isAnonymous() && coComment.getAnonymousId() != 0L){
             this.nickname = "익명 " + coComment.getAnonymousId();

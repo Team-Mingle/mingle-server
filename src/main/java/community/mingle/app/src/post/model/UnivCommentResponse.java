@@ -30,7 +30,7 @@ public class UnivCommentResponse {
         commentId = c.getId();
         
         this.commentId = c.getId();
-        if (c.isAnonymous() == false) {
+        if (c.isAnonymous() == false&& !(Objects.equals(commentWriter, authorId))) {
             this.nickname = c.getMember().getNickname();
         } else if (c.isAnonymous() && c.getAnonymousId() != 0L){
             this.nickname = "익명 " + c.getAnonymousId();
