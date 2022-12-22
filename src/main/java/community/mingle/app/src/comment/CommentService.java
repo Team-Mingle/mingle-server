@@ -113,9 +113,9 @@ public class CommentService {
             commentRepository.saveTotalComment(comment);
             sendTotalPush(post, postTotalCommentRequest, member);
             //알림 저장
-            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, member,comment);
-            if (member.getTotalNotifications().size() > 20) {
-                member.getTotalNotifications().remove(0);
+            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
+            if (post.getMember().getTotalNotifications().size() > 20) {
+                post.getMember().getTotalNotifications().remove(0);
             }
             memberRepository.saveTotalNotification(totalNotification);
 
@@ -225,10 +225,10 @@ public class CommentService {
             System.out.println(comment.getId());
 
             //알림 저장
-            UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, member,comment);
+            UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, univPost.getMember(),comment);
             memberRepository.saveUnivNotification(univNotification);
-            if (member.getTotalNotifications().size() > 20) {
-                member.getTotalNotifications().remove(0);
+            if (univPost.getMember().getTotalNotifications().size() > 20) {
+                univPost.getMember().getTotalNotifications().remove(0);
             }
             PostUnivCommentResponse postUnivCommentResponse = new PostUnivCommentResponse(anonymousId, comment, univPost.getMember().getId());
             return postUnivCommentResponse;
