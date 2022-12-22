@@ -356,12 +356,14 @@ public class MemberController {
      * 2.14 로그아웃 api
      */
     @Operation(summary = "2.14 logout api", description = "2.14 logout api")
-    @ApiResponses({
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
-    })
     @PostMapping("logout")
-    public void logout() throws BaseException {
-        memberService.logout();
+    public BaseResponse<String> logout(){
+        try {
+            memberService.logout();
+            return new BaseResponse<>("로그아웃에 성공하였습니다.");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 }
