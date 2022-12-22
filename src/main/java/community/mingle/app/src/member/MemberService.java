@@ -12,6 +12,7 @@ import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.src.member.model.*;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
@@ -32,6 +33,7 @@ public class MemberService {
     private final AuthRepository authRepository;
     private final MemberRepository memberRepository;
     private final RedisUtil redisUtil;
+    private final FirebaseCloudMessageService fcmService;
 
 
     /**
@@ -263,9 +265,9 @@ public class MemberService {
         //신고한 사람의 memberId를 가져옴 by jwt
         Long reporterMemberId = jwtService.getUserIdx();
         //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
-//        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
-//            throw new BaseException(ALREADY_REPORTED);
-//        }
+        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
+            throw new BaseException(ALREADY_REPORTED);
+        }
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
@@ -288,6 +290,14 @@ public class MemberService {
             if (memberCount % 10 == 0) {
                 member.modifyReportStatus();
             }
+            redisUtil.deleteData(member.getEmail());
+            fcmService.sendMessageTo(member.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
+//            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
+//            if (post.getMember().getTotalNotifications().size() > 20) {
+//                post.getMember().getTotalNotifications().remove(0);
+//            }
+//            memberRepository.saveTotalNotification(totalNotification);
+
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
