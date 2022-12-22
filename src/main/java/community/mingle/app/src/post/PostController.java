@@ -154,7 +154,6 @@ public class PostController {
 
 
 
-
     /**
      * 3.7 학교 게시물 작성 API
      */
@@ -435,6 +434,8 @@ public class PostController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+
 
     /**
      * 3.18 학교 게시물 좋아요 취소 api

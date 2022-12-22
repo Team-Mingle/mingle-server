@@ -3,14 +3,15 @@ package community.mingle.app.src.member;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.TableType;
+import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
+import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.src.member.model.NotificationDTO;
+import community.mingle.app.src.member.model.NotificationRequest;
 import community.mingle.app.src.member.model.ReportDTO;
 import community.mingle.app.src.member.model.ReportRequest;
 import community.mingle.app.utils.JwtService;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -30,6 +32,21 @@ public class MemberService {
     private final AuthRepository authRepository;
     private final MemberRepository memberRepository;
     private final RedisUtil redisUtil;
+
+
+    /**
+     * 토큰에서 대학 추출
+     */
+    public UnivName findUniv() throws BaseException {
+        Member member;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = memberRepository.findMember(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+        return member.getUniv();
+    }
+
 
 
     /**
@@ -53,7 +70,7 @@ public class MemberService {
 
 
     /**
-     * 2.3 내가 쓴 글 조회
+     * 2.2 내가 쓴 글 조회
      */
     public List<TotalPost> getTotalPosts(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -66,7 +83,7 @@ public class MemberService {
     }
 
     /**
-     * 2.4
+     * 2.3
      */
     public List<UnivPost> getUnivPosts(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -80,7 +97,7 @@ public class MemberService {
 
 
     /**
-     * 2.5 내가 쓴 댓글 조회
+     * 2.4 내가 쓴 댓글 조회
      */
     public List<TotalPost> getTotalComments(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -94,7 +111,7 @@ public class MemberService {
 
 
     /**
-     * 2.6
+     * 2.5
      */
     public List<UnivPost> getUnivComments(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -107,7 +124,7 @@ public class MemberService {
     }
 
     /**
-     * 2.7 univ 스크랩
+     * 2.6 univ 스크랩
      */
     public List<UnivPost> getUnivScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -123,7 +140,7 @@ public class MemberService {
 
 
     /**
-     * 2.8 전체 스크랩
+     * 2.7 전체 스크랩
      */
     public List<TotalPost> getTotalScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -139,7 +156,7 @@ public class MemberService {
 
 
     /**
-     * 2.9 잔체 좋아요 게시물
+     * 2.8 잔체 좋아요 게시물
      */
     public List<TotalPost> getTotalLikes(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -156,7 +173,7 @@ public class MemberService {
 
 
     /**
-     * 2.10 학교 좋아요 게시물
+     * 2.9 학교 좋아요 게시물
      */
     public List<UnivPost> getUnivLikes(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -170,9 +187,8 @@ public class MemberService {
     }
 
 
-
     /**
-     * 2.11 유저 삭제
+     * 2.10 유저 삭제
      */
     @Transactional
     public void  deleteMember() throws BaseException {
@@ -194,7 +210,7 @@ public class MemberService {
 
 
     /**
-     * 2.12 report API
+     * 2.11 report API
      */
     @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
@@ -310,19 +326,70 @@ public class MemberService {
     }
 
 
-    public UnivName findUniv() throws BaseException {
-        Member member;
-        Long memberIdByJwt = jwtService.getUserIdx();
-        member = memberRepository.findMember(memberIdByJwt);
-        if (member == null) {
-            throw new BaseException(USER_NOT_EXIST);
+    /**
+     * 2.12 알림 리스트 API
+     */
+    public List<TotalNotification> getTotalNotifications() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        try {
+            List<TotalNotification> notificationDTO = memberRepository.getTotalNotification(userIdByJwt);
+            return notificationDTO;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
         }
-        return member.getUniv();
     }
 
 
+    public List<UnivNotification> getUnivNotifications() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        try {
+            List<UnivNotification> notificationDTO = memberRepository.getUnivNotification(userIdByJwt);
+            return notificationDTO;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     /**
-     * 2.12 로그아웃 api
+     * 2.13 알림 읽기 API
+     */
+    @Transactional
+    public void  readNotification(NotificationRequest notificationRequest) throws BaseException {
+        try {
+            if (notificationRequest.getBoardType().equals(BoardType.광장)){
+                TotalNotification totalNotification;
+                totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
+                totalNotification.readNotification();
+            }
+            else if (notificationRequest.getBoardType().equals(BoardType.잔디밭)) {
+                UnivNotification univNotification;
+                univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
+               univNotification.readNotification();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
+    public List<NotificationDTO> sortNotifications(List<NotificationDTO> final_result) {
+        Collections.sort(final_result, new NotificationDTOComparator().reversed());
+        if (final_result.size() <= 20) {
+            return final_result;
+        } else {
+            final_result.subList(0, 20);
+        }
+        return final_result;
+    }
+
+
+
+
+
+    /**
+     * 2.14 로그아웃 api
      */
     public void logout() throws BaseException {
         Long userIdx = jwtService.getUserIdx();

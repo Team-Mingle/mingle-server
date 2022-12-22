@@ -9,6 +9,7 @@ import community.mingle.app.src.domain.TableType;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
+import community.mingle.app.src.member.MemberRepository;
 import community.mingle.app.utils.JwtService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +31,8 @@ public class CommentService {
 
     private final JwtService jwtService;
     private final CommentRepository commentRepository;
+
+    private final MemberRepository memberRepository;
 
     private final FirebaseCloudMessageService firebaseCloudMessageService;
 
@@ -109,6 +112,14 @@ public class CommentService {
             System.out.println(comment);
             commentRepository.saveTotalComment(comment);
             sendTotalPush(post, postTotalCommentRequest, member);
+            //알림 저장
+            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
+            if (post.getMember().getTotalNotifications().size() > 20) {
+                post.getMember().getTotalNotifications().remove(0);
+            }
+            memberRepository.saveTotalNotification(totalNotification);
+
+
             PostTotalCommentResponse postTotalCommentResponse = new PostTotalCommentResponse(anonymousId, comment, post.getMember().getId());
             return postTotalCommentResponse;
 
@@ -212,6 +223,13 @@ public class CommentService {
             commentRepository.saveUnivComment(comment);
             sendUnivNotification(univPost, member, request); //알림 전송
             System.out.println(comment.getId());
+
+            //알림 저장
+            UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, univPost.getMember(),comment);
+            memberRepository.saveUnivNotification(univNotification);
+            if (univPost.getMember().getTotalNotifications().size() > 20) {
+                univPost.getMember().getTotalNotifications().remove(0);
+            }
             PostUnivCommentResponse postUnivCommentResponse = new PostUnivCommentResponse(anonymousId, comment, univPost.getMember().getId());
             return postUnivCommentResponse;
         } catch (Exception e) {

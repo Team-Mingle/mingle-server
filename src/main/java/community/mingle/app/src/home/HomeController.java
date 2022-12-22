@@ -5,10 +5,9 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.home.model.HomeBestTotalPostResponse;
-import community.mingle.app.src.home.model.HomeBestUnivPostResponse;
-import community.mingle.app.src.home.model.BannerResponse;
-import community.mingle.app.src.home.model.HomeRecentPostResponse;
+import community.mingle.app.src.home.model.*;
+import community.mingle.app.src.post.model.CreatePostRequest;
+import community.mingle.app.src.post.model.CreatePostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,10 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,6 +52,21 @@ public class HomeController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * 5.00 광고 배너 사진 업로드 API
+     */
+    @Operation(summary = "5.00 uploadBannerImage API", description = "5.00 배너 업로드 API")
+    @PostMapping("/banner/image")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3033", description = "배너 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<CreateBannerResponse> createBanner (@ModelAttribute CreateBannerRequest createBannerRequest){
+        try{
+            return new BaseResponse<>(homeService.createBanner(createBannerRequest));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        } }
 
 
     /**

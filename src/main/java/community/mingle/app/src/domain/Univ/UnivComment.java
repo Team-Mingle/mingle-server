@@ -2,6 +2,7 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Total.TotalNotification;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,6 +51,11 @@ public class UnivComment {
      */
     @OneToMany(mappedBy = "univComment")
     private List<UnivCommentLike> univCommentLikes = new ArrayList<>();
+
+    /**알림 */
+    @OneToMany(mappedBy = "univComment")
+    private List<UnivNotification> univNotifications = new ArrayList<>();
+
 
 
     /** 익명방법? */

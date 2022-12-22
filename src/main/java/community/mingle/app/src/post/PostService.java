@@ -5,6 +5,7 @@ import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
+import community.mingle.app.src.member.MemberRepository;
 import community.mingle.app.src.post.model.UpdatePostRequest;
 import community.mingle.app.src.post.model.CreatePostRequest;
 import community.mingle.app.src.post.model.CreatePostResponse;
@@ -35,6 +36,7 @@ public class PostService {
     private final S3Service s3Service;
 
     private final FirebaseCloudMessageService fcmService;
+    private final MemberRepository memberRepository;
 
 
     /**
@@ -612,7 +614,15 @@ public class PostService {
                 // 인기 게시물 알림 보내주기
                 if (totalpost.getTotalPostLikes().size() == 10) {
                     sendTotalPostNotification(totalpost, postMember);
+                    //알림 저장
+                    //문제 --> comment 가져오지 않는다
+                    TotalNotification totalNotification = TotalNotification.saveTotalPostNotification(totalpost, member);
+                    memberRepository.saveTotalNotification(totalNotification);
+                    if (member.getTotalNotifications().size() > 20) {
+                        member.getTotalNotifications().remove(0);
+                    }
                 }
+
                 return new LikeTotalPostResponse(id, likeCount);
 
             } catch (Exception e) {
@@ -672,9 +682,18 @@ public class PostService {
 
                 if (univpost.getUnivPostLikes().size() == 5) {
                     sendUnivPostNotification(univpost, postMember);
+                    //알림 저장
+                    UnivNotification univNotification = UnivNotification.saveUnivTotalNotification(univpost, member);
+                    memberRepository.saveUnivNotification(univNotification);
+                    if (member.getUnivNotifications().size() > 20) {
+                        member.getUnivNotifications().remove(0);
+                    }
                 }
+
+
                 return new LikeUnivPostResponse(id, likeCount);
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new BaseException(DATABASE_ERROR);
             }
         }

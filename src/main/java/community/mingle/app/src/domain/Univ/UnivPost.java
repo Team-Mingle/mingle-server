@@ -46,6 +46,9 @@ public class UnivPost {
     @OneToMany(mappedBy = "univPost")
     private List<UnivPostImage> univPostImages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "univPost")
+    private List<UnivNotification> univNotifications= new ArrayList<>();
+
     /** 3.3 추가  - 단방향 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "univ_id")
