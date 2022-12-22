@@ -70,7 +70,7 @@ public class MemberService {
 
 
     /**
-     * 2.3 내가 쓴 글 조회
+     * 2.2 내가 쓴 글 조회
      */
     public List<TotalPost> getTotalPosts(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -83,7 +83,7 @@ public class MemberService {
     }
 
     /**
-     * 2.4
+     * 2.3
      */
     public List<UnivPost> getUnivPosts(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -97,7 +97,7 @@ public class MemberService {
 
 
     /**
-     * 2.5 내가 쓴 댓글 조회
+     * 2.4 내가 쓴 댓글 조회
      */
     public List<TotalPost> getTotalComments(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -111,7 +111,7 @@ public class MemberService {
 
 
     /**
-     * 2.6
+     * 2.5
      */
     public List<UnivPost> getUnivComments(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -124,7 +124,7 @@ public class MemberService {
     }
 
     /**
-     * 2.7 univ 스크랩
+     * 2.6 univ 스크랩
      */
     public List<UnivPost> getUnivScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -140,7 +140,7 @@ public class MemberService {
 
 
     /**
-     * 2.8 전체 스크랩
+     * 2.7 전체 스크랩
      */
     public List<TotalPost> getTotalScraps(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -156,7 +156,7 @@ public class MemberService {
 
 
     /**
-     * 2.9 잔체 좋아요 게시물
+     * 2.8 잔체 좋아요 게시물
      */
     public List<TotalPost> getTotalLikes(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -173,7 +173,7 @@ public class MemberService {
 
 
     /**
-     * 2.10 학교 좋아요 게시물
+     * 2.9 학교 좋아요 게시물
      */
     public List<UnivPost> getUnivLikes(Long postId) throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -187,9 +187,8 @@ public class MemberService {
     }
 
 
-
     /**
-     * 2.11 유저 삭제
+     * 2.10 유저 삭제
      */
     @Transactional
     public void  deleteMember() throws BaseException {
@@ -211,7 +210,7 @@ public class MemberService {
 
 
     /**
-     * 2.12 report API
+     * 2.11 report API
      */
     @Transactional
     public Member findReportedMember(ReportRequest reportRequest) throws BaseException {
@@ -328,7 +327,7 @@ public class MemberService {
 
 
     /**
-     * 알림 리스트 API
+     * 2.12 알림 리스트 API
      */
     public List<TotalNotification> getTotalNotifications() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -352,7 +351,7 @@ public class MemberService {
     }
 
     /**
-     * 2.12 알림 읽기 API
+     * 2.13 알림 읽기 API
      */
     @Transactional
     public void  readNotification(NotificationRequest notificationRequest) throws BaseException {
@@ -390,7 +389,7 @@ public class MemberService {
 
 
     /**
-     * 2.13 로그아웃 api
+     * 2.14 로그아웃 api
      */
     public void logout() throws BaseException {
         Long userIdx = jwtService.getUserIdx();
