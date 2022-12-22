@@ -223,6 +223,7 @@ public class MemberService {
             throw new BaseException(USER_MISMATCH_ERROR);
         }
         try {
+            redisUtil.deleteData(member.getEmail()); //추가
             member.deleteMember();
         } catch (Exception e) {
 //            e.printStackTrace();

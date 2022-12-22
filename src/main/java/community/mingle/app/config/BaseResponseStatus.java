@@ -82,7 +82,10 @@ public enum BaseResponseStatus {
 
     USER_MISMATCH_ERROR(false, 3016, "입력하신 정보가 사용자 정보와 맞지 않습니다."),
 
-    /** 2. /member  */
+    USER_DELETED_ERROR(false, 3017,"탈퇴한 사용자입니다."),
+    USER_REPORTED_ERROR(false, 3018, "신고된 사용자입니다."),
+
+            /** 2. /member  */
     MODIFY_FAIL_NICKNAME(false, 3020,"닉네임 수정에 실패하였습니다." ),
 
     //DELETE_FAIL_USER(false,3021,"유저 삭제에 실패했습니다."),
