@@ -34,8 +34,8 @@ public class Report {
     @Column(name = "reporter_member_id")
     private Long reporterMemberId;
 
-//    @Column(name = "report_type")
-//    private int type;
+    @Column(name = "report_type")
+    private int type;
 
 //    private String reason;
 
@@ -46,13 +46,13 @@ public class Report {
     @Column(columnDefinition = "enum")
     private ReportStatus status;
 
-    public static Report createReport (TableType tableId, Long contentId, Long reportedMemberId, Long reporterMemberId) {
+    public static Report createReport (TableType tableId, Long contentId, Long reportedMemberId, Long reporterMemberId, int type) {
         Report report = new Report();
         report.setTableId(tableId);
         report.setContentId(contentId);
         report.setReportedMemberId(reportedMemberId);
         report.setReporterMemberId(reporterMemberId);
-//        report.setType(type);
+        report.setType(type);
 //        report.setReason(reason);
         report.createdAt = LocalDateTime.now();
         report.status = ReportStatus.ACTIVE;

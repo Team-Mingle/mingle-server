@@ -269,7 +269,7 @@ public class MemberService {
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
-            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId);
+            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId, reportRequest.getType());
             Long reportId = memberRepository.reportSave(report);
             //reportDTO에 reportId를 담아서 반환해 줌 (신고가 잘 저장됐다는 뜻)
             ReportDTO reportDTO = new ReportDTO(reportId);
