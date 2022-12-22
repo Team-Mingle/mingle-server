@@ -43,12 +43,6 @@ public class TotalCommentResponse {
         } else if ((totalComment.isAnonymous() && Objects.equals(commentWriter, authorId))){
             this.nickname = "익명(글쓴이)";
         }
-//        if (totalComment.isAnonymous() == true) {
-//            nickname = "익명 "+totalComment.getAnonymousId();
-//        } else {
-//            nickname = totalComment.getMember().getNickname();
-//        }
-
         if (totalComment.getStatus() == PostStatus.REPORTED) {
             content = "신고된 댓글입니다.";
             nickname = "(비공개됨)";

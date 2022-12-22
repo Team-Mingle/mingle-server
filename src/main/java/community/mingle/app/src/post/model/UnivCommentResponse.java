@@ -39,11 +39,6 @@ public class UnivCommentResponse {
         } else if (c.isAnonymous() && Objects.equals(commentWriter, authorId)) {
             this.nickname = "익명(글쓴이)";
         }
-//        if (c.isAnonymous() == true) {
-//            this.nickname = "익명 "+c.getAnonymousId();
-//        } else {
-//            this.nickname = c.getMember().getNickname();
-//        }
 
         if (c.getStatus() == PostStatus.REPORTED) {
             content = "신고된 댓글입니다.";

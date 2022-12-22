@@ -296,7 +296,6 @@ public class MemberController {
 
 
 
-
     /**
      * 2.11 신고 API
      */
@@ -362,11 +361,8 @@ public class MemberController {
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
-
         }
-
     }
-
 
 
     /**
