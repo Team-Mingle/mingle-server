@@ -154,7 +154,6 @@ public class PostController {
 
 
 
-
     /**
      * 3.7 학교 게시물 작성 API
      */
