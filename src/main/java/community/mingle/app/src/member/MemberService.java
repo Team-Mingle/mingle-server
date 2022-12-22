@@ -3,18 +3,15 @@ package community.mingle.app.src.member;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
-import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalNotification;
-import community.mingle.app.src.domain.TableType;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Report;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.member.model.NotificationDTO;
 import community.mingle.app.src.member.model.NotificationRequest;
-import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.member.model.ReportDTO;
 import community.mingle.app.src.member.model.ReportRequest;
 import community.mingle.app.utils.JwtService;
@@ -341,12 +338,13 @@ public class MemberService {
     @Transactional
     public void  readNotification(NotificationRequest notificationRequest) throws BaseException {
         try {
-            if (notificationRequest.getTableId() == 1){
+            if (notificationRequest.getBoardType().equals(BoardType.잔디밭)){
                 TotalNotification totalNotification;
                 totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
                 totalNotification.readNotification();
             }
-            else if (notificationRequest.getTableId() == 2) {
+//            else if (notificationRequest.getTableId() == 2) {
+            else if (notificationRequest.getBoardType().equals(BoardType.잔디밭)) {
                 UnivNotification univNotification;
                 univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
                univNotification.readNotification();

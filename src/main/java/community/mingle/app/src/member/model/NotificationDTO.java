@@ -31,6 +31,7 @@ public class NotificationDTO { //noti //univnoti //totalnoti
     private Optional<TotalComment> totalComment;
     private NotificationType notificationType;
     private BoardType boardType;
+    private String category;
     private boolean isRead;
     private LocalDateTime createdTime;
 
@@ -43,6 +44,7 @@ public class NotificationDTO { //noti //univnoti //totalnoti
         this.univComment = Optional.ofNullable(n.getUnivComment()); // <-여기 id 가 없을수도 있음. 그리고 커멘트 본문을 보여줘야함
         this.notificationType = n.getNotificationType();
         this.boardType = n.getBoardType();
+        this.category = n.getCa
         this.isRead = n.getIsRead();
         this.createdTime = n.getCreatedAt();
 

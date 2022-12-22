@@ -51,6 +51,8 @@ public class UnivNotification {
     @Column(name = "is_read")
     private Boolean isRead;
 
+    @Column(name = "category") //enum
+    private enum category;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

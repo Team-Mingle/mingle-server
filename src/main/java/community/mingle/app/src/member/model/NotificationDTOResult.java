@@ -46,7 +46,6 @@ public class NotificationDTOResult {
             }
         }
         else if (t.getBoardType().equals(BoardType.잔디밭)) {
-            System.out.println("실행");
             if (t.getUnivComment().isPresent()) { //댓글
                 this.content = t.getUnivComment().get().getContent();
             } else {
@@ -55,6 +54,7 @@ public class NotificationDTOResult {
         }
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
+        this.category = t.getCategory
         this.isRead = t.isRead();
 //        this.createdTime =convertLocaldatetimeToTime(t.getCreatedTime());
 
