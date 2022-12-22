@@ -24,19 +24,16 @@ import static community.mingle.app.config.DateTimeConverter.convertLocaldatetime
 public class NotificationDTOResult {
 
     private Long notificationId;
-//    private Long memberId;
     private NotificationType notificationType;
     private String content;
     private BoardType boardType;
     private String category;
     private boolean isRead;
-
-//    private String createdTime;
+    private String createdAt;
 
 
     public NotificationDTOResult(NotificationDTO t) {
         this.notificationId= t.getNotificationId();
-//        this.memberId = t.getMemberId();
 
         if (t.getBoardType().equals(BoardType.광장)) {
             if (t.getTotalComment().isPresent()) {
@@ -54,9 +51,9 @@ public class NotificationDTOResult {
         }
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
-        this.category = t.getCategory
+        this.category = t.getCategory().name();
         this.isRead = t.isRead();
-//        this.createdTime =convertLocaldatetimeToTime(t.getCreatedTime());
+        this.createdAt =convertLocaldatetimeToTime(t.getCreatedAt());
 
     }
 

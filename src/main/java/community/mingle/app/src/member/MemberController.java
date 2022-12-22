@@ -217,13 +217,12 @@ public class MemberController {
 
 
     /**
-     * 알림 리스트 보여주기 API
+     * 2.11 알림 리스트 보여주기 API
      **/
     @GetMapping("/notification")
-    @Operation(summary = " getNotification API", description = " 알림창 리스트 API")
+    @Operation(summary = " 2.11 getNotification API", description = " 2.11 알림창 리스트 API")
     public BaseResponse<List<NotificationDTOResult>> getNotification() {
         try {
-
             List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
             List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
 
@@ -252,10 +251,10 @@ public class MemberController {
 
 
     /**
-     * 알림 읽었을 때  API
+     * 2.12 알림 읽기 API
      **/
-    @PatchMapping("/notification/notificationId")
-    @Operation(summary = " readNotification API", description = " 알림 읽음 여부 API")
+    @PatchMapping("/notification")
+    @Operation(summary = " 2.12 readNotification API", description = " 2.12 알림 읽음 여부 API")
     public BaseResponse<String> readNotification(@RequestBody NotificationRequest notificationRequest) {
         try {
             memberService.readNotification(notificationRequest);
@@ -271,9 +270,8 @@ public class MemberController {
 
 
 
-
     /**
-     * 2.12 로그아웃 api
+     * 2.13 로그아웃 api
      */
     @Operation(summary = "2.12 logout api", description = "2.12 logout api")
     @ApiResponses({

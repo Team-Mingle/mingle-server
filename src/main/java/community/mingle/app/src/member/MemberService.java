@@ -35,6 +35,21 @@ public class MemberService {
 
 
     /**
+     * 토큰에서 대학 추출
+     */
+    public UnivName findUniv() throws BaseException {
+        Member member;
+        Long memberIdByJwt = jwtService.getUserIdx();
+        member = memberRepository.findMember(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+        return member.getUniv();
+    }
+
+
+
+    /**
      * 2.1 닉네임 수정
      */
     public void modifyNickname(String nickname) throws BaseException {
@@ -45,7 +60,6 @@ public class MemberService {
         if (authRepository.findNickname(nickname) == true) {
             throw new BaseException(USER_EXISTS_NICKNAME);
         }
-
         try {
             member.modifyNickname(nickname);
         } catch (Exception e) {
@@ -313,7 +327,9 @@ public class MemberService {
     }
 
 
-    //알림 리스트
+    /**
+     * 알림 리스트 API
+     */
     public List<TotalNotification> getTotalNotifications() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
@@ -323,6 +339,7 @@ public class MemberService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 
     public List<UnivNotification> getUnivNotifications() throws BaseException {
         Long userIdByJwt = jwtService.getUserIdx();
@@ -334,16 +351,17 @@ public class MemberService {
         }
     }
 
-    //알림 읽음 여부
+    /**
+     * 2.12 알림 읽기 API
+     */
     @Transactional
     public void  readNotification(NotificationRequest notificationRequest) throws BaseException {
         try {
-            if (notificationRequest.getBoardType().equals(BoardType.잔디밭)){
+            if (notificationRequest.getBoardType().equals(BoardType.광장)){
                 TotalNotification totalNotification;
                 totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
                 totalNotification.readNotification();
             }
-//            else if (notificationRequest.getTableId() == 2) {
             else if (notificationRequest.getBoardType().equals(BoardType.잔디밭)) {
                 UnivNotification univNotification;
                 univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
@@ -356,36 +374,23 @@ public class MemberService {
     }
 
 
+
     public List<NotificationDTO> sortNotifications(List<NotificationDTO> final_result) {
-
         Collections.sort(final_result, new NotificationDTOComparator().reversed());
-
-        final_result.forEach(item-> System.out.println( item.getCreatedTime()));
-
         if (final_result.size() <= 20) {
             return final_result;
         } else {
             final_result.subList(0, 20);
-        } 
-
+        }
         return final_result;
     }
 
 
 
-    public UnivName findUniv() throws BaseException {
-        Member member;
-        Long memberIdByJwt = jwtService.getUserIdx();
-        member = memberRepository.findMember(memberIdByJwt);
-        if (member == null) {
-            throw new BaseException(USER_NOT_EXIST);
-        }
-        return member.getUniv();
-    }
 
 
     /**
-     * 2.12 로그아웃 api
+     * 2.13 로그아웃 api
      */
     public void logout() throws BaseException {
         Long userIdx = jwtService.getUserIdx();

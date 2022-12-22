@@ -1,8 +1,6 @@
 package community.mingle.app.src.domain.Univ;
 
-import community.mingle.app.src.domain.BoardType;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.NotificationType;
+import community.mingle.app.src.domain.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,48 +43,52 @@ public class UnivNotification {
 
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum",name = "board_type")
+    @Column(columnDefinition = "enum", name = "board_type")
     private BoardType boardType;
 
     @Column(name = "is_read")
     private Boolean isRead;
 
-    @Column(name = "category") //enum
-    private enum category;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum")
+    private CategoryType category;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     public static UnivNotification saveUnivNotification(UnivPost univPost, Member member, UnivComment univComment){
-        UnivNotification univNotification = new UnivNotification();
-        univNotification.setMember(member);
-        univNotification.tableId = 2;
-        univNotification.setUnivPost(univPost);
-        univNotification.setUnivComment(univComment);
-        univNotification.createdAt = LocalDateTime.now();
-        univNotification.isRead = false;
-        univNotification.boardType = BoardType.잔디밭;
-        univNotification.notificationType = NotificationType.댓글;
-        return univNotification;
+    UnivNotification univNotification = new UnivNotification();
+    univNotification.setMember(member);
+    univNotification.tableId = 2;
+    univNotification.setUnivPost(univPost);
+    univNotification.setUnivComment(univComment);
+    univNotification.createdAt = LocalDateTime.now();
+    univNotification.isRead = false;
+    univNotification.boardType = BoardType.잔디밭;
+    univNotification.notificationType = NotificationType.댓글;
+    univNotification.category = CategoryType.valueOf(univPost.getCategory().getName());
+    return univNotification;
     }
 
-    public static UnivNotification saveUnivTotalNotification(UnivPost univpost, Member member) {
-        UnivNotification univNotification = new UnivNotification();
-        univNotification.setMember(member);
-        univNotification.tableId = 2;
-        univNotification.setUnivPost(univpost);
-        univNotification.setUnivComment(null);
-        univNotification.createdAt = LocalDateTime.now();
-        univNotification.isRead = false;
-        univNotification.boardType = BoardType.잔디밭;
-        univNotification.notificationType = NotificationType.인기;
-        return univNotification;
+    public static UnivNotification saveUnivTotalNotification(UnivPost univpost, Member member){
+    UnivNotification univNotification=new UnivNotification();
+    univNotification.setMember(member);
+    univNotification.tableId = 2;
+    univNotification.setUnivPost(univpost);
+    univNotification.setUnivComment(null);
+    univNotification.createdAt = LocalDateTime.now();
+    univNotification.isRead = false;
+    univNotification.boardType = BoardType.잔디밭;
+    univNotification.notificationType = NotificationType.인기;
+    univNotification.category = CategoryType.valueOf(univpost.getCategory().getName());
+    return univNotification;
 
     }
 
 
-    public void readNotification() {
-        this.isRead = true;
+    public void readNotification(){
+    this.isRead=true;
+
     }
 
 

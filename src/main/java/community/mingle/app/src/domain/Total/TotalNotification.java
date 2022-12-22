@@ -1,6 +1,7 @@
 package community.mingle.app.src.domain.Total;
 
 import community.mingle.app.src.domain.BoardType;
+import community.mingle.app.src.domain.CategoryType;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.NotificationType;
 import lombok.AccessLevel;
@@ -46,9 +47,12 @@ public class TotalNotification {
     @Column(columnDefinition = "enum" ,  name = "board_type")
     private BoardType boardType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum")
+    private CategoryType category;
+
     @Column(name = "is_read")
     private Boolean isRead;
-
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -63,6 +67,7 @@ public class TotalNotification {
         totalNotification.isRead = false;
         totalNotification.boardType = BoardType.광장;
         totalNotification.notificationType = NotificationType.댓글;
+        totalNotification.category = CategoryType.valueOf(totalPost.getCategory().getName());
         return totalNotification;
     }
     public static TotalNotification saveTotalPostNotification(TotalPost totalpost, Member member){
@@ -75,6 +80,8 @@ public class TotalNotification {
         totalNotification.isRead = false;
         totalNotification.boardType = BoardType.광장;
         totalNotification.notificationType = NotificationType.인기;
+        totalNotification.category = CategoryType.valueOf(totalpost.getCategory().getName());
+
         return totalNotification;
     }
 

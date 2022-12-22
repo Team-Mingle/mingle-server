@@ -8,8 +8,8 @@ public class NotificationDTOComparator implements Comparator<NotificationDTO> {
 
     @Override
     public int compare(NotificationDTO notificationDTO1, NotificationDTO notificationDTO2) {
-        return (notificationDTO1.getCreatedTime())
-                .compareTo(notificationDTO2.getCreatedTime());
+        return (notificationDTO1.getCreatedAt())
+                .compareTo(notificationDTO2.getCreatedAt());
     }
 
 
