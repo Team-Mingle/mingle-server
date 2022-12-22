@@ -435,6 +435,8 @@ public class PostController {
         }
     }
 
+
+
     /**
      * 3.18 학교 게시물 좋아요 취소 api
      */
