@@ -4,6 +4,7 @@ import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 
+import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.post.model.UpdatePostRequest;
 import community.mingle.app.src.post.model.CreatePostRequest;
 
@@ -43,10 +44,18 @@ public class TotalPost {
     @OneToMany(mappedBy = "totalPost")
     private List<TotalPostScrap> totalPostScraps = new ArrayList<>();
 
+
     @OneToMany(mappedBy = "totalPost")
     private List<TotalPostImage> totalPostImages = new ArrayList<>();
 
-//    @Enumerated(EnumType.STRING)
+
+    /**알림 */
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalNotification> totalNotifications = new ArrayList<>();
+
+
+
+    //    @Enumerated(EnumType.STRING)
 //    private PostCategory category; //enum
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")

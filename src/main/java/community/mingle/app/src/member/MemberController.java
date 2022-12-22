@@ -4,11 +4,10 @@ package community.mingle.app.src.member;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
+import community.mingle.app.src.domain.Total.TotalNotification;
+import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.UnivName;
-import community.mingle.app.src.post.model.TotalPostListDTO;
-import community.mingle.app.src.post.model.TotalPostListResponse;
 import io.swagger.v3.oas.annotations.*;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Tag(name = "member", description = "유저 관련 API")
 @ApiResponses(value = {
@@ -186,8 +186,6 @@ public class MemberController {
 
     /**
      * 2.7 내가 스크랩 한 글 (대학) API
-     * 에러: 없을시 Validation
-     * postId 받는거 수정하기
      */
     @GetMapping("/scraps/univ")
     @ApiResponses({
@@ -237,6 +235,7 @@ public class MemberController {
         }
     }
 
+
     /**
      * 2.9 내가 좋아요 한 글 (대학) API
      */
@@ -262,12 +261,11 @@ public class MemberController {
 
 
 
-
     /**
-     * 2.10 유저 삭제 API
+     * 2.10 유저 탈퇴 API
      */
     @PatchMapping("/delete")
-    @Operation(summary = "2.10 deleteMember API", description = "2.10 유저 삭제 API")
+    @Operation(summary = "2.10  deleteMember API", description = "2.10 유저 탈퇴 API")
     @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true)))
     public BaseResponse<String> deleteMember() {
         try {
@@ -281,11 +279,12 @@ public class MemberController {
     }
 
 
+
     /**
      * 2.11 신고 API
      */
     @PostMapping("/report")
-    @Operation(summary = "2.11  createReport API", description = "2.11 신고 API")
+    @Operation(summary = "2.11 createReport API", description = "2.11 신고 API")
     public BaseResponse<ReportDTO> createReport(@RequestBody ReportRequest reportRequest) {
         try {
             Member reportedMember = memberService.findReportedMember(reportRequest);
@@ -301,9 +300,62 @@ public class MemberController {
 
 
     /**
-     * 2.12 로그아웃 api
+     * 2.12 알림 리스트 보여주기 API
+     **/
+    @GetMapping("/notification")
+    @Operation(summary = " 2.12 getNotification API", description = " 2.12 알림창 리스트 API")
+    public BaseResponse<List<NotificationDTOResult>> getNotification() {
+        try {
+            List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
+            List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
+
+            List<NotificationDTO> result_1 = totalNotificationList.stream()
+                    .map(t-> new NotificationDTO(t))
+                    .collect(Collectors.toList());
+
+            List<NotificationDTO> result_2 = univNotificationList.stream()
+                    .map(n-> new NotificationDTO(n))
+                    .collect(Collectors.toList());
+
+            List<NotificationDTO> final_result = Stream.concat(result_1.stream(), result_2.stream())
+                    .collect(Collectors.toList());
+
+            List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
+            List<NotificationDTOResult> result = notifications.stream()
+                    .map(n-> new NotificationDTOResult(n))
+                    .collect(Collectors.toList());
+
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            exception.printStackTrace();
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    /**
+     * 2.13 알림 읽기 API
+     **/
+    @PatchMapping("/notification")
+    @Operation(summary = " 2.13 readNotification API", description = " 2.13 알림 읽음 여부 API")
+    public BaseResponse<String> readNotification(@RequestBody NotificationRequest notificationRequest) {
+        try {
+            memberService.readNotification(notificationRequest);
+            String result = "알림을 확인하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+
+        }
+
+    }
+
+
+
+    /**
+     * 2.14 로그아웃 api
      */
-    @Operation(summary = "2.12 logout api", description = "2.12 logout api")
+    @Operation(summary = "2.14 logout api", description = "2.14 logout api")
     @ApiResponses({
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
     })
