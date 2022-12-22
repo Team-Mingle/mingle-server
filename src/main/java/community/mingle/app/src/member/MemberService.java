@@ -240,13 +240,13 @@ public class MemberService {
         Member reportedMember = null;
         //나중에 case문으로 바꿀 수 있는지 확인
         try {
-            if (reportRequest.getTableId() == TableType.TotalPost) {
+            if (reportRequest.getTableType() == TableType.TotalPost) {
                 reportedMember = memberRepository.findReportedTotalPostMember(reportRequest.getContentId());
-            } else if (reportRequest.getTableId() == TableType.TotalComment) {
+            } else if (reportRequest.getTableType() == TableType.TotalComment) {
                 reportedMember = memberRepository.findReportedTotalCommentMember(reportRequest.getContentId());
-            } else if (reportRequest.getTableId() == TableType.UnivPost) {
+            } else if (reportRequest.getTableType() == TableType.UnivPost) {
                 reportedMember = memberRepository.findReportedUnivPostMember(reportRequest.getContentId());
-            } else if (reportRequest.getTableId() == TableType.UnivComment) {
+            } else if (reportRequest.getTableType() == TableType.UnivComment) {
                 reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContentId());
             }
             return reportedMember;
@@ -263,13 +263,13 @@ public class MemberService {
         //신고한 사람의 memberId를 가져옴 by jwt
         Long reporterMemberId = jwtService.getUserIdx();
         //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
-//        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
-//            throw new BaseException(ALREADY_REPORTED);
-//        }
+        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
+            throw new BaseException(ALREADY_REPORTED);
+        }
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
-            Report report = Report.createReport(reportRequest.getTableId(), reportRequest.getContentId(), reportedMemberId, reporterMemberId);
+            Report report = Report.createReport(reportRequest.getTableType(), reportRequest.getContentId(), reportedMemberId, reporterMemberId, reportRequest.getReportTypeId());
             Long reportId = memberRepository.reportSave(report);
             //reportDTO에 reportId를 담아서 반환해 줌 (신고가 잘 저장됐다는 뜻)
             ReportDTO reportDTO = new ReportDTO(reportId);
@@ -301,7 +301,7 @@ public class MemberService {
             Long contentCount = memberRepository.countContentReport(reportRequest);
             if (contentCount == 3) {
                 //total post
-                if (reportRequest.getTableId() == TableType.TotalPost) {
+                if (reportRequest.getTableType() == TableType.TotalPost) {
                     //신고 된 total post 찾음
                     TotalPost reportedTotalPost = memberRepository.findReportedTotalPost(reportRequest.getContentId());
                     //해당 total post에 딸린 total comments들도 찾음
@@ -314,7 +314,7 @@ public class MemberService {
                 }
 
                 //total comment
-                else if (reportRequest.getTableId() == TableType.TotalComment) {
+                else if (reportRequest.getTableType() == TableType.TotalComment) {
                     //신고 된 total comment를 찾음
                     TotalComment reportedTotalComment = memberRepository.findReportedTotalCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
@@ -322,7 +322,7 @@ public class MemberService {
                 }
 
                 //univ post
-                else if (reportRequest.getTableId() == TableType.UnivPost) {
+                else if (reportRequest.getTableType() == TableType.UnivPost) {
                     //신고 된 univ post를 찾음
                     UnivPost reportedUnivPost = memberRepository.findReportedUnivPost(reportRequest.getContentId());
                     //해당 univ post에 딸린 univ comments들도 찾음
@@ -335,7 +335,7 @@ public class MemberService {
                 }
 
                 //univ comment
-                else if (reportRequest.getTableId() == TableType.UnivComment) {
+                else if (reportRequest.getTableType() == TableType.UnivComment) {
                     //신고 된 univ comment를 찾음
                     UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌

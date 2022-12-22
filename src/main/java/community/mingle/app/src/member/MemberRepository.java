@@ -148,7 +148,7 @@ public class MemberRepository {
      */
     public boolean isMultipleReport(ReportRequest reportRequest, Long memberId) {
         Long countMultipleReport = em.createQuery("select count(r) from Report r where r.tableId = :tableId and r.contentId = :contentId and r.reporterMemberId = :memberId", Long.class)
-                .setParameter("tableId", reportRequest.getTableId())
+                .setParameter("tableId", reportRequest.getTableType())
                 .setParameter("contentId", reportRequest.getContentId())
                 .setParameter("memberId", memberId)
                 .getSingleResult();
@@ -201,7 +201,7 @@ public class MemberRepository {
 
     public Long countContentReport(ReportRequest reportRequest) {
         Long countContent = em.createQuery("select count(r) from Report r where r.tableId =:tableId and r.contentId =: contentId", Long.class)
-                .setParameter("tableId", reportRequest.getTableId())
+                .setParameter("tableId", reportRequest.getTableType())
                 .setParameter("contentId", reportRequest.getContentId())
                 .getSingleResult();
         return countContent;
