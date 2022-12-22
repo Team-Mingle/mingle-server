@@ -78,24 +78,20 @@ public class AuthService {
      * 1.3 이메일 입력 & 중복검사 API
      */
     @Transactional
-    public String verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
-
+    public void verifyEmail(PostUserEmailRequest postUserEmailRequest) throws BaseException {
         try {
             String email = new SHA256().encrypt(postUserEmailRequest.getEmail());
             postUserEmailRequest.setEmail(email);
         } catch (Exception ignored) {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
-
-        try {
-            if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
-                throw new BaseException(USER_EXISTS_EMAIL);
-            }
-        } catch (Exception e) {
+        if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
+            if (authRepository.findMember(postUserEmailRequest.getEmail()).getStatus().equals(UserStatus.INACTIVE)) {
+                throw new BaseException(USER_DELETED_ERROR);
+            } else {
             throw new BaseException(USER_EXISTS_EMAIL);
+            }
         }
-
-        return null;
     }
 
 
@@ -173,7 +169,6 @@ public class AuthService {
         if (authRepository.findUniv(postSignupRequest.getUnivId()) == null) {
             throw new BaseException(INVALID_UNIV_ID);
         }
-
         //이메일 암호화
         String email;
         try {
@@ -182,7 +177,6 @@ public class AuthService {
         } catch (Exception ignored) {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
-
         //비밀번호 암호화
         String pwd;
         try {
@@ -193,12 +187,11 @@ public class AuthService {
         }
 
         //이메일 중복검사
-        /** 얘를 try catch 밖으로 빼니 콘솔에 에러 문구가 안뜸. (??) */
         if ((authRepository.findEmail(email) == true)) {  //탈퇴 유저 재가입 방지
             if (authRepository.findMember(email).getStatus().equals(UserStatus.INACTIVE)) {
                 throw new BaseException(USER_DELETED_ERROR);
             } else {
-                throw new BaseException(USER_EXISTS_EMAIL);
+            throw new BaseException(USER_EXISTS_EMAIL);
             }
         }
 

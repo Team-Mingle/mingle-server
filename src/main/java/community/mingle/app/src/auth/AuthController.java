@@ -95,11 +95,12 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
     @ResponseBody
-    @PostMapping("checkemail") // (POST) 127.0.0.1:9000/users
+    @PostMapping("checkemail")
     public BaseResponse<String> verifyEmail(@RequestBody PostUserEmailRequest postUserEmailRequest) {
         System.out.println("email=" + postUserEmailRequest.getEmail());
 
@@ -111,8 +112,8 @@ public class AuthController {
             return new BaseResponse<>(EMAIL_FORMAT_ERROR);
         }
         try {
-            String result = authService.verifyEmail(postUserEmailRequest);
-            return new BaseResponse<>(result);
+            authService.verifyEmail(postUserEmailRequest);
+            return new BaseResponse<>("이메일 확인 성공");
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -274,7 +275,6 @@ public class AuthController {
         if (!isRegexPassword(postSignupRequest.getPwd())) {
             return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
         }
-
         try {
             PostSignupResponse postSignupResponse = authService.createMember(postSignupRequest);
             return new BaseResponse<>(postSignupResponse);
