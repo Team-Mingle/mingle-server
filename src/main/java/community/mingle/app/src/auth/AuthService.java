@@ -115,7 +115,7 @@ public class AuthService {
      */
     private void sendAuthEmail(String email, String authKey) throws BaseException {
         String subject = "Mingle의 이메일을 인증하세요!";
-        String text = "\n\n인증번호는" + authKey + "입니다.";
+        String text = "\n\n인증번호는 " + authKey + " 입니다.";
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
