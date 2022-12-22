@@ -247,6 +247,7 @@ public class AuthController {
             @ApiResponse(responseCode = "2017", description = "이미 존재하는 닉네임입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "2018", description = "존재하지 않는 학교 id 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3010", description = "회원가입에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
     })

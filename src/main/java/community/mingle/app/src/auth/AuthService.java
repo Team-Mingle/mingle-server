@@ -166,12 +166,10 @@ public class AuthService {
     public PostSignupResponse createMember(PostSignupRequest postSignupRequest) throws BaseException {
 
         //닉네임 중복검사 먼저
-
         if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
             throw new BaseException(USER_EXISTS_NICKNAME);
         }
-
-//        없는 univId 일때 추가
+        //없는 univId 일때 추가
         if (authRepository.findUniv(postSignupRequest.getUnivId()) == null) {
             throw new BaseException(INVALID_UNIV_ID);
         }
@@ -196,8 +194,12 @@ public class AuthService {
 
         //이메일 중복검사
         /** 얘를 try catch 밖으로 빼니 콘솔에 에러 문구가 안뜸. (??) */
-        if ((authRepository.findEmail(email) == true)) {
-            throw new BaseException(USER_EXISTS_EMAIL);
+        if ((authRepository.findEmail(email) == true)) {  //탈퇴 유저 재가입 방지
+            if (authRepository.findMember(email).getStatus().equals(UserStatus.INACTIVE)) {
+                throw new BaseException(USER_DELETED_ERROR);
+            } else {
+                throw new BaseException(USER_EXISTS_EMAIL);
+            }
         }
 
         //로직
