@@ -4,6 +4,7 @@ package community.mingle.app.src.member;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
+import community.mingle.app.src.auth.model.PostLoginResponse;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.UnivName;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static community.mingle.app.config.BaseResponseStatus.EMAIL_EMPTY_ERROR;
+import static community.mingle.app.config.BaseResponseStatus.PASSWORD_EMPTY_ERROR;
 
 @Tag(name = "member", description = "유저 관련 API")
 @ApiResponses(value = {
@@ -267,13 +271,18 @@ public class MemberController {
     @PatchMapping("/delete")
     @Operation(summary = "2.10  deleteMember API", description = "2.10 유저 탈퇴 API")
     @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true)))
-    public BaseResponse<String> deleteMember() {
+    public BaseResponse<String> deleteMember(DeleteMemberRequest deleteMemberRequest) {
         try {
-            memberService.deleteMember();
-            String result = "유저가 삭제되었습니다";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+            if (deleteMemberRequest.getEmail().isEmpty()) {
+                return new BaseResponse<>(EMAIL_EMPTY_ERROR);
+            }
+            if (deleteMemberRequest.getPwd().isEmpty()) {
+                return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
+            }
+            memberService.deleteMember(deleteMemberRequest);
+            return new BaseResponse<>("탉퇴에 성공했습니다.");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
 
     }

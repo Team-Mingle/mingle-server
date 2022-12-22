@@ -80,6 +80,7 @@ public enum BaseResponseStatus {
     FAILED_TO_GET_TERMS(false, 3014, "개인정보처리방침을 가져오는데 실패하였습니다"),
     EMAIL_CODE_EXPIRED(false, 3015, "인증번호 입력시간이 초과되었습니다."),
 
+    USER_MISMATCH_ERROR(false, 3016, "입력하신 정보가 사용자 정보와 맞지 않습니다."),
 
     /** 2. /member  */
     MODIFY_FAIL_NICKNAME(false, 3020,"닉네임 수정에 실패하였습니다." ),

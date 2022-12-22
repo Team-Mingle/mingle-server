@@ -37,4 +37,9 @@ public class HealthCheckController {
         return ResponseEntity.ok("CI/CD Success !!");
     }
 
+    @GetMapping("/route")
+    public ResponseEntity<String> routeTest() {
+        return ResponseEntity.ok("route53 Success !!");
+    }
+
 }
