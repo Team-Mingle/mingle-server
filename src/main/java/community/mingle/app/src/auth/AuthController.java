@@ -399,12 +399,14 @@ public class AuthController {
      * 1.13 fcm Token 리프레시 api
      */
     @Operation(summary = "1.13 fcm token refresh api", description = "1.13 fcm Token 리프레시 api")
-    @ApiResponses({
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
-    })
     @PatchMapping("fcmtoken")
-    public void refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) throws BaseException {
-        authService.refreshFcmToken(fcmTokenRequest);
+    public BaseResponse<String> refreshFcmToken(@RequestBody FcmTokenRequest fcmTokenRequest) {
+        try {
+            authService.refreshFcmToken(fcmTokenRequest);
+            return new BaseResponse<>("fcmToken 재발급에 성공하였습니다.");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 

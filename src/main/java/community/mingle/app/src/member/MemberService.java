@@ -391,6 +391,7 @@ public class MemberService {
     /**
      * 2.14 로그아웃 api
      */
+    @Transactional
     public void logout() throws BaseException {
         Long userIdx = jwtService.getUserIdx();
         Member member = authRepository.findMemberById(userIdx);
