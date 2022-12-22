@@ -21,7 +21,7 @@ public class PostUnivCommentResponse {
         Long commentWriter = univComment.getMember().getId();
 
         this.commentId = univComment.getId();
-        if (univComment.isAnonymous() == false) {
+        if (univComment.isAnonymous() == false && !(Objects.equals(commentWriter, authorId))) {
             this.nickname = univComment.getMember().getNickname();
         } else if (univComment.isAnonymous() && anonymousId != 0L){
             this.nickname = "익명 " + anonymousId;
@@ -30,6 +30,7 @@ public class PostUnivCommentResponse {
         } else if (univComment.isAnonymous() && Objects.equals(commentWriter, authorId)) {
             this.nickname = "익명(글쓴이)";
         }
+
 
         if (Objects.equals(commentWriter, authorId)) {
             isCommentFromAuthor = true;
