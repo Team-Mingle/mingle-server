@@ -263,9 +263,9 @@ public class MemberService {
         //신고한 사람의 memberId를 가져옴 by jwt
         Long reporterMemberId = jwtService.getUserIdx();
         //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
-//        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
-//            throw new BaseException(ALREADY_REPORTED);
-//        }
+        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
+            throw new BaseException(ALREADY_REPORTED);
+        }
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장

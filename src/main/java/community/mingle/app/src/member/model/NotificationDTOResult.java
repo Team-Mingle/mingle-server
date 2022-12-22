@@ -25,6 +25,7 @@ public class NotificationDTOResult {
 
     private Long notificationId;
     private NotificationType notificationType;
+    private Long postId;
     private String content;
     private BoardType boardType;
     private String category;
@@ -34,8 +35,8 @@ public class NotificationDTOResult {
 
     public NotificationDTOResult(NotificationDTO t) {
         this.notificationId= t.getNotificationId();
-
         if (t.getBoardType().equals(BoardType.광장)) {
+            this.postId = t.getTotalPost().getId();
             if (t.getTotalComment().isPresent()) {
                 this.content = t.getTotalComment().get().getContent();//댓글
             } else {
@@ -43,6 +44,7 @@ public class NotificationDTOResult {
             }
         }
         else if (t.getBoardType().equals(BoardType.잔디밭)) {
+            this.postId = t.getUnivPost().getId();
             if (t.getUnivComment().isPresent()) { //댓글
                 this.content = t.getUnivComment().get().getContent();
             } else {
