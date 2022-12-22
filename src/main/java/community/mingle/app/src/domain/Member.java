@@ -125,6 +125,14 @@ public class Member {
         this.status = UserStatus.REPORTED;
     }
 
+    public void deleteTotalNotification(List<TotalNotification> totalNotifications){
+        this.totalNotifications = totalNotifications;
+    }
+
+    public void deleteUnivNotification(List<UnivNotification> univNotifications){
+        this.univNotifications = univNotifications;
+    }
+
 
 
 }
