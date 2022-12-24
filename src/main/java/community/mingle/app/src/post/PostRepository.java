@@ -505,7 +505,7 @@ public class PostRepository {
     }
 
     public boolean checkUnivPostIsBlinded(Long postId, Long memberId) throws BaseException {
-        List<UnivBlind> resultList = em.createQuery("select ub from UnivBlind ub where ub.univPost =:univPostId and ub.member.id =:memberId", UnivBlind.class)
+        List<UnivBlind> resultList = em.createQuery("select ub from UnivBlind ub where ub.univPost.id =:univPostId and ub.member.id =:memberId", UnivBlind.class)
                 .setParameter("univPostId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();

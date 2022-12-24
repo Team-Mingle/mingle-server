@@ -356,6 +356,7 @@ public class PostService {
             UnivPostResponse univPostResponse = new UnivPostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
             return univPostResponse;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -925,6 +926,7 @@ public class PostService {
     /**
      * 2.25 전체 게시물 가리기
      */
+    @Transactional
     public String blindTotalPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postId);
@@ -944,12 +946,14 @@ public class PostService {
                 Long id = postRepository.saveBlind(totalBlind);
                 return "게시물을 가렸어요.";
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new BaseException(DATABASE_ERROR);
             }
         }
 
     }
 
+    @Transactional
     public String blindUnivPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postId);
