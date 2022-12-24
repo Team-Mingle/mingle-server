@@ -26,12 +26,13 @@ public class TotalPostResponse {
     private boolean isMyPost;
     private boolean isLiked;
     private boolean isScraped;
+    private boolean isBlinded;
     private String createdAt;
     private final int viewCount;
 
     private List<String> postImgUrl = new ArrayList<>();
 
-    public TotalPostResponse(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped) {
+    public TotalPostResponse(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded) {
         this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.content = totalPost.getContent();
@@ -50,6 +51,7 @@ public class TotalPostResponse {
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
+        this.isBlinded = isBlinded;
         this.createdAt = convertToDateAndTime(totalPost.getCreatedAt());
         this.viewCount = totalPost.getViewCount();
 

@@ -19,7 +19,7 @@ public class TotalBlind {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "totalblind_id")
+    @Column(name = "total_blind_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
