@@ -26,6 +26,7 @@ public class UnivPostResponse {
     private boolean isMyPost;
     private boolean isLiked;
     private boolean isScraped;
+    private boolean isBlinded;
     private String createdAt;
 
     private final int viewCount;
@@ -34,7 +35,7 @@ public class UnivPostResponse {
 
 
 
-    public UnivPostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped) {
+    public UnivPostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded) {
         postId = u.getId();
         title = u.getTitle();
         content = u.getContent();
@@ -62,5 +63,6 @@ public class UnivPostResponse {
                 this.postImgUrl.add(pi.getImgUrl());
             }
         }
+        this.isBlinded = isBlinded;
     }
 }

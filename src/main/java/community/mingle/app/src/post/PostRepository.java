@@ -1,6 +1,8 @@
 package community.mingle.app.src.post;
 
 
+import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -14,6 +16,8 @@ import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static community.mingle.app.config.BaseResponseStatus.BLIND_NOT_EXIST;
+
 @Repository
 @RequiredArgsConstructor
 public class PostRepository {
@@ -25,7 +29,7 @@ public class PostRepository {
      * 2.2 전체 베스트 게시판 api
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId) {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.id < :postId and p.totalPostLikes.size > 10 order by p.createdAt desc", TotalPost.class)
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
 //                .setParameter("localDateTime", LocalDateTime.now().minusDays(3))
                 .setParameter("postId", postId)
@@ -486,5 +490,42 @@ public class PostRepository {
         em.remove(univPost);
     }
 
+
+    public boolean checkTotalPostIsBlinded(Long totalPostId, Long memberId) throws BaseException {
+        List<TotalBlind> resultList = em.createQuery("select tb from TotalBlind tb where tb.totalPost.id =:totalPostId and tb.member.id =:memberId", TotalBlind.class)
+                .setParameter("totalPostId", totalPostId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (resultList.get(0) == null) {
+            throw new BaseException(BLIND_NOT_EXIST);
+        } else{
+            return true;
+        }
+
+    }
+
+    public boolean checkUnivPostIsBlinded(Long postId, Long memberId) throws BaseException {
+        List<UnivBlind> resultList = em.createQuery("select ub from UnivBlind ub where ub.univPost.id =:univPostId and ub.member.id =:memberId", UnivBlind.class)
+                .setParameter("univPostId", postId)
+                .setParameter("memberId", memberId)
+                .getResultList();
+        if (resultList.get(0) == null) {
+            throw new BaseException(BLIND_NOT_EXIST);
+        } else{
+            return true;
+        }
+    }
+    /**
+     * 게시물 숨기기
+     */
+    public Long saveBlind(TotalBlind totalBlind) {
+            em.persist(totalBlind);
+            return totalBlind.getId();
+    }
+
+    public Long saveBlind(UnivBlind univBlind) {
+        em.persist(univBlind);
+        return univBlind.getId();
+    }
 
 }

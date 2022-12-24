@@ -74,6 +74,11 @@ public class Member {
     private List<UnivNotification> univNotifications= new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "member")
+    private List<TotalBlind> totalBlindPost = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<UnivBlind> univBlindPost = new ArrayList<>();
 
     private LocalDateTime agreedAt;
     private LocalDateTime createdAt;

@@ -579,6 +579,41 @@ public class PostController {
     }
 
 
+    /**
+     * 3.25 게시물 가리기 API
+     */
+    @Operation(summary = "3.25  blindTotalPost API", description = "3.25 통합 게시물 가리기 api")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 게시물을 가렸어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    @PostMapping("/total/blind")
+    public BaseResponse<String> blindTotalPost (@RequestParam Long postId){
+        try{
+            return new BaseResponse<>(postService.blindTotalPost(postId));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    @Operation(summary = "3.25  blindTotalPost API", description = "3.25 통합 게시물 가리기 api")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 게시물을 가렸어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    @PostMapping("/univ/blind")
+    public BaseResponse<String> blindUnivPost (@RequestParam Long postId){
+        try{
+            return new BaseResponse<>(postService.blindUnivPost(postId));
+        }catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 
 
 }
