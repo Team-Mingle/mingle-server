@@ -51,7 +51,7 @@ public class HomeRepository {
      * 5.2 홈 전체 베스트 게시판 api
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment() {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.totalPostLikes.size > 10 order by p.createdAt desc", TotalPost.class)
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setFirstResult(0)
                 .setMaxResults(4)
@@ -65,7 +65,7 @@ public class HomeRepository {
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount(Member member) {
         return em.createQuery(
-                        "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId  and p.univPostLikes.size > 5 order by p.createdAt desc ", UnivPost.class)
+                        "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId  and p.univPostLikes.size > 4 order by p.createdAt desc ", UnivPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("univId", member.getUniv().getId()) //어디 학교인지
                 .setFirstResult(0)

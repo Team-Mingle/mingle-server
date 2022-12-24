@@ -147,7 +147,7 @@ public class CommentService {
             }
             else {
                 //이게 방금 살린거
-                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요" + postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
+                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
             }
         } else if (postTotalCommentRequest.getParentCommentId()!= null) {
             Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
