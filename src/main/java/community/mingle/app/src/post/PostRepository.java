@@ -25,7 +25,7 @@ public class PostRepository {
      * 2.2 전체 베스트 게시판 api
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId) {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.id < :postId and p.totalPostLikes.size > 10 order by p.createdAt desc", TotalPost.class)
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
 //                .setParameter("localDateTime", LocalDateTime.now().minusDays(3))
                 .setParameter("postId", postId)

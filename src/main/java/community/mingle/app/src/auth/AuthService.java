@@ -254,7 +254,7 @@ public class AuthService {
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
             String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
             member.setFcmToken(postLoginRequest.getFcmToken());
-            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), member.getNickname(),member.getUniv().getUnivName() ,accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
+            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), member.getNickname(),member.getUniv().getUnivName().substring(0,3) ,accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e);
