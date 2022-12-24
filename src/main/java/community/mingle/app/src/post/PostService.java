@@ -1,6 +1,7 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -921,6 +922,55 @@ public class PostService {
     }
 
 
+    /**
+     * 2.25 전체 게시물 가리기
+     */
+    public String blindTotalPost(Long postId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        TotalPost totalpost = postRepository.findTotalPostById(postId);
+        if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
+        if (totalpost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        Member member = postRepository.findMemberbyId(memberIdByJwt);
+        TotalBlind totalBlind = TotalBlind.blindTotalPost(totalpost, member);
+        if (totalBlind == null) {
+            throw new BaseException(DUPLICATE_BLIND);
+        }
+        else {
+            try {
+                Long id = postRepository.saveBlind(totalBlind);
+                return "게시물을 가렸어요.";
+            } catch (Exception e) {
+                throw new BaseException(DATABASE_ERROR);
+            }
+        }
 
+    }
 
+    public String blindUnivPost(Long postId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        UnivPost univpost = postRepository.findUnivPostById(postId);
+        if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
+        if (univpost == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        Member member = postRepository.findMemberbyId(memberIdByJwt);
+        UnivBlind univBlind = UnivBlind.blindUnivPost(univpost, member);
+        if (univBlind == null) {
+            throw new BaseException(DUPLICATE_BLIND);
+        }
+        else {
+            try {
+                Long id = postRepository.saveBlind(univBlind);
+                return "게시물을 가렸어요.";
+            } catch (Exception e) {
+                throw new BaseException(DATABASE_ERROR);
+            }
+        }
+    }
 }

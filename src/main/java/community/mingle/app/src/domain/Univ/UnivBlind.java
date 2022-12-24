@@ -1,6 +1,8 @@
 package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Total.TotalBlind;
+import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Total.TotalPostLike;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,24 +36,22 @@ public class UnivBlind {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-//
-//    public static UnivPostLike likesUnivPost(UnivPost univPost, Member member) {
-//        List<UnivPostLike> univPostLikeList = member.getUnivPostLikes();
-//        if (univPostLikeList == null || univPostLikeList.isEmpty()) {
-//        }
-//        else {
-//            for (UnivPostLike UnivPostLike : univPostLikeList) {
-//                if (Objects.equals(UnivPostLike.getUnivPost().getId(), univPost.getId())) {
-//                    return null;
-//                }
-//            }
-//        }
-//        UnivPostLike univPostLike = new UnivPostLike();
-//        univPostLike.setMember(member);
-//        univPostLike.setUnivPost(univPost);
-//        univPostLike.createdAt = LocalDateTime.now();
-//        return univPostLike;
-//    }
-//
+    public static UnivBlind blindUnivPost(UnivPost Univpost, Member member) {
+        List<UnivBlind> univBlindList = member.getUnivBlindPost();
+        if (univBlindList == null || univBlindList.isEmpty()) {
+        } else {
+            for (UnivBlind univBlind : univBlindList) {
+                if (Objects.equals(univBlind.getUnivPost().getId(), univBlind.getId())) {
+                    return null;
+                }
+            }
+        }
+        UnivBlind univBlind = new UnivBlind();
+        univBlind.setMember(member);
+        univBlind.setUnivPost(Univpost);
+        univBlind.createdAt = LocalDateTime.now();
+        return univBlind;
+    }
+
 
 }

@@ -515,4 +515,17 @@ public class PostRepository {
             return true;
         }
     }
+    /**
+     * 게시물 숨기기
+     */
+    public Long saveBlind(TotalBlind totalBlind) {
+            em.persist(totalBlind);
+            return totalBlind.getId();
+    }
+
+    public Long saveBlind(UnivBlind univBlind) {
+        em.persist(univBlind);
+        return univBlind.getId();
+    }
+
 }

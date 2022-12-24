@@ -112,6 +112,8 @@ public enum BaseResponseStatus {
     DELETED_SCRAP(false, 3063, "이미 스크랩을 취소했어요."),
     BLIND_NOT_EXIST(false, 3064, "해당 게시물을 가리지 않았어요"),
 
+    DUPLICATE_BLIND(false,3064 ,"이미 게시물을 가렸어요." ),
+
 
 
     /**
