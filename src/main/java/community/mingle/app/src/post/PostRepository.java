@@ -496,7 +496,7 @@ public class PostRepository {
                 .setParameter("totalPostId", totalPostId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList.get(0) == null) {
+        if (resultList == null) {
             throw new BaseException(BLIND_NOT_EXIST);
         } else{
             return true;
@@ -509,7 +509,7 @@ public class PostRepository {
                 .setParameter("univPostId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList.get(0) == null) {
+        if (resultList == null) {
             throw new BaseException(BLIND_NOT_EXIST);
         } else{
             return true;

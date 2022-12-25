@@ -3,10 +3,12 @@ package community.mingle.app.src.post;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.post.model.*;
+import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
@@ -33,6 +35,8 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 public class PostController {
 
     private final PostService postService;
+    private final PostRepository postRepository;
+    private final JwtService jwtService;
 
 
 
@@ -72,11 +76,13 @@ public class PostController {
     })
     public BaseResponse<BestUnivPostListResponse> getUnivBest(@RequestParam Long postId) {
         try {
+            Long memberIdByJwt = jwtService.getUserIdx();
             UnivName univ = postService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount(postId);
+            Member member = postRepository.findMemberbyId(memberIdByJwt);
             List<BestUnivPostDTO> result = univPosts.stream()
-                    .map(p -> new BestUnivPostDTO(p))
+                    .map(p -> new BestUnivPostDTO(p, member))
                     .collect(Collectors.toList());
             BestUnivPostListResponse bestUnivPostListResponse = new BestUnivPostListResponse(univName, result);
             return new BaseResponse<>(bestUnivPostListResponse);
@@ -98,6 +104,7 @@ public class PostController {
     })
     public BaseResponse<TotalPostListResponse> getTotalPosts (@RequestParam int category, @RequestParam Long postId) {
         try {
+
             List<TotalPost> totalPosts = postService.findTotalPost(category, postId);
             List<TotalPostListDTO> result = totalPosts.stream()
                     .map(p -> new TotalPostListDTO(p))
