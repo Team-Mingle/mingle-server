@@ -8,6 +8,7 @@ import community.mingle.app.src.auth.model.PostLoginResponse;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.*;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -38,6 +39,7 @@ import static community.mingle.app.config.BaseResponseStatus.PASSWORD_EMPTY_ERRO
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtService jwtService;
 
 
     /**
@@ -70,11 +72,12 @@ public class MemberController {
     public BaseResponse<MyPagePostResponse> getMyTotalPosts (@RequestParam Long postId) {
         try {
             List<TotalPost> totalPosts = memberService.getTotalPosts(postId);
+            Long memberIdByJwt = jwtService.getUserIdx();
             if (totalPosts.isEmpty()) {
                 throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
             }
             List<MyPagePostDTO> result = totalPosts.stream()
-                    .map(p -> new MyPagePostDTO(p))
+                    .map(p -> new MyPagePostDTO(p, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
             return new BaseResponse<>(myPagePostResponse);
@@ -97,11 +100,12 @@ public class MemberController {
             UnivName univ = memberService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = memberService.getUnivPosts(postId);
+            Long memberIdByJwt = jwtService.getUserIdx();
             if (univPosts.isEmpty()) {
                 throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
             }
             List<MyPagePostDTO> result = univPosts.stream()
-                    .map(p -> new MyPagePostDTO(p))
+                    .map(p -> new MyPagePostDTO(p, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
             return new BaseResponse<>(myPagePostResponse);
@@ -121,11 +125,12 @@ public class MemberController {
     public BaseResponse<MyPagePostResponse> getTotalComments(@RequestParam Long postId) {
         try {
             List<TotalPost> totalComments = memberService.getTotalComments(postId);
+            Long memberIdByJwt = jwtService.getUserIdx();
             if (totalComments.isEmpty()) {
                 throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
             }
             List<MyPagePostDTO> result = totalComments.stream()
-                    .map(p -> new MyPagePostDTO(p))
+                    .map(p -> new MyPagePostDTO(p, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
             return new BaseResponse<>(myPagePostResponse);
@@ -145,6 +150,7 @@ public class MemberController {
     @GetMapping("/comments/univ")
     public BaseResponse<MyPagePostResponse> getUnivComments(@RequestParam Long postId) {
         try {
+            Long memberIdByJwt = jwtService.getUserIdx();
             UnivName univ = memberService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univComments = memberService.getUnivComments(postId);
@@ -152,7 +158,7 @@ public class MemberController {
                 throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
             }
             List<MyPagePostDTO> result = univComments.stream()
-                    .map(p -> new MyPagePostDTO(p))
+                    .map(p -> new MyPagePostDTO(p, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
             return new BaseResponse<>(myPagePostResponse);
@@ -172,12 +178,13 @@ public class MemberController {
     @Operation(summary = "2.6 getMyTotalScraps API", description = "2.6 내가 스크랩 한 전체 게시글 API")
     public BaseResponse<MyPagePostResponse> getTotalScraps(@RequestParam Long postId) {
         try {
+            Long memberIdByJwt = jwtService.getUserIdx();
             List<TotalPost> totalPosts = memberService.getTotalScraps(postId);
             if (totalPosts.isEmpty()) {
                 throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
             }
             List<MyPagePostDTO> result = totalPosts.stream()
-                    .map(post -> new MyPagePostDTO(post))
+                    .map(post -> new MyPagePostDTO(post, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
             return new BaseResponse<>(myPagePostResponse);
@@ -198,6 +205,7 @@ public class MemberController {
     @Operation(summary = "2.7 getMyUnivScraps API", description = "2.7 내가 스크랩 한 학교 게시글 API")
     public BaseResponse<MyPagePostResponse> getUnivScraps(@RequestParam Long postId) {
         try {
+            Long memberIdByJwt = jwtService.getUserIdx();
             UnivName univ = memberService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = memberService.getUnivScraps(postId);
@@ -205,7 +213,7 @@ public class MemberController {
                 throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
             }
             List<MyPagePostDTO> result = univPosts.stream()
-                    .map(post -> new MyPagePostDTO(post))
+                    .map(post -> new MyPagePostDTO(post, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
             return new BaseResponse<>(myPagePostResponse);
@@ -225,12 +233,13 @@ public class MemberController {
     @Operation(summary = "2.8 getMyTotalLikePosts API", description = "2.8 내가 좋아요한 전체 게시글 API")
     public BaseResponse<MyPagePostResponse> getTotalLikes(@RequestParam Long postId) {
         try {
+            Long memberIdByJwt = jwtService.getUserIdx();
             List<TotalPost> totalPosts = memberService.getTotalLikes(postId);
             if (totalPosts.isEmpty()) {
                 throw new BaseException(BaseResponseStatus.EMPTY_MYPOST_LIST);
             }
             List<MyPagePostDTO> result = totalPosts.stream()
-                    .map(post -> new MyPagePostDTO(post))
+                    .map(post -> new MyPagePostDTO(post, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(null, result);
             return new BaseResponse<>(myPagePostResponse);
@@ -250,11 +259,12 @@ public class MemberController {
     @Operation(summary = "2.9 getMyUnivLikePosts API", description = "2.9 내가 좋아요한 학교 게시글 API")
     public BaseResponse<MyPagePostResponse> getUnivLikes(@RequestParam Long postId) {
         try {
+            Long memberIdByJwt = jwtService.getUserIdx();
             UnivName univ = memberService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = memberService.getUnivLikes(postId);
             List<MyPagePostDTO> result = univPosts.stream()
-                    .map(post -> new MyPagePostDTO(post))
+                    .map(post -> new MyPagePostDTO(post, memberIdByJwt))
                     .collect(Collectors.toList());
             MyPagePostResponse myPagePostResponse = new MyPagePostResponse(univName, result);
             return new BaseResponse<>(myPagePostResponse);

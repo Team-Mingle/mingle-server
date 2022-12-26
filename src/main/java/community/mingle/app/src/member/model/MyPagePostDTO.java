@@ -19,11 +19,12 @@ public class MyPagePostDTO {
     private String contents;
     private String nickname;
     private boolean isFileAttached;
+    private boolean isBlinded;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 
-    public MyPagePostDTO (TotalPost p) {
+    public MyPagePostDTO (TotalPost p, Long memberId) {
         this.postId = p.getId();
         this.title = p.getTitle();
         this.contents = p.getContent();
@@ -39,9 +40,14 @@ public class MyPagePostDTO {
         List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
         this.createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
+        if (p.getTotalBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        } else{
+            this.isBlinded = false;
+        }
     }
 
-    public MyPagePostDTO (UnivPost p) {
+    public MyPagePostDTO (UnivPost p, Long memberId) {
         this.postId = p.getId();
         this.title = p.getTitle();
         this.contents = p.getContent();
@@ -57,6 +63,12 @@ public class MyPagePostDTO {
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
         this.createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
+        if (p.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        } else{
+            this.isBlinded = false;
+        }
+
     }
 
 }
