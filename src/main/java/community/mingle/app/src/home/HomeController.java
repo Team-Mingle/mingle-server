@@ -117,6 +117,9 @@ public class HomeController {
     }
 
 
+    /**
+     * 5.4 홈화면 최신 게시물 API
+     */
     @GetMapping("/total/recent")
     @Operation(summary = "5.4 getTotalRecentPosts API", description = "5.4 홈화면 광장 최신 게시글 API")
     @ApiResponses({
@@ -133,7 +136,6 @@ public class HomeController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     @GetMapping("/univ/recent")
     @Operation(summary = "5.5 getUnivRecentPosts API", description = "5.5 홈화면 잔디밭 최신 게시글 API")

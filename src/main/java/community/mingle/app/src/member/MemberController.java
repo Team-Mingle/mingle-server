@@ -60,7 +60,7 @@ public class MemberController {
     }
 
     /**
-     * 2.2 내가 쓴 글 조회 - 통합 api
+     * 2.2 내가 쓴 글 조회 - 통합 api +
      */
     @Operation(summary = "2.2 getMyTotalPosts API", description = "2.2 내가 쓴 전체 게시글 조회 API")
     @ApiResponses({

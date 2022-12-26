@@ -1,19 +1,13 @@
 package community.mingle.app.src.post;
 
-
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static community.mingle.app.config.BaseResponseStatus.BLIND_NOT_EXIST;
@@ -26,16 +20,15 @@ public class PostRepository {
 
 
     /**
-     * 2.2 전체 베스트 게시판 api
+     * 2.2 전체 베스트 게시판 api +
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId) {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
+    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Long memberIdByJwt) {
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-//                .setParameter("localDateTime", LocalDateTime.now().minusDays(3))
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setMaxResults(50) //수정 필요
                 .getResultList();
-
         return recentTotalPosts;
     }
 
@@ -45,25 +38,24 @@ public class PostRepository {
     public List<TotalPost> findAllBestTotalPost(Long postId) {
         List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.id = :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-//                .setParameter("localDateTime", LocalDateTime.now().minusDays(3))
                 .setParameter("postId", postId)
                 .getResultList();
-
         return recentTotalPosts;
     }
 
     /**
-     * 2.3 학교 베스트 게시판 api
+     * 2.3 학교 베스트 게시판 api +
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount(Member member, Long postId) {
 //        LocalDateTime minusDate = LocalDateTime.now().minusDays(5);
         return em.createQuery(
 //              "select p from UnivPost p join fetch p.member join fetch p.univName u where u.id = :univId AND p.createdAt > :localDateTime order by p.univPostLikes.size desc, p.createdAt desc", UnivPost.class)
 //              "select p from UnivPost p join fetch p.member m.univName.id = :univId p.createdAt BETWEEN :timestampStart AND current_timestamp ", UnivPost.class)
-                "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId  and p.univPostLikes.size > 4 and p.id < :postId  order by p.createdAt desc ", UnivPost.class)
+                "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId and p.univPostLikes.size > 4 and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", UnivPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
 //                .setParameter("localDateTime", (LocalDateTime.now().minusDays(3))) //최근 3일중 likeCount 로 정렬. 좋아요 수가 같으면 최신순으로 정렬.
                 .setParameter("univId", member.getUniv().getId()) //어디 학교인지
+                .setParameter("memberIdByJwt", member.getId())
                 .setParameter("postId", postId)
                 .setMaxResults(50)
                 .getResultList();
@@ -87,12 +79,13 @@ public class PostRepository {
 
 
     /**
-     * 2.4 광장 게시판 api
+     * 2.4 광장 게시판 api +
      */
-    public List<TotalPost> findTotalPost(int category, Long postId) {
-        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status = :status and c.id = :categoryId and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+    public List<TotalPost> findTotalPost(int category, Long postId, Long memberIdByJwt) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status = :status and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("categoryId", category)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setMaxResults(50)
                 .getResultList();
@@ -100,13 +93,14 @@ public class PostRepository {
 
 
     /**
-     * 2.5 학교 게시판 api
+     * 2.5 학교 게시판 api +
      */
-    public List<UnivPost> findUnivPost(int category, Long postId, int univId) {
-        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status = :status and p.univName.id = :univId and c.id = :categoryId and p.id < :postId order by p.createdAt desc", UnivPost.class)
+    public List<UnivPost> findUnivPost(int category, Long postId, int univId, Long memberIdByJwt) {
+        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status = :status and p.univName.id = :univId and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("univId", univId)
                 .setParameter("categoryId", category)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setMaxResults(50)
                 .getResultList();
@@ -284,16 +278,18 @@ public class PostRepository {
 //        return  totalPost;
 //    }
 
-    public List<TotalComment> getTotalComments(Long id) {
-        List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null order by tc.createdAt asc", TotalComment.class)
+    public List<TotalComment> getTotalComments(Long id, Long memberIdByJwt) {
+        List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null and tc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tc.createdAt asc", TotalComment.class)
                 .setParameter("id", id)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
         return totalCommentList;
     }
 
-    public List<TotalComment> getTotalCocomments(Long id) {
-        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is not null order by tc.createdAt asc", TotalComment.class)
+    public List<TotalComment> getTotalCocomments(Long id, Long memberIdByJwt) {
+        List<TotalComment> totalCocommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is not null and tc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tc.createdAt asc", TotalComment.class)
                 .setParameter("id", id)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
         return totalCocommentList;
     }
@@ -383,22 +379,24 @@ public class PostRepository {
 
 
     //parentCommentId 가 null 인 댓글만 가져오기 (commentLike 는? )
-    public List<UnivComment> getUnivComments(Long postId) {
+    public List<UnivComment> getUnivComments(Long postId, Long memberIdByJwt) {
         List<UnivComment> univCommentList = em.createQuery("select uc from UnivComment uc join uc.univPost as p" +
-                " where p.id = :postId and uc.parentCommentId is null" +
+                " where p.id = :postId and uc.parentCommentId is null and uc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt)" +
                 " order by uc.createdAt asc ", UnivComment.class)
                 .setParameter("postId", postId)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
         return univCommentList;
     }
 
 
     //대댓글만 가져오기 --> 페이징?
-    public List<UnivComment> getUnivCoComments(Long postId) {
+    public List<UnivComment> getUnivCoComments(Long postId, Long memberIdByJwt) {
         List<UnivComment> univCoCommentList = em.createQuery("select uc from UnivComment uc join uc.univPost as p " +
-                " where p.id = :postId and uc.parentCommentId is not null " +
+                " where p.id = :postId and uc.parentCommentId is not null and uc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) " +
                 " order by uc.createdAt asc", UnivComment.class)
                 .setParameter("postId", postId)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
         return univCoCommentList;
     }
@@ -445,11 +443,12 @@ public class PostRepository {
      * @param keyword
      * @return totalPosts
      */
-    public List<TotalPost> searchTotalPostWithKeyword(String keyword) {
+    public List<TotalPost> searchTotalPostWithKeyword(String keyword, Long memberIdByJwt) {
 
-        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status order by tp.createdAt desc" , TotalPost.class)
+        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc" , TotalPost.class)
                 .setParameter("keyword",keyword)
                 .setParameter("status", PostStatus.ACTIVE)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
         return totalPosts;
 
@@ -461,10 +460,11 @@ public class PostRepository {
      * @param keyword
      * @return totalPosts
      */
-    public List<UnivPost> searchUnivPostWithKeyword(String keyword) {
-        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE (up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%')) AND up.status = :status order by up.createdAt desc", UnivPost.class)
+    public List<UnivPost> searchUnivPostWithKeyword(String keyword, Long memberIdByJwt) {
+        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE (up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%')) AND up.status = :status and up.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by up.createdAt desc", UnivPost.class)
                 .setParameter("keyword", keyword)
                 .setParameter("status", PostStatus.ACTIVE)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
         return univPosts;
     }
@@ -501,7 +501,6 @@ public class PostRepository {
         } else{
             return true;
         }
-
     }
 
     public boolean checkUnivPostIsBlinded(Long postId, Long memberId) throws BaseException {
@@ -515,6 +514,8 @@ public class PostRepository {
             return true;
         }
     }
+
+
     /**
      * 게시물 숨기기
      */
