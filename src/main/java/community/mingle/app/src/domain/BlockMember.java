@@ -35,6 +35,7 @@ public class BlockMember {
         BlockMember blockMember = new BlockMember();
         blockMember.setBlockedMember(blockedMember);
         blockMember.setBlockerMember(blockerMember);
+        blockMember.createdAt = LocalDateTime.now();
         return blockMember;
     }
 }

@@ -978,6 +978,7 @@ public class PostService {
         }
     }
 
+    @Transactional
     public String blockMemberInTotalPost(Long postId) throws BaseException {
         TotalPost totalPostById = postRepository.findTotalPostById(postId);
         Long userIdx = jwtService.getUserIdx();
@@ -991,6 +992,7 @@ public class PostService {
         return "유저를 성공적으로 차단했습니다.";
     }
 
+    @Transactional
     public String blockMemberInUnivPost(Long postId) throws BaseException {
         UnivPost univPostById = postRepository.findUnivPostById(postId);
         Long userIdx = jwtService.getUserIdx();
@@ -1004,6 +1006,7 @@ public class PostService {
         return "유저를 성공적으로 차단했습니다.";
     }
 
+    @Transactional
     public String unblindTotalPost(Long postId) throws BaseException {
         Long memberId = jwtService.getUserIdx();
         try {
@@ -1014,6 +1017,7 @@ public class PostService {
         }
     }
 
+    @Transactional
     public String unblindUnivPost(Long postId) throws BaseException {
         Long memberId = jwtService.getUserIdx();
         try {
