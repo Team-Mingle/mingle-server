@@ -289,9 +289,9 @@ public class MemberService {
             //10번일 시 member의 status를 REPORTED로 변환
             if (memberCount % 10 == 0) {
                 member.modifyReportStatus();
+                redisUtil.deleteData(member.getEmail());
+                fcmService.sendMessageTo(member.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
             }
-            redisUtil.deleteData(member.getEmail());
-            fcmService.sendMessageTo(member.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
 //            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
 //            if (post.getMember().getTotalNotifications().size() > 20) {
 //                post.getMember().getTotalNotifications().remove(0);
