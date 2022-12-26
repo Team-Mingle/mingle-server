@@ -977,4 +977,50 @@ public class PostService {
             }
         }
     }
+
+    public String blockMemberInTotalPost(Long postId) throws BaseException {
+        TotalPost totalPostById = postRepository.findTotalPostById(postId);
+        Long userIdx = jwtService.getUserIdx();
+        Member member = postRepository.findMemberbyId(userIdx);
+        try {
+            BlockMember blockMember = BlockMember.CreateBlockMember(totalPostById.getMember(), member);
+            postRepository.save(blockMember);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+        return "유저를 성공적으로 차단했습니다.";
+    }
+
+    public String blockMemberInUnivPost(Long postId) throws BaseException {
+        UnivPost univPostById = postRepository.findUnivPostById(postId);
+        Long userIdx = jwtService.getUserIdx();
+        Member member = postRepository.findMemberbyId(userIdx);
+        try {
+            BlockMember blockMember = BlockMember.CreateBlockMember(univPostById.getMember(), member);
+            postRepository.save(blockMember);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+        return "유저를 성공적으로 차단했습니다.";
+    }
+
+    public String unblindTotalPost(Long postId) throws BaseException {
+        Long memberId = jwtService.getUserIdx();
+        try {
+            postRepository.deleteTotalBlind(memberId, postId);
+            return "가리기를 취소했습니다.";
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public String unblindUnivPost(Long postId) throws BaseException {
+        Long memberId = jwtService.getUserIdx();
+        try {
+            postRepository.deleteUnivBlind(memberId, postId);
+            return "가리기를 취소했습니다.";
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

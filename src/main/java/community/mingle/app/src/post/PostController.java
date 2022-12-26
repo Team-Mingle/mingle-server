@@ -592,7 +592,7 @@ public class PostController {
 
 
     /**
-     * 3.25 게시물 가리기 API
+     * 3.25 게시물 가리기 전체 API
      */
     @Operation(summary = "3.25  blindTotalPost API", description = "3.25 통합 게시물 가리기 api")
     @ApiResponses ({
@@ -610,7 +610,10 @@ public class PostController {
         }
     }
 
-    @Operation(summary = "3.25  blindTotalPost API", description = "3.25 통합 게시물 가리기 api")
+    /**
+     * 3.26 게시물 가리기 학교 API
+     */
+    @Operation(summary = "3.26  blindUnivPost API", description = "3.26 학교 게시물 가리기 api")
     @ApiResponses ({
             @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
@@ -626,7 +629,57 @@ public class PostController {
         }
     }
 
+    /**
+     * 3.27 게시물 가리기 취소 전체 API
+     */
+    @Operation(summary = "3.27 UnblindTotalPost API", description = "3.27 전체 게시물 가리기 취소 api")
+    @PostMapping("/total/deleteblind/")
+    public BaseResponse<String> unblindTotalPost(@RequestParam Long postId) {
+        try{
+            return new BaseResponse<>(postService.unblindTotalPost(postId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
+    /**
+     * 3.28 게시물 가리기 취소 학교 API
+     */
+    @Operation(summary = "3.28 UnblindUnivPost API", description = "3.28 학교 게시물 가리기 취소 api")
+    @PostMapping("/total/deleteblind/")
+    public BaseResponse<String> unblindUnivPost(@RequestParam Long postId) {
+        try{
+            return new BaseResponse<>(postService.unblindUnivPost(postId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 3.29 유저 차단 전체 api
+     */
+    @Operation(summary = "3.29 userBlockTotal API", description = "3.29 유저 차단 전체 api")
+    @PostMapping("/total/block")
+    public BaseResponse<String> blockMemberInTotalPost(@RequestParam Long postId) throws BaseException {
+        try {
+            return new BaseResponse<>(postService.blockMemberInTotalPost(postId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 3.30 유저 차단 학교 api
+     */
+    @Operation(summary = "3.30  userBlockUniv API", description = "3.30 유저 차단 학교 api")
+    @PostMapping("/univ/block")
+    public BaseResponse<String> blockMemberInUnivPost(@RequestParam Long postId) throws BaseException {
+        try {
+            return new BaseResponse<>(postService.blockMemberInUnivPost(postId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }
 

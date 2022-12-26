@@ -30,4 +30,11 @@ public class BlockMember {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public static BlockMember CreateBlockMember(Member blockedMember, Member blockerMember) {
+        BlockMember blockMember = new BlockMember();
+        blockMember.setBlockedMember(blockedMember);
+        blockMember.setBlockerMember(blockerMember);
+        return blockMember;
+    }
 }
