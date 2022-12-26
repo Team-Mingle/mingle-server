@@ -631,7 +631,7 @@ public class PostController {
      * 3.27 게시물 가리기 취소 전체 API
      */
     @Operation(summary = "3.27 UnblindTotalPost API", description = "3.27 전체 게시물 가리기 취소 api")
-    @PostMapping("/total/deleteblind")
+    @DeleteMapping("/total/deleteblind")
     public BaseResponse<String> unblindTotalPost(@RequestParam Long postId) {
         try{
             return new BaseResponse<>(postService.unblindTotalPost(postId));
@@ -644,7 +644,7 @@ public class PostController {
      * 3.28 게시물 가리기 취소 학교 API
      */
     @Operation(summary = "3.28 UnblindUnivPost API", description = "3.28 학교 게시물 가리기 취소 api")
-    @PostMapping("/univ/deleteblind")
+    @DeleteMapping("/univ/deleteblind")
     public BaseResponse<String> unblindUnivPost(@RequestParam Long postId) {
         try{
             return new BaseResponse<>(postService.unblindUnivPost(postId));
