@@ -22,7 +22,7 @@ import java.util.Objects;
 public class UnivBlind {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "univblind_id")
+    @Column(name = "univ_blind_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
