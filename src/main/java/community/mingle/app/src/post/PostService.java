@@ -68,8 +68,8 @@ public class PostService {
     /**
      * 3.2 홍콩 배스트 게시판 API
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId) throws BaseException {
-        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(postId);
+    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Long memberId) throws BaseException {
+        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(postId, memberId);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -98,8 +98,8 @@ public class PostService {
     /**
      * 3.4 광장 게시판 리스트 API
      */
-    public List<TotalPost> findTotalPost(int category, Long postId) throws BaseException {
-        List<TotalPost> totalPostList = postRepository.findTotalPost(category, postId);
+    public List<TotalPost> findTotalPost(int category, Long postId, Long memberId) throws BaseException {
+        List<TotalPost> totalPostList = postRepository.findTotalPost(category, postId, memberId);
         if (totalPostList.size() == 0) {
             throw new BaseException(EMPTY_POSTS_LIST);
         }
@@ -110,8 +110,8 @@ public class PostService {
     /**
      * 3.5 학교 게시판 리스트 API
      */
-    public List<UnivPost> findUnivPost(int category, Long postId, int univId) throws BaseException {
-        List<UnivPost> getUnivAll = postRepository.findUnivPost(category, postId, univId);
+    public List<UnivPost> findUnivPost(int category, Long postId, int univId, Long memberId) throws BaseException {
+        List<UnivPost> getUnivAll = postRepository.findUnivPost(category, postId, univId, memberId);
         if (getUnivAll.size() == 0) {
             throw new BaseException(EMPTY_POSTS_LIST);
         }
@@ -295,8 +295,8 @@ public class PostService {
         }
         Long memberIdByJwt = jwtService.getUserIdx();
         try {
-            List<TotalComment> totalCommentList = postRepository.getTotalComments(id);
-            List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id);
+            List<TotalComment> totalCommentList = postRepository.getTotalComments(id, memberIdByJwt);
+            List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id, memberIdByJwt);
             List<TotalCommentResponse> totalCommentResponseList = new ArrayList<>();
             for (TotalComment tc : totalCommentList) {
                 List<TotalComment> coComments = totalCocommentList.stream()
@@ -379,8 +379,8 @@ public class PostService {
         member = postRepository.findMemberbyId(memberIdByJwt);
         try {
             //1. postId 의 댓글, 대댓글 리스트 각각 가져오기
-            List<UnivComment> univComments = postRepository.getUnivComments(postId); //댓글
-            List<UnivComment> univCoComments = postRepository.getUnivCoComments(postId); //대댓글
+            List<UnivComment> univComments = postRepository.getUnivComments(postId, memberIdByJwt); //댓글
+            List<UnivComment> univCoComments = postRepository.getUnivCoComments(postId, memberIdByJwt); //대댓글
             //2. 댓글 + 대댓글 DTO 생성
             List<UnivCommentResponse> univCommentResponseList = new ArrayList<>();
             //3. 댓글 리스트 돌면서 댓글 하나당 대댓글 리스트 넣어서 합쳐주기
@@ -902,8 +902,8 @@ public class PostService {
      * 전체 게시판 검색 기능
      */
     @Transactional
-    public List<TotalPost> findAllSearch(String keyword) throws BaseException {
-        List<TotalPost> searchTotalPostLists = postRepository.searchTotalPostWithKeyword(keyword);
+    public List<TotalPost> findAllSearch(String keyword, Long memberId) throws BaseException {
+        List<TotalPost> searchTotalPostLists = postRepository.searchTotalPostWithKeyword(keyword, memberId);
         if (searchTotalPostLists.size() == 0) {
             throw new BaseException(POST_NOT_EXIST);
         }
@@ -914,8 +914,8 @@ public class PostService {
      * 학교 게시판 검색 기능
      */
     @Transactional
-    public List<UnivPost> findUnivSearch(String keyword)  throws BaseException {
-        List<UnivPost> searchUnivPostLists = postRepository.searchUnivPostWithKeyword(keyword);
+    public List<UnivPost> findUnivSearch(String keyword, Long memberId)  throws BaseException {
+        List<UnivPost> searchUnivPostLists = postRepository.searchUnivPostWithKeyword(keyword, memberId);
         if (searchUnivPostLists.size() == 0) {
             throw new BaseException(POST_NOT_EXIST);
         }

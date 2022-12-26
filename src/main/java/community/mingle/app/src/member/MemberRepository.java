@@ -29,11 +29,12 @@ public class MemberRepository {
 
 
     /**
-     * 2.3
+     * 2.2 +
      */
-    public List<TotalPost> findTotalPosts(Long memberId, Long postId) {
-        List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where m.id = :id AND p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
-                .setParameter("id", memberId)
+    public List<TotalPost> findTotalPosts(Long memberIdByJwt, Long postId) {
+        List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) AND p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -42,11 +43,12 @@ public class MemberRepository {
     }
 
     /**
-     * 2.4
+     * 2.3 +
      */
-    public List<UnivPost> findUnivPosts(Long memberId, Long postId) {
-        List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
-                .setParameter("id", memberId)
+    public List<UnivPost> findUnivPosts(Long memberIdByJwt, Long postId) {
+        List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -57,9 +59,10 @@ public class MemberRepository {
     /**
      * 2.5
      */
-    public List<TotalPost> findTotalComments(Long memberId, Long postId) {
-        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where m.id = :id and p.id < :postId AND p.status = :status order by c.createdAt desc ", TotalPost.class)
-                .setParameter("id", memberId)
+    public List<TotalPost> findTotalComments(Long memberIdByJwt, Long postId) {
+        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId AND p.status = :status order by c.createdAt desc ", TotalPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -70,9 +73,10 @@ public class MemberRepository {
     /**
      * 2.6
      */
-    public List<UnivPost> findUnivComments(Long memberId, Long postId) {
-        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where m.id = :id AND p.id < :postId AND p.status = :status order by c.createdAt desc ", UnivPost.class)
-                .setParameter("id", memberId)
+    public List<UnivPost> findUnivComments(Long memberIdByJwt, Long postId) {
+        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where m.id = :id AND p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId AND p.status = :status order by c.createdAt desc ", UnivPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -84,10 +88,11 @@ public class MemberRepository {
     /**
      * 2.7 내가 스크랩한 글 - 대학
      */
-    public List<UnivPost> findUnivScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
+    public List<UnivPost> findUnivScraps(Long memberIdByJwt, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p " +
-                        "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
-                .setParameter("id", memberId)
+                        "where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -99,10 +104,11 @@ public class MemberRepository {
     /**
      * 2.8 내가 스크랩 한 글 - 전체
      */
-    public List<TotalPost> findTotalScraps(Long memberId, Long postId) { // join fetch 안했을경우 : likeCount: size()
+    public List<TotalPost> findTotalScraps(Long memberIdByJwt, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p" +
-                        " where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
-                .setParameter("id", memberId)
+                        " where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -115,10 +121,11 @@ public class MemberRepository {
     /**
      * 2.9 내가 좋아요 한 광장 글
      */
-    public List<TotalPost> findTotalLikes(Long memberId, Long postId) {
+    public List<TotalPost> findTotalLikes(Long memberIdByJwt, Long postId) {
         List<TotalPost> resultList = em.createQuery("select p from TotalPostLike us join us.member m join us.totalPost p " +
-                        "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
-                .setParameter("id", memberId)
+                        "where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.status = :status order by p.createdAt desc", TotalPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -130,10 +137,11 @@ public class MemberRepository {
     /**
      * 2.10 내가 좋아요 한 잔디밭 글
      */
-    public List<UnivPost> findUnivLikes(Long memberId, Long postId) {
+    public List<UnivPost> findUnivLikes(Long memberIdByJwt, Long postId) {
         List<UnivPost> resultList = em.createQuery("select p from UnivPostLike us join us.member m join us.univPost p " +
-                        "where m.id = :id and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
-                .setParameter("id", memberId)
+                        "where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.status = :status order by p.createdAt desc", UnivPost.class)
+                .setParameter("id", memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
@@ -146,11 +154,11 @@ public class MemberRepository {
     /**
      * report API
      */
-    public boolean isMultipleReport(ReportRequest reportRequest, Long memberId) {
-        Long countMultipleReport = em.createQuery("select count(r) from Report r where r.tableId = :tableId and r.contentId = :contentId and r.reporterMemberId = :memberId", Long.class)
+    public boolean isMultipleReport(ReportRequest reportRequest, Long memberIdByJwt) {
+        Long countMultipleReport = em.createQuery("select count(r) from Report r where r.tableId = :tableId and r.contentId = :contentId and r.reportermemberIdByJwt = :memberIdByJwt", Long.class)
                 .setParameter("tableId", reportRequest.getTableType())
                 .setParameter("contentId", reportRequest.getContentId())
-                .setParameter("memberId", memberId)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getSingleResult();
         if (countMultipleReport != 0) {
             return true;
@@ -192,9 +200,9 @@ public class MemberRepository {
         return report.getReportId();
     }
 
-    public Long countMemberReport(Long memberId) {
-        Long countMember = em.createQuery("select count(r.reportedMemberId) from Report r where r.reportedMemberId = :memberId", Long.class)
-                .setParameter("memberId", memberId)
+    public Long countMemberReport(Long memberIdByJwt) {
+        Long countMember = em.createQuery("select count(r.reportedmemberIdByJwt) from Report r where r.reportedmemberIdByJwt = :memberIdByJwt", Long.class)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .getSingleResult();
         return countMember;
     }
@@ -300,9 +308,9 @@ public class MemberRepository {
 
 
 
-//    public List<UnivPost> findUnivScrapsV2(Long memberId) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ
+//    public List<UnivPost> findUnivScrapsV2(Long memberIdByJwt) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ
 //        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join fetch us.univPost p where m.id = :id order by us.createdAt desc", UnivPost.class)
-//                .setParameter("id", memberId)
+//                .setParameter("id", memberIdByJwt)
 //                .getResultList();
 //        return resultList;
 //    }

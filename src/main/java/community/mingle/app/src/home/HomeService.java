@@ -76,7 +76,8 @@ public class HomeService {
      * 5.2 홈 전체 배스트 게시판 API
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException {
-        List<TotalPost> totalPosts = homeRepository.findTotalPostWithMemberLikeComment();
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        List<TotalPost> totalPosts = homeRepository.findTotalPostWithMemberLikeComment(memberIdByJwt);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -88,8 +89,7 @@ public class HomeService {
      */
     public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
-        Member member;
-        member = homeRepository.findMemberbyId(memberIdByJwt);
+        Member member = homeRepository.findMemberbyId(memberIdByJwt);
         if (member == null) {
             throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
         }
@@ -104,7 +104,9 @@ public class HomeService {
      * 5.4 홈 전체 최신 게시글 api
      */
     public List<TotalPost> findTotalRecentPosts() throws BaseException {
-        List<TotalPost> totalPosts = homeRepository.findTotalRecentPosts();
+        Long memberIdByJwt = jwtService.getUserIdx();
+//        Member member = homeRepository.findMemberbyId(memberIdByJwt);
+        List<TotalPost> totalPosts = homeRepository.findTotalRecentPosts(memberIdByJwt);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_RECENT_POSTS);
         }
@@ -117,9 +119,6 @@ public class HomeService {
     public List<UnivPost> findUnivRecentPosts() throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         Member member = homeRepository.findMemberbyId(memberIdByJwt);
-        if (member == null) {
-            throw new BaseException(DATABASE_ERROR);
-        }
         List<UnivPost> univPosts;
         try {
           univPosts = homeRepository.findUnivRecentPosts(member);

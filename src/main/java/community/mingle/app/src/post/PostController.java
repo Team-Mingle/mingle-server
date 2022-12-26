@@ -2,8 +2,6 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
-import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.UnivName;
@@ -40,7 +38,7 @@ public class PostController {
 
 
     /**
-     * 3.2 전체 배스트 게시판 API
+     * 3.2 전체 배스트 게시판 API +
      */
     @GetMapping("/total/best")
     @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
@@ -50,7 +48,7 @@ public class PostController {
     public BaseResponse<BestTotalPostListResponse> getTotalBest(@RequestParam Long postId) {
         try { //JWT로 해당 유저인지 확인 필요
             Long memberId = jwtService.getUserIdx();
-            List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment(postId);
+            List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment(postId, memberId);
             List<BestTotalPostDTO> result = totalPosts.stream()
                     .map(m -> new BestTotalPostDTO(m, memberId))
                     .collect(Collectors.toList());
@@ -65,7 +63,7 @@ public class PostController {
 
 
     /**
-     * 3.3 학교 베스트 게시판 API
+     * 3.3 학교 베스트 게시판 API +
      */
     @GetMapping("/univ/best")
     @Operation(summary = "3.3 getUnivBest Posts API", description = "3.3 학교 베스트 게시물 리스트 API")
@@ -103,9 +101,8 @@ public class PostController {
     })
     public BaseResponse<TotalPostListResponse> getTotalPosts (@RequestParam int category, @RequestParam Long postId) {
         try {
-
-            List<TotalPost> totalPosts = postService.findTotalPost(category, postId);
             Long memberId = jwtService.getUserIdx();
+            List<TotalPost> totalPosts = postService.findTotalPost(category, postId, memberId);
             List<TotalPostListDTO> result = totalPosts.stream()
                     .map(p -> new TotalPostListDTO(p, memberId))
                     .collect(Collectors.toList());
@@ -130,7 +127,7 @@ public class PostController {
             UnivName univ = postService.findUniv();
             Long memberId = jwtService.getUserIdx();
             String univName = univ.getUnivName().substring(0,3);
-            List<UnivPost> univPosts = postService.findUnivPost(category, postId, univ.getId());
+            List<UnivPost> univPosts = postService.findUnivPost(category, postId, univ.getId(), memberId);
             List<UnivPostListDTO> result = univPosts.stream()
                     .map(u -> new UnivPostListDTO(u, memberId))
                     .collect(Collectors.toList());
@@ -158,7 +155,8 @@ public class PostController {
             return new BaseResponse<>(postService.createTotalPost(createPostRequest));
         }catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
-    } }
+        }
+    }
 
 
 
@@ -219,7 +217,7 @@ public class PostController {
 
 
     /**
-     * 3.9.2 통합 게시물 상세 - 댓글 API
+     * 3.9.2 통합 게시물 상세 - 댓글 API +
      */
     @GetMapping("/total/{totalPostId}/comment")
     @Operation(summary = "3.9.2 totalPostDetailComment API", description = "3.9.2 통합 게시물 상세 - 댓글 부분 API")
@@ -548,14 +546,14 @@ public class PostController {
 
 
     /**
-     * 3.23 전체 게시판 검색 api
+     * 3.23 전체 게시판 검색 api +
      */
     @Operation(summary = "searchTotalPost API", description = "전체게시판 검색 api")
     @GetMapping("total/search")
     public BaseResponse<SearchTotalPostResponse> searchTotalPost(@RequestParam(value="keyword") String keyword) {
         try {
-            List<TotalPost> totalPosts = postService.findAllSearch(keyword);
             Long memberId = jwtService.getUserIdx();
+            List<TotalPost> totalPosts = postService.findAllSearch(keyword, memberId);
             List<SearchTotalPostDTO> result = totalPosts.stream()
                     .map(tp -> new SearchTotalPostDTO(tp, memberId))
                     .collect(Collectors.toList());
@@ -569,14 +567,14 @@ public class PostController {
 
 
     /**
-     * 3.24 학교 게시판 검색 api
+     * 3.24 학교 게시판 검색 api +
      */
     @Operation(summary = "searchUnivPost API", description = "학교게시판 검색 api")
     @GetMapping("univ/search")
     public BaseResponse<SearchUnivPostResponse> searchUnivPost(@RequestParam(value="keyword") String keyword) {
         try {
-            List<UnivPost> univPosts = postService.findUnivSearch(keyword);
             Long memberId = jwtService.getUserIdx();
+            List<UnivPost> univPosts = postService.findUnivSearch(keyword, memberId);
             List<SearchUnivPostDTO> result = univPosts.stream()
                     .map(up -> new SearchUnivPostDTO(up, memberId))
                     .collect(Collectors.toList());

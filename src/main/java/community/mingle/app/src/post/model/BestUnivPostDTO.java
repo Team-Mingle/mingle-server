@@ -48,6 +48,7 @@ public class BestUnivPostDTO {
         List<UnivComment> commentList = p.getUnivComments();
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
+        this.likeCount = p.getUnivPostLikes().size();
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
     }
 
