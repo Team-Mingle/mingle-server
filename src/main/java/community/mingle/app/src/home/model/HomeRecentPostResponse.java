@@ -18,13 +18,14 @@ public class HomeRecentPostResponse {
     private String title;
     private String contents;
     private String nickname;
-    private Boolean isFileAttached;
+    private boolean isFileAttached;
+    private boolean isBlinded;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 
 
-    public HomeRecentPostResponse(TotalPost totalPost) {
+    public HomeRecentPostResponse(TotalPost totalPost, Long memberId) {
         this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
@@ -34,6 +35,11 @@ public class HomeRecentPostResponse {
             this.nickname = totalPost.getMember().getNickname();
         }
         this.isFileAttached = totalPost.getIsFileAttached();
+        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        }else{
+            this.isBlinded = false;
+        }
         this.likeCount = totalPost.getTotalPostLikes().size();
         /** 댓글 개수*/
         List<TotalComment> commentList = totalPost.getTotalPostComments();
@@ -42,7 +48,7 @@ public class HomeRecentPostResponse {
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
     }
 
-    public HomeRecentPostResponse(UnivPost p) {
+    public HomeRecentPostResponse(UnivPost p, Long memberId) {
         postId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
@@ -53,6 +59,11 @@ public class HomeRecentPostResponse {
             this.nickname = p.getMember().getNickname();
         }
         isFileAttached = p.getIsFileAttached();
+        if (p.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        }else{
+            this.isBlinded = false;
+        }
         likeCount = p.getUnivPostLikes().size();
         /** 댓글 개수*/
         List<UnivComment> commentList = p.getUnivComments();
