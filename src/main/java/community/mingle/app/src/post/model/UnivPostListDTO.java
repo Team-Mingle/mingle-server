@@ -19,13 +19,14 @@ public class UnivPostListDTO {
     private String contents;
     private String nickname;
     private boolean isFileAttached;
+    private boolean isBlinded;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 //    private String postImgUrl;
 
 
-    public UnivPostListDTO(UnivPost univPost) {
+    public UnivPostListDTO(UnivPost univPost, Long memberId) {
         this.postId = univPost.getId();
         this.title = univPost.getTitle();
         this.contents = univPost.getContent();
@@ -36,6 +37,11 @@ public class UnivPostListDTO {
         }
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
+        if (univPost.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        } else{
+            this.isBlinded = false;
+        }
 
         /** 댓글 개수*/
         List<UnivComment> commentList = univPost.getUnivComments();

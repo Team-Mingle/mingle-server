@@ -16,13 +16,14 @@ public class HomeBestTotalPostResponse {
     private String title;
     private String contents;
     private String nickname;
-    private Boolean isFileAttached;
+    private boolean isFileAttached;
+    private boolean isBlinded;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 
 
-    public HomeBestTotalPostResponse(TotalPost totalPost) {
+    public HomeBestTotalPostResponse(TotalPost totalPost, Long memberId) {
         this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
@@ -32,6 +33,11 @@ public class HomeBestTotalPostResponse {
             this.nickname = totalPost.getMember().getNickname();
         }
         this.isFileAttached = totalPost.getIsFileAttached();
+        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        }else{
+            this.isBlinded = false;
+        }
         this.likeCount = totalPost.getTotalPostLikes().size();
         /** 댓글 개수*/
         List<TotalComment> commentList = totalPost.getTotalPostComments();

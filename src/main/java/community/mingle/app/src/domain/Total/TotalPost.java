@@ -53,6 +53,10 @@ public class TotalPost {
     @OneToMany(mappedBy = "totalPost")
     private List<TotalNotification> totalNotifications = new ArrayList<>();
 
+    //member 알아내려고 조인한것
+    @OneToMany(mappedBy = "totalPost")
+    private List<TotalBlind> totalBlinds = new ArrayList<>();
+
 
 
     //    @Enumerated(EnumType.STRING)

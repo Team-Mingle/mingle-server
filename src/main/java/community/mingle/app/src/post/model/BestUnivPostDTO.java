@@ -20,14 +20,14 @@ public class BestUnivPostDTO {
     private String contents;
     private String nickname;
     private boolean isFileAttached;
-//    private boolean isBlinded;
+    private boolean isBlinded;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 //    private String postImgUrl;
 
 
-    public BestUnivPostDTO(UnivPost p, Member member) {
+    public BestUnivPostDTO(UnivPost p, Long memberId) {
         postId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
@@ -37,6 +37,11 @@ public class BestUnivPostDTO {
             this.nickname = p.getMember().getNickname();
         }
         this.isFileAttached = p.getIsFileAttached();
+        if (p.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        }else{
+            this.isBlinded = false;
+        }
 //        this.isBlinded = member.
 //        likeCount = p.getUnivPostLikes().size();
         /** 댓글 개수*/
