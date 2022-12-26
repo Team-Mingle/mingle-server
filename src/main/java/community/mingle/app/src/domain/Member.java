@@ -80,6 +80,12 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<UnivBlind> univBlindPost = new ArrayList<>();
 
+    @OneToMany(mappedBy = "blockedMember")
+    private List<BlockMember> blockedMember= new ArrayList<>();
+
+    @OneToMany(mappedBy = "blockerMember")
+    private List<BlockMember> blockerMember= new ArrayList<>();
+
     private LocalDateTime agreedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
