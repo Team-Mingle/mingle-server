@@ -124,9 +124,10 @@ public class HomeController {
     })
     public BaseResponse<List<HomeRecentPostResponse>> getTotalRecentPosts() {
         try {
+            Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = homeService.findTotalRecentPosts();
             List<HomeRecentPostResponse> result = totalPosts.stream()
-                    .map(m -> new HomeRecentPostResponse(m))
+                    .map(m -> new HomeRecentPostResponse(m, memberId))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
@@ -142,9 +143,10 @@ public class HomeController {
     })
     public BaseResponse<List<HomeRecentPostResponse>> getUnivRecentPosts() {
         try {
+            Long memberId = jwtService.getUserIdx();
             List<UnivPost> univPosts = homeService.findUnivRecentPosts();
             List<HomeRecentPostResponse> result = univPosts.stream()
-                    .map(m -> new HomeRecentPostResponse(m))
+                    .map(m -> new HomeRecentPostResponse(m, memberId))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
         } catch (BaseException exception) {

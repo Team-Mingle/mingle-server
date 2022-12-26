@@ -528,4 +528,25 @@ public class PostRepository {
         return univBlind.getId();
     }
 
+    public Long save(BlockMember blockMember) {
+        em.persist(blockMember);
+        return blockMember.getBlockMemberId();
+    }
+
+    public void deleteTotalBlind(Long memberId, Long postId) {
+        TotalBlind totalBlind = em.createQuery("select tb from TotalBlind tb where tb.member.id = :memberId and tb.totalPost.id = :postId", TotalBlind.class)
+                .setParameter("memberId", memberId)
+                .setParameter("postId", postId)
+                .getSingleResult();
+        em.remove(totalBlind);
+    }
+
+    public void deleteUnivBlind(Long memberId, Long postId) {
+        UnivBlind univBlind = em.createQuery("select ub from UnivBlind ub where ub.member.id = :memberId and ub.univPost.id = :postId", UnivBlind.class)
+                .setParameter("memberId", memberId)
+                .setParameter("postId", postId)
+                .getSingleResult();
+        em.remove(univBlind);
+
+    }
 }
