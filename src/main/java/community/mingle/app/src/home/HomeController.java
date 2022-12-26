@@ -8,6 +8,7 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.home.model.*;
 import community.mingle.app.src.post.model.CreatePostRequest;
 import community.mingle.app.src.post.model.CreatePostResponse;
+import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 public class HomeController {
 
     private final HomeService homeService;
+    private final JwtService jwtService;
 
 
     /**
@@ -79,9 +81,10 @@ public class HomeController {
     })
     public BaseResponse<List<HomeBestTotalPostResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
+            Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = homeService.findTotalPostWithMemberLikeComment();
             List<HomeBestTotalPostResponse> result = totalPosts.stream()
-                    .map(m -> new HomeBestTotalPostResponse(m))
+                    .map(m -> new HomeBestTotalPostResponse(m, memberId))
                     .collect(Collectors.toList());
 
             return new BaseResponse<>(result);
@@ -101,9 +104,10 @@ public class HomeController {
     })
     public BaseResponse<List<HomeBestUnivPostResponse>> getUnivBest() {
         try {
+            Long memberId = jwtService.getUserIdx();
             List<UnivPost> univPosts = homeService.findAllWithMemberLikeCommentCount();
             List<HomeBestUnivPostResponse> result = univPosts.stream()
-                    .map(p -> new HomeBestUnivPostResponse(p))
+                    .map(p -> new HomeBestUnivPostResponse(p, memberId))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 

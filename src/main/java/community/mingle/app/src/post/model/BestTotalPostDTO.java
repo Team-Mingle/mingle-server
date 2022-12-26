@@ -17,12 +17,13 @@ public class BestTotalPostDTO {
     private String contents;
     private String nickname;
     private boolean isFileAttached;
+    private boolean isBlinded;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 
 
-    public BestTotalPostDTO(TotalPost totalPost) {
+    public BestTotalPostDTO(TotalPost totalPost, Long memberId) {
         this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
@@ -33,6 +34,11 @@ public class BestTotalPostDTO {
         }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
+        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        }else{
+            this.isBlinded = false;
+        }
         /** 댓글 개수*/
         List<TotalComment> commentList = totalPost.getTotalPostComments();
         List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());

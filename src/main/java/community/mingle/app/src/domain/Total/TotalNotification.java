@@ -70,6 +70,7 @@ public class TotalNotification {
         totalNotification.category = CategoryType.valueOf(totalPost.getCategory().getName());
         return totalNotification;
     }
+
     public static TotalNotification saveTotalPostNotification(TotalPost totalpost, Member member){
         TotalNotification totalNotification = new TotalNotification();
         totalNotification.setMember(member);

@@ -162,5 +162,14 @@ public class CommentRepository {
 
     }
 
+    public void deleteUnivNotification(Long univNotificationId) {
+        UnivNotification univNotification = em.find(UnivNotification.class, univNotificationId);
+        em.remove(univNotification);
+    }
 
+
+    public void deleteTotalNotification(Long totalNotificationId) {
+        TotalNotification totalNotification = em.find(TotalNotification.class, totalNotificationId);
+        em.remove(totalNotification);
+    }
 }

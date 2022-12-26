@@ -2,6 +2,7 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.*;
 
+import community.mingle.app.src.domain.Total.TotalBlind;
 import community.mingle.app.src.post.model.UpdatePostRequest;
 
 import community.mingle.app.src.post.model.CreatePostRequest;
@@ -36,6 +37,9 @@ public class UnivPost {
     @OneToMany(mappedBy = "univPost")
     private List<UnivPostLike> univPostLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "univPost")
+    //member 알아내려고 조인한것
+    private List<UnivBlind> univBlinds = new ArrayList<>();
 
     /**
      * 3.10 추가

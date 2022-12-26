@@ -105,6 +105,7 @@ public class AuthService {
             String authKey = String.valueOf(random.nextInt(888888) + 111111);
             sendAuthEmail(request.getEmail(), authKey); /**/
         } catch (BaseException e) {
+            e.printStackTrace();
             throw new BaseException(CODE_GENERATE_FAIL);
         }
     }
@@ -114,7 +115,7 @@ public class AuthService {
      */
     private void sendAuthEmail(String email, String authKey) throws BaseException {
         String subject = "Mingle의 이메일을 인증하세요!";
-        String text = "\n\n인증번호는" + authKey + "입니다.";
+        String text = "\n\n인증번호는 " + authKey + " 입니다.";
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -126,8 +127,10 @@ public class AuthService {
             javaMailSender.send(mimeMessage);
 
         } catch(MessagingException e) {
+            e.printStackTrace();
             throw new BaseException(EMAIL_SEND_FAIL);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
 

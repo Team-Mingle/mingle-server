@@ -110,6 +110,7 @@ public enum BaseResponseStatus {
     DUPLICATE_SCRAP(false, 3061, "이미 스크랩을 눌렀어요."),
     DELETED_LIKE(false, 3062, "이미 좋아요를 취소했어요."),
     DELETED_SCRAP(false, 3063, "이미 스크랩을 취소했어요."),
+    BLIND_NOT_EXIST(false, 3064, "해당 게시물을 가리지 않았어요"),
 
     DUPLICATE_BLIND(false,3064 ,"이미 게시물을 가렸어요." ),
 

@@ -12,6 +12,7 @@ import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.src.member.model.*;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
@@ -32,6 +33,7 @@ public class MemberService {
     private final AuthRepository authRepository;
     private final MemberRepository memberRepository;
     private final RedisUtil redisUtil;
+    private final FirebaseCloudMessageService fcmService;
 
 
     /**
@@ -289,6 +291,14 @@ public class MemberService {
             if (memberCount % 10 == 0) {
                 member.modifyReportStatus();
             }
+            redisUtil.deleteData(member.getEmail());
+            fcmService.sendMessageTo(member.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
+//            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
+//            if (post.getMember().getTotalNotifications().size() > 20) {
+//                post.getMember().getTotalNotifications().remove(0);
+//            }
+//            memberRepository.saveTotalNotification(totalNotification);
+
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

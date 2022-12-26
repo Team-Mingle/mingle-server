@@ -32,12 +32,34 @@ public class FirebaseCloudMessageService {
         System.out.println(response.body().string());
     }
 
+    public void sendMessageTo(String targetToken, String title, String body) throws IOException{
+        String message = makeMessage(targetToken, title, body);
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder().url(API_URL).post(requestBody).addHeader("AUTHORIZATION", "Bearer " + getAcccessToken())
+                .addHeader("CONTENT_TYPE", "application/json; UTF-8")
+                .build();
+        Response response = client.newCall(request).execute();
+        System.out.println(response.body().string());
+    }
+
     private String makeMessage(String targetToken, String title, String body, TableType tableType, Long postId) throws com.fasterxml.jackson.core.JsonProcessingException {
 
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder().token(targetToken)
                         .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).build())
                         .data(FcmMessage.Data.builder().tableId(String.valueOf(tableType)).postId(String.valueOf(postId)).build())
+                        .build())
+                .validate_only(false).build();
+        return objectMapper.writeValueAsString(fcmMessage);
+    }
+
+    private String makeMessage(String targetToken, String title, String body) throws com.fasterxml.jackson.core.JsonProcessingException {
+
+        FcmMessage fcmMessage = FcmMessage.builder()
+                .message(FcmMessage.Message.builder().token(targetToken)
+                        .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).build())
                         .build())
                 .validate_only(false).build();
         return objectMapper.writeValueAsString(fcmMessage);
