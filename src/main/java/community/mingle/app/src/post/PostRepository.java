@@ -496,12 +496,11 @@ public class PostRepository {
                 .setParameter("totalPostId", totalPostId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList == null) {
-            throw new BaseException(BLIND_NOT_EXIST);
-        } else{
+        if (resultList.size() != 0) {
             return true;
+        } else {
+            return false;
         }
-
     }
 
     public boolean checkUnivPostIsBlinded(Long postId, Long memberId) throws BaseException {
@@ -509,10 +508,10 @@ public class PostRepository {
                 .setParameter("univPostId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList == null) {
-            throw new BaseException(BLIND_NOT_EXIST);
-        } else{
+        if (resultList.size() != 0) {
             return true;
+        } else {
+            return false;
         }
     }
     /**
