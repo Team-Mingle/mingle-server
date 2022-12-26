@@ -18,13 +18,14 @@ public class HomeBestUnivPostResponse {
     private String title;
     private String contents;
     private String nickname;
-    private Boolean isFileAttached;
+    private boolean isFileAttached;
+    private boolean isBlinded;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 
 
-    public HomeBestUnivPostResponse(UnivPost p) {
+    public HomeBestUnivPostResponse(UnivPost p, Long memberId) {
         postId = p.getId();
         title = p.getTitle();
         contents = p.getContent();
@@ -33,6 +34,11 @@ public class HomeBestUnivPostResponse {
             this.nickname = "익명";
         } else {
             this.nickname = p.getMember().getNickname();
+        }
+        if (p.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+            this.isBlinded = true;
+        }else{
+            this.isBlinded = false;
         }
         isFileAttached = p.getIsFileAttached();
         likeCount = p.getUnivPostLikes().size();

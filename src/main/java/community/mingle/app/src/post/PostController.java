@@ -51,9 +51,10 @@ public class PostController {
     })
     public BaseResponse<BestTotalPostListResponse> getTotalBest(@RequestParam Long postId) {
         try { //JWT로 해당 유저인지 확인 필요
+            Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment(postId);
             List<BestTotalPostDTO> result = totalPosts.stream()
-                    .map(m -> new BestTotalPostDTO(m))
+                    .map(m -> new BestTotalPostDTO(m, memberId))
                     .collect(Collectors.toList());
             BestTotalPostListResponse bestTotalPostListResponse = new BestTotalPostListResponse(null, result);
             return new BaseResponse<>(bestTotalPostListResponse);
@@ -80,9 +81,9 @@ public class PostController {
             UnivName univ = postService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount(postId);
-            Member member = postRepository.findMemberbyId(memberIdByJwt);
+//            Member member = postRepository.findMemberbyId(memberIdByJwt);
             List<BestUnivPostDTO> result = univPosts.stream()
-                    .map(p -> new BestUnivPostDTO(p, member))
+                    .map(p -> new BestUnivPostDTO(p, memberIdByJwt))
                     .collect(Collectors.toList());
             BestUnivPostListResponse bestUnivPostListResponse = new BestUnivPostListResponse(univName, result);
             return new BaseResponse<>(bestUnivPostListResponse);
@@ -106,8 +107,9 @@ public class PostController {
         try {
 
             List<TotalPost> totalPosts = postService.findTotalPost(category, postId);
+            Long memberId = jwtService.getUserIdx();
             List<TotalPostListDTO> result = totalPosts.stream()
-                    .map(p -> new TotalPostListDTO(p))
+                    .map(p -> new TotalPostListDTO(p, memberId))
                     .collect(Collectors.toList());
             TotalPostListResponse totalPostListResponse = new TotalPostListResponse(null, result);
             return new BaseResponse<>(totalPostListResponse);
@@ -128,10 +130,11 @@ public class PostController {
     public BaseResponse<UnivPostListResponse> getUnivPosts (@RequestParam int category,  @RequestParam Long postId) {
         try {
             UnivName univ = postService.findUniv();
+            Long memberId = jwtService.getUserIdx();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = postService.findUnivPost(category, postId, univ.getId());
             List<UnivPostListDTO> result = univPosts.stream()
-                    .map(u -> new UnivPostListDTO(u))
+                    .map(u -> new UnivPostListDTO(u, memberId))
                     .collect(Collectors.toList());
             UnivPostListResponse univPostListResponse = new UnivPostListResponse(univName, result);
             return new BaseResponse<>(univPostListResponse);
@@ -554,8 +557,9 @@ public class PostController {
     public BaseResponse<SearchTotalPostResponse> searchTotalPost(@RequestParam(value="keyword") String keyword) {
         try {
             List<TotalPost> totalPosts = postService.findAllSearch(keyword);
+            Long memberId = jwtService.getUserIdx();
             List<SearchTotalPostDTO> result = totalPosts.stream()
-                    .map(tp -> new SearchTotalPostDTO(tp))
+                    .map(tp -> new SearchTotalPostDTO(tp, memberId))
                     .collect(Collectors.toList());
             SearchTotalPostResponse searchTotalPostResponse = new SearchTotalPostResponse("광장", result);
             return new BaseResponse<>(searchTotalPostResponse);
@@ -574,8 +578,9 @@ public class PostController {
     public BaseResponse<SearchUnivPostResponse> searchUnivPost(@RequestParam(value="keyword") String keyword) {
         try {
             List<UnivPost> univPosts = postService.findUnivSearch(keyword);
+            Long memberId = jwtService.getUserIdx();
             List<SearchUnivPostDTO> result = univPosts.stream()
-                    .map(up -> new SearchUnivPostDTO(up))
+                    .map(up -> new SearchUnivPostDTO(up, memberId))
                     .collect(Collectors.toList());
             SearchUnivPostResponse searchUnivPostResponse = new SearchUnivPostResponse("잔디밭", result);
             return new BaseResponse<>(searchUnivPostResponse);
