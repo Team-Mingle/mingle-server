@@ -8,11 +8,9 @@
       "links": [],
       "portMappings": [
         {
-          "name": "mingle-api-prod-9000-tcp",
           "containerPort": 9000,
           "hostPort": 9000,
-          "protocol": "tcp",
-          "appProtocol": "http"
+          "protocol": "tcp"
         }
       ],
       "essential": true,
