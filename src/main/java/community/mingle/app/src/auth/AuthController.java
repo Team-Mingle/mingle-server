@@ -4,6 +4,7 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.model.*;
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Policy;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.utils.RedisService;
@@ -195,16 +196,18 @@ public class AuthController {
     @GetMapping("terms/privacy")
     public BaseResponse<String> getPrivacyTerms() {
         try {
-            String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
-            FileInputStream fileStream = null;
-
-            fileStream = new FileInputStream(filePath);
-            byte[] readBuffer = new byte[fileStream.available()];
-            while (fileStream.read(readBuffer) != -1) {
-            }
-            fileStream.close(); //스트림 닫기
-            return new BaseResponse<>(new String(readBuffer));
-        } catch (IOException e) {
+//            String filePath = "src/main/java/community/mingle/app/config/personalinfoterms";
+//            FileInputStream fileStream = null;
+//
+//            fileStream = new FileInputStream(filePath);
+//            byte[] readBuffer = new byte[fileStream.available()];
+//            while (fileStream.read(readBuffer) != -1) {
+//            }
+//            fileStream.close(); //스트림 닫기
+//            return new BaseResponse<>(new String(readBuffer));
+            Policy privacyTerms = authRepository.findTerms(Long.valueOf(1));
+            return new BaseResponse<>(privacyTerms.getContent());
+        } catch (Exception e) {
             return new BaseResponse<>(FAILED_TO_GET_TERMS);
         }
     }
@@ -220,19 +223,22 @@ public class AuthController {
     @GetMapping("terms/service")
     public BaseResponse<String> getServiceTerms() {
         try {
-            String filePath = "src/main/java/community/mingle/app/config/serviceUsageTerms";
-            FileInputStream fileStream = null;
-
-            fileStream = new FileInputStream(filePath);
-            byte[] readBuffer = new byte[fileStream.available()];
-            while (fileStream.read(readBuffer) != -1) {
-            }
-            fileStream.close();
-            return new BaseResponse<>(new String(readBuffer));
-        } catch (IOException e) {
+//            String filePath = "src/main/java/community/mingle/app/config/serviceUsageTerms";
+//            FileInputStream fileStream = null;
+//
+//            fileStream = new FileInputStream(filePath);
+//            byte[] readBuffer = new byte[fileStream.available()];
+//            while (fileStream.read(readBuffer) != -1) {
+//            }
+//            fileStream.close();
+//            return new BaseResponse<>(new String(readBuffer));
+            Policy privacyTerms = authRepository.findTerms(Long.valueOf(2));
+            return new BaseResponse<>(privacyTerms.getContent());
+        } catch (Exception e) {
             return new BaseResponse<>(FAILED_TO_GET_TERMS);
         }
     }
+
 
 
     /**
