@@ -1,6 +1,7 @@
 package community.mingle.app.src.auth;
 
 import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Policy;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import lombok.RequiredArgsConstructor;
@@ -107,6 +108,15 @@ public class AuthRepository {
         else return false;
     }
 
+//    public String getPrivacyTerms() {
+//        return em.createQuery("select p from Policy p where p.id = :id", Member.class)
+//                .setParameter("email", )
+//                .getSingleResult(); //에러남
+//    }
+
+    public Policy findTerms(Long id) {
+        return em.find(Policy.class, id);
+    }
 
 
 
