@@ -72,9 +72,7 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
-      #      - name: Docker build
-      #        run: |
-      #          docker build -t spring-cicd .
+
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
