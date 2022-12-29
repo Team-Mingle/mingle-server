@@ -165,13 +165,13 @@ public class CommentService {
                     continue;
                 }else{
                     firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
+                    //알림 저장
+                    TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, member,comment);
+                    memberRepository.saveTotalNotification(totalNotification);
+                    if (member.getTotalNotifications().size() > 20) {
+                        commentRepository.deleteTotalNotification(member.getTotalNotifications().get(0).getId());
+                    }
                 }
-                //알림 저장
-                TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, member,comment);
-                if (member.getTotalNotifications().size() > 20) {
-                    commentRepository.deleteTotalNotification(member.getTotalNotifications().get(0).getId());
-                }
-                memberRepository.saveTotalNotification(totalNotification);
             }
         }
 
@@ -286,9 +286,9 @@ public class CommentService {
                 fcmService.sendMessageTo(token, title, body, TableType.UnivPost, univPost.getId());
                 //알림 저장
                 UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, member, comment);
+                memberRepository.saveUnivNotification(univNotification);
                 if (univPost.getMember().getUnivNotifications().size() > 20) {
                     commentRepository.deleteUnivNotification(univPost.getMember().getUnivNotifications().get(0).getId());
-                    memberRepository.saveUnivNotification(univNotification);
                 }
             }
 
