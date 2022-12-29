@@ -287,13 +287,20 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다..",content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3020", description = "게시물 수정을 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3021", description = "제목을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3021", description = "제목/본문을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3040", description = "게시물 수정 권한이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<String> updateTotalPost (@PathVariable Long id, @RequestBody @Valid UpdatePostRequest updatePostRequest){
         //empty일 경우 (title&content)
-        if (updatePostRequest.getTitle().length() == 0) {
+//        if (updatePostRequest.getTitle().length() == 0) {
+//            return new BaseResponse<>(TITLE_EMPTY_ERROR);
+//        }
+        try {
+            if (updatePostRequest.getTitle() == null || updatePostRequest.getContent() == null) {
+                return new BaseResponse<>(TITLE_EMPTY_ERROR);
+            }
+        } catch (Exception e) {
             return new BaseResponse<>(TITLE_EMPTY_ERROR);
         }
         try{
@@ -315,13 +322,17 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.",content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3020", description = "게시물 수정을 실패했습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3021", description = "제목을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3021", description = "제목/본문을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3040", description = "게시물 수정 권한이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<String> updateUnivPost (@PathVariable Long id, @RequestBody @Valid UpdatePostRequest updatePostRequest){
         //empty일 경우 (title&content)
-        if (updatePostRequest.getTitle().length() == 0) {
+        try {
+            if (updatePostRequest.getTitle() == null || updatePostRequest.getContent() == null) {
+                return new BaseResponse<>(TITLE_EMPTY_ERROR);
+            }
+        } catch (Exception e) {
             return new BaseResponse<>(TITLE_EMPTY_ERROR);
         }
         try{
