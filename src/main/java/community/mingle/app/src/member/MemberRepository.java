@@ -155,7 +155,7 @@ public class MemberRepository {
      * report API
      */
     public boolean isMultipleReport(ReportRequest reportRequest, Long memberIdByJwt) {
-        Long countMultipleReport = em.createQuery("select count(r) from Report r where r.tableId = :tableId and r.contentId = :contentId and r.reportermemberIdByJwt = :memberIdByJwt", Long.class)
+        Long countMultipleReport = em.createQuery("select count(r) from Report r where r.tableId = :tableId and r.contentId = :contentId and r.reporterMemberId = :memberIdByJwt", Long.class)
                 .setParameter("tableId", reportRequest.getTableType())
                 .setParameter("contentId", reportRequest.getContentId())
                 .setParameter("memberIdByJwt", memberIdByJwt)
