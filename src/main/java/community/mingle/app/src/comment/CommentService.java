@@ -146,6 +146,12 @@ public class CommentService {
             else {
                 //이게 방금 살린거
                 firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
+                //알림 저장
+                TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, postMember,comment);
+                memberRepository.saveTotalNotification(totalNotification);
+                if (postMember.getTotalNotifications().size() > 20) {
+                    commentRepository.deleteTotalNotification(postMember.getTotalNotifications().get(0).getId());
+                }
             }
         } else if (postTotalCommentRequest.getParentCommentId()!= null) {
             Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
@@ -253,6 +259,11 @@ public class CommentService {
             } else {
                 String body = "새로운 댓글이 달렸어요: " + request.getContent();
                 fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, TableType.UnivPost, univPost.getId());
+                UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, postWriter, comment);
+                memberRepository.saveUnivNotification(univNotification);
+                if (postWriter.getUnivNotifications().size() > 20) {
+                    commentRepository.deleteUnivNotification(postWriter.getUnivNotifications().get(0).getId());
+                }
             }
         }
 
@@ -287,8 +298,8 @@ public class CommentService {
                 //알림 저장
                 UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, member, comment);
                 memberRepository.saveUnivNotification(univNotification);
-                if (univPost.getMember().getUnivNotifications().size() > 20) {
-                    commentRepository.deleteUnivNotification(univPost.getMember().getUnivNotifications().get(0).getId());
+                if (member.getUnivNotifications().size() > 20) {
+                    commentRepository.deleteUnivNotification(member.getUnivNotifications().get(0).getId());
                 }
             }
 
