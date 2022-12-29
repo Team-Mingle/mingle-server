@@ -36,7 +36,7 @@ env:
   ECS_SERVICE: mingle-api-service-prod                 # set this to your Amazon ECS service name
   ECS_CLUSTER: mingle-api-prod-cluster                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: task-definition-prod.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
+  # file, e.g. .task-definition.json
   CONTAINER_NAME: mingle-api-prod           # set this to the name of the container in the
   # containerDefinitions section of your task definition
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: Copy Secret
         env:
-          CREATE_SECRET: ${{secrets.MINGLE_APPLICATION_YML}}
+          CREATE_SECRET: ${{secrets.MINGLE_PROD_APPLICATION_YML}}
           CREATE_SECRET_DIR: src/main/resources
           CREATE_SECRET_DIR_FILE_NAME: application.yml
         run: echo $CREATE_SECRET | base64 --decode > $CREATE_SECRET_DIR/$CREATE_SECRET_DIR_FILE_NAME

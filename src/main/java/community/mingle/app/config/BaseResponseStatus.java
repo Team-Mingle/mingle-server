@@ -94,7 +94,7 @@ public enum BaseResponseStatus {
     /** 3. /posts 주석 해제하고 쓰기 */
 
     MODIFY_FAIL_POST(false, 3020, "게시물 수정을 실패했습니다."),
-    TITLE_EMPTY_ERROR(false, 3021, "제목을 입력해주세요."),
+    TITLE_EMPTY_ERROR(false, 3021, "제목/본문을 입력해주세요."),
     DELETE_FAIL_POST(false, 3025, "게시물 삭제를 실패했습니다."),
     EMPTY_RECENT_POSTS(false, 3029, "최근 올라온 게시글이 없어요."), //홈화면 최신글 api
     EMPTY_BEST_POSTS(false, 3030,"인기 게시물이 없어요."),

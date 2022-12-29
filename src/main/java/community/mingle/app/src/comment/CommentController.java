@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Tag(name = "comment", description = "댓글 관련 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @ApiResponses(value = {
@@ -37,7 +39,7 @@ public class CommentController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<PostTotalCommentResponse> createTotalComment(@RequestBody PostTotalCommentRequest postTotalCommentRequest) {
+    public BaseResponse<PostTotalCommentResponse> createTotalComment(@RequestBody @Valid PostTotalCommentRequest postTotalCommentRequest) {
         try {
             PostTotalCommentResponse result = commentService.createTotalComment(postTotalCommentRequest);
             return new BaseResponse<>(result);
@@ -57,7 +59,7 @@ public class CommentController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<PostUnivCommentResponse> createUnivComment(@RequestBody PostUnivCommentRequest univCommentRequest) {
+    public BaseResponse<PostUnivCommentResponse> createUnivComment(@RequestBody @Valid PostUnivCommentRequest univCommentRequest) {
         try {
             PostUnivCommentResponse result = commentService.createUnivComment(univCommentRequest);
             return new BaseResponse<>(result);
