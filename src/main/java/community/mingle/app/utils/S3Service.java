@@ -48,9 +48,11 @@ public class S3Service {
         // multipartFile로 넘어온 파일들 fileNameList에 추가
         for (MultipartFile file : multipartFile) {
             String fileName = dirName + "/" + createFileName(file.getOriginalFilename());
+            System.out.println("파일을 보자" + file);
+            System.out.println("파일파일" + file.getContentType());
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
+            objectMetadata.setContentType("image");
 
             try(InputStream inputStream = file.getInputStream()) {
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)

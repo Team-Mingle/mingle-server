@@ -625,10 +625,10 @@ public class PostService {
                     sendTotalPostNotification(totalpost, postMember);
                     //알림 저장
                     //문제 --> comment 가져오지 않는다
-                    TotalNotification totalNotification = TotalNotification.saveTotalPostNotification(totalpost, member);
+                    TotalNotification totalNotification = TotalNotification.saveTotalPostNotification(totalpost, postMember);
                     memberRepository.saveTotalNotification(totalNotification);
-                    if (member.getTotalNotifications().size() > 20) {
-                        member.getTotalNotifications().remove(0);
+                    if (postMember.getTotalNotifications().size() > 20) {
+                        postMember.getTotalNotifications().remove(0);
                     }
                 }
 
@@ -692,10 +692,10 @@ public class PostService {
                 if (univpost.getUnivPostLikes().size() == 5) {
                     sendUnivPostNotification(univpost, postMember);
                     //알림 저장
-                    UnivNotification univNotification = UnivNotification.saveUnivTotalNotification(univpost, member);
+                    UnivNotification univNotification = UnivNotification.saveUnivTotalNotification(univpost, postMember);
                     memberRepository.saveUnivNotification(univNotification);
-                    if (member.getUnivNotifications().size() > 20) {
-                        member.getUnivNotifications().remove(0);
+                    if (postMember.getUnivNotifications().size() > 20) {
+                        postMember.getUnivNotifications().remove(0);
                     }
                 }
 
