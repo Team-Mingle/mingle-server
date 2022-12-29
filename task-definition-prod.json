@@ -1,5 +1,5 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:289449549176:task-definition/mingle-api-prod:1",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:289449549176:task-definition/mingle-api-prod2:1",
   "containerDefinitions": [
     {
       "name": "mingle-api-prod",
@@ -8,9 +8,11 @@
       "links": [],
       "portMappings": [
         {
+          "name": "mingle-api-prod-9000-tcp",
           "containerPort": 9000,
           "hostPort": 9000,
-          "protocol": "tcp"
+          "protocol": "tcp",
+          "appProtocol": "http"
         }
       ],
       "essential": true,
@@ -31,7 +33,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-create-group": "true",
-          "awslogs-group": "/ecs/mingle-api-prod",
+          "awslogs-group": "/ecs/mingle-api-prod2",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
         },
@@ -40,7 +42,7 @@
       "systemControls": []
     }
   ],
-  "family": "mingle-api-prod",
+  "family": "mingle-api-prod2",
   "taskRoleArn": "arn:aws:iam::289449549176:role/ecsTaskExecutionRole",
   "executionRoleArn": "arn:aws:iam::289449549176:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
@@ -93,7 +95,7 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2022-12-27T17:44:52.028Z",
+  "registeredAt": "2022-12-29T18:10:34.366Z",
   "registeredBy": "arn:aws:iam::289449549176:root",
   "tags": [
     {
@@ -102,7 +104,7 @@
     },
     {
       "key": "ecs:taskDefinition:stackId",
-      "value": "arn:aws:cloudformation:ap-northeast-2:289449549176:stack/ECS-Console-V2-TaskDefinition-6a0b7a16-ae99-45e7-849c-ab2a0525e460/27ebeab0-860e-11ed-887a-060247d3ce16"
+      "value": "arn:aws:cloudformation:ap-northeast-2:289449549176:stack/ECS-Console-V2-TaskDefinition-2262bbda-fe83-4914-9063-053c4177943e/13da8df0-87a4-11ed-8e67-06a5c5fa8f92"
     }
   ]
 }
