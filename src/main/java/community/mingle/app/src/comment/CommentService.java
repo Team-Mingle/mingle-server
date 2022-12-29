@@ -132,6 +132,7 @@ public class CommentService {
     }
 
 
+    @Transactional
     public void sendTotalPush(TotalPost post, PostTotalCommentRequest postTotalCommentRequest, Member creatorMember, TotalComment comment) throws IOException {
         Member postMember = post.getMember();
 
@@ -149,7 +150,7 @@ public class CommentService {
                 //알림 저장
                 TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, postMember,comment);
                 memberRepository.saveTotalNotification(totalNotification);
-                if (postMember.getTotalNotifications().size() > 20) {
+                if (postMember.getTotalNotifications().size() +postMember.getUnivNotifications().size()> 20) {
                     commentRepository.deleteTotalNotification(postMember.getTotalNotifications().get(0).getId());
                 }
             }
@@ -174,7 +175,7 @@ public class CommentService {
                     //알림 저장
                     TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, member,comment);
                     memberRepository.saveTotalNotification(totalNotification);
-                    if (member.getTotalNotifications().size() > 20) {
+                    if ((member.getTotalNotifications().size()+member.getUnivNotifications().size())> 20) {
                         commentRepository.deleteTotalNotification(member.getTotalNotifications().get(0).getId());
                     }
                 }
@@ -248,6 +249,7 @@ public class CommentService {
     }
 
 
+    @Transactional
     public void sendUnivNotification(UnivPost univPost, Member commentWriter, PostUnivCommentRequest request, UnivComment comment) throws IOException {
         String title = "잔디밭";
         Member postWriter = univPost.getMember(); //1. 게시물 작성자 id
@@ -261,7 +263,7 @@ public class CommentService {
                 fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, TableType.UnivPost, univPost.getId());
                 UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, postWriter, comment);
                 memberRepository.saveUnivNotification(univNotification);
-                if (postWriter.getUnivNotifications().size() > 20) {
+                if (postWriter.getUnivNotifications().size() + postWriter.getTotalNotifications().size()> 20) {
                     commentRepository.deleteUnivNotification(postWriter.getUnivNotifications().get(0).getId());
                 }
             }
@@ -298,7 +300,7 @@ public class CommentService {
                 //알림 저장
                 UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, member, comment);
                 memberRepository.saveUnivNotification(univNotification);
-                if (member.getUnivNotifications().size() > 20) {
+                if ((member.getUnivNotifications().size() + member.getTotalNotifications().size()) > 20) {
                     commentRepository.deleteUnivNotification(member.getUnivNotifications().get(0).getId());
                 }
             }

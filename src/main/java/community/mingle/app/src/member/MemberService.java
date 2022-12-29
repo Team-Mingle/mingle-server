@@ -411,9 +411,8 @@ public class MemberService {
         if (final_result.size() <= 20) {
             return final_result;
         } else {
-            final_result.subList(0, 20);
+            return final_result.subList(0, 20);
         }
-        return final_result;
     }
 
 
