@@ -54,8 +54,6 @@ public class CommentService {
         if (post == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-
-
         /*
         1. 댓글을 달때: parent = null, mention = null.
         2. 처음 대댓글 달때 (b) : parent = a , mention = a.
@@ -111,17 +109,17 @@ public class CommentService {
             TotalComment comment = TotalComment.createComment(post, member, postTotalCommentRequest.getContent(), postTotalCommentRequest.getParentCommentId(), postTotalCommentRequest.getMentionId(), postTotalCommentRequest.isAnonymous(), anonymousId);
             System.out.println(comment);
             commentRepository.saveTotalComment(comment);
-            sendTotalPush(post, postTotalCommentRequest, member);
+            sendTotalPush(post, postTotalCommentRequest, member, comment);
             //알림 저장
-            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
-            if (post.getMember().getTotalNotifications().size() > 20) {
-                commentRepository.deleteTotalNotification(post.getMember().getTotalNotifications().get(0).getId());
-//                List<TotalNotification> totalNotifications = post.getMember().getTotalNotifications();
-//                totalNotifications.remove(0);
-//                post.getMember().deleteTotalNotification(totalNotifications);
-
-            }
-            memberRepository.saveTotalNotification(totalNotification);
+//            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
+//            if (post.getMember().getTotalNotifications().size() > 20) {
+//                commentRepository.deleteTotalNotification(post.getMember().getTotalNotifications().get(0).getId());
+////                List<TotalNotification> totalNotifications = post.getMember().getTotalNotifications();
+////                totalNotifications.remove(0);
+////                post.getMember().deleteTotalNotification(totalNotifications);
+//
+//            }
+//            memberRepository.saveTotalNotification(totalNotification);
 
 
             PostTotalCommentResponse postTotalCommentResponse = new PostTotalCommentResponse(anonymousId, comment, post.getMember().getId());
@@ -134,7 +132,8 @@ public class CommentService {
     }
 
 
-    public void sendTotalPush(TotalPost post, PostTotalCommentRequest postTotalCommentRequest, Member creatorMember) throws IOException {
+    @Transactional
+    public void sendTotalPush(TotalPost post, PostTotalCommentRequest postTotalCommentRequest, Member creatorMember, TotalComment comment) throws IOException {
         Member postMember = post.getMember();
 
         //이거 두개는 원래 죽어있는게 맞겠지? 아ㅏ그르네
@@ -148,6 +147,12 @@ public class CommentService {
             else {
                 //이게 방금 살린거
                 firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
+                //알림 저장
+                TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, postMember,comment);
+                memberRepository.saveTotalNotification(totalNotification);
+                if (postMember.getTotalNotifications().size() +postMember.getUnivNotifications().size()> 20) {
+                    commentRepository.deleteTotalNotification(postMember.getTotalNotifications().get(0).getId());
+                }
             }
         } else if (postTotalCommentRequest.getParentCommentId()!= null) {
             Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
@@ -167,6 +172,12 @@ public class CommentService {
                     continue;
                 }else{
                     firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
+                    //알림 저장
+                    TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, member,comment);
+                    memberRepository.saveTotalNotification(totalNotification);
+                    if ((member.getTotalNotifications().size()+member.getUnivNotifications().size())> 20) {
+                        commentRepository.deleteTotalNotification(member.getTotalNotifications().get(0).getId());
+                    }
                 }
             }
         }
@@ -225,18 +236,10 @@ public class CommentService {
             UnivComment comment = UnivComment.createComment(univPost, member, request.getContent(), request.getParentCommentId(), request.getMentionId(), request.isAnonymous(), anonymousId);
             System.out.println(request.isAnonymous());
             commentRepository.saveUnivComment(comment);
-            sendUnivNotification(univPost, member, request); //알림 전송
+            sendUnivNotification(univPost, member, request, comment); //알림 전송
             System.out.println(comment.getId());
 
-            //알림 저장
-            UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, univPost.getMember(),comment);
-            memberRepository.saveUnivNotification(univNotification);
-            if (univPost.getMember().getUnivNotifications().size() > 20) {
-                commentRepository.deleteUnivNotification(univPost.getMember().getUnivNotifications().get(0).getId());
-//                List<UnivNotification> univNotifications = univPost.getMember().getUnivNotifications();
-//                univNotifications.remove(0);
-//                univPost.getMember().deleteUnivNotification(univNotifications);
-            }
+
             PostUnivCommentResponse postUnivCommentResponse = new PostUnivCommentResponse(anonymousId, comment, univPost.getMember().getId());
             return postUnivCommentResponse;
         } catch (Exception e) {
@@ -246,7 +249,8 @@ public class CommentService {
     }
 
 
-    public void sendUnivNotification(UnivPost univPost, Member commentWriter, PostUnivCommentRequest request) throws IOException {
+    @Transactional
+    public void sendUnivNotification(UnivPost univPost, Member commentWriter, PostUnivCommentRequest request, UnivComment comment) throws IOException {
         String title = "잔디밭";
         Member postWriter = univPost.getMember(); //1. 게시물 작성자 id
 
@@ -257,6 +261,11 @@ public class CommentService {
             } else {
                 String body = "새로운 댓글이 달렸어요: " + request.getContent();
                 fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, TableType.UnivPost, univPost.getId());
+                UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, postWriter, comment);
+                memberRepository.saveUnivNotification(univNotification);
+                if (postWriter.getUnivNotifications().size() + postWriter.getTotalNotifications().size()> 20) {
+                    commentRepository.deleteUnivNotification(postWriter.getUnivNotifications().get(0).getId());
+                }
             }
         }
 
@@ -282,16 +291,21 @@ public class CommentService {
 
             map.remove(commentWriter);
 
-            for (Member member : map.keySet()) {
-                System.out.println(map.get(member));
-            }
 
             for (Member member : map.keySet()) {
                 String token = member.getFcmToken();
                 String body = "새로운 대댓글이 달렸어요: " + request.getContent();
                 System.out.println(body);
                 fcmService.sendMessageTo(token, title, body, TableType.UnivPost, univPost.getId());
+                //알림 저장
+                UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, member, comment);
+                memberRepository.saveUnivNotification(univNotification);
+                if ((member.getUnivNotifications().size() + member.getTotalNotifications().size()) > 20) {
+                    commentRepository.deleteUnivNotification(member.getUnivNotifications().get(0).getId());
+                }
             }
+
+
         }
     }
 
