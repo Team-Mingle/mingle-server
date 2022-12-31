@@ -236,6 +236,12 @@ public class AuthService {
         }
 
         Member member = authRepository.findMemberByEmail(postLoginRequest.getEmail()); //이메일로 유저 찾기
+        if (member == null) { //없는 유저
+            throw new BaseException(FAILED_TO_LOGIN);
+        } //비밀번호 불일치
+        if (!(member.getPwd().equals(encryptPwd))) { //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
+            throw new BaseException(FAILED_TO_LOGIN);
+        }
         //탈퇴 유저 재로그인 방지
 //        if (!(Objects.isNull(member.getDeletedAt())) && (member.getRole().equals(UserStatus.INACTIVE))) {
 //        if (member.getRole().equals(UserStatus.INACTIVE.toString())) {
@@ -245,12 +251,6 @@ public class AuthService {
 //        if (member.getRole().equals(UserStatus.REPORTED.name())) {
         if (member.getStatus().equals(UserStatus.REPORTED)) {
             throw new BaseException(USER_REPORTED_ERROR);
-        }
-        if (member == null) { //없는 유저
-            throw new BaseException(FAILED_TO_LOGIN);
-        } //비밀번호 불일치
-        if (!(member.getPwd().equals(encryptPwd))) { //Member 에게 받아온 비밀번호와 방금 암호화한 비밀번호를 비교
-            throw new BaseException(FAILED_TO_LOGIN);
         }
         try { //토큰 발급
             Long memberId = member.getId();
