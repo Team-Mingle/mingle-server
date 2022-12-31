@@ -28,40 +28,23 @@ name: Deploy to Amazon ECS CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "prod" ]
 
 env:
   AWS_REGION: ap-northeast-2                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: mingle-api                   # set this to your Amazon ECR repository name
-  ECS_SERVICE: mingle-api-service-dev                 # set this to your Amazon ECS service name
-  ECS_CLUSTER: mingle-api-dev-cluster                 # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: task-definition.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: mingle-api-dev           # set this to the name of the container in the
+  ECR_REPOSITORY: mingle-api-prod                 # set this to your Amazon ECR repository name
+  ECS_SERVICE: mingle-api-service-prod                 # set this to your Amazon ECS service name
+  ECS_CLUSTER: mingle-api-prod-cluster                 # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: task-definition-prod.json # set this to the path to your Amazon ECS task definition
+  # file, e.g. .task-definition.json
+  CONTAINER_NAME: mingle-api-prod           # set this to the name of the container in the
   # containerDefinitions section of your task definition
 
 # permissions:
 #   contents: read
 
 jobs:
-#  build:
-#
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Set up JDK 11
-#        uses: actions/setup-java@v3
-#        with:
-#          java-version: '11'
-#          distribution: 'adopt'
-#      - name: Grant execute permission for gradlew
-#        run: chmod +x gradlew
-#      - name: Build with Gradle
-#        run: ./gradlew build
-##      - name: Docker build
-##        run: |
-##          docker build -t spring-cicd .
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -82,16 +65,14 @@ jobs:
 
       - name: Copy Secret
         env:
-          CREATE_SECRET: ${{secrets.MINGLE_APPLICATION_YML}}
+          CREATE_SECRET: ${{secrets.MINGLE_PROD_APPLICATION_YML}}
           CREATE_SECRET_DIR: src/main/resources
           CREATE_SECRET_DIR_FILE_NAME: application.yml
         run: echo $CREATE_SECRET | base64 --decode > $CREATE_SECRET_DIR/$CREATE_SECRET_DIR_FILE_NAME
 
       - name: Build with Gradle
         run: ./gradlew build
-      #      - name: Docker build
-      #        run: |
-      #          docker build -t spring-cicd .
+
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
