@@ -201,7 +201,7 @@ public class MemberRepository {
     }
 
     public Long countMemberReport(Long memberIdByJwt) {
-        Long countMember = em.createQuery("select count(r.reportedmemberIdByJwt) from Report r where r.reportedmemberIdByJwt = :memberIdByJwt", Long.class)
+        Long countMember = em.createQuery("select count(r.reportedMemberId) from Report r where r.reportedMemberId = :memberIdByJwt", Long.class)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .getSingleResult();
         return countMember;
