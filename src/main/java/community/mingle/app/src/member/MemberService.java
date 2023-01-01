@@ -275,38 +275,22 @@ public class MemberService {
             Long reportId = memberRepository.reportSave(report);
             //reportDTO에 reportId를 담아서 반환해 줌 (신고가 잘 저장됐다는 뜻)
             ReportDTO reportDTO = new ReportDTO(reportId);
-            return reportDTO;
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-    @Transactional
-    //신고 10회 이상 누적된 멤버 삭제 메소드
-    public void checkReportedMember(Member member) throws BaseException{
-        try {
+
+            /**checkReportMember*/
             //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
-            Long memberCount = memberRepository.countMemberReport(member.getId());
+            Long memberCount = memberRepository.countMemberReport(reportedMember.getId());
             //10번일 시 member의 status를 REPORTED로 변환
             if (memberCount % 10 == 0) {
-                member.modifyReportStatus();
-                redisUtil.deleteData(member.getEmail());
-                fcmService.sendMessageTo(member.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
+                reportedMember.modifyReportStatus();
+                if (redisUtil.getData(reportedMember.getEmail())!=null) {
+                    redisUtil.deleteData(reportedMember.getEmail());
+                }
+                if (reportedMember.getFcmToken() != null) {
+                    fcmService.sendMessageTo(reportedMember.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
+                }
             }
-//            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
-//            if (post.getMember().getTotalNotifications().size() > 20) {
-//                post.getMember().getTotalNotifications().remove(0);
-//            }
-//            memberRepository.saveTotalNotification(totalNotification);
 
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-
-    }
-    @Transactional
-    //신고 3회 이상 누적된 멤버 삭제 메소드
-    public void checkReportedPost(ReportRequest reportRequest) throws BaseException{
-        try {
+            /** checkReportedPost */
             //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
             Long contentCount = memberRepository.countContentReport(reportRequest);
             if (contentCount == 3) {
@@ -352,11 +336,91 @@ public class MemberService {
                     reportedUnivComment.modifyReportStatus();
                 }
             }
+            return reportDTO;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-
     }
+//    @Transactional
+//    //신고 10회 이상 누적된 멤버 삭제 메소드
+//    public void checkReportedMember(Member member) throws BaseException{
+//        try {
+//            //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
+//            Long memberCount = memberRepository.countMemberReport(member.getId());
+//            //10번일 시 member의 status를 REPORTED로 변환
+//            if (memberCount % 10 == 0) {
+//                member.modifyReportStatus();
+//                if (redisUtil.getData(member.getEmail())!=null) {
+//                    redisUtil.deleteData(member.getEmail());
+//                }
+//                fcmService.sendMessageTo(member.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
+//            }
+////            TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, post.getMember(),comment);
+////            if (post.getMember().getTotalNotifications().size() > 20) {
+////                post.getMember().getTotalNotifications().remove(0);
+////            }
+////            memberRepository.saveTotalNotification(totalNotification);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//
+//    }
+//    @Transactional
+//    //신고 3회 이상 누적된 멤버 삭제 메소드
+//    public void checkReportedPost(ReportRequest reportRequest) throws BaseException{
+//        try {
+//            //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
+//            Long contentCount = memberRepository.countContentReport(reportRequest);
+//            if (contentCount == 3) {
+//                //total post
+//                if (reportRequest.getTableType() == TableType.TotalPost) {
+//                    //신고 된 total post 찾음
+//                    TotalPost reportedTotalPost = memberRepository.findReportedTotalPost(reportRequest.getContentId());
+//                    //해당 total post에 딸린 total comments들도 찾음
+//                    int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
+//                    //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
+//                    reportedTotalPost.modifyReportStatus();
+////                for (TotalComment tc : reportedTotalComments) {
+////                    tc.modifyInactiveStatus();
+////                }
+//                }
+//
+//                //total comment
+//                else if (reportRequest.getTableType() == TableType.TotalComment) {
+//                    //신고 된 total comment를 찾음
+//                    TotalComment reportedTotalComment = memberRepository.findReportedTotalCommentByCommentId(reportRequest.getContentId());
+//                    //해당 댓글을 REPORTED status로 만들어 줌
+//                    reportedTotalComment.modifyReportStatus();
+//                }
+//
+//                //univ post
+//                else if (reportRequest.getTableType() == TableType.UnivPost) {
+//                    //신고 된 univ post를 찾음
+//                    UnivPost reportedUnivPost = memberRepository.findReportedUnivPost(reportRequest.getContentId());
+//                    //해당 univ post에 딸린 univ comments들도 찾음
+//                    int reportedUnivComments = memberRepository.findReportedUnivCommentsByPostId(reportRequest.getContentId());
+//                    //univ post는 REPORTED status로 univ comments는 INACTIVE status로 만들어 줌
+//                    reportedUnivPost.modifyReportStatus();
+////                for (UnivComment uc : reportedUnivComments) {
+////                    uc.modifyInactiveStatus();
+////                }
+//                }
+//
+//                //univ comment
+//                else if (reportRequest.getTableType() == TableType.UnivComment) {
+//                    //신고 된 univ comment를 찾음
+//                    UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
+//                    //해당 댓글을 REPORTED status로 만들어 줌
+//                    reportedUnivComment.modifyReportStatus();
+//                }
+//            }
+//        } catch (Exception e) {
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//
+//    }
 
 
     /**
