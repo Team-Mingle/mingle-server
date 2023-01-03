@@ -1,6 +1,5 @@
 package community.mingle.app.src.auth;
 
-import antlr.Token;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.auth.model.*;
@@ -12,18 +11,19 @@ import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.security.auth.RefreshFailedException;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -42,6 +42,8 @@ public class AuthService {
 
     private final TokenHelper accessTokenHelper;
     private final TokenHelper refreshTokenHelper;
+
+    private final SpringTemplateEngine springTemplateEngine;
 
 
     @Value("${spring.mail.username}")
@@ -114,8 +116,10 @@ public class AuthService {
      * 1.4.2 인증번호 이메일 전송
      */
     private void sendAuthEmail(String email, String authKey) throws BaseException {
-        String subject = "Mingle의 이메일을 인증하세요!";
+        String subject = "Mingle의 이메일 인증번호를 확인하세요";
         String text = "\n\n인증번호는 " + authKey + " 입니다.";
+        Context context = new Context();
+        context.setVariable("authKey", authKey);
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -123,7 +127,9 @@ public class AuthService {
             helper.setFrom(from);
             helper.setTo(email);
             helper.setSubject(subject);
-            helper.setText(text, true);
+            String html = springTemplateEngine.process("index", context);
+            helper.setText(html, true);
+            helper.addInline("image", new ClassPathResource("templates/images/image-1.jpeg"));
             javaMailSender.send(mimeMessage);
 
         } catch(MessagingException e) {
