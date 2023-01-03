@@ -171,6 +171,7 @@ public class PostController {
     })
     public BaseResponse<CreatePostResponse> createUnivPost (@ModelAttribute CreatePostRequest createPostRequest){
         try{
+            System.out.println(createPostRequest.getMultipartFile());
             return new BaseResponse<>(postService.createUnivPost(createPostRequest));
         }catch (BaseException exception){
             exception.printStackTrace();
