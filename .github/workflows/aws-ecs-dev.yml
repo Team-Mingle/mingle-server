@@ -11,8 +11,8 @@ env:
   ECR_REPOSITORY: mingle-api                   # set this to your Amazon ECR repository name
   ECS_SERVICE: mingle-api-service-dev                 # set this to your Amazon ECS service name
   ECS_CLUSTER: mingle-api-dev-cluster                 # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: task-definition-dev.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
+  ECS_TASK_DEFINITION: task-definition-dev2.json # set this to the path to your Amazon ECS task definition
+  #  # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: mingle-api-dev           # set this to the name of the container in the
   # containerDefinitions section of your task definition
 
