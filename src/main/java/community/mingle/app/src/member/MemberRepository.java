@@ -57,10 +57,11 @@ public class MemberRepository {
     }
 
     /**
-     * 2.5
+     * 2.4
      */
     public List<TotalPost> findTotalComments(Long memberIdByJwt, Long postId) {
-        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId AND p.status = :status order by c.createdAt desc ", TotalPost.class)
+        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where c.status = :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId AND p.status = :status order by c.createdAt desc ", TotalPost.class)
+                .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
@@ -71,10 +72,11 @@ public class MemberRepository {
     }
 
     /**
-     * 2.6
+     * 2.5
      */
     public List<UnivPost> findUnivComments(Long memberIdByJwt, Long postId) {
-        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where m.id = :id AND p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId AND p.status = :status order by c.createdAt desc ", UnivPost.class)
+        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where c.status = :status and m.id = :id AND p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId AND p.status = :status order by c.createdAt desc ", UnivPost.class)
+                .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
