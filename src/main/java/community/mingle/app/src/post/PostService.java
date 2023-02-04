@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -261,7 +262,7 @@ public class PostService {
         boolean isScraped = false;
         boolean isBlinded = false;
         try {
-            if (totalPost.getMember().getId() == memberIdByJwt) {
+            if (Objects.equals(totalPost.getMember().getId(), memberIdByJwt)) {
                 isMyPost = true;
             }
             if (postRepository.checkTotalIsLiked(totalPost.getId(), memberIdByJwt) == true) {
@@ -341,7 +342,7 @@ public class PostService {
             throw new BaseException(REPORTED_DELETED_POST);
         }
         try {
-            if (univPost.getMember().getId() == memberIdByJwt) {
+            if (Objects.equals(univPost.getMember().getId(), memberIdByJwt)) {
                 isMyPost = true;
             }
             if (postRepository.checkUnivPostIsLiked(postId, memberIdByJwt) == true) {
