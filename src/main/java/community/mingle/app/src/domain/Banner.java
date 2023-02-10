@@ -30,6 +30,9 @@ public class Banner {
     @Column(name = "img_url", columnDefinition = "TEXT")
     private String url;
 
+    @Column(name = "link_url", columnDefinition = "TEXT")
+    private String link;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -40,12 +43,13 @@ public class Banner {
 
      */
 
-    public static Banner createBanner (Member member, CreateBannerRequest req, String fileName){
+    public static Banner createBanner (Member member, CreateBannerRequest req, String fileName, String link){
         Banner banner = new Banner();
 
         //후에 req에서 받아서 쓰는 코드 추가될까봐 req 받아둠.
         banner.setMember(member);
         banner.setUrl(fileName);
+        banner.setLink(link);
         banner.createdAt = LocalDateTime.now();
         banner.updatedAt = LocalDateTime.now();
 
