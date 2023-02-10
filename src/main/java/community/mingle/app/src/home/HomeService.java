@@ -51,21 +51,18 @@ public class HomeService {
         if (member == null) {
             throw new BaseException(USER_NOT_EXIST);
         }
-
         try {
             List<String> fileNameList = null;
             int finalId = 0;
             if (createBannerRequest.getMultipartFile()!=null && !createBannerRequest.getMultipartFile().isEmpty()) {
-                    fileNameList = s3Service.uploadFile(createBannerRequest.getMultipartFile(), "banner");
-                    for (String fileName : fileNameList) { //Banner사진 여러개 올리기 가능? 일단 for loop 남겨둠.
-                        Banner banner = Banner.createBanner(member, createBannerRequest, fileName);
-                        int id = homeRepository.save(banner);
-                        finalId = id; //id는 마지막 사진 id만 리턴 (연결된 테이블 따로 없이 바로 url을 배너에 저장하니까)
-                    }
+                fileNameList = s3Service.uploadFile(createBannerRequest.getMultipartFile(), "banner");
+                for (String fileName : fileNameList) { //Banner사진 여러개 올리기 가능? 일단 for loop 남겨둠.
+                    Banner banner = Banner.createBanner(member, createBannerRequest, fileName, createBannerRequest.getLink());
+                    int id = homeRepository.save(banner);
+                    finalId = id; //id는 마지막 사진 id만 리턴 (연결된 테이블 따로 없이 바로 url을 배너에 저장하니까)
+                }
             }
-
             return new CreateBannerResponse(finalId, fileNameList);
-
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
