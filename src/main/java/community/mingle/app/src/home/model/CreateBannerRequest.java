@@ -12,4 +12,5 @@ import java.util.List;
 @Getter
 public class CreateBannerRequest {
     private List<MultipartFile> multipartFile;
+    private String link;
 }

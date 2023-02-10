@@ -49,7 +49,6 @@ public class HomeController {
                     .map(m -> new BannerResponse(m))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
-
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
