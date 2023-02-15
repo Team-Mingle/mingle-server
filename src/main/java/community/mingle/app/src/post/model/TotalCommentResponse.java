@@ -56,7 +56,7 @@ public class TotalCommentResponse {
         likeCount = totalComment.getTotalCommentLikes().size();
 
         for (TotalCommentLike tcl : totalComment.getTotalCommentLikes()) {
-            if (tcl.getMember().getId() == memberId) {
+            if (Objects.equals(tcl.getMember().getId(), memberId)) {
                 isLiked = true;
                 break;
             } else {

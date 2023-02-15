@@ -6,6 +6,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
@@ -39,7 +40,7 @@ public class TotalPostListDTO {
         List<TotalComment> commentList = totalPost.getTotalPostComments();
         List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
-        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
             //1 ,3, 6
             this.isBlinded = true;
         } else{
