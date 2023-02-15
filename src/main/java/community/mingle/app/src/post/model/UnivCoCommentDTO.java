@@ -86,7 +86,7 @@ public class UnivCoCommentDTO {
         this.likeCount = coComment.getUnivCommentLikes().size();
 
         for (UnivCommentLike ucl : coComment.getUnivCommentLikes()) { //영속성
-            if (ucl.getMember().getId() == memberId) { //배치사이즈?
+            if (Objects.equals(ucl.getMember().getId(), memberId)) { //배치사이즈?
                 isLiked = true;
                 break;
             } else {

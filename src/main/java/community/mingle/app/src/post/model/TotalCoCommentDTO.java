@@ -73,7 +73,7 @@ public class TotalCoCommentDTO {
 
 
         for (TotalCommentLike tpl : coComment.getTotalCommentLikes()) {
-            if (tpl.getMember().getId() == memberId) {
+            if (Objects.equals(tpl.getMember().getId(), memberId)) {
                 this.isLiked = true;
                 break;
             } else {
