@@ -7,10 +7,8 @@ import lombok.Getter;
 @Data
 @AllArgsConstructor
 @Getter
-public class ScrapTotalPostResponse {
-
+public class ScrapPostResponse {
     private Long id;
     private int scrapCount;
-
 
 }

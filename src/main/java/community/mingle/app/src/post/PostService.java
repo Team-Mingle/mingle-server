@@ -581,7 +581,7 @@ public class PostService {
      * 3.15 통합 게시물 좋아요 api + 인기 게시물 알림 기능
      */
     @Transactional
-    public LikeTotalPostResponse likesTotalPost(Long postIdx) throws BaseException {
+    public LikePostResponse likesTotalPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postIdx);
         if (totalpost == null) {
@@ -593,24 +593,6 @@ public class PostService {
 
         Member member = postRepository.findMemberbyId(memberIdByJwt);
         Member postMember = totalpost.getMember(); //유저 삭제 시 게시물 삭제 넣을 시 추후에 삭제가능 이 아니라 알림위해 남겨놓기
-//        Member postMember = postRepository.findMemberbyPostId(postIdx);
-//        if (member == null) { //해야할까?
-//            throw new BaseException(USER_NOT_EXIST);
-//        }
-
-//        //좋아요 중복 방지 - 1
-//        List<TotalPostLike> totalPostLikeList = member.getTotalPostLikes();
-//        for (TotalPostLike totalPostLike : totalPostLikeList) {
-//            if (totalPostLike.getTotalPost().getId() == postIdx) {
-//                throw new BaseException(DUPLICATE_LIKE);
-//            }
-//        }
-//        //좋아요 중복 방지 - 2
-//        boolean checkTotalIsLiked = postRepository.checkTotalIsLiked(postIdx, member.getId());
-//        if (checkTotalIsLiked) {
-//            throw new BaseException(DUPLICATE_LIKE);
-//        }
-
         TotalPostLike totalPostLike = TotalPostLike.likesTotalPost(totalpost, member);
         if (totalPostLike == null) {
             throw new BaseException(DUPLICATE_LIKE);
@@ -631,9 +613,7 @@ public class PostService {
                         postMember.getTotalNotifications().remove(0);
                     }
                 }
-
-                return new LikeTotalPostResponse(id, likeCount);
-
+                return new LikePostResponse(id, likeCount);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new BaseException(DATABASE_ERROR);
@@ -658,7 +638,7 @@ public class PostService {
      * 3.16 학교 게시물 좋아요 api
      */
     @Transactional
-    public LikeUnivPostResponse likesUnivPost(Long postIdx) throws BaseException {
+    public LikePostResponse likesUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
         if (univpost == null) {
@@ -673,22 +653,18 @@ public class PostService {
         if (member == null || postMember == null) { //해야할까?
             throw new BaseException(USER_NOT_EXIST);
         }
-
         //좋아요 중복 방지
         UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
         if (univPostLike == null) {
             throw new BaseException(DUPLICATE_LIKE);
         }
-
         else {
             try {
 //            UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
                 Long id = postRepository.save(univPostLike);
                 //이게 persist가 되자마자 바로 univpost에서 좋아요 갯수가 동기화 되는지 확인 필요
                 int likeCount = univpost.getUnivPostLikes().size();
-
                 // 인기 게시물 알림 보내주기 조건:좋아요 5개
-
                 if (univpost.getUnivPostLikes().size() == 5) {
                     sendUnivPostNotification(univpost, postMember);
                     //알림 저장
@@ -698,9 +674,7 @@ public class PostService {
                         postMember.getUnivNotifications().remove(0);
                     }
                 }
-
-
-                return new LikeUnivPostResponse(id, likeCount);
+                return new LikePostResponse(id, likeCount);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new BaseException(DATABASE_ERROR);
@@ -760,7 +734,7 @@ public class PostService {
      * 3.19 통합 게시물 스크랩 api
      */
     @Transactional
-    public ScrapTotalPostResponse scrapTotalPost(Long postIdx) throws BaseException {
+    public ScrapPostResponse scrapTotalPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postIdx);
         if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
@@ -786,7 +760,7 @@ public class PostService {
 //                TotalPostScrap totalPostScrap = TotalPostScrap.scrapTotalPost(totalpost, member);
                 Long id = postRepository.save(totalPostScrap);
                 int scrapCount = totalpost.getTotalPostScraps().size();
-                return new ScrapTotalPostResponse(id, scrapCount);
+                return new ScrapPostResponse(id, scrapCount);
             } catch (Exception e) {
                 throw new BaseException(DATABASE_ERROR);
             }
@@ -798,7 +772,7 @@ public class PostService {
      * 3.20 학교 게시물 스크랩 api
      */
     @Transactional
-    public ScrapUnivPostResponse scrapUnivPost(Long postIdx) throws BaseException {
+    public ScrapPostResponse scrapUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
         if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
@@ -823,7 +797,7 @@ public class PostService {
 //                UnivPostScrap univPostScrap = UnivPostScrap.scrapUnivPost(univpost, member);
                 Long id = postRepository.save(univPostScrap);
                 int scrapCount = univpost.getUnivPostScraps().size();
-                return new ScrapUnivPostResponse(id, scrapCount);
+                return new ScrapPostResponse(id, scrapCount);
             } catch (Exception e) {
                 throw new BaseException(DATABASE_ERROR);
             }
