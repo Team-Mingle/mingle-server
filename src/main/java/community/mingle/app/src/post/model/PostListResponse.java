@@ -1,7 +1,10 @@
 package community.mingle.app.src.post.model;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class PostListResponse {
     private String boardName;
     private List<PostListDTO> postListDTO;
