@@ -437,7 +437,7 @@ public class PostService {
         }
 
 
-        if (memberIdByJwt != totalPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, totalPost.getMember().getId())) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
@@ -468,7 +468,7 @@ public class PostService {
         if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
-        if (memberIdByJwt != univPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, univPost.getMember().getId())) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
