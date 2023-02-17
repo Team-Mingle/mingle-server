@@ -1,7 +1,6 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -285,7 +283,7 @@ public class PostService {
      * 3.9.2 통합 게시물 상세 - 댓글 API
      */
     @Transactional(readOnly = true)
-    public List<TotalCommentResponse> getTotalCommentList(Long id) throws BaseException {
+    public List<CommentResponse> getTotalCommentList(Long id) throws BaseException {
         TotalPost totalPost = postRepository.checkTotalPostDisabled(id);
         if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
@@ -297,7 +295,7 @@ public class PostService {
         try {
             List<TotalComment> totalCommentList = postRepository.getTotalComments(id, memberIdByJwt);
             List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id, memberIdByJwt);
-            List<TotalCommentResponse> totalCommentResponseList = new ArrayList<>();
+            List<CommentResponse> totalCommentResponseList = new ArrayList<>();
             for (TotalComment tc : totalCommentList) {
                 List<TotalComment> coComments = totalCocommentList.stream()
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
@@ -308,13 +306,13 @@ public class PostService {
                 if ((tc.getStatus() == PostStatus.INACTIVE || tc.getStatus() == PostStatus.REPORTED ) && coComments.size() == 0) {
                     continue;
                 }
-                List<TotalCoCommentDTO> coCommentDtos = coComments.stream()
+                List<CoCommentDTO> coCommentDtos = coComments.stream()
                         .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
-                        .map(p -> new TotalCoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
+                        .map(p -> new CoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
                         .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
-                TotalCommentResponse totalCommentResponse = new TotalCommentResponse(tc, coCommentDtos, memberIdByJwt, totalPost.getMember().getId());
+                CommentResponse totalCommentResponse = new CommentResponse(tc, coCommentDtos, memberIdByJwt, totalPost.getMember().getId());
                 totalCommentResponseList.add(totalCommentResponse);
             }
             return totalCommentResponseList;
@@ -366,7 +364,7 @@ public class PostService {
      * 3.10.2 학교 게시물 상세 - 댓글 API
      */
     @Transactional(readOnly = true)
-    public List<UnivCommentResponse> getUnivComments(Long postId) throws BaseException {
+    public List<CommentResponse> getUnivComments(Long postId) throws BaseException {
         UnivPost univPost = postRepository.checkUnivPostDisabled(postId);
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
@@ -382,7 +380,7 @@ public class PostService {
             List<UnivComment> univComments = postRepository.getUnivComments(postId, memberIdByJwt); //댓글
             List<UnivComment> univCoComments = postRepository.getUnivCoComments(postId, memberIdByJwt); //대댓글
             //2. 댓글 + 대댓글 DTO 생성
-            List<UnivCommentResponse> univCommentResponseList = new ArrayList<>();
+            List<CommentResponse> univCommentResponseList = new ArrayList<>();
             //3. 댓글 리스트 돌면서 댓글 하나당 대댓글 리스트 넣어서 합쳐주기
             for (UnivComment c : univComments) {
                 //parentComment 하나당 해당하는 UnivComment 타입의 대댓글 찾아서 리스트 만들기
@@ -397,14 +395,14 @@ public class PostService {
                 }
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
-                List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
+                List<CoCommentDTO> coCommentDTO = CoCommentList.stream()
                         .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
-                        .map(cc -> new UnivCoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
+                        .map(cc -> new CoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
                         .collect(Collectors.toList());
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
                 //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
                 //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
-                UnivCommentResponse univCommentResponse = new UnivCommentResponse(c, coCommentDTO, memberIdByJwt, univPost.getMember().getId());
+                CommentResponse univCommentResponse = new CommentResponse(c, coCommentDTO, memberIdByJwt, univPost.getMember().getId());
                 univCommentResponseList.add(univCommentResponse);
             }
             return univCommentResponseList;
