@@ -94,7 +94,7 @@ public class UnivCoCommentDTO {
             }
         }
 
-        if (coComment.getMember().getId() == memberId) {
+        if (Objects.equals(coComment.getMember().getId(), memberId)) {
             isMyComment = true;
         }
         if (Objects.equals(coCommentWriter, memberId)) {
