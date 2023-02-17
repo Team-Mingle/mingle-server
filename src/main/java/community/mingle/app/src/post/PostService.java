@@ -255,7 +255,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public TotalPostResponse getTotalPostDto(TotalPost totalPost) throws BaseException {
+    public PostResponse getTotalPost(TotalPost totalPost) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         boolean isMyPost = false;
         boolean isLiked = false;
@@ -277,8 +277,7 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-        TotalPostResponse totalPostResponse = new TotalPostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded);
-
+        PostResponse totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded);
         return totalPostResponse;
     }
 
@@ -329,7 +328,7 @@ public class PostService {
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
-    public UnivPostResponse getUnivPost(Long postId) throws BaseException {
+    public PostResponse getUnivPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
@@ -354,7 +353,7 @@ public class PostService {
             if (postRepository.checkUnivPostIsBlinded(postId, memberIdByJwt) == true){
                 isBlinded = true;
             }
-            UnivPostResponse univPostResponse = new UnivPostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
+            PostResponse univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
             return univPostResponse;
         } catch (Exception e) {
             e.printStackTrace();
@@ -437,7 +436,7 @@ public class PostService {
         }
 
 
-        if (memberIdByJwt != totalPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, totalPost.getMember().getId())) { // 2/17 핫픽스
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
@@ -468,7 +467,7 @@ public class PostService {
         if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
-        if (memberIdByJwt != univPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, univPost.getMember().getId())) { // 2/17 핫픽스
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {

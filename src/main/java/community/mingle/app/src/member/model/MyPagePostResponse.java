@@ -1,6 +1,5 @@
 package community.mingle.app.src.member.model;
 
-import community.mingle.app.src.post.model.TotalPostListDTO;
 import lombok.Getter;
 
 import java.util.List;
