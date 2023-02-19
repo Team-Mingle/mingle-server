@@ -550,4 +550,22 @@ public class PostRepository {
         em.remove(univBlind);
 
     }
+
+
+    /**
+     * 신고 가이드라인 추가
+     */
+    public List<Report> findReportedPostReason(Long postId) {
+        List<Report> reportList = em.createQuery("select r from Report r where r.contentId = :contentId", Report.class)
+                .setParameter("contentId", postId)
+                .getResultList();
+        return reportList;
+    }
+
+    public String findReportedTypeReason(int reportTypeNo) {
+        ReportType reportType = em.createQuery("select rt from ReportType rt where rt.id = :reportTypeNo", ReportType.class)
+                .setParameter("reportTypeNo", reportTypeNo)
+                .getSingleResult();
+        return reportType.getType();
+    }
 }

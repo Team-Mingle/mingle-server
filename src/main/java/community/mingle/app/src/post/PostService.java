@@ -19,12 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
+import static community.mingle.app.src.domain.PostStatus.DELETED;
+import static community.mingle.app.src.domain.PostStatus.REPORTED;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +66,33 @@ public class PostService {
 //    }
 
 
+    /**
+     * 신고된 게시물 처리
+     */
+    public String findReportedPostReason(Long postId)  {
+        List<Report> reportedPostReason = postRepository.findReportedPostReason(postId);
+        int mode = 0;
+        int maxCount = 0;
+
+        List<Integer> reportedTypeList = null;
+        if (reportedPostReason.isEmpty()) {
+            return null;
+        }
+        else {
+            reportedPostReason.forEach(report -> reportedTypeList.add(report.getType()));
+            for (int type : reportedTypeList) {
+                int count = Collections.frequency(reportedTypeList, type);
+                if (count > maxCount) {
+                    mode = type;
+                    maxCount = count;
+                }
+            }
+            String reason = postRepository.findReportedTypeReason(mode);
+            return reason;
+        }
+    }
+
+
 
     /**
      * 3.2 홍콩 배스트 게시판 API
@@ -74,6 +104,8 @@ public class PostService {
         }
         return totalPosts;
     }
+
+
 
 
     /**
@@ -275,7 +307,14 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-        PostResponse totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded);
+        /*** 게시물 신고 추가 */
+        PostResponse totalPostResponse;
+        if (totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED)) {
+            String reportedReason = findReportedPostReason(totalPost.getId());
+            totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded, reportedReason);
+        } else {
+            totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded);
+        }
         return totalPostResponse;
     }
 
@@ -351,12 +390,19 @@ public class PostService {
             if (postRepository.checkUnivPostIsBlinded(postId, memberIdByJwt) == true){
                 isBlinded = true;
             }
-            PostResponse univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
-            return univPostResponse;
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
+        /*** 게시물 신고 추가 */
+        PostResponse univPostResponse;
+        if (univPost.getStatus().equals(REPORTED) || univPost.getStatus().equals(DELETED)) {
+            String reportedReason = findReportedPostReason(univPost.getId());
+            univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded, reportedReason);
+        } else {
+            univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
+        }
+        return univPostResponse;
     }
 
 

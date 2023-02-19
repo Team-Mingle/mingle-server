@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.src.domain.PostStatus.DELETED;
+import static community.mingle.app.src.domain.PostStatus.REPORTED;
 
 @Getter
 public class PostListDTO {
@@ -22,16 +24,12 @@ public class PostListDTO {
     private String nickname;
     private boolean isFileAttached;
     private boolean isBlinded;
+    private boolean isReported;
     private int likeCount;
     private int commentCount;
     private String createdAt;
 
 
-    /**
-     * 3.4 전체 게시판 리스트
-     * @param totalPost
-     * @param memberId
-     */
     public PostListDTO(TotalPost totalPost, Long memberId) {
         this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
@@ -52,12 +50,20 @@ public class PostListDTO {
         } else{
             this.isBlinded = false;
         }
+//        this.isReported = false; // 2/17 추가
+        this.isReported = totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED); // 2/17 추가
+        if (totalPost.getStatus().equals(REPORTED)) {
+            this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
+        }
+        if (totalPost.getStatus().equals(DELETED)) {
+            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+        }
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
     }
 
 
     /**
-     * 3.5 대학 게시물 리스트
+     * 3.5 대학 게시물 리스트 w Report (w/o reason)
      * @param univPost
      * @param memberId
      */
@@ -81,8 +87,15 @@ public class PostListDTO {
         List<UnivComment> commentList = univPost.getUnivComments();
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
+//        this.isReported = false; // 2/17 추가
+        this.isReported = univPost.getStatus().equals(REPORTED) || univPost.getStatus().equals(DELETED); // 2/17 추가
+        if (univPost.getStatus().equals(REPORTED)) {
+            this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
+        }
+        if (univPost.getStatus().equals(DELETED)) {
+            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+        }
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
     }
-
 
 }

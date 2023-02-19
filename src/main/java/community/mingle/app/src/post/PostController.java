@@ -2,6 +2,8 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.UnivName;
@@ -49,6 +51,17 @@ public class PostController {
         try { //JWT로 해당 유저인지 확인 필요
             Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment(postId, memberId);
+            //신고 사유 String reason = postService.findReportedPostReason(postId); //신고 사유
+            /**
+             * 1. 모든 API 에서 reason을 다 찾은 후 아 이건 아닌듯
+             * 2. stream 돌려서 reported 된 posts 들만 찾아서 따로 DTO 만듦. 그리고 날짜순으로 합치기 (..)
+             */
+//            List<PostListDTO> reportedPostResult = null;
+//            List<TotalPost> reportedPosts = totalPosts.stream().filter(tp -> tp.getStatus().equals(PostStatus.REPORTED)).collect(Collectors.toList());
+//            for (TotalPost reportedPost : reportedPosts) {
+//                String reportedPostReason = postService.findReportedPostReason(reportedPost.getId());
+//                reportedPostResult.add(new PostListDTO(reportedPost,memberId,reportedPostReason));
+//            }
             List<PostListDTO> result = totalPosts.stream()
                     .map(m -> new PostListDTO(m, memberId))
                     .collect(Collectors.toList());
