@@ -58,18 +58,19 @@ public class CoCommentDTO {
             this.mention = "익명(글쓴이)";
         }
 
-        if (coComment.getStatus() == PostStatus.REPORTED) {
-            this.content = "신고된 댓글입니다.";
+        if (coComment.getStatus() == PostStatus.INACTIVE) {
+           this.content = "삭제된 댓글입니다.";
+           nickname = "(비공개됨)";
+        } else if (coComment.getStatus() == PostStatus.DELETED) {
+            this.content = "운영규칙 위반에 따라 삭제된 댓글입니다.";
             nickname = "(비공개됨)";
-        } else if (coComment.getStatus() == PostStatus.INACTIVE) {
-            this.content = "삭제된 댓글입니다.";
+        } else if (coComment.getStatus() == PostStatus.REPORTED) {
+            this.content = "신고된 댓글입니다.";
             nickname = "(비공개됨)";
         } else {
             this.content = coComment.getContent();
         }
-
         this.likeCount = coComment.getTotalCommentLikes().size();
-
 
         for (TotalCommentLike tpl : coComment.getTotalCommentLikes()) {
             if (Objects.equals(tpl.getMember().getId(), memberId)) {
@@ -132,11 +133,14 @@ public class CoCommentDTO {
             this.mention = "익명(글쓴이)";
         }
 
-        if (coComment.getStatus() == PostStatus.REPORTED) {
-            this.content = "신고된 댓글입니다.";
-            nickname = "(비공개됨)";
-        } else if (coComment.getStatus() == PostStatus.INACTIVE) {
+        if (coComment.getStatus() == PostStatus.INACTIVE) {
             this.content = "삭제된 댓글입니다.";
+            nickname = "(비공개됨)";
+        } else if (coComment.getStatus() == PostStatus.DELETED) {
+            this.content = "운영규칙 위반에 따라 삭제된 댓글입니다.";
+            nickname = "(비공개됨)";
+        } else if (coComment.getStatus() == PostStatus.REPORTED) {
+            this.content = "신고된 댓글입니다.";
             nickname = "(비공개됨)";
         } else {
             this.content = coComment.getContent();

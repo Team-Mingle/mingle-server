@@ -341,8 +341,8 @@ public class PostService {
                         .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE))
                         .collect(Collectors.toList());
 
-                //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
-                if ((tc.getStatus() == PostStatus.INACTIVE || tc.getStatus() == PostStatus.REPORTED ) && coComments.size() == 0) {
+                //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제 // 2/20 추가: 유저가 직접 삭제한 댓글만 표시하지 않기
+                if ((tc.getStatus() == PostStatus.INACTIVE) && coComments.size() == 0) {
                     continue;
                 }
                 List<CoCommentDTO> coCommentDtos = coComments.stream()
