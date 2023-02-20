@@ -1,7 +1,6 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -23,10 +22,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
+import static java.lang.Long.parseLong;
 
 @Service
 @RequiredArgsConstructor
@@ -1027,5 +1026,55 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public List<NotifiedContentResponse> listNotifiedTotalPost() {
+        List<TotalPost> reportedTotalPostList = postRepository.getReportedTotalPostList();
+        return reportedTotalPostList.stream()
+                .map(totalPost -> new NotifiedContentResponse(totalPost.getMember().getId().toString(), totalPost.getMember().getNickname(), totalPost.getId().toString(), totalPost.getTitle()))
+                .collect(Collectors.toList());
+    }
+
+    public List<NotifiedContentResponse> listNotifiedUnivPost() {
+        List<UnivPost> reportedUnivPostList = postRepository.getReportedUnivPostList();
+        return reportedUnivPostList.stream()
+                .map(univPost -> new NotifiedContentResponse(univPost.getMember().getId().toString(), univPost.getMember().getNickname(), univPost.getId().toString(), univPost.getTitle()))
+                .collect(Collectors.toList());
+    }
+
+    public List<NotifiedContentResponse> listNotifiedTotalComment() {
+        List<TotalComment> reportedTotalCommentList = postRepository.getReportedTotalCommentList();
+        return reportedTotalCommentList.stream()
+                .map(totalComment -> new NotifiedContentResponse(totalComment.getMember().getId().toString(), totalComment.getMember().getNickname(), totalComment.getId().toString(), totalComment.getContent()))
+                .collect(Collectors.toList());
+    }
+
+    public List<NotifiedContentResponse> listNotifiedUnivComment() {
+        List<UnivComment> reportedUnivCommentList = postRepository.getReportedUnivCommentList();
+        return reportedUnivCommentList.stream()
+                .map(univComment -> new NotifiedContentResponse(univComment.getMember().getId().toString(), univComment.getMember().getNickname(), univComment.getId().toString(), univComment.getContent()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void executeTotalPost(String contentId) {
+        TotalPost totalPost = postRepository.findTotalPostById(parseLong(contentId));
+        totalPost.modifyStatusAsReported();
+    }
+    @Transactional
+    public void executeUnivPost(String contentId) {
+        UnivPost univPost = postRepository.findUnivPostById(parseLong(contentId));
+        univPost.modifyStatusAsReported();
+    }
+    @Transactional
+    public void executeTotalComment(String contentId) {
+        TotalComment totalComment = postRepository.findTotalCommentById(parseLong(contentId));
+        totalComment.modifyStatusAsReported();
+    }
+
+    @Transactional
+    public void executeUnivComment(String contentId) {
+        UnivComment univComment = postRepository.findUnivCommentById(parseLong(contentId));
+        univComment.modifyStatusAsReported();
     }
 }
