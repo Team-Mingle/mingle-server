@@ -20,6 +20,20 @@ public class PostRepository {
 
 
     /**
+     * 2.1 학교 전체 게시판 api +
+     */
+    public List<UnivPost> findPosts(int category, Long postId, Long memberIdByJwt) {
+        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status = :status and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("status", PostStatus.ACTIVE)
+                .setParameter("categoryId", category)
+                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
+    }
+
+
+    /**
      * 2.2 전체 베스트 게시판 api +
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Long memberIdByJwt) {
@@ -82,8 +96,8 @@ public class PostRepository {
      * 2.4 광장 게시판 api +
      */
     public List<TotalPost> findTotalPost(int category, Long postId, Long memberIdByJwt) {
-        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status = :status and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
-                .setParameter("status", PostStatus.ACTIVE)
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+//                .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("categoryId", category)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
@@ -96,8 +110,8 @@ public class PostRepository {
      * 2.5 학교 게시판 api +
      */
     public List<UnivPost> findUnivPost(int category, Long postId, int univId, Long memberIdByJwt) {
-        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status = :status and p.univName.id = :univId and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
-                .setParameter("status", PostStatus.ACTIVE)
+        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.univName.id = :univId and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+//                .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("univId", univId)
                 .setParameter("categoryId", category)
                 .setParameter("memberIdByJwt", memberIdByJwt)

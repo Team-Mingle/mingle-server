@@ -40,14 +40,35 @@ public class PostController {
 
 
     /**
+     * 3.1 학교 전체 글 리스트 API
+     */
+    @GetMapping("")
+    @Operation(summary = "3.1 getUnivTotalPosts API", description = " 3.1 학교 전체 글 리스트 API")
+    public BaseResponse<PostListResponse> getPosts (@RequestParam int category,  @RequestParam Long postId) {
+        try {
+            Long memberId = jwtService.getUserIdx();
+            List<UnivPost> univPosts = postService.findPosts(category, postId, memberId);
+            List<PostListDTO> result = univPosts.stream()
+                    .map(u -> new PostListDTO(u, memberId))
+                    .collect(Collectors.toList());
+            PostListResponse univPostListResponse = new PostListResponse("학교 전체", result);
+            return new BaseResponse<>(univPostListResponse);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+    /**
      * 3.2 전체 배스트 게시판 API +
      */
     @GetMapping("/total/best")
     @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
+    @ApiResponses({
+            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
     public BaseResponse<PostListResponse> getTotalBest(@RequestParam Long postId) {
+
         try { //JWT로 해당 유저인지 확인 필요
             Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment(postId, memberId);

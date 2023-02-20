@@ -42,6 +42,20 @@ public class PostService {
     private final MemberRepository memberRepository;
 
 
+
+    /**
+     * 3.1 학교 전체 리스트 API
+     */
+    public List<UnivPost> findPosts(int category, Long postId, Long memberId) throws BaseException {
+        List<UnivPost> getUnivAll = postRepository.findPosts(category, postId, memberId);
+        if (getUnivAll.size() == 0) {
+            throw new BaseException(EMPTY_POSTS_LIST);
+        }
+        return getUnivAll;
+    }
+
+
+
     /**
      * 유저 토큰에서 학교 추출
      */
@@ -74,12 +88,15 @@ public class PostService {
         int mode = 0;
         int maxCount = 0;
 
-        List<Integer> reportedTypeList = null;
-        if (reportedPostReason.isEmpty()) {
+        ArrayList<Integer> reportedTypeList = new ArrayList<>();
+        if (reportedPostReason == null) {
             return null;
         }
-        else {
+        else  {
             reportedPostReason.forEach(report -> reportedTypeList.add(report.getType()));
+//            for (Report r : reportedPostReason) {
+//                    reportedTypeList.add(report.getType());
+//            }
             for (int type : reportedTypeList) {
                 int count = Collections.frequency(reportedTypeList, type);
                 if (count > maxCount) {
@@ -278,9 +295,9 @@ public class PostService {
         if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (totalPost.getStatus().equals(PostStatus.INACTIVE) || totalPost.getStatus().equals(PostStatus.REPORTED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
+//        if (totalPost.getStatus().equals(PostStatus.INACTIVE) || totalPost.getStatus().equals(PostStatus.REPORTED)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
         return totalPost;
     }
 
@@ -346,7 +363,7 @@ public class PostService {
                     continue;
                 }
                 List<CoCommentDTO> coCommentDtos = coComments.stream()
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED)) //11/25: 대댓글 삭제시 그냥 삭제. 2/20: 신고된 댓글 표시
                         .map(p -> new CoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
                         .collect(Collectors.toList());
 
@@ -374,9 +391,9 @@ public class PostService {
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
+//        if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
         try {
             if (Objects.equals(univPost.getMember().getId(), memberIdByJwt)) {
                 isMyPost = true;
@@ -415,9 +432,9 @@ public class PostService {
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
+//        if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
@@ -432,17 +449,17 @@ public class PostService {
                 //parentComment 하나당 해당하는 UnivComment 타입의 대댓글 찾아서 리스트 만들기
                 List<UnivComment> CoCommentList = univCoComments.stream()
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) // 더 추가: 대댓글 active 인거만 가져오기
+//                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) // 더 추가: 대댓글 active 인거만 가져오기
                         .collect(Collectors.toList());
 
                 //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
-                if ((c.getStatus() == PostStatus.INACTIVE || c.getStatus() == PostStatus.REPORTED ) && CoCommentList.size() == 0) {
+                if ((c.getStatus() == PostStatus.INACTIVE ) && CoCommentList.size() == 0) {
                     continue;
                 }
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<CoCommentDTO> coCommentDTO = CoCommentList.stream()
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED)) //11/25: 대댓글 삭제시 그냥 삭제. //2/20: 신고된 댓글 표시
                         .map(cc -> new CoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
                         .collect(Collectors.toList());
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
