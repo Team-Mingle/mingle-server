@@ -496,7 +496,7 @@ public class PostService {
         if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (memberIdByJwt != totalPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, totalPost.getMember().getId())) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
@@ -507,7 +507,7 @@ public class PostService {
                 }
             }
             List<TotalPostImage> totalPostImages = postRepository.findAllTotalImage(id);
-            if (totalPostImages != null && totalPost.getIsFileAttached() == true) {
+            if (totalPostImages != null && totalPost.getIsFileAttached()) {
                 for (TotalPostImage pi : totalPostImages) {
                     pi.deleteTotalImage();
 
@@ -544,7 +544,7 @@ public class PostService {
             throw new BaseException(POST_NOT_EXIST);
         }
 
-        if (memberIdByJwt != univPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, univPost.getMember().getId())) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
 
@@ -557,7 +557,7 @@ public class PostService {
             }
 
             List<UnivPostImage> univPostImages = postRepository.findAllUnivImage(id); //사진 삭제
-            if (univPostImages != null && univPost.getIsFileAttached() == true) {
+            if (univPostImages != null && univPost.getIsFileAttached()) {
                 for (UnivPostImage pi : univPostImages) {
                     pi.deleteUnivImage();
 
