@@ -8,6 +8,7 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
@@ -35,7 +36,7 @@ public class HomeRecentPostResponse {
             this.nickname = totalPost.getMember().getNickname();
         }
         this.isFileAttached = totalPost.getIsFileAttached();
-        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
             this.isBlinded = true;
         }else{
             this.isBlinded = false;
@@ -59,7 +60,7 @@ public class HomeRecentPostResponse {
             this.nickname = p.getMember().getNickname();
         }
         isFileAttached = p.getIsFileAttached();
-        if (p.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+        if (p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
             this.isBlinded = true;
         }else{
             this.isBlinded = false;

@@ -6,6 +6,7 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
@@ -35,7 +36,7 @@ public class HomeBestUnivPostResponse {
         } else {
             this.nickname = p.getMember().getNickname();
         }
-        if (p.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+        if (p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
             this.isBlinded = true;
         }else{
             this.isBlinded = false;
