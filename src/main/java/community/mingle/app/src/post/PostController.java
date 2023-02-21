@@ -2,6 +2,8 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.UnivName;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -38,23 +41,54 @@ public class PostController {
 
 
     /**
+     * 3.1 학교 전체 글 리스트 API
+     */
+    @GetMapping("")
+    @Operation(summary = "3.1 getUnivTotalPosts API", description = " 3.1 학교 전체 글 리스트 API")
+    public BaseResponse<PostListResponse> getPosts (@RequestParam int category,  @RequestParam Long postId) {
+        try {
+            Long memberId = jwtService.getUserIdx();
+            List<UnivPost> univPosts = postService.findPosts(category, postId, memberId);
+            List<PostListDTO> result = univPosts.stream()
+                    .map(u -> new PostListDTO(u, memberId))
+                    .collect(Collectors.toList());
+            PostListResponse univPostListResponse = new PostListResponse("학교 전체", result);
+            return new BaseResponse<>(univPostListResponse);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+    /**
      * 3.2 전체 배스트 게시판 API +
      */
     @GetMapping("/total/best")
     @Operation(summary = "3.2 getTotalBest Posts API", description = "3.2 광장 베스트 게시물 리스트 API")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
+    @ApiResponses({
+            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
-    public BaseResponse<BestTotalPostListResponse> getTotalBest(@RequestParam Long postId) {
+    public BaseResponse<PostListResponse> getTotalBest(@RequestParam Long postId) {
+
         try { //JWT로 해당 유저인지 확인 필요
             Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = postService.findTotalPostWithMemberLikeComment(postId, memberId);
-            List<BestTotalPostDTO> result = totalPosts.stream()
-                    .map(m -> new BestTotalPostDTO(m, memberId))
+            //신고 사유 String reason = postService.findReportedPostReason(postId); //신고 사유
+            /**
+             * 1. 모든 API 에서 reason을 다 찾은 후 아 이건 아닌듯
+             * 2. stream 돌려서 reported 된 posts 들만 찾아서 따로 DTO 만듦. 그리고 날짜순으로 합치기 (..)
+             */
+//            List<PostListDTO> reportedPostResult = null;
+//            List<TotalPost> reportedPosts = totalPosts.stream().filter(tp -> tp.getStatus().equals(PostStatus.REPORTED)).collect(Collectors.toList());
+//            for (TotalPost reportedPost : reportedPosts) {
+//                String reportedPostReason = postService.findReportedPostReason(reportedPost.getId());
+//                reportedPostResult.add(new PostListDTO(reportedPost,memberId,reportedPostReason));
+//            }
+            List<PostListDTO> result = totalPosts.stream()
+                    .map(m -> new PostListDTO(m, memberId))
                     .collect(Collectors.toList());
-            BestTotalPostListResponse bestTotalPostListResponse = new BestTotalPostListResponse(null, result);
+            PostListResponse bestTotalPostListResponse = new PostListResponse(result);
             return new BaseResponse<>(bestTotalPostListResponse);
-
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -71,19 +105,17 @@ public class PostController {
             @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다..", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<BestUnivPostListResponse> getUnivBest(@RequestParam Long postId) {
+    public BaseResponse<PostListResponse> getUnivBest(@RequestParam Long postId) {
         try {
             Long memberIdByJwt = jwtService.getUserIdx();
             UnivName univ = postService.findUniv();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = postService.findAllWithMemberLikeCommentCount(postId);
-//            Member member = postRepository.findMemberbyId(memberIdByJwt);
-            List<BestUnivPostDTO> result = univPosts.stream()
-                    .map(p -> new BestUnivPostDTO(p, memberIdByJwt))
+            List<PostListDTO> result = univPosts.stream()
+                    .map(p -> new PostListDTO(p, memberIdByJwt))
                     .collect(Collectors.toList());
-            BestUnivPostListResponse bestUnivPostListResponse = new BestUnivPostListResponse(univName, result);
+            PostListResponse bestUnivPostListResponse = new PostListResponse(univName, result);
             return new BaseResponse<>(bestUnivPostListResponse);
-
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -99,16 +131,15 @@ public class PostController {
     @ApiResponses ({
             @ApiResponse(responseCode = "3032", description = "해당 카테고리에 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true)))
     })
-    public BaseResponse<TotalPostListResponse> getTotalPosts (@RequestParam int category, @RequestParam Long postId) {
+    public BaseResponse<PostListResponse> getTotalPosts (@RequestParam int category, @RequestParam Long postId) {
         try {
             Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = postService.findTotalPost(category, postId, memberId);
-            List<TotalPostListDTO> result = totalPosts.stream()
-                    .map(p -> new TotalPostListDTO(p, memberId))
+            List<PostListDTO> result = totalPosts.stream()
+                    .map(p -> new PostListDTO(p, memberId))
                     .collect(Collectors.toList());
-            TotalPostListResponse totalPostListResponse = new TotalPostListResponse(null, result);
+            PostListResponse totalPostListResponse = new PostListResponse(result);
             return new BaseResponse<>(totalPostListResponse);
-
         } catch (BaseException e) {
             e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
@@ -122,18 +153,17 @@ public class PostController {
      */
     @GetMapping("/univ")
     @Operation(summary = "3.5 getUnivPosts API", description = " 3.5 학교 게시판 게시물 리스트 API")
-    public BaseResponse<UnivPostListResponse> getUnivPosts (@RequestParam int category,  @RequestParam Long postId) {
+    public BaseResponse<PostListResponse> getUnivPosts (@RequestParam int category,  @RequestParam Long postId) {
         try {
             UnivName univ = postService.findUniv();
             Long memberId = jwtService.getUserIdx();
             String univName = univ.getUnivName().substring(0,3);
             List<UnivPost> univPosts = postService.findUnivPost(category, postId, univ.getId(), memberId);
-            List<UnivPostListDTO> result = univPosts.stream()
-                    .map(u -> new UnivPostListDTO(u, memberId))
+            List<PostListDTO> result = univPosts.stream()
+                    .map(u -> new PostListDTO(u, memberId))
                     .collect(Collectors.toList());
-            UnivPostListResponse univPostListResponse = new UnivPostListResponse(univName, result);
+            PostListResponse univPostListResponse = new PostListResponse(univName, result);
             return new BaseResponse<>(univPostListResponse);
-
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -205,11 +235,11 @@ public class PostController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<TotalPostResponse> totalPostDetail(@PathVariable Long totalPostId) { //dto->response
+    public BaseResponse<PostResponse> totalPostDetail(@PathVariable Long totalPostId) { //dto->response
         try {
             TotalPost totalPost = postService.getTotalPost(totalPostId);
             postService.updateView(totalPostId);
-            TotalPostResponse totalPostResponse = postService.getTotalPostDto(totalPost); //메소드이름 좀 맞추자
+            PostResponse totalPostResponse = postService.getTotalPost(totalPost); //메소드이름 좀 맞추자
             return new BaseResponse<>(totalPostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -226,10 +256,10 @@ public class PostController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<TotalCommentResponse>> totalPostDetailComment(@PathVariable Long totalPostId) {
+    public BaseResponse<List<CommentResponse>> totalPostDetailComment(@PathVariable Long totalPostId) {
 
         try {
-            List<TotalCommentResponse> totalCommentResponseList = postService.getTotalCommentList(totalPostId);
+            List<CommentResponse> totalCommentResponseList = postService.getTotalCommentList(totalPostId);
             return new BaseResponse<>(totalCommentResponseList);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -247,12 +277,12 @@ public class PostController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<UnivPostResponse> getUnivPost(@PathVariable Long univPostId) {
+    public BaseResponse<PostResponse> getUnivPost(@PathVariable Long univPostId) {
         try {
 //            UnivPost univPost = postService.getUnivPost(univPostId);
 //            UnivPostDTO univPostDTO = new UnivPostDTO(univPost); //DTO 로 변환
             postService.updateViewUniv(univPostId);
-            UnivPostResponse univPostResponse = postService.getUnivPost(univPostId);
+            PostResponse univPostResponse = postService.getUnivPost(univPostId);
             return new BaseResponse<>(univPostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -269,9 +299,9 @@ public class PostController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<UnivCommentResponse>> univPostComment(@PathVariable Long univPostId) { //dto -> response
+    public BaseResponse<List<CommentResponse>> univPostComment(@PathVariable Long univPostId) { //dto -> response
         try {
-            List<UnivCommentResponse> univCommentResponseList = postService.getUnivComments(univPostId);
+            List<CommentResponse> univCommentResponseList = postService.getUnivComments(univPostId);
             return new BaseResponse<>(univCommentResponseList);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -404,7 +434,7 @@ public class PostController {
             @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
     })
     @PostMapping("/total/likes")
-    public BaseResponse<LikeTotalPostResponse> likesTotalPost (@RequestParam Long postIdx){
+    public BaseResponse<LikePostResponse> likesTotalPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.likesTotalPost(postIdx));
         }catch (BaseException exception){
@@ -425,7 +455,7 @@ public class PostController {
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<LikeUnivPostResponse> likesUnivPost (@RequestParam Long postIdx){
+    public BaseResponse<LikePostResponse> likesUnivPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.likesUnivPost(postIdx));
         }catch (BaseException exception) {
@@ -487,7 +517,7 @@ public class PostController {
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3061", description = "이미 스크랩을 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<ScrapTotalPostResponse> scrapTotalPost (@RequestParam Long postIdx){
+    public BaseResponse<ScrapPostResponse> scrapTotalPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.scrapTotalPost(postIdx));
         }catch (BaseException exception){
@@ -509,7 +539,7 @@ public class PostController {
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3061", description = "이미 스크랩을 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
     })
-    public BaseResponse<ScrapUnivPostResponse> scrapUnivPost (@RequestParam Long postIdx){
+    public BaseResponse<ScrapPostResponse> scrapUnivPost (@RequestParam Long postIdx){
         try{
             return new BaseResponse<>(postService.scrapUnivPost(postIdx));
         }catch (BaseException exception){
@@ -562,14 +592,14 @@ public class PostController {
      */
     @Operation(summary = "searchTotalPost API", description = "전체게시판 검색 api")
     @GetMapping("total/search")
-    public BaseResponse<SearchTotalPostResponse> searchTotalPost(@RequestParam(value="keyword") String keyword) {
+    public BaseResponse<PostListResponse> searchTotalPost(@RequestParam(value="keyword") String keyword) {
         try {
             Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = postService.findAllSearch(keyword, memberId);
-            List<SearchTotalPostDTO> result = totalPosts.stream()
-                    .map(tp -> new SearchTotalPostDTO(tp, memberId))
+            List<PostListDTO> result = totalPosts.stream()
+                    .map(tp -> new PostListDTO(tp, memberId))
                     .collect(Collectors.toList());
-            SearchTotalPostResponse searchTotalPostResponse = new SearchTotalPostResponse("광장", result);
+            PostListResponse searchTotalPostResponse = new PostListResponse("광장", result);
             return new BaseResponse<>(searchTotalPostResponse);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -583,16 +613,15 @@ public class PostController {
      */
     @Operation(summary = "searchUnivPost API", description = "학교게시판 검색 api")
     @GetMapping("univ/search")
-    public BaseResponse<SearchUnivPostResponse> searchUnivPost(@RequestParam(value="keyword") String keyword) {
+    public BaseResponse<PostListResponse> searchUnivPost(@RequestParam(value="keyword") String keyword) {
         try {
             Long memberId = jwtService.getUserIdx();
             List<UnivPost> univPosts = postService.findUnivSearch(keyword, memberId);
-            List<SearchUnivPostDTO> result = univPosts.stream()
-                    .map(up -> new SearchUnivPostDTO(up, memberId))
+            List<PostListDTO> result = univPosts.stream()
+                    .map(up -> new PostListDTO(up, memberId))
                     .collect(Collectors.toList());
-            SearchUnivPostResponse searchUnivPostResponse = new SearchUnivPostResponse("잔디밭", result);
+            PostListResponse searchUnivPostResponse = new PostListResponse("잔디밭", result);
             return new BaseResponse<>(searchUnivPostResponse);
-
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
@@ -688,6 +717,8 @@ public class PostController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+
 
 }
 

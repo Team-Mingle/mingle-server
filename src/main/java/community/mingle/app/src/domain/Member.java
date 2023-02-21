@@ -132,7 +132,7 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public void modifyReportStatus() {
+    public void modifyStatusAsReported() {
         this.status = UserStatus.REPORTED;
     }
 

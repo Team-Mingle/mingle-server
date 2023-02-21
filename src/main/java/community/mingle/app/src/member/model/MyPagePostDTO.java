@@ -8,9 +8,12 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.src.domain.PostStatus.DELETED;
+import static community.mingle.app.src.domain.PostStatus.REPORTED;
 
 @Getter
 public class MyPagePostDTO {
@@ -20,6 +23,8 @@ public class MyPagePostDTO {
     private String nickname;
     private boolean isFileAttached;
     private boolean isBlinded;
+    private boolean isReported;
+
     private int likeCount;
     private int commentCount;
     private String createdAt;
@@ -40,10 +45,19 @@ public class MyPagePostDTO {
         List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
         this.createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
-        if (p.getTotalBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+        if (p.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
             this.isBlinded = true;
         } else{
             this.isBlinded = false;
+        }
+        this.isReported = p.getStatus().equals(REPORTED) || p.getStatus().equals(DELETED); // 2/17 추가
+        if (p.getStatus().equals(REPORTED)) {
+            this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
+            this.contents = "";
+        }
+        if (p.getStatus().equals(DELETED)) {
+            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+            this.contents = "";
         }
     }
 
@@ -63,12 +77,18 @@ public class MyPagePostDTO {
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
         this.createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
-        if (p.getUnivBlinds().stream().anyMatch(bm -> bm.getMember().getId() == memberId)) {
+        if (p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
             this.isBlinded = true;
         } else{
             this.isBlinded = false;
         }
-
+        this.isReported = p.getStatus().equals(REPORTED) || p.getStatus().equals(DELETED); // 2/17 추가
+        if (p.getStatus().equals(REPORTED)) {
+            this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
+        }
+        if (p.getStatus().equals(DELETED)) {
+            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+        }
     }
 
 }

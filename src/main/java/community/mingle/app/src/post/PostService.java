@@ -1,7 +1,6 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -20,13 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
+import static community.mingle.app.src.domain.PostStatus.DELETED;
+import static community.mingle.app.src.domain.PostStatus.REPORTED;
+import static java.lang.Long.parseLong;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,20 @@ public class PostService {
 
     private final FirebaseCloudMessageService fcmService;
     private final MemberRepository memberRepository;
+
+
+
+    /**
+     * 3.1 학교 전체 리스트 API
+     */
+    public List<UnivPost> findPosts(int category, Long postId, Long memberId) throws BaseException {
+        List<UnivPost> getUnivAll = postRepository.findPosts(category, postId, memberId);
+        if (getUnivAll.size() == 0) {
+            throw new BaseException(EMPTY_POSTS_LIST);
+        }
+        return getUnivAll;
+    }
+
 
 
     /**
@@ -65,6 +81,36 @@ public class PostService {
 //    }
 
 
+    /**
+     * 신고된 게시물 처리
+     */
+    public String findReportedPostReason(Long postId)  {
+        List<Report> reportedPostReason = postRepository.findReportedPostReason(postId);
+        int mode = 0;
+        int maxCount = 0;
+
+        ArrayList<Integer> reportedTypeList = new ArrayList<>();
+        if (reportedPostReason == null) {
+            return null;
+        }
+        else  {
+            reportedPostReason.forEach(report -> reportedTypeList.add(report.getType()));
+//            for (Report r : reportedPostReason) {
+//                    reportedTypeList.add(report.getType());
+//            }
+            for (int type : reportedTypeList) {
+                int count = Collections.frequency(reportedTypeList, type);
+                if (count > maxCount) {
+                    mode = type;
+                    maxCount = count;
+                }
+            }
+            String reason = postRepository.findReportedTypeReason(mode);
+            return reason;
+        }
+    }
+
+
 
     /**
      * 3.2 홍콩 배스트 게시판 API
@@ -76,6 +122,8 @@ public class PostService {
         }
         return totalPosts;
     }
+
+
 
 
     /**
@@ -248,14 +296,14 @@ public class PostService {
         if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (totalPost.getStatus().equals(PostStatus.INACTIVE) || totalPost.getStatus().equals(PostStatus.REPORTED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
+//        if (totalPost.getStatus().equals(PostStatus.INACTIVE) || totalPost.getStatus().equals(PostStatus.REPORTED)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
         return totalPost;
     }
 
     @Transactional(readOnly = true)
-    public TotalPostResponse getTotalPostDto(TotalPost totalPost) throws BaseException {
+    public PostResponse getTotalPost(TotalPost totalPost) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         boolean isMyPost = false;
         boolean isLiked = false;
@@ -277,8 +325,14 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
-        TotalPostResponse totalPostResponse = new TotalPostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded);
-
+        /*** 게시물 신고 추가 */
+        PostResponse totalPostResponse;
+        if (totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED)) {
+            String reportedReason = findReportedPostReason(totalPost.getId());
+            totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded, reportedReason);
+        } else {
+            totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded);
+        }
         return totalPostResponse;
     }
 
@@ -286,7 +340,7 @@ public class PostService {
      * 3.9.2 통합 게시물 상세 - 댓글 API
      */
     @Transactional(readOnly = true)
-    public List<TotalCommentResponse> getTotalCommentList(Long id) throws BaseException {
+    public List<CommentResponse> getTotalCommentList(Long id) throws BaseException {
         TotalPost totalPost = postRepository.checkTotalPostDisabled(id);
         if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
@@ -298,24 +352,24 @@ public class PostService {
         try {
             List<TotalComment> totalCommentList = postRepository.getTotalComments(id, memberIdByJwt);
             List<TotalComment> totalCocommentList = postRepository.getTotalCocomments(id, memberIdByJwt);
-            List<TotalCommentResponse> totalCommentResponseList = new ArrayList<>();
+            List<CommentResponse> totalCommentResponseList = new ArrayList<>();
             for (TotalComment tc : totalCommentList) {
                 List<TotalComment> coComments = totalCocommentList.stream()
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
                         .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE))
                         .collect(Collectors.toList());
 
-                //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
-                if ((tc.getStatus() == PostStatus.INACTIVE || tc.getStatus() == PostStatus.REPORTED ) && coComments.size() == 0) {
+                //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제 // 2/20 추가: 유저가 직접 삭제한 댓글만 표시하지 않기
+                if ((tc.getStatus() == PostStatus.INACTIVE) && coComments.size() == 0) {
                     continue;
                 }
-                List<TotalCoCommentDTO> coCommentDtos = coComments.stream()
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
-                        .map(p -> new TotalCoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
+                List<CoCommentDTO> coCommentDtos = coComments.stream()
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED)) //11/25: 대댓글 삭제시 그냥 삭제. 2/20: 신고된 댓글 표시
+                        .map(p -> new CoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
                         .collect(Collectors.toList());
 
 //            boolean isLiked = postRepository.checkCommentIsLiked(tc.getId(), memberIdByJwt);
-                TotalCommentResponse totalCommentResponse = new TotalCommentResponse(tc, coCommentDtos, memberIdByJwt, totalPost.getMember().getId());
+                CommentResponse totalCommentResponse = new CommentResponse(tc, coCommentDtos, memberIdByJwt, totalPost.getMember().getId());
                 totalCommentResponseList.add(totalCommentResponse);
             }
             return totalCommentResponseList;
@@ -329,7 +383,7 @@ public class PostService {
      * 3.10.1 학교 게시물 상세 - 게시물 API
      */
     @Transactional(readOnly = true)
-    public UnivPostResponse getUnivPost(Long postId) throws BaseException {
+    public PostResponse getUnivPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
@@ -338,9 +392,9 @@ public class PostService {
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
+//        if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
         try {
             if (Objects.equals(univPost.getMember().getId(), memberIdByJwt)) {
                 isMyPost = true;
@@ -354,12 +408,19 @@ public class PostService {
             if (postRepository.checkUnivPostIsBlinded(postId, memberIdByJwt) == true){
                 isBlinded = true;
             }
-            UnivPostResponse univPostResponse = new UnivPostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
-            return univPostResponse;
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
+        /*** 게시물 신고 추가 */
+        PostResponse univPostResponse;
+        if (univPost.getStatus().equals(REPORTED) || univPost.getStatus().equals(DELETED)) {
+            String reportedReason = findReportedPostReason(univPost.getId());
+            univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded, reportedReason);
+        } else {
+            univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
+        }
+        return univPostResponse;
     }
 
 
@@ -367,14 +428,14 @@ public class PostService {
      * 3.10.2 학교 게시물 상세 - 댓글 API
      */
     @Transactional(readOnly = true)
-    public List<UnivCommentResponse> getUnivComments(Long postId) throws BaseException {
+    public List<CommentResponse> getUnivComments(Long postId) throws BaseException {
         UnivPost univPost = postRepository.checkUnivPostDisabled(postId);
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
+//        if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member;
         member = postRepository.findMemberbyId(memberIdByJwt);
@@ -383,29 +444,29 @@ public class PostService {
             List<UnivComment> univComments = postRepository.getUnivComments(postId, memberIdByJwt); //댓글
             List<UnivComment> univCoComments = postRepository.getUnivCoComments(postId, memberIdByJwt); //대댓글
             //2. 댓글 + 대댓글 DTO 생성
-            List<UnivCommentResponse> univCommentResponseList = new ArrayList<>();
+            List<CommentResponse> univCommentResponseList = new ArrayList<>();
             //3. 댓글 리스트 돌면서 댓글 하나당 대댓글 리스트 넣어서 합쳐주기
             for (UnivComment c : univComments) {
                 //parentComment 하나당 해당하는 UnivComment 타입의 대댓글 찾아서 리스트 만들기
                 List<UnivComment> CoCommentList = univCoComments.stream()
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) // 더 추가: 대댓글 active 인거만 가져오기
+//                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) // 더 추가: 대댓글 active 인거만 가져오기
                         .collect(Collectors.toList());
 
                 //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
-                if ((c.getStatus() == PostStatus.INACTIVE || c.getStatus() == PostStatus.REPORTED ) && CoCommentList.size() == 0) {
+                if ((c.getStatus() == PostStatus.INACTIVE ) && CoCommentList.size() == 0) {
                     continue;
                 }
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
-                List<UnivCoCommentDTO> coCommentDTO = CoCommentList.stream()
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) //11/25: 대댓글 삭제시 그냥 삭제.
-                        .map(cc -> new UnivCoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
+                List<CoCommentDTO> coCommentDTO = CoCommentList.stream()
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED)) //11/25: 대댓글 삭제시 그냥 삭제. //2/20: 신고된 댓글 표시
+                        .map(cc -> new CoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
                         .collect(Collectors.toList());
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
                 //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
                 //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
-                UnivCommentResponse univCommentResponse = new UnivCommentResponse(c, coCommentDTO, memberIdByJwt, univPost.getMember().getId());
+                CommentResponse univCommentResponse = new CommentResponse(c, coCommentDTO, memberIdByJwt, univPost.getMember().getId());
                 univCommentResponseList.add(univCommentResponse);
             }
             return univCommentResponseList;
@@ -436,8 +497,7 @@ public class PostService {
             throw new BaseException(POST_NOT_EXIST);
         }
 
-
-        if (memberIdByJwt != totalPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, totalPost.getMember().getId())) { // 2/17 핫픽스
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
@@ -468,7 +528,7 @@ public class PostService {
         if (univPost.getStatus().equals(PostStatus.INACTIVE) || univPost.getStatus().equals(PostStatus.REPORTED)) {
             throw new BaseException(REPORTED_DELETED_POST);
         }
-        if (memberIdByJwt != univPost.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, univPost.getMember().getId())) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
@@ -582,7 +642,7 @@ public class PostService {
      * 3.15 통합 게시물 좋아요 api + 인기 게시물 알림 기능
      */
     @Transactional
-    public LikeTotalPostResponse likesTotalPost(Long postIdx) throws BaseException {
+    public LikePostResponse likesTotalPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postIdx);
         if (totalpost == null) {
@@ -594,24 +654,6 @@ public class PostService {
 
         Member member = postRepository.findMemberbyId(memberIdByJwt);
         Member postMember = totalpost.getMember(); //유저 삭제 시 게시물 삭제 넣을 시 추후에 삭제가능 이 아니라 알림위해 남겨놓기
-//        Member postMember = postRepository.findMemberbyPostId(postIdx);
-//        if (member == null) { //해야할까?
-//            throw new BaseException(USER_NOT_EXIST);
-//        }
-
-//        //좋아요 중복 방지 - 1
-//        List<TotalPostLike> totalPostLikeList = member.getTotalPostLikes();
-//        for (TotalPostLike totalPostLike : totalPostLikeList) {
-//            if (totalPostLike.getTotalPost().getId() == postIdx) {
-//                throw new BaseException(DUPLICATE_LIKE);
-//            }
-//        }
-//        //좋아요 중복 방지 - 2
-//        boolean checkTotalIsLiked = postRepository.checkTotalIsLiked(postIdx, member.getId());
-//        if (checkTotalIsLiked) {
-//            throw new BaseException(DUPLICATE_LIKE);
-//        }
-
         TotalPostLike totalPostLike = TotalPostLike.likesTotalPost(totalpost, member);
         if (totalPostLike == null) {
             throw new BaseException(DUPLICATE_LIKE);
@@ -632,9 +674,7 @@ public class PostService {
                         postMember.getTotalNotifications().remove(0);
                     }
                 }
-
-                return new LikeTotalPostResponse(id, likeCount);
-
+                return new LikePostResponse(id, likeCount);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new BaseException(DATABASE_ERROR);
@@ -659,7 +699,7 @@ public class PostService {
      * 3.16 학교 게시물 좋아요 api
      */
     @Transactional
-    public LikeUnivPostResponse likesUnivPost(Long postIdx) throws BaseException {
+    public LikePostResponse likesUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
         if (univpost == null) {
@@ -674,22 +714,18 @@ public class PostService {
         if (member == null || postMember == null) { //해야할까?
             throw new BaseException(USER_NOT_EXIST);
         }
-
         //좋아요 중복 방지
         UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
         if (univPostLike == null) {
             throw new BaseException(DUPLICATE_LIKE);
         }
-
         else {
             try {
 //            UnivPostLike univPostLike = UnivPostLike.likesUnivPost(univpost, member);
                 Long id = postRepository.save(univPostLike);
                 //이게 persist가 되자마자 바로 univpost에서 좋아요 갯수가 동기화 되는지 확인 필요
                 int likeCount = univpost.getUnivPostLikes().size();
-
                 // 인기 게시물 알림 보내주기 조건:좋아요 5개
-
                 if (univpost.getUnivPostLikes().size() == 5) {
                     sendUnivPostNotification(univpost, postMember);
                     //알림 저장
@@ -699,9 +735,7 @@ public class PostService {
                         postMember.getUnivNotifications().remove(0);
                     }
                 }
-
-
-                return new LikeUnivPostResponse(id, likeCount);
+                return new LikePostResponse(id, likeCount);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new BaseException(DATABASE_ERROR);
@@ -761,7 +795,7 @@ public class PostService {
      * 3.19 통합 게시물 스크랩 api
      */
     @Transactional
-    public ScrapTotalPostResponse scrapTotalPost(Long postIdx) throws BaseException {
+    public ScrapPostResponse scrapTotalPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         TotalPost totalpost = postRepository.findTotalPostById(postIdx);
         if (totalpost.getStatus().equals(PostStatus.INACTIVE) || totalpost.getStatus().equals(PostStatus.REPORTED)) {
@@ -787,7 +821,7 @@ public class PostService {
 //                TotalPostScrap totalPostScrap = TotalPostScrap.scrapTotalPost(totalpost, member);
                 Long id = postRepository.save(totalPostScrap);
                 int scrapCount = totalpost.getTotalPostScraps().size();
-                return new ScrapTotalPostResponse(id, scrapCount);
+                return new ScrapPostResponse(id, scrapCount);
             } catch (Exception e) {
                 throw new BaseException(DATABASE_ERROR);
             }
@@ -799,7 +833,7 @@ public class PostService {
      * 3.20 학교 게시물 스크랩 api
      */
     @Transactional
-    public ScrapUnivPostResponse scrapUnivPost(Long postIdx) throws BaseException {
+    public ScrapPostResponse scrapUnivPost(Long postIdx) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         UnivPost univpost = postRepository.findUnivPostById(postIdx);
         if (univpost.getStatus().equals(PostStatus.INACTIVE) || univpost.getStatus().equals(PostStatus.REPORTED)) {
@@ -824,7 +858,7 @@ public class PostService {
 //                UnivPostScrap univPostScrap = UnivPostScrap.scrapUnivPost(univpost, member);
                 Long id = postRepository.save(univPostScrap);
                 int scrapCount = univpost.getUnivPostScraps().size();
-                return new ScrapUnivPostResponse(id, scrapCount);
+                return new ScrapPostResponse(id, scrapCount);
             } catch (Exception e) {
                 throw new BaseException(DATABASE_ERROR);
             }
@@ -1027,5 +1061,55 @@ public class PostService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public List<NotifiedContentResponse> listNotifiedTotalPost() {
+        List<TotalPost> reportedTotalPostList = postRepository.getReportedTotalPostList();
+        return reportedTotalPostList.stream()
+                .map(totalPost -> new NotifiedContentResponse(totalPost.getMember().getId().toString(), totalPost.getMember().getNickname(), totalPost.getId().toString(), totalPost.getTitle()))
+                .collect(Collectors.toList());
+    }
+
+    public List<NotifiedContentResponse> listNotifiedUnivPost() {
+        List<UnivPost> reportedUnivPostList = postRepository.getReportedUnivPostList();
+        return reportedUnivPostList.stream()
+                .map(univPost -> new NotifiedContentResponse(univPost.getMember().getId().toString(), univPost.getMember().getNickname(), univPost.getId().toString(), univPost.getTitle()))
+                .collect(Collectors.toList());
+    }
+
+    public List<NotifiedContentResponse> listNotifiedTotalComment() {
+        List<TotalComment> reportedTotalCommentList = postRepository.getReportedTotalCommentList();
+        return reportedTotalCommentList.stream()
+                .map(totalComment -> new NotifiedContentResponse(totalComment.getMember().getId().toString(), totalComment.getMember().getNickname(), totalComment.getId().toString(), totalComment.getContent()))
+                .collect(Collectors.toList());
+    }
+
+    public List<NotifiedContentResponse> listNotifiedUnivComment() {
+        List<UnivComment> reportedUnivCommentList = postRepository.getReportedUnivCommentList();
+        return reportedUnivCommentList.stream()
+                .map(univComment -> new NotifiedContentResponse(univComment.getMember().getId().toString(), univComment.getMember().getNickname(), univComment.getId().toString(), univComment.getContent()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void executeTotalPost(String contentId) {
+        TotalPost totalPost = postRepository.findTotalPostById(parseLong(contentId));
+        totalPost.modifyStatusAsReported();
+    }
+    @Transactional
+    public void executeUnivPost(String contentId) {
+        UnivPost univPost = postRepository.findUnivPostById(parseLong(contentId));
+        univPost.modifyStatusAsReported();
+    }
+    @Transactional
+    public void executeTotalComment(String contentId) {
+        TotalComment totalComment = postRepository.findTotalCommentById(parseLong(contentId));
+        totalComment.modifyStatusAsReported();
+    }
+
+    @Transactional
+    public void executeUnivComment(String contentId) {
+        UnivComment univComment = postRepository.findUnivCommentById(parseLong(contentId));
+        univComment.modifyStatusAsReported();
     }
 }
