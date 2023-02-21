@@ -2,7 +2,6 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.Total.TotalNotification;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -75,8 +74,16 @@ public class UnivComment {
     @Column(columnDefinition = "enum")
     private PostStatus status;
 
-    public void modifyReportStatus() {
+    public void modifyStatusAsReported() {
         this.status = PostStatus.REPORTED;
+    }
+
+    public void modifyStatusAsNotified() {
+        this.status = PostStatus.NOTIFIED;
+    }
+
+    public void modifyStatusAsDeleted() {
+        this.status = PostStatus.DELETED;
     }
 
 //    public void modifyInactiveStatus() {

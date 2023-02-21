@@ -2,7 +2,6 @@ package community.mingle.app.src.domain.Univ;
 
 import community.mingle.app.src.domain.*;
 
-import community.mingle.app.src.domain.Total.TotalBlind;
 import community.mingle.app.src.post.model.UpdatePostRequest;
 
 import community.mingle.app.src.post.model.CreatePostRequest;
@@ -131,8 +130,16 @@ public class UnivPost {
         this.status = PostStatus.ACTIVE;
     }
 
-    public void modifyReportStatus() {
+    public void modifyStatusAsReported() {
         this.status = PostStatus.REPORTED;
+    }
+
+    public void modifyStatusAsNotified() {
+        this.status = PostStatus.NOTIFIED;
+    }
+
+    public void modifyStatusAsDeleted() {
+        this.status = PostStatus.DELETED;
     }
 
     //== 비즈니스 로직 == //

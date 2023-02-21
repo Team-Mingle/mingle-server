@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static community.mingle.app.config.BaseResponseStatus.BLIND_NOT_EXIST;
-
 @Repository
 @RequiredArgsConstructor
 public class PostRepository {
@@ -65,7 +63,7 @@ public class PostRepository {
         return em.createQuery(
 //              "select p from UnivPost p join fetch p.member join fetch p.univName u where u.id = :univId AND p.createdAt > :localDateTime order by p.univPostLikes.size desc, p.createdAt desc", UnivPost.class)
 //              "select p from UnivPost p join fetch p.member m.univName.id = :univId p.createdAt BETWEEN :timestampStart AND current_timestamp ", UnivPost.class)
-                "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId and p.univPostLikes.size > 4 and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", UnivPost.class)
+                        "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId and p.univPostLikes.size > 4 and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", UnivPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
 //                .setParameter("localDateTime", (LocalDateTime.now().minusDays(3))) //최근 3일중 likeCount 로 정렬. 좋아요 수가 같으면 최신순으로 정렬.
                 .setParameter("univId", member.getUniv().getId()) //어디 학교인지
@@ -135,6 +133,7 @@ public class PostRepository {
 
     /**
      * postID 로 유저 찾기
+     *
      * @return
      */
 //    public Member findMemberbyPostId(Long postId) {
@@ -148,13 +147,11 @@ public class PostRepository {
 //        }
 ////        return em.find(Member.class, id);
 //    }
-
-
-
     public Long save(TotalPost totalPost) {
         em.persist(totalPost);
         return totalPost.getId();
     }
+
     public Long save(UnivPost univPost) {
         em.persist(univPost);
         return univPost.getId();
@@ -178,7 +175,7 @@ public class PostRepository {
     }
 
     public TotalPost findTotalPostById(Long id) {
-        return em.find(TotalPost.class,id);
+        return em.find(TotalPost.class, id);
     }
 
     public UnivPost findUnivPostById(Long id) {
@@ -236,7 +233,6 @@ public class PostRepository {
     }
 
 
-
     public void deleteTotalLike(Long postId, Long memberId) {
         TotalPostLike findLike = em.createQuery("select l from TotalPostLike l where l.totalPost.id = :postId and l.member.id = :memberId", TotalPostLike.class)
                 .setParameter("postId", postId)
@@ -291,7 +287,6 @@ public class PostRepository {
 //                .getSingleResult();
 //        return  totalPost;
 //    }
-
     public List<TotalComment> getTotalComments(Long id, Long memberIdByJwt) {
         List<TotalComment> totalCommentList = em.createQuery("select tc from TotalComment tc join tc.totalPost as tp where tp.id = :id and tc.parentCommentId is null and tc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tc.createdAt asc", TotalComment.class)
                 .setParameter("id", id)
@@ -334,7 +329,7 @@ public class PostRepository {
         }
     }
 
-    public boolean checkTotalIsScraped(Long postId, Long memberId){
+    public boolean checkTotalIsScraped(Long postId, Long memberId) {
         List<TotalPostScrap> totalPostScrapList = em.createQuery("select tps from TotalPostScrap tps join tps.totalPost tp join tps.member m where tp.id = :postId and m.id = :memberId", TotalPostScrap.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
@@ -348,6 +343,7 @@ public class PostRepository {
 
     /**
      * 3.9 대댓글 이슈 수정용
+     *
      * @param mentionId
      * @return
      */
@@ -379,7 +375,7 @@ public class PostRepository {
     }
 
 
-    public boolean checkUnivPostIsScraped(Long postId, Long memberId){
+    public boolean checkUnivPostIsScraped(Long postId, Long memberId) {
         List<UnivPostScrap> univPostScrapList = em.createQuery("select ups from UnivPostScrap ups join ups.univPost up join ups.member m where up.id = :postId and m.id = :memberId", UnivPostScrap.class)
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
@@ -395,8 +391,8 @@ public class PostRepository {
     //parentCommentId 가 null 인 댓글만 가져오기 (commentLike 는? )
     public List<UnivComment> getUnivComments(Long postId, Long memberIdByJwt) {
         List<UnivComment> univCommentList = em.createQuery("select uc from UnivComment uc join uc.univPost as p" +
-                " where p.id = :postId and uc.parentCommentId is null and uc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt)" +
-                " order by uc.createdAt asc ", UnivComment.class)
+                        " where p.id = :postId and uc.parentCommentId is null and uc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt)" +
+                        " order by uc.createdAt asc ", UnivComment.class)
                 .setParameter("postId", postId)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
@@ -407,8 +403,8 @@ public class PostRepository {
     //대댓글만 가져오기 --> 페이징?
     public List<UnivComment> getUnivCoComments(Long postId, Long memberIdByJwt) {
         List<UnivComment> univCoCommentList = em.createQuery("select uc from UnivComment uc join uc.univPost as p " +
-                " where p.id = :postId and uc.parentCommentId is not null and uc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) " +
-                " order by uc.createdAt asc", UnivComment.class)
+                        " where p.id = :postId and uc.parentCommentId is not null and uc.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) " +
+                        " order by uc.createdAt asc", UnivComment.class)
                 .setParameter("postId", postId)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
@@ -442,7 +438,6 @@ public class PostRepository {
     }
 
 
-
     /**
      * 3.10 mentionId로 댓글 찾기
      */
@@ -451,16 +446,16 @@ public class PostRepository {
     }
 
 
-
     /**
      * 전체 게시판 검색 기능
+     *
      * @param keyword
      * @return totalPosts
      */
     public List<TotalPost> searchTotalPostWithKeyword(String keyword, Long memberIdByJwt) {
 
-        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc" , TotalPost.class)
-                .setParameter("keyword",keyword)
+        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc", TotalPost.class)
+                .setParameter("keyword", keyword)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
@@ -471,6 +466,7 @@ public class PostRepository {
 
     /**
      * 학교 게시판 검색 기능
+     *
      * @param keyword
      * @return totalPosts
      */
@@ -534,8 +530,8 @@ public class PostRepository {
      * 게시물 숨기기
      */
     public Long saveBlind(TotalBlind totalBlind) {
-            em.persist(totalBlind);
-            return totalBlind.getId();
+        em.persist(totalBlind);
+        return totalBlind.getId();
     }
 
     public Long saveBlind(UnivBlind univBlind) {
@@ -581,5 +577,38 @@ public class PostRepository {
                 .setParameter("reportTypeNo", reportTypeNo)
                 .getSingleResult();
         return reportType.getType();
+    }
+
+
+    public List<TotalPost> getReportedTotalPostList(){
+    return em.createQuery("select tp from TotalPost tp where tp.status = :status", TotalPost.class)
+            .setParameter("status", PostStatus.NOTIFIED)
+            .getResultList();
+    }
+
+    public List<UnivPost> getReportedUnivPostList() {
+        return em.createQuery("select up from UnivPost up where up.status = :status", UnivPost.class)
+                .setParameter("status", PostStatus.NOTIFIED)
+                .getResultList();
+    }
+
+    public List<TotalComment> getReportedTotalCommentList() {
+        return em.createQuery("select tc from TotalComment tc where tc.status = :status", TotalComment.class)
+                .setParameter("status", PostStatus.NOTIFIED)
+                .getResultList();
+    }
+
+    public List<UnivComment> getReportedUnivCommentList() {
+        return em.createQuery("select uc from UnivComment uc where uc.status = :status", UnivComment.class)
+                .setParameter("status", PostStatus.NOTIFIED)
+                .getResultList();
+    }
+
+    public TotalComment findTotalCommentById(Long id) {
+        return em.find(TotalComment.class, id);
+    }
+
+    public UnivComment findUnivCommentById(Long id) {
+        return em.find(UnivComment.class, id);
     }
 }
