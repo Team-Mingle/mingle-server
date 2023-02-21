@@ -195,6 +195,10 @@ public class CommentService {
             throw new BaseException(POST_NOT_EXIST);
         }
 
+        if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.DELETED)) {
+            throw new BaseException(COMMENT_BLOCKED);
+        }
+
         //check parentCommentId, mentionId validity
         List<UnivComment> univComments = univPost.getUnivComments();
         boolean parentFlag = false;

@@ -1,10 +1,8 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
-import community.mingle.app.src.auth.model.PostLoginResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -280,8 +278,8 @@ public class MemberService {
             //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
             Long memberCount = memberRepository.countMemberReport(reportedMember.getId());
             //10번일 시 member의 status를 REPORTED로 변환
-            if (memberCount % 10 == 0) {
-                reportedMember.modifyReportStatus();
+            if (memberCount % 30 == 0) {
+                reportedMember.modifyStatusAsReported();
                 if (redisUtil.getData(reportedMember.getEmail())!=null) {
                     redisUtil.deleteData(reportedMember.getEmail());
                 }
@@ -293,7 +291,7 @@ public class MemberService {
             /** checkReportedPost */
             //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
             Long contentCount = memberRepository.countContentReport(reportRequest);
-            if (contentCount == 3) {
+            if (contentCount == 10) {
                 //total post
                 if (reportRequest.getTableType() == TableType.TotalPost) {
                     //신고 된 total post 찾음
@@ -301,7 +299,7 @@ public class MemberService {
                     //해당 total post에 딸린 total comments들도 찾음
                     int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
                     //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
-                    reportedTotalPost.modifyReportStatus();
+                    reportedTotalPost.modifyStatusAsNotified();
 //                for (TotalComment tc : reportedTotalComments) {
 //                    tc.modifyInactiveStatus();
 //                }
@@ -312,7 +310,7 @@ public class MemberService {
                     //신고 된 total comment를 찾음
                     TotalComment reportedTotalComment = memberRepository.findReportedTotalCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
-                    reportedTotalComment.modifyReportStatus();
+                    reportedTotalComment.modifyStatusAsNotified();
                 }
 
                 //univ post
@@ -322,7 +320,7 @@ public class MemberService {
                     //해당 univ post에 딸린 univ comments들도 찾음
                     int reportedUnivComments = memberRepository.findReportedUnivCommentsByPostId(reportRequest.getContentId());
                     //univ post는 REPORTED status로 univ comments는 INACTIVE status로 만들어 줌
-                    reportedUnivPost.modifyReportStatus();
+                    reportedUnivPost.modifyStatusAsNotified();
 //                for (UnivComment uc : reportedUnivComments) {
 //                    uc.modifyInactiveStatus();
 //                }
@@ -333,7 +331,7 @@ public class MemberService {
                     //신고 된 univ comment를 찾음
                     UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
-                    reportedUnivComment.modifyReportStatus();
+                    reportedUnivComment.modifyStatusAsNotified();
                 }
             }
             return reportDTO;

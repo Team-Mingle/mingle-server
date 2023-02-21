@@ -131,7 +131,7 @@ public enum BaseResponseStatus {
     COMMENT_NOT_EXIST(false, 4035, "댓글이 존재하지 않습니다."),
     FAILED_TO_CREATECOMMENT(false, 4040, "잘못된 parentCommentId / mentionId 입니다."),
     REPORTED_DELETED_COMMENT(false, 4050, "삭제되거나 신고된 댓글입니다."),
-
+    COMMENT_BLOCKED(false , 4051,"신고된 게시물에는 댓글을 달 수 없어요." ),
 
 
 

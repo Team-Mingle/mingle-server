@@ -96,8 +96,16 @@ public class TotalComment {
         this.status = PostStatus.INACTIVE;
     }
 
-    public void modifyReportStatus() {
+    public void modifyStatusAsReported() {
         this.status = PostStatus.REPORTED;
+    }
+
+    public void modifyStatusAsNotified() {
+        this.status = PostStatus.NOTIFIED;
+    }
+
+    public void modifyStatusAsDeleted() {
+        this.status = PostStatus.DELETED;
     }
 
     public void modifyInactiveStatus() {

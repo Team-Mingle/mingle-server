@@ -4,7 +4,6 @@ import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 
-import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.post.model.UpdatePostRequest;
 import community.mingle.app.src.post.model.CreatePostRequest;
 
@@ -126,10 +125,17 @@ public class TotalPost {
         this.status = PostStatus.INACTIVE;
     }
 
-    public void modifyReportStatus() {
+    public void modifyStatusAsReported() {
         this.status = PostStatus.REPORTED;
     }
 
+    public void modifyStatusAsNotified() {
+        this.status = PostStatus.NOTIFIED;
+    }
+
+    public void modifyStatusAsDeleted() {
+        this.status = PostStatus.DELETED;
+    }
     public void updateView() {
         if (viewCount == 0) {
             this.viewCount = 1;
