@@ -48,7 +48,7 @@ public class FirebaseCloudMessageService {
 
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder().token(targetToken)
-                        .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).build())
+                        .notification(FcmMessage.Notification.builder().title(title).body(body).image(null).click_action("PostActivity").build())
                         .data(FcmMessage.Data.builder().tableId(String.valueOf(tableType)).postId(String.valueOf(postId)).build())
                         .build())
                 .validate_only(false).build();
