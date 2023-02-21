@@ -29,6 +29,7 @@ public class FcmMessage {
         private String title;
         private String body;
         private String image;
+        private String click_action;
     }
 
     @Builder
