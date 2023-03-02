@@ -460,7 +460,7 @@ public class PostService {
 
                 //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
                 List<CoCommentDTO> coCommentDTO = CoCommentList.stream()
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED)) //11/25: 대댓글 삭제시 그냥 삭제. //2/20: 신고된 댓글 표시
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED) || cc.getStatus().equals(DELETED)) //11/25: 대댓글 삭제시 그냥 삭제. //2/20: 신고된 댓글 표시
                         .map(cc -> new CoCommentDTO(postRepository.findUnivComment(cc.getMentionId()), cc, memberIdByJwt, univPost.getMember().getId()))
                         .collect(Collectors.toList());
                 /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
