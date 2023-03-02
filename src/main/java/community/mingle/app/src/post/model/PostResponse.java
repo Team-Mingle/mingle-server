@@ -92,7 +92,7 @@ public class PostResponse {
         this.isBlinded = isBlinded;
         createdAt = convertToDateAndTime(u.getCreatedAt());
         this.viewCount =  u.getViewCount();
-        if(u.getIsFileAttached() == true) {
+        if(u.getIsFileAttached()) {
             List<UnivPostImage> univPostImages = u.getUnivPostImages();
             for (UnivPostImage pi : univPostImages) {
                 this.postImgUrl.add(pi.getImgUrl());
@@ -109,9 +109,9 @@ public class PostResponse {
      */
     public PostResponse(TotalPost totalPost, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded, String reportedReason) {
         this.postId = totalPost.getId();
-        this.title = totalPost.getTitle();
-        this.content = totalPost.getContent();
-        if (totalPost.getIsAnonymous() == true) {
+//        this.title = totalPost.getTitle();
+//        this.content = totalPost.getContent();
+        if (totalPost.getIsAnonymous()) {
             this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
@@ -120,21 +120,21 @@ public class PostResponse {
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
         /** 댓글 개수*/
-        List<TotalComment> commentList = totalPost.getTotalPostComments();
-        List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
-        this.commentCount = activeComments.size();
+//        List<TotalComment> commentList = totalPost.getTotalPostComments();
+//        List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
+//        this.commentCount = activeComments.size();
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
         this.isBlinded = isBlinded;
         this.createdAt = convertToDateAndTime(totalPost.getCreatedAt());
         this.viewCount = totalPost.getViewCount();
-        if (totalPost.getIsFileAttached() == true) {
-            List<TotalPostImage> totalPostImages = totalPost.getTotalPostImages();
-            for (TotalPostImage pi : totalPostImages) {
-                this.postImgUrl.add(pi.getImgUrl());
-            }
-        }
+//        if (totalPost.getIsFileAttached()) {
+//            List<TotalPostImage> totalPostImages = totalPost.getTotalPostImages();
+//            for (TotalPostImage pi : totalPostImages) {
+//                this.postImgUrl.add(pi.getImgUrl());
+//            }
+//        }
         this.isReported = totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED); // 2/17 추가
         if (totalPost.getStatus().equals(REPORTED)) {
             this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
@@ -148,9 +148,9 @@ public class PostResponse {
 
     public PostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded, String reportedReason) {
         postId = u.getId();
-        title = u.getTitle();
-        content = u.getContent();
-        if (u.getIsAnonymous() == true) {
+//        title = u.getTitle();
+//        content = u.getContent();
+        if (u.getIsAnonymous()) {
             this.nickname = "익명";
         } else {
             this.nickname = u.getMember().getNickname();
@@ -159,21 +159,21 @@ public class PostResponse {
         likeCount = u.getUnivPostLikes().size();
         scrapCount = u.getUnivPostScraps().size();
         /** 댓글 개수*/
-        List<UnivComment> commentList = u.getUnivComments();
-        List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
-        this.commentCount = activeComments.size();
+//        List<UnivComment> commentList = u.getUnivComments();
+//        List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
+//        this.commentCount = activeComments.size();
         this.isMyPost = isMyPost;
         this.isLiked = isLiked;
         this.isScraped = isScraped;
         this.isBlinded = isBlinded;
         createdAt = convertToDateAndTime(u.getCreatedAt());
         this.viewCount =  u.getViewCount();
-        if(u.getIsFileAttached() == true) {
-            List<UnivPostImage> univPostImages = u.getUnivPostImages();
-            for (UnivPostImage pi : univPostImages) {
-                this.postImgUrl.add(pi.getImgUrl());
-            }
-        }
+//        if(u.getIsFileAttached()) {
+//            List<UnivPostImage> univPostImages = u.getUnivPostImages();
+//            for (UnivPostImage pi : univPostImages) {
+//                this.postImgUrl.add(pi.getImgUrl());
+//            }
+//        }
         this.isReported = u.getStatus().equals(REPORTED) || u.getStatus().equals(DELETED); // 2/17 추가
         if (u.getStatus().equals(REPORTED)) {
             this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
