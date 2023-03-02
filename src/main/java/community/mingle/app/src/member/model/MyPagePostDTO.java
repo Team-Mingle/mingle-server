@@ -85,9 +85,11 @@ public class MyPagePostDTO {
         this.isReported = p.getStatus().equals(REPORTED) || p.getStatus().equals(DELETED); // 2/17 추가
         if (p.getStatus().equals(REPORTED)) {
             this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
+            this.contents = "";
         }
         if (p.getStatus().equals(DELETED)) {
             this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+            this.contents = "";
         }
     }
 
