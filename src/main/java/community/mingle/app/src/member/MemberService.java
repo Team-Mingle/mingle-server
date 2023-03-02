@@ -263,9 +263,12 @@ public class MemberService {
         //신고한 사람의 memberId를 가져옴 by jwt
         Long reporterMemberId = jwtService.getUserIdx();
         //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
-        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
-            throw new BaseException(ALREADY_REPORTED);
-        }
+        /**
+         * 3/2 신고 테스트 용 중복방지 임시 해제
+         */
+//        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId)) {
+//            throw new BaseException(ALREADY_REPORTED);
+//        }
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
@@ -278,7 +281,7 @@ public class MemberService {
             //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
             Long memberCount = memberRepository.countMemberReport(reportedMember.getId());
             //10번일 시 member의 status를 REPORTED로 변환
-            if (memberCount % 30 == 0) {
+            if (memberCount % 100 == 0) {
                 reportedMember.modifyStatusAsReported();
                 if (redisUtil.getData(reportedMember.getEmail())!=null) {
                     redisUtil.deleteData(reportedMember.getEmail());
