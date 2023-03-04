@@ -5,6 +5,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class MyPagePostDTO {
     private int likeCount;
     private int commentCount;
     private String createdAt;
+    private boolean isAdmin;
 
     public MyPagePostDTO (TotalPost p, Long memberId) {
         this.postId = p.getId();
@@ -59,6 +61,7 @@ public class MyPagePostDTO {
             this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
             this.contents = "";
         }
+        this.isAdmin = p.getMember().getRole().equals("ADMIN");
     }
 
     public MyPagePostDTO (UnivPost p, Long memberId) {
@@ -91,6 +94,7 @@ public class MyPagePostDTO {
             this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
             this.contents = "";
         }
+        this.isAdmin = p.getMember().getRole().equals("ADMIN");
     }
 
 }
