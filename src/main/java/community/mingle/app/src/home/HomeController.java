@@ -78,12 +78,12 @@ public class HomeController {
     @ApiResponses({
             @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<HomeBestTotalPostResponse>> getTotalBest() {
+    public BaseResponse<List<HomePostResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
             Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = homeService.findTotalPostWithMemberLikeComment();
-            List<HomeBestTotalPostResponse> result = totalPosts.stream()
-                    .map(m -> new HomeBestTotalPostResponse(m, memberId))
+            List<HomePostResponse> result = totalPosts.stream()
+                    .map(m -> new HomePostResponse(m, memberId))
                     .collect(Collectors.toList());
 
             return new BaseResponse<>(result);
@@ -101,12 +101,12 @@ public class HomeController {
     @ApiResponses({
             @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<HomeBestUnivPostResponse>> getUnivBest() {
+    public BaseResponse<List<HomePostResponse>> getUnivBest() {
         try {
             Long memberId = jwtService.getUserIdx();
             List<UnivPost> univPosts = homeService.findAllWithMemberLikeCommentCount();
-            List<HomeBestUnivPostResponse> result = univPosts.stream()
-                    .map(p -> new HomeBestUnivPostResponse(p, memberId))
+            List<HomePostResponse> result = univPosts.stream()
+                    .map(p -> new HomePostResponse(p, memberId))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 
@@ -124,12 +124,12 @@ public class HomeController {
     @ApiResponses({
             @ApiResponse(responseCode = "3029", description = "최근 올라온 게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<HomeRecentPostResponse>> getTotalRecentPosts() {
+    public BaseResponse<List<HomePostResponse>> getTotalRecentPosts() {
         try {
             Long memberId = jwtService.getUserIdx();
             List<TotalPost> totalPosts = homeService.findTotalRecentPosts();
-            List<HomeRecentPostResponse> result = totalPosts.stream()
-                    .map(m -> new HomeRecentPostResponse(m, memberId))
+            List<HomePostResponse> result = totalPosts.stream()
+                    .map(m -> new HomePostResponse(m, memberId))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
@@ -142,12 +142,12 @@ public class HomeController {
     @ApiResponses({
             @ApiResponse(responseCode = "3029", description = "최근 올라온 게시글이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
-    public BaseResponse<List<HomeRecentPostResponse>> getUnivRecentPosts() {
+    public BaseResponse<List<HomePostResponse>> getUnivRecentPosts() {
         try {
             Long memberId = jwtService.getUserIdx();
             List<UnivPost> univPosts = homeService.findUnivRecentPosts();
-            List<HomeRecentPostResponse> result = univPosts.stream()
-                    .map(m -> new HomeRecentPostResponse(m, memberId))
+            List<HomePostResponse> result = univPosts.stream()
+                    .map(m -> new HomePostResponse(m, memberId))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
         } catch (BaseException exception) {

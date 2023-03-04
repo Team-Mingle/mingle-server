@@ -32,11 +32,11 @@ public class MemberRepository {
      * 2.2 +
      */
     public List<TotalPost> findTotalPosts(Long memberIdByJwt, Long postId) {
-        List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) AND p.id < :postId order by p.createdAt desc", TotalPost.class)
+        List<TotalPost> resultList = em.createQuery("select p from TotalPost p join p.member m where p.status <> :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) AND p.id < :postId order by p.createdAt desc", TotalPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
-//                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
@@ -46,11 +46,11 @@ public class MemberRepository {
      * 2.3 +
      */
     public List<UnivPost> findUnivPosts(Long memberIdByJwt, Long postId) {
-        List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+        List<UnivPost> resultList = em.createQuery("select p from UnivPost p join p.member m where p.status <> :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
-                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
@@ -60,7 +60,8 @@ public class MemberRepository {
      * 2.4
      */
     public List<TotalPost> findTotalComments(Long memberIdByJwt, Long postId) {
-        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where c.status = :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by c.createdAt desc ", TotalPost.class)
+        List<TotalPost> resultList = em.createQuery("select distinct p from TotalComment c join c.member m join c.totalPost p where p.status <> :status and c.status = :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by c.createdAt desc ", TotalPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
@@ -75,7 +76,8 @@ public class MemberRepository {
      * 2.5
      */
     public List<UnivPost> findUnivComments(Long memberIdByJwt, Long postId) {
-        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where c.status = :status and m.id = :id AND p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by c.createdAt desc ", UnivPost.class)
+        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where p.status <> :status and c.status = :status and m.id = :id AND p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by c.createdAt desc ", UnivPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
@@ -92,11 +94,11 @@ public class MemberRepository {
      */
     public List<UnivPost> findUnivScraps(Long memberIdByJwt, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join us.univPost p " +
-                        "where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                        "where  p.status <> :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
-//                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
@@ -108,11 +110,11 @@ public class MemberRepository {
      */
     public List<TotalPost> findTotalScraps(Long memberIdByJwt, Long postId) { // join fetch 안했을경우 : likeCount: size()
         List<TotalPost> resultList = em.createQuery("select p from TotalPostScrap ts join ts.member m join ts.totalPost p" +
-                        " where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", TotalPost.class)
+                        " where p.status <> :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", TotalPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
-//                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
@@ -125,11 +127,11 @@ public class MemberRepository {
      */
     public List<TotalPost> findTotalLikes(Long memberIdByJwt, Long postId) {
         List<TotalPost> resultList = em.createQuery("select p from TotalPostLike us join us.member m join us.totalPost p " +
-                        "where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", TotalPost.class)
+                        "where p.status <> :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", TotalPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
-//                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
@@ -141,11 +143,11 @@ public class MemberRepository {
      */
     public List<UnivPost> findUnivLikes(Long memberIdByJwt, Long postId) {
         List<UnivPost> resultList = em.createQuery("select p from UnivPostLike us join us.member m join us.univPost p " +
-                        "where m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                        "where p.status <> :status and m.id = :id and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
-//                .setParameter("status", PostStatus.ACTIVE)
                 .setMaxResults(50)
                 .getResultList();
         return resultList;
