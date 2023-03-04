@@ -50,7 +50,7 @@ public class CommentResponse {
             content = "삭제된 댓글입니다.";
             nickname = "(비공개됨)";
         } else if (totalComment.getStatus() == PostStatus.DELETED) {
-            content = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+            content = "운영규칙 위반에 따라 삭제된 글입니다.";
             nickname = "(비공개됨)";
         }else {
             content = totalComment.getContent();
@@ -112,7 +112,7 @@ public class CommentResponse {
             nickname = "(비공개됨)";
         }
         else if (c.getStatus() == PostStatus.DELETED) {
-            content = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+            content = "운영규칙 위반에 따라 삭제된 글입니다.";
             nickname = "(비공개됨)";
         } else {
             content = c.getContent();

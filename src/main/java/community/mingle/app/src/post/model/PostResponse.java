@@ -141,8 +141,8 @@ public class PostResponse {
             this.content = "사유: " + reportedReason;
         }
         if (totalPost.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
-            this.content = "사유 백오피스 반영 TBD ";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
+            this.content = "";
         }
     }
 
@@ -180,8 +180,8 @@ public class PostResponse {
             this.content = "사유: " + reportedReason;
         }
         if (u.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
-            this.content = "사유 백오피스 반영 TBD ";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
+            this.content = "";
         }
     }
 }

@@ -57,7 +57,7 @@ public class PostListDTO {
             this.contents = "";
         }
         if (totalPost.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
@@ -96,7 +96,7 @@ public class PostListDTO {
             this.contents = "";
         }
         if (univPost.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 운영진에 의해 삭제된 글입니다.";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
