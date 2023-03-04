@@ -345,9 +345,12 @@ public class PostService {
         if (totalPost == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (totalPost.getStatus().equals(PostStatus.REPORTED) || totalPost.getStatus().equals(PostStatus.INACTIVE)) {
-            throw new BaseException(REPORTED_DELETED_POST);
+        if (totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED)) {
+            return new ArrayList<>();
         }
+//        if (totalPost.getStatus().equals(PostStatus.REPORTED) || totalPost.getStatus().equals(PostStatus.INACTIVE)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
         Long memberIdByJwt = jwtService.getUserIdx();
         try {
             List<TotalComment> totalCommentList = postRepository.getTotalComments(id, memberIdByJwt);
@@ -356,7 +359,7 @@ public class PostService {
             for (TotalComment tc : totalCommentList) {
                 List<TotalComment> coComments = totalCocommentList.stream()
                         .filter(obj -> tc.getId().equals(obj.getParentCommentId()))
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE))
+//                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE))
                         .collect(Collectors.toList());
 
                 //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제 // 2/20 추가: 유저가 직접 삭제한 댓글만 표시하지 않기
@@ -364,7 +367,7 @@ public class PostService {
                     continue;
                 }
                 List<CoCommentDTO> coCommentDtos = coComments.stream()
-                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED)) //11/25: 대댓글 삭제시 그냥 삭제. 2/20: 신고된 댓글 표시
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED) || cc.getStatus().equals(DELETED)) //11/25: 대댓글 삭제시 그냥 삭제. 2/20: 신고된 댓글 표시
                         .map(p -> new CoCommentDTO(p, postRepository.findTotalComment(p.getMentionId()), memberIdByJwt, totalPost.getMember().getId()))
                         .collect(Collectors.toList());
 
@@ -432,6 +435,9 @@ public class PostService {
         UnivPost univPost = postRepository.checkUnivPostDisabled(postId);
         if (univPost == null) {
             throw new BaseException(POST_NOT_EXIST);
+        }
+        if (univPost.getStatus().equals(REPORTED) || univPost.getStatus().equals(DELETED)) {
+            return new ArrayList<>();
         }
 //        if (univPost.getStatus().equals(PostStatus.REPORTED) || univPost.getStatus().equals(PostStatus.INACTIVE)) {
 //            throw new BaseException(REPORTED_DELETED_POST);
