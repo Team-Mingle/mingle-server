@@ -27,6 +27,7 @@ public class CoCommentDTO {
     private boolean isCommentDeleted;
     private boolean isCommentReported;
     private String createdAt;
+    private boolean isAdmin;
 
 
     //total
@@ -100,7 +101,7 @@ public class CoCommentDTO {
             isCommentReported = false;
         }
         this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
-
+        this.isAdmin = coComment.getMember().getRole().equals("ADMIN");
     }
 
 
@@ -180,6 +181,7 @@ public class CoCommentDTO {
         }
 
         this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
+        this.isAdmin = coComment.getMember().getRole().equals("ADMIN");
 
     }
 }

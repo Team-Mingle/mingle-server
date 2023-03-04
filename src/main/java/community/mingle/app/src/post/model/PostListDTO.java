@@ -5,6 +5,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class PostListDTO {
     private int likeCount;
     private int commentCount;
     private String createdAt;
+    private boolean isAdmin;
 
 
     public PostListDTO(TotalPost totalPost, Long memberId) {
@@ -61,6 +63,7 @@ public class PostListDTO {
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
+        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
     }
 
 
@@ -100,6 +103,7 @@ public class PostListDTO {
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
+        this.isAdmin = univPost.getMember().getRole().equals("ADMIN");
     }
 
 }

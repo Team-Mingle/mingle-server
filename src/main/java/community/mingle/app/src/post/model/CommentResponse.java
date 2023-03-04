@@ -26,6 +26,7 @@ public class CommentResponse {
     private boolean isCommentReported;
     private String createdAt;
     private List<CoCommentDTO> coCommentsList;
+    private boolean isAdmin;
 
 
     //total
@@ -85,6 +86,7 @@ public class CommentResponse {
 
         createdAt = convertToDateAndTime(totalComment.getCreatedAt());
         coCommentsList = totalCoCommentDTOList;
+        isAdmin = totalComment.getMember().getRole().equals("ADMIN");
     }
 
 
@@ -153,5 +155,6 @@ public class CommentResponse {
         }
         createdAt = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;
+        isAdmin = c.getMember().getRole().equals("ADMIN");
     }
 }

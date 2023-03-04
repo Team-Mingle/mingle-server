@@ -7,6 +7,7 @@ import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostImage;
+import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class PostResponse {
     private String createdAt;
     private final int viewCount;
     private List<String> postImgUrl = new ArrayList<>();
+    private boolean isAdmin;
 
 
 
@@ -68,6 +70,7 @@ public class PostResponse {
             }
         }
         this.isReported = false;
+        this.isAdmin = totalPost.getMember().getRole().equals(UserStatus.ADMIN);
     }
 
     public PostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded) {
@@ -99,6 +102,7 @@ public class PostResponse {
             }
         }
         this.isReported = false; // 2/17 추가
+        this.isAdmin = u.getMember().getRole().equals(UserStatus.ADMIN);
     }
 
 
@@ -144,6 +148,7 @@ public class PostResponse {
             this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.content = "";
         }
+        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
     }
 
     public PostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded, String reportedReason) {
@@ -183,5 +188,6 @@ public class PostResponse {
             this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.content = "";
         }
+        this.isAdmin = u.getMember().getRole().equals("ADMIN");
     }
 }
