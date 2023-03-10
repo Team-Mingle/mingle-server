@@ -264,11 +264,11 @@ public class MemberService {
         Long reporterMemberId = jwtService.getUserIdx();
         //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
         /**
-         * 3/2 신고 테스트 용 중복방지 임시 해제
+         * 3/2 신고 테스트 용 중복방지 임시 해제 -> 3/11 prod 배포위해 다시 추가
          */
-//        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId)) {
-//            throw new BaseException(ALREADY_REPORTED);
-//        }
+        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId)) {
+            throw new BaseException(ALREADY_REPORTED);
+        }
 
         try {
             //신고 엔티티의 createReport를 통해 report생성 후 DB에 저장
@@ -280,21 +280,21 @@ public class MemberService {
             /**checkReportMember*/
             //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
             Long memberCount = memberRepository.countMemberReport(reportedMember.getId());
-            //10번일 시 member의 status를 REPORTED로 변환
+            //10번일 시 member의 status를 REPORTED로 변환 -> 수정 필요
             if (memberCount % 100 == 0) {
                 reportedMember.modifyStatusAsReported();
                 if (redisUtil.getData(reportedMember.getEmail())!=null) {
                     redisUtil.deleteData(reportedMember.getEmail());
                 }
                 if (reportedMember.getFcmToken() != null) {
-                    fcmService.sendMessageTo(reportedMember.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
+                    fcmService.sendMessageTo(reportedMember.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다.");
                 }
             }
 
             /** checkReportedPost */
             //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
             Long contentCount = memberRepository.countContentReport(reportRequest);
-            if (contentCount == 2) { //임시 테스트 2개로 변경
+            if (contentCount == 3) {
                 //total post
                 if (reportRequest.getTableType() == TableType.TotalPost) {
                     //신고 된 total post 찾음
