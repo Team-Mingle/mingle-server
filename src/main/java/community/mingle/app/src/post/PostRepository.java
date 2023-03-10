@@ -565,18 +565,19 @@ public class PostRepository {
     /**
      * 신고 가이드라인 추가
      */
-    public List<Report> findReportedPostReason(Long postId) {
-        List<Report> reportList = em.createQuery("select r from Report r where r.contentId = :contentId", Report.class)
+    public List<Report> findReportedPostReason(Long postId, TableType tableType) {
+        List<Report> reportList = em.createQuery("select r from Report r where r.contentId = :contentId and r.tableId = :tableType", Report.class) // 4개 type 중 골라야하지 않나..?
                 .setParameter("contentId", postId)
+                .setParameter("tableType", tableType)
                 .getResultList();
         return reportList;
     }
 
-    public String findReportedTypeReason(int reportTypeNo) {
-        ReportType reportType = em.createQuery("select rt from ReportType rt where rt.id = :reportTypeNo", ReportType.class)
+    public List<ReportType> findReportedTypeReason(int reportTypeNo) {
+        List<ReportType> reportType = em.createQuery("select rt from ReportType rt where rt.id = :reportTypeNo", ReportType.class)
                 .setParameter("reportTypeNo", reportTypeNo)
-                .getSingleResult();
-        return reportType.getType();
+                .getResultList();
+        return reportType;
     }
 
 

@@ -84,8 +84,8 @@ public class PostService {
     /**
      * 신고된 게시물 처리
      */
-    public String findReportedPostReason(Long postId)  {
-        List<Report> reportedPostReason = postRepository.findReportedPostReason(postId);
+    public String findReportedPostReason(Long postId, TableType tableType)  {
+        List<Report> reportedPostReason = postRepository.findReportedPostReason(postId, tableType);
         int mode = 0;
         int maxCount = 0;
 
@@ -105,8 +105,13 @@ public class PostService {
                     maxCount = count;
                 }
             }
-            String reason = postRepository.findReportedTypeReason(mode);
+            List<ReportType> reportedTypeReason = postRepository.findReportedTypeReason(mode); //null 체크 추가
+            if (reportedTypeReason == null) {
+
+            }
+            String reason = (reportedTypeReason == null) ? reportedTypeReason.get(0).getType() : "욕설/인신공격/혐오/비하"; //null check
             return reason;
+//            return reportedTypeReason.get(0).getType();
         }
     }
 
@@ -313,13 +318,13 @@ public class PostService {
             if (Objects.equals(totalPost.getMember().getId(), memberIdByJwt)) {
                 isMyPost = true;
             }
-            if (postRepository.checkTotalIsLiked(totalPost.getId(), memberIdByJwt) == true) {
+            if (postRepository.checkTotalIsLiked(totalPost.getId(), memberIdByJwt)) {
                 isLiked = true;
             }
-            if (postRepository.checkTotalIsScraped(totalPost.getId(), memberIdByJwt) == true) {
+            if (postRepository.checkTotalIsScraped(totalPost.getId(), memberIdByJwt)) {
                 isScraped = true;
             }
-            if (postRepository.checkTotalPostIsBlinded(totalPost.getId(), memberIdByJwt) == true) {
+            if (postRepository.checkTotalPostIsBlinded(totalPost.getId(), memberIdByJwt)) {
                 isBlinded = true;
             }
         } catch (Exception e) {
@@ -327,9 +332,11 @@ public class PostService {
         }
         /*** 게시물 신고 추가 */
         PostResponse totalPostResponse;
-        if (totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED)) {
-            String reportedReason = findReportedPostReason(totalPost.getId());
+        if (totalPost.getStatus().equals(REPORTED)) { //reported 일때만 reason 찾기
+            String reportedReason = findReportedPostReason(totalPost.getId(), TableType.TotalPost);
             totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded, reportedReason);
+        }else if (totalPost.getStatus().equals(DELETED)) {
+            totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded, "");
         } else {
             totalPostResponse = new PostResponse(totalPost, isMyPost, isLiked, isScraped, isBlinded);
         }
@@ -402,13 +409,13 @@ public class PostService {
             if (Objects.equals(univPost.getMember().getId(), memberIdByJwt)) {
                 isMyPost = true;
             }
-            if (postRepository.checkUnivPostIsLiked(postId, memberIdByJwt) == true) {
+            if (postRepository.checkUnivPostIsLiked(postId, memberIdByJwt)) {
                 isLiked = true;
             }
-            if (postRepository.checkUnivPostIsScraped(postId, memberIdByJwt) == true) {
+            if (postRepository.checkUnivPostIsScraped(postId, memberIdByJwt)) {
                 isScraped = true;
             }
-            if (postRepository.checkUnivPostIsBlinded(postId, memberIdByJwt) == true){
+            if (postRepository.checkUnivPostIsBlinded(postId, memberIdByJwt)){
                 isBlinded = true;
             }
         } catch (Exception e) {
@@ -417,9 +424,11 @@ public class PostService {
         }
         /*** 게시물 신고 추가 */
         PostResponse univPostResponse;
-        if (univPost.getStatus().equals(REPORTED) || univPost.getStatus().equals(DELETED)) {
-            String reportedReason = findReportedPostReason(univPost.getId());
+        if (univPost.getStatus().equals(REPORTED)) {
+            String reportedReason = findReportedPostReason(univPost.getId(),TableType.UnivPost);
             univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded, reportedReason);
+        } else if (univPost.getStatus().equals(DELETED)) {
+            univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded, "");
         } else {
             univPostResponse = new PostResponse(univPost, isMyPost, isLiked, isScraped, isBlinded);
         }
