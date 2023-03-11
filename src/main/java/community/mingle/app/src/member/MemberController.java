@@ -5,6 +5,7 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.auth.model.PostLoginResponse;
+import community.mingle.app.src.domain.ReportNotification;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.UnivName;
@@ -334,6 +335,7 @@ public class MemberController {
         try {
             List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
             List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
+            List<ReportNotification> reportNotificationList = memberService.getReportNotifications();
 
             List<NotificationDTO> result_1 = totalNotificationList.stream()
                     .map(t-> new NotificationDTO(t))
@@ -343,7 +345,13 @@ public class MemberController {
                     .map(n-> new NotificationDTO(n))
                     .collect(Collectors.toList());
 
-            List<NotificationDTO> final_result = Stream.concat(result_1.stream(), result_2.stream())
+            List<NotificationDTO> result_3 = reportNotificationList.stream()
+                    .map(r-> new NotificationDTO(r))
+                    .collect(Collectors.toList());
+
+            List<NotificationDTO> result_4 = Stream.concat(result_1.stream(), result_2.stream())
+                    .collect(Collectors.toList());
+            List<NotificationDTO> final_result = Stream.concat(result_4.stream(), result_3.stream())
                     .collect(Collectors.toList());
 
             List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
@@ -388,5 +396,7 @@ public class MemberController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+
 
 }

@@ -1,10 +1,8 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
-import community.mingle.app.src.auth.model.PostLoginResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -265,7 +263,10 @@ public class MemberService {
         //신고한 사람의 memberId를 가져옴 by jwt
         Long reporterMemberId = jwtService.getUserIdx();
         //신고한 사람이 이미 해당 컨텐츠를 한 번 신고한 적 있는지 validation을 해 줌
-        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId) == true) {
+        /**
+         * 3/2 신고 테스트 용 중복방지 임시 해제 -> 3/11 prod 배포위해 다시 추가
+         */
+        if (memberRepository.isMultipleReport(reportRequest, reporterMemberId)) {
             throw new BaseException(ALREADY_REPORTED);
         }
 
@@ -279,21 +280,21 @@ public class MemberService {
             /**checkReportMember*/
             //신고 테이블에서 신고 당한 맴버가 몇 번이 있는지를 count한 후
             Long memberCount = memberRepository.countMemberReport(reportedMember.getId());
-            //10번일 시 member의 status를 REPORTED로 변환
-            if (memberCount % 30 == 0) {
-                reportedMember.modifyReportStatus();
+            //10번일 시 member의 status를 REPORTED로 변환 -> 수정 필요
+            if (memberCount % 100 == 0) {
+                reportedMember.modifyStatusAsReported();
                 if (redisUtil.getData(reportedMember.getEmail())!=null) {
                     redisUtil.deleteData(reportedMember.getEmail());
                 }
                 if (reportedMember.getFcmToken() != null) {
-                    fcmService.sendMessageTo(reportedMember.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다 ");
+                    fcmService.sendMessageTo(reportedMember.getFcmToken(), "커뮤니티 이용제한 안내", "신고 누적으로 인해 로그아웃 될 예정입니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다.");
                 }
             }
 
             /** checkReportedPost */
             //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
             Long contentCount = memberRepository.countContentReport(reportRequest);
-            if (contentCount == 10) {
+            if (contentCount == 3) {
                 //total post
                 if (reportRequest.getTableType() == TableType.TotalPost) {
                     //신고 된 total post 찾음
@@ -301,7 +302,7 @@ public class MemberService {
                     //해당 total post에 딸린 total comments들도 찾음
                     int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
                     //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
-                    reportedTotalPost.modifyReportStatus();
+                    reportedTotalPost.modifyStatusAsNotified();
 //                for (TotalComment tc : reportedTotalComments) {
 //                    tc.modifyInactiveStatus();
 //                }
@@ -312,7 +313,7 @@ public class MemberService {
                     //신고 된 total comment를 찾음
                     TotalComment reportedTotalComment = memberRepository.findReportedTotalCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
-                    reportedTotalComment.modifyReportStatus();
+                    reportedTotalComment.modifyStatusAsNotified();
                 }
 
                 //univ post
@@ -322,7 +323,7 @@ public class MemberService {
                     //해당 univ post에 딸린 univ comments들도 찾음
                     int reportedUnivComments = memberRepository.findReportedUnivCommentsByPostId(reportRequest.getContentId());
                     //univ post는 REPORTED status로 univ comments는 INACTIVE status로 만들어 줌
-                    reportedUnivPost.modifyReportStatus();
+                    reportedUnivPost.modifyStatusAsNotified();
 //                for (UnivComment uc : reportedUnivComments) {
 //                    uc.modifyInactiveStatus();
 //                }
@@ -333,7 +334,7 @@ public class MemberService {
                     //신고 된 univ comment를 찾음
                     UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
-                    reportedUnivComment.modifyReportStatus();
+                    reportedUnivComment.modifyStatusAsNotified();
                 }
             }
             return reportDTO;
@@ -441,6 +442,16 @@ public class MemberService {
         Long userIdByJwt = jwtService.getUserIdx();
         try {
             List<UnivNotification> notificationDTO = memberRepository.getUnivNotification(userIdByJwt);
+            return notificationDTO;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<ReportNotification> getReportNotifications() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        try {
+            List<ReportNotification> notificationDTO = memberRepository.getReportNotification(userIdByJwt);
             return notificationDTO;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);

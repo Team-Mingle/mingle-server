@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+
+<div class="container">
+
+  <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+
+
+
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>UserId</th>
+        <th>User Nickname</th>
+        <th>Univ Comment Id</th>
+        <th>Univ Comment Content</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="item : ${listNotifiedUnivComment}">
+        <!--/*@thymesVar id="getUserId" type=""*/-->
+        <td th:text="${item.userId}"></td>
+        <td th:text="${item.nickname}"></td>
+<!--        <td><a th:href="@{${item.data}}">다운로드</a></td>-->
+        <td th:text="${item.contentId}"></td>
+        <td th:text="${item.title}"></td>
+        <td>
+          <button type="button" th:contentId="${item.contentId}" onclick="executeTotalPost(this.getAttribute('contentId'))">EXECUTE</button>
+        </td>
+        <!--                <td th:text="${item.data}"></td>-->
+
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div th:replace="fragments/footer :: footer"/>
+
+</div> <!-- /container -->
+
+</body>
+<script>
+  function cancel(id) {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "/orders/" + id + "/cancel");
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  function executeTotalPost(contentId) {
+    console.log(contentId)
+    fetch('/report-univcomment?contentId=' + encodeURIComponent(contentId), {
+      method: 'PATCH'
+    })
+            .then(response => {
+              if (response.ok) {
+                alert("성공했습니다")
+                location.reload();
+              } else {
+                alert("실패했습니다")
+              }
+            })
+            .catch(error => {
+              alert(error)
+            });
+  }
+</script>
+</html>

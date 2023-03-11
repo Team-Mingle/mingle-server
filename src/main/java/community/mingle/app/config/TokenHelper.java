@@ -69,7 +69,6 @@ public class TokenHelper {
         return new PrivateClaims(claims.get(MEMBER_ID, String.class), claims.get(ROLE_TYPES, String.class));
     }
 
-
     /**
      * validate ACCESS Token
      * doFilter 에서 쓰임

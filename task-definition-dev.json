@@ -1,9 +1,9 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:289449549176:task-definition/mingle-api-dev:1",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:289449549176:task-definition/mingle-api-dev2:2",
   "containerDefinitions": [
     {
       "name": "mingle-api-dev",
-      "image": "289449549176.dkr.ecr.ap-northeast-2.amazonaws.com/mingle-api:latest",
+      "image": "289449549176.dkr.ecr.ap-northeast-2.amazonaws.com/mingle-api-dev:latest",
       "cpu": 0,
       "links": [],
       "portMappings": [
@@ -31,7 +31,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-create-group": "true",
-          "awslogs-group": "/ecs/mingle-api-dev",
+          "awslogs-group": "/ecs/mingle-api-dev2",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
         },
@@ -40,11 +40,11 @@
       "systemControls": []
     }
   ],
-  "family": "mingle-api-dev",
+  "family": "mingle-api-dev2",
   "taskRoleArn": "arn:aws:iam::289449549176:role/ecsTaskExecutionRole",
   "executionRoleArn": "arn:aws:iam::289449549176:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
-  "revision": 1,
+  "revision": 2,
   "volumes": [],
   "status": "ACTIVE",
   "requiresAttributes": [
@@ -87,13 +87,13 @@
   "requiresCompatibilities": [
     "FARGATE"
   ],
-  "cpu": "1024",
-  "memory": "2048",
+  "cpu": "256",
+  "memory": "512",
   "runtimePlatform": {
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2022-11-22T14:21:31.225Z",
+  "registeredAt": "2023-01-07T14:10:42.909Z",
   "registeredBy": "arn:aws:iam::289449549176:root",
   "tags": [
     {
@@ -102,7 +102,7 @@
     },
     {
       "key": "ecs:taskDefinition:stackId",
-      "value": "arn:aws:cloudformation:ap-northeast-2:289449549176:stack/ECS-Console-V2-TaskDefinition-1fdacbaa-3540-4e04-a77a-b1f358961ee7/f35f1690-6a70-11ed-9e1b-067f2d4cc1e2"
+      "value": "arn:aws:cloudformation:ap-northeast-2:289449549176:stack/ECS-Console-V2-TaskDefinition-b5f90613-84be-4650-921f-886197adf6b7/0f1a3340-8e95-11ed-b4c2-0a04e74cf1fc"
     }
   ]
 }
