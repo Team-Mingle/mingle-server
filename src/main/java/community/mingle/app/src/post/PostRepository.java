@@ -612,4 +612,8 @@ public class PostRepository {
     public UnivComment findUnivCommentById(Long id) {
         return em.find(UnivComment.class, id);
     }
+
+    public void saveReportNotification(ReportNotification reportNotification) {
+        em.persist(reportNotification);
+    }
 }

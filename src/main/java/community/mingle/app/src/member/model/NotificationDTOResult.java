@@ -36,19 +36,31 @@ public class NotificationDTOResult {
     public NotificationDTOResult(NotificationDTO t) {
         this.notificationId= t.getNotificationId();
         if (t.getBoardType().equals(BoardType.광장)) {
-            this.postId = t.getTotalPost().getId();
-            if (t.getTotalComment().isPresent()) {
-                this.content = t.getTotalComment().get().getContent();//댓글
-            } else {
-                this.content = t.getTotalPost().getTitle(); //인기게시물
+            if (t.getReportedPostId() != null) {
+                this.postId = t.getReportedPostId();
+                this.content = t.getReportMessage();
+            }
+            else{
+                this.postId = t.getTotalPost().getId();
+                if (t.getTotalComment().isPresent()) {
+                    this.content = t.getTotalComment().get().getContent();//댓글
+                } else {
+                    this.content = t.getTotalPost().getTitle(); //인기게시물
+                }
             }
         }
         else if (t.getBoardType().equals(BoardType.잔디밭)) {
-            this.postId = t.getUnivPost().getId();
-            if (t.getUnivComment().isPresent()) { //댓글
-                this.content = t.getUnivComment().get().getContent();
-            } else {
-                this.content = t.getUnivPost().getTitle();   //인기게시물
+            if (t.getReportedPostId() != null) {
+                this.postId = t.getReportedPostId();
+                this.content = t.getReportMessage();
+            }
+            else{
+                this.postId = t.getUnivPost().getId();
+                if (t.getUnivComment().isPresent()) { //댓글
+                    this.content = t.getUnivComment().get().getContent();
+                } else {
+                    this.content = t.getUnivPost().getTitle();   //인기게시물
+                }
             }
         }
         this.notificationType= t.getNotificationType();

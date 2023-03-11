@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -56,7 +57,7 @@ public class BackOfficeController {
      * 신고 execute api
      */
     @PatchMapping("/report-totalpost")
-    public String executeTotalPost(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) {
+    public String executeTotalPost(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) throws IOException {
         postService.executeTotalPost(contentId);
         List<NotifiedContentResponse> listNotifiedTotalPost = postService.listNotifiedTotalPost();
         model.addAttribute("listNotifiedTotalPost", listNotifiedTotalPost);
@@ -64,7 +65,7 @@ public class BackOfficeController {
     }
 
     @PatchMapping("/report-univpost")
-    public String executeUnivPost(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) {
+    public String executeUnivPost(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) throws IOException{
         postService.executeUnivPost(contentId);
         List<NotifiedContentResponse> listNotifiedUnivPost = postService.listNotifiedUnivPost();
         model.addAttribute("listNotifiedTotalPost", listNotifiedUnivPost);
@@ -72,7 +73,7 @@ public class BackOfficeController {
     }
 
     @PatchMapping("/report-totalcomment")
-    public String executeTotalComment(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) {
+    public String executeTotalComment(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model)throws IOException {
         postService.executeTotalComment(contentId);
         List<NotifiedContentResponse> listNotifiedTotalComment = postService.listNotifiedTotalComment();
         model.addAttribute("listNotifiedTotalPost", listNotifiedTotalComment);
@@ -80,7 +81,7 @@ public class BackOfficeController {
     }
 
     @PatchMapping("/report-univcomment")
-    public String executeUnivComment(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) {
+    public String executeUnivComment(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) throws IOException{
         postService.executeUnivComment(contentId);
         List<NotifiedContentResponse> listNotifiedUnivComment = postService.listNotifiedUnivComment();
         model.addAttribute("listNotifiedTotalPost", listNotifiedUnivComment);

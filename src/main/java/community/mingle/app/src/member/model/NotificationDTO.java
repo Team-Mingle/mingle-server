@@ -3,6 +3,7 @@ package community.mingle.app.src.member.model;
 import community.mingle.app.src.domain.BoardType;
 import community.mingle.app.src.domain.CategoryType;
 import community.mingle.app.src.domain.NotificationType;
+import community.mingle.app.src.domain.ReportNotification;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -27,6 +28,8 @@ public class NotificationDTO { //noti //univnoti //totalnoti
     //post en
     private TotalPost totalPost;
     private UnivPost univPost;
+    private Long reportedPostId;
+    private String reportMessage;
     private int tableId;
     private Optional<UnivComment> univComment;
     private Optional<TotalComment> totalComment;
@@ -62,7 +65,19 @@ public class NotificationDTO { //noti //univnoti //totalnoti
         this.category = t.getCategory();
         this.isRead = t.getIsRead();
         this.createdAt = t.getCreatedAt();
+    }
 
+    public NotificationDTO(ReportNotification r) {
+        this.notificationId = r.getId();
+//        this.tableId = t.getTableId();
+        this.memberId = r.getMemberId();
+        this.reportedPostId = r.getPostId();
+        this.notificationType = r.getNotificationType();
+        this.boardType = r.getBoardType();
+        this.category = r.getCategoryType();
+        this.isRead = r.getIsRead();
+        this.createdAt = r.getCreatedAt();
+        this.reportMessage = "다른 사용자의 신고로 인해 삭제된 컨텐츠입니다.";
     }
 
 
