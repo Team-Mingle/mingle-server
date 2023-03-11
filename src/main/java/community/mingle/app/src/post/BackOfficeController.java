@@ -53,6 +53,17 @@ public class BackOfficeController {
         return "notifiedUnivCommentList";
     }
 
+
+    /**
+     * 신고 10번 이상 당한 유저 리스트 GET
+     */
+
+
+    /**
+     * 신고 10번 이상 당한 유저 숙청 PATCH
+     * 숙청 및 게시물, 댓글 다 INACTIVE 처리
+     */
+
     /**
      * 신고 execute api
      */
