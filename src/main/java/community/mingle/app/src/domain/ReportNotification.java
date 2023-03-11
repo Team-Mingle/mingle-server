@@ -36,12 +36,34 @@ public class ReportNotification {
     private Boolean isRead;
 
     @NotNull
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "board_type", nullable = false)
-    private String boardType;
+    private BoardType boardType;
 
     @NotNull
-    @Column(name = "created_at", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "notification_type", nullable = false)
+    private NotificationType notificationType;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private String categoryType;
+    @NotNull
+    @Column(columnDefinition = "enum" ,name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    public static ReportNotification saveReportNotification(Long memberId, PostStatus postStatus, Long postId, BoardType boardType, NotificationType notificationType, String categoryType) {
+        ReportNotification reportNotification = new ReportNotification();
+        reportNotification.memberId = memberId;
+        reportNotification.reportType = postStatus;
+        reportNotification.postId = postId;
+        reportNotification.isRead = false;
+        reportNotification.boardType = boardType;
+        reportNotification.createdAt = LocalDateTime.now();
+        reportNotification.notificationType = notificationType;
+        reportNotification.categoryType = categoryType;
+        return reportNotification;
+    }
 
 }
