@@ -294,7 +294,7 @@ public class MemberService {
             /** checkReportedPost */
             //신고 테이블에서 이번에 신고된 컨텐츠와 같은 tableId와 contentId를 가지고 있는 컨텐츠를 count한 후 3번 이상일 시
             Long contentCount = memberRepository.countContentReport(reportRequest);
-            if (contentCount == 3) {
+            if (contentCount > 2) {
                 //total post
                 if (reportRequest.getTableType() == TableType.TotalPost) {
                     //신고 된 total post 찾음
