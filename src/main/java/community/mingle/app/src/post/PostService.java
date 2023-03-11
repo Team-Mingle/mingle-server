@@ -1110,7 +1110,7 @@ public class PostService {
     public void executeTotalPost(String contentId) throws IOException {
         TotalPost totalPost = postRepository.findTotalPostById(parseLong(contentId));
         totalPost.modifyStatusAsReported();
-        ReportNotification reportNotification = ReportNotification.saveReportNotification(totalPost.getMember().getId(), REPORTED, totalPost.getId(), BoardType.광장, NotificationType.게시물, totalPost.getCategory().getName());
+        ReportNotification reportNotification = ReportNotification.saveReportNotification(totalPost.getMember().getId(), REPORTED, totalPost.getId(), BoardType.광장, NotificationType.게시물, CategoryType.valueOf(totalPost.getCategory().getName()));
         postRepository.saveReportNotification(reportNotification);
         String title = "광장 게시글 차단";
         String body = "다른 사용자들의 신고에 의해 글이 삭제되었습니다.";
@@ -1120,7 +1120,7 @@ public class PostService {
     public void executeUnivPost(String contentId) throws IOException {
         UnivPost univPost = postRepository.findUnivPostById(parseLong(contentId));
         univPost.modifyStatusAsReported();
-        ReportNotification reportNotification = ReportNotification.saveReportNotification(univPost.getMember().getId(), REPORTED, univPost.getId(), BoardType.잔디밭, NotificationType.게시물, univPost.getCategory().getName());
+        ReportNotification reportNotification = ReportNotification.saveReportNotification(univPost.getMember().getId(), REPORTED, univPost.getId(), BoardType.잔디밭, NotificationType.게시물, CategoryType.valueOf(univPost.getCategory().getName()));
         postRepository.saveReportNotification(reportNotification);
         String title = "잔디밭 게시글 차단";
         String body = "다른 사용자들의 신고에 의해 글이 삭제되었습니다.";
@@ -1130,7 +1130,7 @@ public class PostService {
     public void executeTotalComment(String contentId) throws IOException {
         TotalComment totalComment = postRepository.findTotalCommentById(parseLong(contentId));
         totalComment.modifyStatusAsReported();
-        ReportNotification reportNotification = ReportNotification.saveReportNotification(totalComment.getMember().getId(), REPORTED, totalComment.getId(), BoardType.광장, NotificationType.댓글, totalComment.getTotalPost().getCategory().getName());
+        ReportNotification reportNotification = ReportNotification.saveReportNotification(totalComment.getMember().getId(), REPORTED, totalComment.getId(), BoardType.광장, NotificationType.댓글, CategoryType.valueOf(totalComment.getTotalPost().getCategory().getName()));
         postRepository.saveReportNotification(reportNotification);
         String title = "광장 댓글 차단";
         String body = "다른 사용자들의 신고에 의해 글이 삭제되었습니다.";
@@ -1141,7 +1141,7 @@ public class PostService {
     public void executeUnivComment(String contentId) throws IOException {
         UnivComment univComment = postRepository.findUnivCommentById(parseLong(contentId));
         univComment.modifyStatusAsReported();
-        ReportNotification reportNotification = ReportNotification.saveReportNotification(univComment.getMember().getId(), REPORTED, univComment.getId(), BoardType.잔디밭, NotificationType.댓글, univComment.getUnivPost().getCategory().getName());
+        ReportNotification reportNotification = ReportNotification.saveReportNotification(univComment.getMember().getId(), REPORTED, univComment.getId(), BoardType.잔디밭, NotificationType.댓글, CategoryType.valueOf(univComment.getUnivPost().getCategory().getName()));
         postRepository.saveReportNotification(reportNotification);
         String title = "잔디밭 댓글 차단";
         String body = "다른 사용자들의 신고에 의해 글이 삭제되었습니다.";

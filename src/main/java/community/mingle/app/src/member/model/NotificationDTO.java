@@ -74,7 +74,7 @@ public class NotificationDTO { //noti //univnoti //totalnoti
         this.reportedPostId = r.getPostId();
         this.notificationType = r.getNotificationType();
         this.boardType = r.getBoardType();
-        this.category = CategoryType.valueOf(r.getCategoryType());
+        this.category = r.getCategoryType();
         this.isRead = r.getIsRead();
         this.createdAt = r.getCreatedAt();
         this.reportMessage = "다른 사용자의 신고로 인해 삭제된 컨텐츠입니다.";
