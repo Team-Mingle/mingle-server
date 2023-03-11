@@ -3,6 +3,7 @@ package community.mingle.app.src.member;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Report;
+import community.mingle.app.src.domain.ReportNotification;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.member.model.*;
@@ -281,6 +282,13 @@ public class MemberRepository {
         return resultList;
     }
 
+    public List<ReportNotification> getReportNotification(Long userIdByJwt) {
+        List<ReportNotification> resultList = em.createQuery("select r from ReportNotification r where r.memberId = :userIdByJwt order by r.createdAt desc", ReportNotification.class)
+                .setParameter("userIdByJwt",userIdByJwt)
+                .setMaxResults(20)
+                .getResultList();
+        return resultList;
+    }
 
 
     /**알림 읽음 여부**/

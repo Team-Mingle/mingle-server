@@ -448,6 +448,16 @@ public class MemberService {
         }
     }
 
+    public List<ReportNotification> getReportNotifications() throws BaseException {
+        Long userIdByJwt = jwtService.getUserIdx();
+        try {
+            List<ReportNotification> notificationDTO = memberRepository.getReportNotification(userIdByJwt);
+            return notificationDTO;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     /**
      * 2.13 알림 읽기 API
      */
