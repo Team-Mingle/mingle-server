@@ -7,6 +7,7 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Policy;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.src.post.PostService;
 import community.mingle.app.utils.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import community.mingle.app.utils.JwtService;
@@ -48,6 +49,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final RedisService redisService;
     private final RedisTemplate redisTemplate;
+    private final PostService postService;
 
 
     /**
@@ -419,6 +421,10 @@ public class AuthController {
         }
     }
 
+    @PatchMapping("/report-member")
+    public void executeMember(@RequestParam Long memberId) throws IOException {
+        postService.executeMember(memberId);
+    }
 
 }
 

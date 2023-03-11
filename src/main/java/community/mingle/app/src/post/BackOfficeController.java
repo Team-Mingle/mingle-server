@@ -2,6 +2,7 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.src.post.model.NotifiedContentRequest;
 import community.mingle.app.src.post.model.NotifiedContentResponse;
+import community.mingle.app.src.post.model.NotifiedMemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,11 +54,25 @@ public class BackOfficeController {
         return "notifiedUnivCommentList";
     }
 
+
+    /**
+     * 신고 10번 이상 당한 유저 리스트 GET
+     */
+
+
+    /**
+     * 신고 10번 이상 당한 유저 숙청 PATCH
+     * 숙청 및 게시물, 댓글 다 INACTIVE 처리
+     */
+
     /**
      * 신고 execute api
      */
+
+
     @PatchMapping("/report-totalpost")
     public String executeTotalPost(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) throws IOException {
+
         postService.executeTotalPost(contentId);
         List<NotifiedContentResponse> listNotifiedTotalPost = postService.listNotifiedTotalPost();
         model.addAttribute("listNotifiedTotalPost", listNotifiedTotalPost);

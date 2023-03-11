@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/ping").permitAll()
-                .antMatchers(HttpMethod.GET, "/post/notified-totalpost").permitAll()
+                .antMatchers(HttpMethod.GET, "/post/report-member").permitAll()
 //                .antMatchers(HttpMethod.POST, "/auth/logout").access("@memberGuard.check()")
                 .antMatchers(HttpMethod.PATCH, "/auth/fcmtoken").access("@memberGuard.check()")
                 .antMatchers("/post/**").access("@memberGuard.check()")
