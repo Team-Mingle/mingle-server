@@ -37,23 +37,23 @@ public class ReportNotification {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "board_type", nullable = false)
+    @Column(columnDefinition = "enum", name = "board_type", nullable = false)
     private BoardType boardType;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "notification_type", nullable = false)
+    @Column(columnDefinition = "enum", name = "notification_type", nullable = false)
     private NotificationType notificationType;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "category", nullable = false)
-    private String categoryType;
+    @Column(columnDefinition = "enum", name = "category", nullable = false)
+    private CategoryType categoryType;
     @NotNull
-    @Column(columnDefinition = "enum" ,name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    public static ReportNotification saveReportNotification(Long memberId, PostStatus postStatus, Long postId, BoardType boardType, NotificationType notificationType, String categoryType) {
+    public static ReportNotification saveReportNotification(Long memberId, PostStatus postStatus, Long postId, BoardType boardType, NotificationType notificationType, CategoryType categoryType) {
         ReportNotification reportNotification = new ReportNotification();
         reportNotification.memberId = memberId;
         reportNotification.reportType = postStatus;
