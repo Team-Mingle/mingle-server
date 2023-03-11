@@ -76,9 +76,9 @@ public class MemberRepository {
      * 2.5
      */
     public List<UnivPost> findUnivComments(Long memberIdByJwt, Long postId) {
-        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where p.status <> :status and c.status = :status and m.id = :id AND p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by c.createdAt desc ", UnivPost.class)
-                .setParameter("status", PostStatus.INACTIVE)
-                .setParameter("status", PostStatus.ACTIVE)
+        List<UnivPost> resultList = em.createQuery("select distinct p from UnivComment c join c.member m join c.univPost p where p.status <> :status1 and c.status = :status2 and m.id = :id AND p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by c.createdAt desc ", UnivPost.class)
+                .setParameter("status1", PostStatus.INACTIVE)
+                .setParameter("status2", PostStatus.ACTIVE)
                 .setParameter("id", memberIdByJwt)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("postId", postId)
