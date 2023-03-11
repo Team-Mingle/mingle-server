@@ -1106,6 +1106,10 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+//    public List<NotifiedMemberResponse> listNotifiedMember() {
+//        List<Member> reportedMemberList = postRepository.getReportedMemberList();
+//
+//    }
     @Transactional
     public void executeTotalPost(String contentId) throws IOException {
         TotalPost totalPost = postRepository.findTotalPostById(parseLong(contentId));
@@ -1146,5 +1150,14 @@ public class PostService {
         String title = "잔디밭 댓글 차단";
         String body = "다른 사용자들의 신고에 의해 글이 삭제되었습니다.";
         fcmService.sendMessageTo(univComment.getMember().getFcmToken(), title, body, TableType.UnivComment, univComment.getId());
+    }
+
+    @Transactional
+    public void executeMember(Long memberId) throws IOException {
+        Member member = postRepository.findMemberbyId(memberId);
+        member.modifyStatusAsReported();
+        String title = "밍글 계정 사용 정지 알림";
+        String body = "운영 정책 위반 및 유저 신고 누적으로 인해 계정 사용이 정지되었습니다. 자세한 문의사항이 있다면 이메일을 통해 문의바랍니다.";
+        fcmService.sendMessageTo(member.getFcmToken(), title, body);
     }
 }

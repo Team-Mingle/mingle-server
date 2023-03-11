@@ -2,6 +2,7 @@ package community.mingle.app.src.post;
 
 import community.mingle.app.src.post.model.NotifiedContentRequest;
 import community.mingle.app.src.post.model.NotifiedContentResponse;
+import community.mingle.app.src.post.model.NotifiedMemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,8 +68,11 @@ public class BackOfficeController {
     /**
      * 신고 execute api
      */
+
+
     @PatchMapping("/report-totalpost")
     public String executeTotalPost(@RequestParam String contentId, @ModelAttribute("notifiedTotalPostForm") NotifiedContentRequest notifiedContentRequest, Model model) throws IOException {
+
         postService.executeTotalPost(contentId);
         List<NotifiedContentResponse> listNotifiedTotalPost = postService.listNotifiedTotalPost();
         model.addAttribute("listNotifiedTotalPost", listNotifiedTotalPost);
