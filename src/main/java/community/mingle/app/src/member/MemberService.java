@@ -508,5 +508,32 @@ public class MemberService {
     }
 
 
+    /**
+     * 2.15
+     */
+    @Transactional
+    public void disablePosts(Long memberId) throws BaseException {
+        try {
+            List<UnivPost> univPostByReportedMember = memberRepository.findUnivPostByReportedMember(memberId);
+            for (UnivPost univPost : univPostByReportedMember) {
+                univPost.deleteUnivPost();
+            }
+            List<TotalPost> totalPostByReportedMember = memberRepository.findTotalPostByReportedMember(memberId);
+            for (TotalPost totalPost : totalPostByReportedMember) {
+                totalPost.deleteTotalPost();
+            }
+            List<TotalComment> totalCommentByReportedMember = memberRepository.findTotalCommentByReportedMember(memberId);
+            for (TotalComment totalComment : totalCommentByReportedMember) {
+                totalComment.deleteTotalComment();
+            }
+            List<UnivComment> univCommentByReportedMember = memberRepository.findUnivCommentByReportedMember(memberId);
+            for (UnivComment univComment : univCommentByReportedMember) {
+                univComment.deleteUnivComment();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
 
+    }
 }

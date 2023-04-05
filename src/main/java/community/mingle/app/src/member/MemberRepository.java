@@ -319,6 +319,30 @@ public class MemberRepository {
     }
 
 
+    public List<TotalPost> findTotalPostByReportedMember(Long memberId){
+        return em.createQuery("select p from TotalPost p join fetch p.member as m where p.member.id = :memberId", TotalPost.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
+    public List<UnivPost> findUnivPostByReportedMember(Long memberId) {
+        return em.createQuery("select p from UnivPost p join fetch p.member as m where p.member.id = :memberId", UnivPost.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
+    public List<TotalComment> findTotalCommentByReportedMember(Long memberId) {
+        return em.createQuery("select p from TotalComment p join fetch p.member as m where p.member.id = :memberId", TotalComment.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
+    public List<UnivComment> findUnivCommentByReportedMember(Long memberId) {
+        return em.createQuery("select p from UnivComment p join fetch p.member as m where p.member.id = :memberId", UnivComment.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberIdByJwt) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ
 //        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join fetch us.univPost p where m.id = :id order by us.createdAt desc", UnivPost.class)

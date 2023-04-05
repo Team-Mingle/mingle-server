@@ -7,6 +7,7 @@ import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Policy;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.src.member.MemberService;
 import community.mingle.app.src.post.PostService;
 import community.mingle.app.utils.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,10 +47,8 @@ public class AuthController {
     //    @Autowired
     private final AuthService authService;
     private final AuthRepository authRepository;
-    private final JwtService jwtService;
-    private final RedisService redisService;
-    private final RedisTemplate redisTemplate;
     private final PostService postService;
+    private final MemberService memberService;
 
 
     /**
@@ -426,5 +425,19 @@ public class AuthController {
         postService.executeMember(memberId);
     }
 
+
+
+    /**
+     * 1.15 유저 글/댓글 INACTIVE api
+     */
+    @PatchMapping("/withdraw")
+    public BaseResponse<String> disablePosts(@RequestParam Long memberId) {
+        try {
+            memberService.disablePosts(memberId);
+            return new BaseResponse<>("숙청 성공");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }
 

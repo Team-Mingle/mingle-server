@@ -398,5 +398,19 @@ public class MemberController {
     }
 
 
+    /**
+     * 2.15 유저 글/댓글 INACTIVE api
+     */
+    @PatchMapping("/withdraw")
+    public BaseResponse<String> disablePosts(@RequestParam Long memberId) {
+        try {
+            memberService.disablePosts(memberId);
+            return new BaseResponse<>("숙청 성공");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
 
 }
