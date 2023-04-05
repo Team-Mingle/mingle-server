@@ -1,5 +1,8 @@
 package community.mingle.app.src.domain;
 
+import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Total.TotalPostLike;
+import community.mingle.app.src.domain.Total.TotalPostScrap;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +11,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -62,11 +67,21 @@ public class Item {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum", name = "status", nullable = false)
-    private PostStatus status;
+    private ItemStatus status;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+
+    @OneToMany(mappedBy = "item")
+    private List<ItemLike> itemLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item")
+    private List<ItemComment> itemCommentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item")
+    private List<ItemImg> itemImgList = new ArrayList<>();
 
 }
