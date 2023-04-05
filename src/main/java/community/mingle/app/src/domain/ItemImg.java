@@ -33,4 +33,12 @@ public class ItemImg {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    public static ItemImg createItemImg(Item item, String fileName) {
+        ItemImg itemImg = new ItemImg();
+        itemImg.setItem(item);
+        itemImg.setImgUrl(fileName);
+        itemImg.setCreatedAt(LocalDateTime.now());
+        itemImg.setUpdatedAt(LocalDateTime.now());
+        return itemImg;
+    }
 }

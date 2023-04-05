@@ -125,6 +125,8 @@ public enum BaseResponseStatus {
     INVALID_IMAGE_NUMBER(false, 3073, "이미지 개수를 초과하였습니다"),
     DELETE_FAIL_IMAGE(false, 3074,"이미지 삭제에 실패했습니다"),
 
+    IMG_UPLOAD_REQUIRED(false,3075,"최소 1개 이상의 물건 사진을 올려주세요."),
+
 
     /** 4. /comment  */
     DELETE_FAIL_COMMENT(false, 4025, "댓글 삭제를 실패했습니다."),

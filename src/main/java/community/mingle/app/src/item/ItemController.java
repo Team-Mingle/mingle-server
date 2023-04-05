@@ -4,7 +4,10 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Item;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ItemListResponse;
+import community.mingle.app.src.post.model.CreatePostRequest;
+import community.mingle.app.src.post.model.CreatePostResponse;
 import community.mingle.app.src.post.model.PostListDTO;
 import community.mingle.app.src.post.model.PostListResponse;
 import community.mingle.app.utils.JwtService;
@@ -46,9 +49,22 @@ public class ItemController {
             ItemListResponse itemListResponse = itemService.findItems(itemId, memberId);
             return new BaseResponse<>(itemListResponse);
         } catch (BaseException e) {
-            e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 6.2 거래 게시판 글 작성 api
+     */
+    @PostMapping("")
+    @Operation(summary = "6.2 createItemPost API", description = "6.2 거래 게시판 글 작성 API")
+    public BaseResponse<String> createItemPost(@ModelAttribute CreateItemRequest createItemRequest) {
+        try{
+            return new BaseResponse<>(itemService.createItemPost(createItemRequest));
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 
 }
