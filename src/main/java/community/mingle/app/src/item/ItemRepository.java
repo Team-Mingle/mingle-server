@@ -1,6 +1,7 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.src.domain.Item;
+import community.mingle.app.src.domain.ItemImg;
 import community.mingle.app.src.domain.ItemStatus;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Univ.UnivPost;
@@ -24,5 +25,14 @@ public class ItemRepository {
                 .setParameter("itemId", itemId)
                 .setMaxResults(50)
                 .getResultList();
+    }
+
+    public Long save(Item item) {
+        em.persist(item);
+        return item.getId();
+    }
+
+    public void saveImg(ItemImg itemImg) {
+        em.persist(itemImg);
     }
 }

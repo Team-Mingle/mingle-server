@@ -3,6 +3,7 @@ package community.mingle.app.src.domain;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPostLike;
 import community.mingle.app.src.domain.Total.TotalPostScrap;
+import community.mingle.app.src.item.model.CreateItemRequest;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -84,4 +85,18 @@ public class Item {
     @OneToMany(mappedBy = "item")
     private List<ItemImg> itemImgList = new ArrayList<>();
 
+    public static Item createItemPost(Member member, CreateItemRequest createItemRequest) {
+        Item item = new Item();
+        item.setTitle(createItemRequest.getTitle());
+        item.setPrice(createItemRequest.getPrice());
+        item.setContent(createItemRequest.getContent());
+        item.setLocation(createItemRequest.getLocation());
+        item.setChatUrl(createItemRequest.getChatUrl());
+        item.setIsAnonymous(createItemRequest.getIsAnonymous());
+        item.setCreatedAt(LocalDateTime.now());
+        item.setUpdatedAt(LocalDateTime.now());
+        item.setStatus(ItemStatus.SELLING);
+        item.setMember(member);
+        return item;
+    }
 }
