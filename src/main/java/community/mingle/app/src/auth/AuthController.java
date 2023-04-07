@@ -422,7 +422,7 @@ public class AuthController {
     }
 
     @PatchMapping("/report-member")
-    public void executeMember(@RequestParam Long memberId) throws IOException {
+    public void executeMember(@RequestParam Long memberId) throws IOException, BaseException {
         postService.executeMember(memberId);
     }
 
