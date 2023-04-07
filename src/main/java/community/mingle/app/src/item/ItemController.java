@@ -2,10 +2,12 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.Item;
 import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ItemListResponse;
 import community.mingle.app.src.item.model.ItemResponse;
+import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,7 +38,7 @@ public class ItemController {
      */
     @GetMapping("/list")
     @Operation(summary = "6.1 getItemList API", description = "6.1 거래 게시판 리스트 조회 API")
-    public BaseResponse<ItemListResponse> getItemList (@RequestParam Long itemId) {
+    public BaseResponse<ItemListResponse> getItemList(@RequestParam Long itemId) {
         try {
             Long memberId = jwtService.getUserIdx();
             ItemListResponse itemListResponse = itemService.findItems(itemId, memberId);
@@ -52,9 +54,9 @@ public class ItemController {
     @PostMapping("")
     @Operation(summary = "6.2 createItemPost API", description = "6.2 거래 게시판 글 작성 API")
     public BaseResponse<String> createItemPost(@ModelAttribute CreateItemRequest createItemRequest) {
-        try{
+        try {
             return new BaseResponse<>(itemService.createItemPost(createItemRequest));
-        } catch (BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
@@ -73,6 +75,23 @@ public class ItemController {
             return new BaseResponse<>(itemPostDetailResponse);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 6.4 거래 게시물 수정 api
+     * 사진 수정 논의 필요
+     */
+    @PatchMapping("{itemId}")
+    @Operation(summary = "6.4 modifyItemPost API", description = "6.4 거래 게시물 수정 API")
+    public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @RequestBody ModifyItemPostRequest request) {
+        if (request.getTitle() == null || request.getContent() == null || request.getPrice() == null || request.getChatUrl() == null || request.getLocation() == null)
+            return new BaseResponse<>(BaseResponseStatus.FIELD_EMPTY_ERROR);
+        try {
+            itemService.modifyItemPost(itemId, request);
+            return new BaseResponse<>("거래 게시물 수정 성공");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
