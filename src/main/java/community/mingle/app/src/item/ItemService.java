@@ -124,20 +124,8 @@ public class ItemService {
      */
     @Transactional
     public void modifyItemPost(Long itemId, ModifyItemPostRequest request) throws BaseException {
-        Long memberIdByJwt = jwtService.getUserIdx();
-        postRepository.findMemberbyId(memberIdByJwt); //throws USER_NOT_EXIST
-        Item item = itemRepository.findItemById(itemId);
-        if (item == null)
-            throw new BaseException(POST_NOT_EXIST);
-        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED))
-            throw new BaseException(REPORTED_DELETED_POST);
-        if (!Objects.equals(memberIdByJwt, item.getMember().getId()))
-            throw new BaseException(MODIFY_NOT_AUTHORIZED);
-        try {
-            item.updateItemPost(request);
-        } catch (Exception e) {
-            throw new BaseException(MODIFY_FAIL_POST);
-        }
+        Item item = checkMemberAndItemIsValidAndByAuthor(itemId);
+        item.updateItemPost(request);
     }
 
 
@@ -146,13 +134,7 @@ public class ItemService {
      */
     @Transactional
     public void deleteItemPost(Long itemId) throws BaseException {
-        Long memberIdByJwt = jwtService.getUserIdx();
-        postRepository.findMemberbyId(memberIdByJwt);
-        Item deleteItem = itemRepository.findItemById(itemId);
-        if (deleteItem == null)
-            throw new BaseException(POST_NOT_EXIST);
-        if (!Objects.equals(memberIdByJwt, deleteItem.getMember().getId()))
-            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        Item deleteItem = checkMemberAndItemIsValidAndByAuthor(itemId);
         try {
             List<ItemComment> itemCommentList = deleteItem.getItemCommentList();
             if (itemCommentList != null) {
@@ -177,4 +159,26 @@ public class ItemService {
     }
 
 
+    /**
+     * 6.6 판매 상태 변경 API
+     */
+    @Transactional
+    public void modifyItemStatus(Long itemId, String itemStatus) throws BaseException {
+        Item modifyItem = checkMemberAndItemIsValidAndByAuthor(itemId);
+        modifyItem.modifyItemStatus(itemStatus);
+    }
+
+
+    private Item checkMemberAndItemIsValidAndByAuthor(Long itemId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        postRepository.findMemberbyId(memberIdByJwt);
+        Item item = itemRepository.findItemById(itemId);
+        if (item == null)
+            throw new BaseException(POST_NOT_EXIST);
+        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED))
+            throw new BaseException(REPORTED_DELETED_POST);
+        if (!Objects.equals(memberIdByJwt, item.getMember().getId()))
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        return item;
+    }
 }

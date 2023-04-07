@@ -118,4 +118,18 @@ public class Item {
         this.deletedAt = LocalDateTime.now();
         this.status = ItemStatus.INACTIVE;
     }
+
+    public void modifyItemStatus(String itemStatus) {
+        switch (itemStatus) {
+            case "판매중" :
+                this.status = ItemStatus.SELLING;
+                break;
+            case "예약중" :
+                this.status = ItemStatus.RESERVED;
+                break;
+            case "판매완료" :
+                this.status = ItemStatus.SOLDOUT;
+                break;
+        }
+    }
 }
