@@ -95,4 +95,18 @@ public class ItemController {
         }
     }
 
+    /**
+     * 6.5 거래 게시물 삭제 API
+     */
+    @PatchMapping("/status/{itemId}")
+    @Operation(summary = "6.5 deleteItemPost API", description = "6.5 거래 게시물 삭제 API")
+    public BaseResponse<String> deleteItemPost(@PathVariable Long itemId) {
+        try {
+            itemService.deleteItemPost(itemId);
+            return new BaseResponse<>("거래 게시물 삭제 성공");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }

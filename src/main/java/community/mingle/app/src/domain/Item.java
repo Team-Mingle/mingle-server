@@ -1,8 +1,5 @@
 package community.mingle.app.src.domain;
 
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPostLike;
-import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import lombok.Getter;
@@ -11,7 +8,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,5 +112,10 @@ public class Item {
         this.setPrice(request.getPrice());
         this.setLocation(request.getLocation());
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void deleteItemPost() {
+        this.deletedAt = LocalDateTime.now();
+        this.status = ItemStatus.INACTIVE;
     }
 }
