@@ -159,6 +159,14 @@ public class ItemService {
     }
 
 
+    /**
+     * 6.6 판매 상태 변경 API
+     */
+    @Transactional
+    public void modifyItemStatus(Long itemId, String itemStatus) throws BaseException {
+        Item modifyItem = checkMemberAndItemIsValidAndByAuthor(itemId);
+        modifyItem.modifyItemStatus(itemStatus);
+    }
 
 
     private Item checkMemberAndItemIsValidAndByAuthor(Long itemId) throws BaseException {

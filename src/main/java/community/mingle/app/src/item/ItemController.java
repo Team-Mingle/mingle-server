@@ -109,4 +109,20 @@ public class ItemController {
         }
     }
 
+
+    /**
+     * 6.6 판매 상태 변경 API
+     */
+    @PatchMapping("/item-status/{itemId}")
+    @Operation(summary = "6.6 modifyItemStatus API", description = "6.6 판매 상태 변경 API")
+    public BaseResponse<String> modifyItemStatus(@PathVariable Long itemId, @RequestParam String itemStatus) {
+        try {
+            itemService.modifyItemStatus(itemId, itemStatus);
+            return new BaseResponse<>("판매 상태 변경 완료");
+        } catch (BaseException e) {
+            e.printStackTrace();
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }
