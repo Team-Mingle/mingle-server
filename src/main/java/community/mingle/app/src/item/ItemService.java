@@ -1,17 +1,13 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponseStatus;
-import community.mingle.app.src.domain.Item;
-import community.mingle.app.src.domain.ItemImg;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.Univ.UnivPostImage;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ItemListDTO;
 import community.mingle.app.src.item.model.ItemListResponse;
+import community.mingle.app.src.item.model.ItemResponse;
 import community.mingle.app.src.post.PostRepository;
-import community.mingle.app.src.post.model.CreatePostResponse;
+import community.mingle.app.src.post.PostService;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -32,6 +29,8 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final JwtService jwtService;
     private final PostRepository postRepository;
+
+    private final PostService postService;
     private final S3Service s3Service;
 
     /**
@@ -77,4 +76,52 @@ public class ItemService {
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
+
+    /**
+     * 6.3 거래 게시판 글 상세 api
+     */
+    public Item getItem(Long itemId) throws BaseException {
+        Item item = itemRepository.findItemById(itemId);
+        if (item == null)
+            throw new BaseException(POST_NOT_EXIST);
+        return item;
+    }
+    @Transactional
+    public ItemResponse getItemPostDetail(Item item) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        boolean isMyPost = false, isLiked = false, isScraped = false, isBlinded = false;
+        Long itemId = item.getId();
+        try {
+            if (Objects.equals(item.getMember().getId(), memberIdByJwt)) {
+                isMyPost = true;
+            }
+            if (itemRepository.checkItemIsLiked(itemId, memberIdByJwt)) {
+                isLiked = true;
+            }
+            if (itemRepository.checkItemIsBlinded(itemId, memberIdByJwt)){
+                isBlinded = true;
+            }
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+        /*** 신고된 게시물 처리 */
+        ItemResponse itemResponse;
+        if (item.getStatus().equals(ItemStatus.REPORTED)) {
+            String reportedReason = postService.findReportedPostReason(item.getId(), TableType.Item);
+            itemResponse = new ItemResponse(item, isMyPost, isLiked, isBlinded, reportedReason);
+        } else if (item.getStatus().equals(ItemStatus.DELETED)) {
+            itemResponse = new ItemResponse(item, isMyPost, isLiked, isBlinded, "");
+        } else { //정상 게시물
+            itemResponse = new ItemResponse(item, isMyPost, isLiked, isBlinded);
+        }
+        return itemResponse;
+    }
+    @Transactional
+    public void updateView(Item item) {
+        item.updateView();
+    }
+
+
+
 }

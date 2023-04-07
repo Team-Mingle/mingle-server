@@ -3,13 +3,9 @@ package community.mingle.app.src.item;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Item;
-import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ItemListResponse;
-import community.mingle.app.src.post.model.CreatePostRequest;
-import community.mingle.app.src.post.model.CreatePostResponse;
-import community.mingle.app.src.post.model.PostListDTO;
-import community.mingle.app.src.post.model.PostListResponse;
+import community.mingle.app.src.item.model.ItemResponse;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,9 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag(name = "item", description = "중고거래 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -66,5 +59,21 @@ public class ItemController {
         }
     }
 
+
+    /**
+     * 6.3 거래 게시판 글 상세 api
+     */
+    @GetMapping("{itemId}")
+    @Operation(summary = "6.3 getItemPostDetail API", description = "6.3 거래 게시판 글 상세 API")
+    public BaseResponse<ItemResponse> getItemPostDetail(@PathVariable Long itemId) {
+        try {
+            Item item = itemService.getItem(itemId);
+            itemService.updateView(item);
+            ItemResponse itemPostDetailResponse = itemService.getItemPostDetail(item);
+            return new BaseResponse<>(itemPostDetailResponse);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 }
