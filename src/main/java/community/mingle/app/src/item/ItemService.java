@@ -2,6 +2,8 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.item.model.*;
 import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.src.post.PostService;
@@ -89,15 +91,12 @@ public class ItemService {
         boolean isMyPost = false, isLiked = false, isScraped = false, isBlinded = false;
         Long itemId = item.getId();
         try {
-            if (Objects.equals(item.getMember().getId(), memberIdByJwt)) {
+            if (Objects.equals(item.getMember().getId(), memberIdByJwt))
                 isMyPost = true;
-            }
-            if (itemRepository.checkItemIsLiked(itemId, memberIdByJwt)) {
+            if (itemRepository.checkItemIsLiked(itemId, memberIdByJwt))
                 isLiked = true;
-            }
-            if (itemRepository.checkItemIsBlinded(itemId, memberIdByJwt)){
+            if (itemRepository.checkItemIsBlinded(itemId, memberIdByJwt))
                 isBlinded = true;
-            }
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -140,4 +139,42 @@ public class ItemService {
             throw new BaseException(MODIFY_FAIL_POST);
         }
     }
+
+
+    /**
+     * 6.5 거래 게시물 삭제 API
+     */
+    @Transactional
+    public void deleteItemPost(Long itemId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        postRepository.findMemberbyId(memberIdByJwt);
+        Item deleteItem = itemRepository.findItemById(itemId);
+        if (deleteItem == null)
+            throw new BaseException(POST_NOT_EXIST);
+        if (!Objects.equals(memberIdByJwt, deleteItem.getMember().getId()))
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        try {
+            List<ItemComment> itemCommentList = deleteItem.getItemCommentList();
+            if (itemCommentList != null) {
+                for (ItemComment itemComment : itemCommentList) {
+                    itemComment.deleteItemComment();
+                }
+            }
+            List<ItemImg> itemImgList = deleteItem.getItemImgList();
+            if (itemImgList != null) {
+                for (ItemImg itemImg : itemImgList) {
+                    itemImg.deleteItemImage();
+                    /** s3 사진 삭제 추가 **/
+                    //String imgUrl = itemImg.getImgUrl();
+                    //String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/item/") + 11);
+                    //s3Service.deleteFile(fileName, "item");
+                }
+            }
+            deleteItem.deleteItemPost();
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_POST);
+        }
+    }
+
+
 }
