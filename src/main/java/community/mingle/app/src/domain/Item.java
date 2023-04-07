@@ -4,6 +4,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPostLike;
 import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.item.model.CreateItemRequest;
+import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -106,5 +107,14 @@ public class Item {
         } else {
             this.viewCount += 1;
         }
+    }
+
+    public void updateItemPost(ModifyItemPostRequest request) {
+        this.setTitle(request.getTitle());
+        this.setContent(request.getContent());
+        this.setChatUrl(request.getChatUrl());
+        this.setPrice(request.getPrice());
+        this.setLocation(request.getLocation());
+        this.updatedAt = LocalDateTime.now();
     }
 }

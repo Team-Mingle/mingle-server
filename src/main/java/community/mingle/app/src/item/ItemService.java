@@ -2,10 +2,7 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.*;
-import community.mingle.app.src.item.model.CreateItemRequest;
-import community.mingle.app.src.item.model.ItemListDTO;
-import community.mingle.app.src.item.model.ItemListResponse;
-import community.mingle.app.src.item.model.ItemResponse;
+import community.mingle.app.src.item.model.*;
 import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.src.post.PostService;
 import community.mingle.app.utils.JwtService;
@@ -123,5 +120,24 @@ public class ItemService {
     }
 
 
-
+    /**
+     * 6.4 거래 게시물 수정 API
+     */
+    @Transactional
+    public void modifyItemPost(Long itemId, ModifyItemPostRequest request) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        postRepository.findMemberbyId(memberIdByJwt); //throws USER_NOT_EXIST
+        Item item = itemRepository.findItemById(itemId);
+        if (item == null)
+            throw new BaseException(POST_NOT_EXIST);
+        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED))
+            throw new BaseException(REPORTED_DELETED_POST);
+        if (!Objects.equals(memberIdByJwt, item.getMember().getId()))
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        try {
+            item.updateItemPost(request);
+        } catch (Exception e) {
+            throw new BaseException(MODIFY_FAIL_POST);
+        }
+    }
 }
