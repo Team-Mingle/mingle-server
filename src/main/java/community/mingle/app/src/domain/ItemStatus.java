@@ -20,7 +20,8 @@ public enum ItemStatus {
     SOLDOUT("판매완료"),
     INACTIVE("삭제됨"),
     NOTIFIED("신고중"),
-    REPORTED("신고됨");
+    REPORTED("신고됨"),
+    DELETED("운영진 삭제");
 
     private final String name;
 
