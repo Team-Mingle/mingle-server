@@ -1,10 +1,6 @@
 package community.mingle.app.src.item;
 
-import community.mingle.app.src.domain.Item;
-import community.mingle.app.src.domain.ItemImg;
-import community.mingle.app.src.domain.ItemStatus;
-import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -34,5 +30,25 @@ public class ItemRepository {
 
     public void saveImg(ItemImg itemImg) {
         em.persist(itemImg);
+    }
+
+    public Item findItemById(Long itemId) {
+        return em.find(Item.class, itemId);
+    }
+
+    public boolean checkItemIsBlinded(Long itemId, Long memberIdByJwt) {
+        List<ItemBlind> resultList = em.createQuery("select b from ItemBlind b where b.item.id =:itemId and b.member.id =:memberId", ItemBlind.class)
+                .setParameter("itemId", itemId)
+                .setParameter("memberId", memberIdByJwt)
+                .getResultList();
+        return resultList.size() != 0;
+    }
+
+    public boolean checkItemIsLiked(Long itemId, Long memberIdByJwt) {
+        List<ItemLike> itemLikeList = em.createQuery("select l from ItemLike l join l.item item join l.member m where item.id = :itemId and m.id = :memberId", ItemLike.class)
+                .setParameter("itemId", itemId)
+                .setParameter("memberId", memberIdByJwt)
+                .getResultList();
+        return itemLikeList.size() != 0;
     }
 }

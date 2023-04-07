@@ -99,4 +99,12 @@ public class Item {
         item.setMember(member);
         return item;
     }
+
+    public void updateView() {
+        if (viewCount == 0) {
+            this.viewCount = 1;
+        } else {
+            this.viewCount += 1;
+        }
+    }
 }
