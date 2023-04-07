@@ -74,7 +74,7 @@ public class PostListDTO {
      */
     public PostListDTO(UnivPost univPost, Long memberId) {
         this.postId = univPost.getId();
-        this.title = "[" + univPost.getUnivName().getUnivName() + "] " + univPost.getTitle();
+        this.title = univPost.getTitle();
         this.contents = univPost.getContent();
         if (univPost.getIsAnonymous() == true) {
             this.nickname = "익명";
