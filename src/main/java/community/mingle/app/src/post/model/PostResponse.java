@@ -70,7 +70,7 @@ public class PostResponse {
             }
         }
         this.isReported = false;
-        this.isAdmin = totalPost.getMember().getRole().equals(UserStatus.ADMIN);
+        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
     }
 
     public PostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded) {
@@ -102,7 +102,7 @@ public class PostResponse {
             }
         }
         this.isReported = false; // 2/17 추가
-        this.isAdmin = u.getMember().getRole().equals(UserStatus.ADMIN);
+        this.isAdmin = u.getMember().getRole().equals("ADMIN");
     }
 
 

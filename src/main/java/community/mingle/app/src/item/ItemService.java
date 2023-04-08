@@ -9,6 +9,12 @@ import community.mingle.app.src.member.MemberRepository;
 import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.src.post.model.CoCommentDTO;
 import community.mingle.app.src.post.model.CommentResponse;
+import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Total.TotalPostImage;
+import community.mingle.app.src.item.model.*;
+import community.mingle.app.src.post.PostRepository;
+import community.mingle.app.src.post.PostService;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -33,6 +41,7 @@ public class ItemService {
     private final JwtService jwtService;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final PostService postService;
     private final S3Service s3Service;
     private final CommentRepository commentRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
@@ -309,5 +318,114 @@ public class ItemService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+
+    /**
+     * 6.3 거래 게시판 글 상세 api
+     */
+    public Item getItem (Long itemId) throws BaseException {
+        Item item = itemRepository.findItemById(itemId);
+        if (item == null)
+            throw new BaseException(POST_NOT_EXIST);
+        return item;
+    }
+
+
+    @Transactional
+    public ItemResponse getItemPostDetail(Item item) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        boolean isMyPost = false, isLiked = false, isScraped = false, isBlinded = false;
+        Long itemId = item.getId();
+        try {
+            if (Objects.equals(item.getMember().getId(), memberIdByJwt))
+                isMyPost = true;
+            if (itemRepository.checkItemIsLiked(itemId, memberIdByJwt))
+                isLiked = true;
+            if (itemRepository.checkItemIsBlinded(itemId, memberIdByJwt))
+                isBlinded = true;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+        /*** 신고된 게시물 처리 */
+        ItemResponse itemResponse;
+        if (item.getStatus().equals(ItemStatus.REPORTED)) {
+            String reportedReason = postService.findReportedPostReason(item.getId(), TableType.Item);
+            itemResponse = new ItemResponse(item, isMyPost, isLiked, isBlinded, reportedReason);
+        } else if (item.getStatus().equals(ItemStatus.DELETED)) {
+            itemResponse = new ItemResponse(item, isMyPost, isLiked, isBlinded, "");
+        } else { //정상 게시물
+            itemResponse = new ItemResponse(item, isMyPost, isLiked, isBlinded);
+        }
+        return itemResponse;
+    }
+    @Transactional
+    public void updateView(Item item) {
+        item.updateView();
+    }
+
+
+    /**
+     * 6.4 거래 게시물 수정 API
+     */
+    @Transactional
+    public void modifyItemPost(Long itemId, ModifyItemPostRequest request) throws BaseException {
+        Item item = checkMemberAndItemIsValidAndByAuthor(itemId);
+        item.updateItemPost(request);
+    }
+
+
+    /**
+     * 6.5 거래 게시물 삭제 API
+     */
+    @Transactional
+    public void deleteItemPost(Long itemId) throws BaseException {
+        Item deleteItem = checkMemberAndItemIsValidAndByAuthor(itemId);
+        try {
+            List<ItemComment> itemCommentList = deleteItem.getItemCommentList();
+            if (itemCommentList != null) {
+                for (ItemComment itemComment : itemCommentList) {
+                    itemComment.deleteItemComment();
+                }
+            }
+            List<ItemImg> itemImgList = deleteItem.getItemImgList();
+            if (itemImgList != null) {
+                for (ItemImg itemImg : itemImgList) {
+                    itemImg.deleteItemImage();
+                    /** s3 사진 삭제 추가 **/
+                    //String imgUrl = itemImg.getImgUrl();
+                    //String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/item/") + 11);
+                    //s3Service.deleteFile(fileName, "item");
+                }
+            }
+            deleteItem.deleteItemPost();
+        } catch (Exception e) {
+            throw new BaseException(DELETE_FAIL_POST);
+        }
+    }
+
+
+    /**
+     * 6.6 판매 상태 변경 API
+     */
+    @Transactional
+    public void modifyItemStatus(Long itemId, String itemStatus) throws BaseException {
+        Item modifyItem = checkMemberAndItemIsValidAndByAuthor(itemId);
+        modifyItem.modifyItemStatus(itemStatus);
+    }
+
+
+    private Item checkMemberAndItemIsValidAndByAuthor(Long itemId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        postRepository.findMemberbyId(memberIdByJwt);
+        Item item = itemRepository.findItemById(itemId);
+        if (item == null)
+            throw new BaseException(POST_NOT_EXIST);
+        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED))
+            throw new BaseException(REPORTED_DELETED_POST);
+        if (!Objects.equals(memberIdByJwt, item.getMember().getId()))
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        return item;
     }
 }

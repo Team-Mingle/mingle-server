@@ -1,16 +1,13 @@
 package community.mingle.app.src.domain;
 
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPostLike;
-import community.mingle.app.src.domain.Total.TotalPostScrap;
 import community.mingle.app.src.item.model.CreateItemRequest;
+import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,5 +95,41 @@ public class Item {
         item.setStatus(ItemStatus.SELLING);
         item.setMember(member);
         return item;
+    }
+
+    public void updateView() {
+        if (viewCount == 0) {
+            this.viewCount = 1;
+        } else {
+            this.viewCount += 1;
+        }
+    }
+
+    public void updateItemPost(ModifyItemPostRequest request) {
+        this.setTitle(request.getTitle());
+        this.setContent(request.getContent());
+        this.setChatUrl(request.getChatUrl());
+        this.setPrice(request.getPrice());
+        this.setLocation(request.getLocation());
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void deleteItemPost() {
+        this.deletedAt = LocalDateTime.now();
+        this.status = ItemStatus.INACTIVE;
+    }
+
+    public void modifyItemStatus(String itemStatus) {
+        switch (itemStatus) {
+            case "판매중" :
+                this.status = ItemStatus.SELLING;
+                break;
+            case "예약중" :
+                this.status = ItemStatus.RESERVED;
+                break;
+            case "판매완료" :
+                this.status = ItemStatus.SOLDOUT;
+                break;
+        }
     }
 }

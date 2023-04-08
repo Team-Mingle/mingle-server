@@ -25,6 +25,7 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
+    FIELD_EMPTY_ERROR(false, 2004, "필수 항목을 입력해주세요."),
 
 
     /** 1. /auth  */

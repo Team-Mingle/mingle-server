@@ -55,6 +55,12 @@ public class ItemComment {
     @Column(columnDefinition = "enum")
     private PostStatus status;
 
+    public void deleteItemComment() {
+        this.deletedAt = LocalDateTime.now();
+        this.status = PostStatus.INACTIVE;
+    }
+
+
 //    @OneToMany(mappedBy = "item_comment")
 //    private List<ItemComment> itemCommentLikes = new ArrayList<>();
 

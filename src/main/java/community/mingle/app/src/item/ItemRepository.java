@@ -63,11 +63,6 @@ public class ItemRepository {
         em.remove(itemLike);
     }
 
-    public Item findItemById(Long itemId) {
-        return em.createQuery("select i from Item i where i.id = :itemId", Item.class)
-                .setParameter("itemId", itemId)
-                .getSingleResult();
-    }
 
     public Long findItemAnonymousId(Item item, Long memberIdByJwt) {
         Long newAnonymousId;
@@ -147,5 +142,25 @@ public class ItemRepository {
                 .setParameter("itemCommentId", itemCommentId)
                 .getSingleResult();
         em.remove(itemComment);
+    }
+
+    public Item findItemById(Long itemId) {
+        return em.find(Item.class, itemId);
+    }
+
+    public boolean checkItemIsBlinded(Long itemId, Long memberIdByJwt) {
+        List<ItemBlind> resultList = em.createQuery("select b from ItemBlind b where b.item.id =:itemId and b.member.id =:memberId", ItemBlind.class)
+                .setParameter("itemId", itemId)
+                .setParameter("memberId", memberIdByJwt)
+                .getResultList();
+        return resultList.size() != 0;
+    }
+
+    public boolean checkItemIsLiked(Long itemId, Long memberIdByJwt) {
+        List<ItemLike> itemLikeList = em.createQuery("select l from ItemLike l join l.item item join l.member m where item.id = :itemId and m.id = :memberId", ItemLike.class)
+                .setParameter("itemId", itemId)
+                .setParameter("memberId", memberIdByJwt)
+                .getResultList();
+        return itemLikeList.size() != 0;
     }
 }

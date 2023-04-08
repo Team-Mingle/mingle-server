@@ -25,6 +25,10 @@ public class ItemImg {
     @NotNull
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
@@ -35,5 +39,9 @@ public class ItemImg {
         itemImg.setImgUrl(fileName);
         itemImg.setCreatedAt(LocalDateTime.now());
         return itemImg;
+    }
+
+    public void deleteItemImage() {
+        this.deletedAt = LocalDateTime.now();
     }
 }

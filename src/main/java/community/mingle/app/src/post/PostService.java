@@ -1153,7 +1153,7 @@ public class PostService {
     }
 
     @Transactional
-    public void executeMember(Long memberId) throws IOException {
+    public void executeMember(Long memberId) throws IOException, BaseException {
         Member member = postRepository.findMemberbyId(memberId);
         member.modifyStatusAsReported();
         String title = "밍글 계정 사용 정지 알림";

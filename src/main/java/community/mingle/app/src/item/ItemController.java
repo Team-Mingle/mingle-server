@@ -3,13 +3,15 @@ package community.mingle.app.src.item;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
+import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.Item;
-import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ItemListResponse;
 import community.mingle.app.src.item.model.PostItemCommentRequest;
 import community.mingle.app.src.item.model.PostItemCommentResponse;
 import community.mingle.app.src.post.model.*;
+import community.mingle.app.src.item.model.ItemResponse;
+import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -68,6 +70,73 @@ public class ItemController {
         }
     }
 
+
+
+    /**
+     * 6.3 거래 게시판 글 상세 api
+     */
+    @GetMapping("{itemId}")
+    @Operation(summary = "6.3 getItemPostDetail API", description = "6.3 거래 게시판 글 상세 API")
+    public BaseResponse<ItemResponse> getItemPostDetail(@PathVariable Long itemId) {
+        try {
+            Item item = itemService.getItem(itemId);
+            itemService.updateView(item);
+            ItemResponse itemPostDetailResponse = itemService.getItemPostDetail(item);
+            return new BaseResponse<>(itemPostDetailResponse);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 6.4 거래 게시물 수정 api
+     * 사진 수정 논의 필요
+     */
+    @PatchMapping("{itemId}")
+    @Operation(summary = "6.4 modifyItemPost API", description = "6.4 거래 게시물 수정 API")
+    public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @RequestBody ModifyItemPostRequest request) {
+        if (request.getTitle() == null || request.getContent() == null || request.getPrice() == null || request.getChatUrl() == null || request.getLocation() == null)
+            return new BaseResponse<>(BaseResponseStatus.FIELD_EMPTY_ERROR);
+        try {
+            itemService.modifyItemPost(itemId, request);
+            return new BaseResponse<>("거래 게시물 수정 성공");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+    /**
+     * 6.5 거래 게시물 삭제 API
+     */
+    @PatchMapping("/status/{itemId}")
+    @Operation(summary = "6.5 deleteItemPost API", description = "6.5 거래 게시물 삭제 API")
+    public BaseResponse<String> deleteItemPost(@PathVariable Long itemId) {
+        try {
+            itemService.deleteItemPost(itemId);
+            return new BaseResponse<>("거래 게시물 삭제 성공");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+
+    /**
+     * 6.6 판매 상태 변경 API
+     */
+    @PatchMapping("/item-status/{itemId}")
+    @Operation(summary = "6.6 modifyItemStatus API", description = "6.6 판매 상태 변경 API")
+    public BaseResponse<String> modifyItemStatus(@PathVariable Long itemId, @RequestParam String itemStatus) {
+        try {
+            itemService.modifyItemStatus(itemId, itemStatus);
+            return new BaseResponse<>("판매 상태 변경 완료");
+        } catch (BaseException e) {
+            e.printStackTrace();
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
     /**
      * 6.7 거래 게시물 찜 api
      */
@@ -117,15 +186,14 @@ public class ItemController {
         try {
             List<CommentResponse> itemCommentResponseList = itemService.getItemComments(itemId);
             return new BaseResponse<>(itemCommentResponseList);
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
         }
     }
 
     /**
      * 6.11 거래 댓글 삭제 api
      */
-
     @PatchMapping("comment/{itemCommentId}")
     @Operation(summary = "6.11 comment delete API", description = "6.11 거래 댓글 삭제")
     public BaseResponse<String> deleteItemComment(@PathVariable Long itemCommentId) {
