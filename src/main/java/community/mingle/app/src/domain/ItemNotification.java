@@ -1,7 +1,5 @@
 package community.mingle.app.src.domain;
 
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPost;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,16 +25,16 @@ public class ItemNotification {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
+    @JoinColumn(name = "item_id")
+    private Item item;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_comment_id")
     private ItemComment itemComment;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum",  name = "notification_type")
-    private NotificationType notificationType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Item item;
+    @Column(columnDefinition = "enum", name = "notification_type")
+    private NotificationType notificationType; //거래게시판
 
     @Column(name = "is_read")
     private Boolean isRead;
@@ -56,6 +53,4 @@ public class ItemNotification {
         itemNotification.notificationType = NotificationType.댓글;
         return itemNotification;
     }
-
-
 }
