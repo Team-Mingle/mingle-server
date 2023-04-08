@@ -87,6 +87,14 @@ public class Member {
     @OneToMany(mappedBy = "blockerMember")
     private List<BlockMember> blockerMember= new ArrayList<>();
 
+
+    @OneToMany(mappedBy = "member")
+    private List<ItemComment> itemCommentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Item> itemList = new ArrayList<>();
+
+
     private LocalDateTime agreedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

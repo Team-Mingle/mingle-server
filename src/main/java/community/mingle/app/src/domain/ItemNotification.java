@@ -21,17 +21,16 @@ public class ItemNotification {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_comment_id")
     private ItemComment itemComment;
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum", name = "notification_type")
     private NotificationType notificationType; //거래게시판
@@ -50,7 +49,7 @@ public class ItemNotification {
         itemNotification.setItemComment(comment);
         itemNotification.isRead = false;
         itemNotification.createdAt = LocalDateTime.now();
-        itemNotification.notificationType = NotificationType.댓글;
+        itemNotification.notificationType = NotificationType.거래;
         return itemNotification;
     }
 }
