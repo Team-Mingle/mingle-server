@@ -73,7 +73,8 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<UnivNotification> univNotifications= new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "member")
+    private List<ItemNotification> itemNotifications= new ArrayList<>();
     @OneToMany(mappedBy = "member")
     private List<TotalBlind> totalBlindPost = new ArrayList<>();
 

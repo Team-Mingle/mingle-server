@@ -1,11 +1,15 @@
 package community.mingle.app.src.item;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.Item;
 import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ItemListResponse;
+import community.mingle.app.src.item.model.PostItemCommentRequest;
+import community.mingle.app.src.item.model.PostItemCommentResponse;
+import community.mingle.app.src.post.model.*;
 import community.mingle.app.src.item.model.ItemResponse;
 import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import community.mingle.app.utils.JwtService;
@@ -16,7 +20,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "item", description = "중고거래 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -62,6 +71,7 @@ public class ItemController {
     }
 
 
+
     /**
      * 6.3 거래 게시판 글 상세 api
      */
@@ -95,6 +105,7 @@ public class ItemController {
         }
     }
 
+
     /**
      * 6.5 거래 게시물 삭제 API
      */
@@ -108,6 +119,7 @@ public class ItemController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 
 
     /**
@@ -125,4 +137,71 @@ public class ItemController {
         }
     }
 
+    /**
+     * 6.7 거래 게시물 찜 api
+     */
+    @PostMapping("/like")
+    @Operation(summary = "6.7 createItemLike API", description = "6.7 거래 게시물 찜")
+    public BaseResponse<String> createItemLike(@RequestParam Long itemId) {
+        try {
+            return new BaseResponse<>(itemService.createItemLike(itemId));
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 6.8 거래 게시물 찜 취소 api
+     */
+    @DeleteMapping("/unlike")
+    @Operation(summary = "6.8 itemUnlike API", description = "6.8 거래 게시물 찜 취소")
+    public BaseResponse<String> itemUnlike(@RequestParam Long itemId) {
+        try {
+            return new BaseResponse<>(itemService.itemUnlike(itemId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 6.9 거래 댓글 작성 api
+     */
+    @PostMapping("/comment")
+    @Operation(summary = "6.9 comment post API", description = "6.9 거래 댓글 작성")
+    public BaseResponse<PostItemCommentResponse> createItemComment(@RequestBody @Valid PostItemCommentRequest postItemCommentRequest) throws BaseException {
+        try {
+            PostItemCommentResponse result = itemService.createItemComment(postItemCommentRequest);
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 6.10 거래 댓글 조회 api
+     */
+    @GetMapping("/comment/{itemId}")
+    @Operation(summary = "6.10 comment get API", description = "6.10 거래 댓글 조회")
+    public BaseResponse<List<CommentResponse>> itemComment(@PathVariable Long itemId) {
+        try {
+            List<CommentResponse> itemCommentResponseList = itemService.getItemComments(itemId);
+            return new BaseResponse<>(itemCommentResponseList);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 6.11 거래 댓글 삭제 api
+     */
+    @PatchMapping("comment/{itemCommentId}")
+    @Operation(summary = "6.11 comment delete API", description = "6.11 거래 댓글 삭제")
+    public BaseResponse<String> deleteItemComment(@PathVariable Long itemCommentId) {
+        try {
+            String deleteItemComment = itemService.deleteItemComment(itemCommentId);
+            return new BaseResponse<>(deleteItemComment);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }
