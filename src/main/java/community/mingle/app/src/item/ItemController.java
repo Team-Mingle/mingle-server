@@ -121,4 +121,19 @@ public class ItemController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 6.11 거래 댓글 삭제 api
+     */
+
+    @PatchMapping("comment/{itemCommentId}")
+    @Operation(summary = "6.11 comment delete API", description = "6.11 거래 댓글 삭제")
+    public BaseResponse<String> deleteItemComment(@PathVariable Long itemCommentId) {
+        try {
+            String deleteItemComment = itemService.deleteItemComment(itemCommentId);
+            return new BaseResponse<>(deleteItemComment);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

@@ -142,6 +142,10 @@ public class ItemRepository {
     }
 
 
-
-
+    public void deleteItemComment(Long itemCommentId) {
+        ItemComment itemComment = em.createQuery("select ic from ItemComment ic where ic.id = :itemCommentId", ItemComment.class)
+                .setParameter("itemCommentId", itemCommentId)
+                .getSingleResult();
+        em.remove(itemComment);
+    }
 }

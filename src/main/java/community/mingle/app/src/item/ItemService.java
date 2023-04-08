@@ -301,4 +301,13 @@ public class ItemService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public String deleteItemComment(Long itemCommentId) throws BaseException {
+        try {
+            itemRepository.deleteItemComment(itemCommentId);
+            return "삭제에 성공했습니다.";
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
