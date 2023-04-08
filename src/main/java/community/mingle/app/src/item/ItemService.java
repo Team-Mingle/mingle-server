@@ -189,20 +189,8 @@ public class ItemService {
             ItemComment comment = ItemComment.createComment(item, member, postItemCommentRequest.getContent(), postItemCommentRequest.getParentCommentId(), postItemCommentRequest.getMentionId(), postItemCommentRequest.isAnonymous(), anonymousId);
             System.out.println(comment);
             itemRepository.saveItemComment(comment);
-            sendItemPush(item, postItemCommentRequest, member, comment);
-            //알림 저장
-//            TotalNotification totalNotification = TotalNotification.saveTotalNotification(item, item.getMember(),comment);
-//            if (item.getMember().getTotalNotifications().size() > 20) {
-//                itemRepository.deleteTotalNotification(item.getMember().getTotalNotifications().get(0).getId());
-////                List<TotalNotification> totalNotifications = item.getMember().getTotalNotifications();
-////                totalNotifications.remove(0);
-////                item.getMember().deleteTotalNotification(totalNotifications);
-//
-//            }
-//            memberRepository.saveTotalNotification(totalNotification);
-
+            sendItemPush(item, postItemCommentRequest, member, comment); //알림 저장 포함
             PostItemCommentResponse postItemCommentResponse = new PostItemCommentResponse(anonymousId, comment, item.getMember().getId());
-
             return postItemCommentResponse;
 
         } catch (Exception e) {
@@ -214,13 +202,9 @@ public class ItemService {
     @Transactional
     public void sendItemPush(Item item, PostItemCommentRequest postItemCommentRequest, Member creatorMember, ItemComment comment) throws IOException {
         Member itemMember = item.getMember();
-
-        //이거 두개는 원래 죽어있는게 맞겠지? 아ㅏ그르네
-//        Member parentMember = commentRepository.findTotalCommentById(postItemCommentRequest.getParentCommentId()).getMember(); //패런츠 커멘트가 없는 놈한테도 페런츠 커멘트 아이디를 가져오려고 함 (ㅁㅊ놈)
-//        Member mentionMember = commentRepository.findTotalCommentById(postItemCommentRequest.getMentionId()).getMember();
-        String messageTitle = "중고장터";
+        String messageTitle = "거래게시판";
         if (postItemCommentRequest.getParentCommentId() == null) {
-            if (itemMember.getId() == creatorMember.getId()) {
+            if (Objects.equals(itemMember.getId(), creatorMember.getId())) {
                 return;
             }
             else {
@@ -247,12 +231,12 @@ public class ItemService {
             map.put(mentionMember, "mentionMemberId");
             map.put(creatorMember, "creatorMemberId");
             for (Member member : map.keySet()) {
-                if (map.get(member) == "creatorMemberId") {
+                if (Objects.equals(map.get(member), "creatorMemberId")) {
                     continue;
                 }else{
                     firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postItemCommentRequest.getContent(), TableType.Item, item.getId());
                     //알림 저장
-                    ItemNotification itemNotification = ItemNotification.saveItemNotification(item, itemMember,comment);
+                    ItemNotification itemNotification = ItemNotification.saveItemNotification(item, member,comment);
                     itemRepository.saveItemNotification(itemNotification);
                     if (itemMember.getTotalNotifications().size() +itemMember.getUnivNotifications().size()+itemMember.getItemNotifications().size()> 20) {
                         itemRepository.deleteItemNotification(itemMember.getItemNotifications().get(0).getId());
@@ -268,12 +252,9 @@ public class ItemService {
         if (item == null) {
             throw new BaseException(POST_NOT_EXIST);
         }
-        if (item.getStatus().equals(REPORTED) || item.getStatus().equals(DELETED)) {
+        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
             return new ArrayList<>();
         }
-//        if (item.getStatus().equals(PostStatus.REPORTED) || item.getStatus().equals(PostStatus.INACTIVE)) {
-//            throw new BaseException(REPORTED_DELETED_POST);
-//        }
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         try {
             //1. postId 의 댓글, 대댓글 리스트 각각 가져오기
