@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -508,5 +509,14 @@ public class MemberService {
     }
 
 
-
+    public void sendPushNotificationToAll(SendPushNotificationRequest request) throws BaseException {
+        List<String> allFcmToken = memberRepository.findAllFcmToken();
+        try {
+            for (String fcmToken : allFcmToken) {
+                    fcmService.sendMessageTo(fcmToken, request.getTitle(), request.getBody(), TableType.TotalPost, request.getPostId());
+            }
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

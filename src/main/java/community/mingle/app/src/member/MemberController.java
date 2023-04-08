@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static community.mingle.app.config.BaseResponseStatus.EMAIL_EMPTY_ERROR;
-import static community.mingle.app.config.BaseResponseStatus.PASSWORD_EMPTY_ERROR;
+import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Tag(name = "member", description = "유저 관련 API")
 @ApiResponses(value = {
@@ -392,6 +391,20 @@ public class MemberController {
         try {
             memberService.logout();
             return new BaseResponse<>("로그아웃에 성공하였습니다.");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+    /**
+     * 2.15 밍글소식 푸시알림 API
+     */
+    @PostMapping("/send-notification")
+    public BaseResponse<String> sendPushNotificationToAll( @RequestBody SendPushNotificationRequest request) {
+        try {
+            memberService.sendPushNotificationToAll(request);
+            return new BaseResponse<>("푸시알림 보내기 완료");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
