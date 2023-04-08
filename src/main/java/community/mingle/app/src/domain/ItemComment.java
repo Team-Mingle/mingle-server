@@ -1,5 +1,6 @@
 package community.mingle.app.src.domain;
 
+import community.mingle.app.src.domain.Total.TotalComment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,4 +57,20 @@ public class ItemComment {
 
 //    @OneToMany(mappedBy = "item_comment")
 //    private List<ItemComment> itemCommentLikes = new ArrayList<>();
+
+    public static ItemComment createComment(Item item, Member member, String content, Long parentCommentId, Long mentionId, boolean isAnonymous, Long anonymousId) {
+        ItemComment itemComment = new ItemComment();
+        itemComment.setItem(item);
+        itemComment.setMember(member);
+        itemComment.setContent(content);
+        itemComment.setParentCommentId(parentCommentId);
+        itemComment.setMentionId(mentionId);
+        itemComment.setAnonymous(isAnonymous);
+        itemComment.setAnonymousId(anonymousId);
+        itemComment.createdAt = LocalDateTime.now();
+        itemComment.updatedAt = LocalDateTime.now();
+        itemComment.status = PostStatus.ACTIVE;
+
+        return itemComment;
+    }
 }

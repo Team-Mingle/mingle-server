@@ -142,7 +142,7 @@ public class CommentRepository {
     }
 
 
-    public void deleteLikeTotal(Long commentId, Long memberId) {
+    public void  deleteLikeTotal(Long commentId, Long memberId) {
 //        TotalCommentLike findComment = em.find(TotalCommentLike.class, commentIdx);
         TotalCommentLike findComment = em.createQuery("select tcp from TotalCommentLike tcp where tcp.totalComment.id =:commentId and tcp.member.id =:memberId", TotalCommentLike.class)
                         .setParameter("commentId", commentId)
