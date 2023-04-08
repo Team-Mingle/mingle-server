@@ -5,6 +5,7 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.auth.model.PostLoginResponse;
+import community.mingle.app.src.domain.ItemNotification;
 import community.mingle.app.src.domain.ReportNotification;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Univ.UnivNotification;
@@ -336,6 +337,7 @@ public class MemberController {
             List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
             List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
             List<ReportNotification> reportNotificationList = memberService.getReportNotifications();
+            List<ItemNotification> itemNotificationList = memberService.getItemNotifications();
 
             List<NotificationDTO> result_1 = totalNotificationList.stream()
                     .map(t-> new NotificationDTO(t))
