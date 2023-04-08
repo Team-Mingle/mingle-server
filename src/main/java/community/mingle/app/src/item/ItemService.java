@@ -2,14 +2,13 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.comment.CommentRepository;
-import community.mingle.app.src.comment.model.PostTotalCommentResponse;
 import community.mingle.app.src.domain.*;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.src.item.model.*;
 import community.mingle.app.src.member.MemberRepository;
 import community.mingle.app.src.post.PostRepository;
+import community.mingle.app.src.post.model.CoCommentDTO;
+import community.mingle.app.src.post.model.CommentResponse;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.config.BaseResponseStatus.CREATE_FAIL_POST;
+import static community.mingle.app.src.domain.PostStatus.DELETED;
+import static community.mingle.app.src.domain.PostStatus.REPORTED;
 
 @Service
 @Transactional(readOnly = true)
@@ -98,7 +96,7 @@ public class ItemService {
             if (item == null) {
                 throw new BaseException(POST_NOT_EXIST);
             }
-            ItemLike itemLike = new ItemLike(member, item);
+            ItemLike itemLike = ItemLike.likesItem(member, item);
             itemRepository.save(itemLike);
             return "중고거래 게시물 찜 성공";
         } catch (Exception e) {
@@ -182,7 +180,7 @@ public class ItemService {
             ItemComment comment = ItemComment.createComment(item, member, postItemCommentRequest.getContent(), postItemCommentRequest.getParentCommentId(), postItemCommentRequest.getMentionId(), postItemCommentRequest.isAnonymous(), anonymousId);
             System.out.println(comment);
             itemRepository.saveItemComment(comment);
-            sendTotalPush(item, postItemCommentRequest, member, comment);
+            sendItemPush(item, postItemCommentRequest, member, comment);
             //알림 저장
 //            TotalNotification totalNotification = TotalNotification.saveTotalNotification(item, item.getMember(),comment);
 //            if (item.getMember().getTotalNotifications().size() > 20) {
@@ -194,9 +192,9 @@ public class ItemService {
 //            }
 //            memberRepository.saveTotalNotification(totalNotification);
 
+            PostItemCommentResponse postItemCommentResponse = new PostItemCommentResponse(anonymousId, comment, item.getMember().getId());
 
-            PostTotalCommentResponse postTotalCommentResponse = new PostTotalCommentResponse(anonymousId, comment, item.getMember().getId());
-            return postTotalCommentResponse;
+            return postItemCommentResponse;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,37 +203,37 @@ public class ItemService {
     }
 
     @Transactional
-    public void sendTotalPush(Item item, PostItemCommentRequest postItemCommentRequest, Member creatorMember, ItemComment comment) throws IOException {
-        Member postMember = item.getMember();
+    public void sendItemPush(Item item, PostItemCommentRequest postItemCommentRequest, Member creatorMember, ItemComment comment) throws IOException {
+        Member itemMember = item.getMember();
 
         //이거 두개는 원래 죽어있는게 맞겠지? 아ㅏ그르네
 //        Member parentMember = commentRepository.findTotalCommentById(postItemCommentRequest.getParentCommentId()).getMember(); //패런츠 커멘트가 없는 놈한테도 페런츠 커멘트 아이디를 가져오려고 함 (ㅁㅊ놈)
 //        Member mentionMember = commentRepository.findTotalCommentById(postItemCommentRequest.getMentionId()).getMember();
         String messageTitle = "중고장터";
         if (postItemCommentRequest.getParentCommentId() == null) {
-            if (postMember.getId() == creatorMember.getId()) {
+            if (itemMember.getId() == creatorMember.getId()) {
                 return;
             }
             else {
                 //이게 방금 살린거
-                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postItemCommentRequest.getContent(), TableType.Item, item.getId());
+                firebaseCloudMessageService.sendMessageTo(itemMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postItemCommentRequest.getContent(), TableType.Item, item.getId());
                 //알림 저장
-                TotalNotification totalNotification = TotalNotification.saveTotalNotification(item, postMember,comment);
-                memberRepository.saveTotalNotification(totalNotification);
-                if (postMember.getTotalNotifications().size() +postMember.getUnivNotifications().size()> 20) {
-                    commentRepository.deleteTotalNotification(postMember.getTotalNotifications().get(0).getId());
+                ItemNotification itemNotification = ItemNotification.saveItemNotification(item, itemMember,comment);
+                itemRepository.saveItemNotification(itemNotification);
+                if (itemMember.getTotalNotifications().size() +itemMember.getUnivNotifications().size()+itemMember.getItemNotifications().size()> 20) {
+                    itemRepository.deleteItemNotification(itemMember.getItemNotifications().get(0).getId());
                 }
             }
         } else if (postItemCommentRequest.getParentCommentId()!= null) {
-            Member parentMember = commentRepository.findTotalCommentById(postItemCommentRequest.getParentCommentId()).getMember();
+            Member parentMember = itemRepository.findItemCommentById(postItemCommentRequest.getParentCommentId()).getMember();
             Member mentionMember;
             if (postItemCommentRequest.getMentionId() == null) {
                 mentionMember = null;
             } else {
-                mentionMember = commentRepository.findTotalCommentById(postItemCommentRequest.getMentionId()).getMember();
+                mentionMember = itemRepository.findItemCommentById(postItemCommentRequest.getMentionId()).getMember();
             }
             Map<Member, String> map = new HashMap<>();
-            map.put(postMember, "postMemberId");
+            map.put(itemMember, "postMemberId");
             map.put(parentMember, "parentMemberId");
             map.put(mentionMember, "mentionMemberId");
             map.put(creatorMember, "creatorMemberId");
@@ -245,14 +243,62 @@ public class ItemService {
                 }else{
                     firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postItemCommentRequest.getContent(), TableType.Item, item.getId());
                     //알림 저장
-                    TotalNotification totalNotification = TotalNotification.saveTotalNotification(item, member,comment);
-                    memberRepository.saveTotalNotification(totalNotification);
-                    if ((member.getTotalNotifications().size()+member.getUnivNotifications().size())> 20) {
-                        commentRepository.deleteTotalNotification(member.getTotalNotifications().get(0).getId());
+                    ItemNotification itemNotification = ItemNotification.saveItemNotification(item, itemMember,comment);
+                    itemRepository.saveItemNotification(itemNotification);
+                    if (itemMember.getTotalNotifications().size() +itemMember.getUnivNotifications().size()+itemMember.getItemNotifications().size()> 20) {
+                        itemRepository.deleteItemNotification(itemMember.getItemNotifications().get(0).getId());
                     }
                 }
             }
         }
 
+    }
+
+    public List<CommentResponse> getItemComments(Long itemId) throws BaseException {
+        Item item = itemRepository.findItemById(itemId);
+        if (item == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        if (item.getStatus().equals(REPORTED) || item.getStatus().equals(DELETED)) {
+            return new ArrayList<>();
+        }
+//        if (item.getStatus().equals(PostStatus.REPORTED) || item.getStatus().equals(PostStatus.INACTIVE)) {
+//            throw new BaseException(REPORTED_DELETED_POST);
+//        }
+        Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
+        try {
+            //1. postId 의 댓글, 대댓글 리스트 각각 가져오기
+            List<ItemComment> itemComments = itemRepository.findItemComments(itemId, memberIdByJwt); //댓글
+            List<ItemComment> itemCoComments = itemRepository.findItemCoComments(itemId, memberIdByJwt); //대댓글
+            //2. 댓글 + 대댓글 DTO 생성
+            List<CommentResponse> univCommentResponseList = new ArrayList<>();
+            //3. 댓글 리스트 돌면서 댓글 하나당 대댓글 리스트 넣어서 합쳐주기
+            for (ItemComment c : itemComments) {
+                //parentComment 하나당 해당하는 ItemComment 타입의 대댓글 찾아서 리스트 만들기
+                List<ItemComment> CoCommentList = itemCoComments.stream()
+                        .filter(cc -> c.getId().equals(cc.getParentCommentId()))
+//                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE)) // 더 추가: 대댓글 active 인거만 가져오기
+                        .collect(Collectors.toList());
+
+                //11/25 추가: 삭제된 댓글 표시 안하기 - 대댓글 없는 댓글 그냥 삭제
+                if ((c.getStatus() == PostStatus.INACTIVE ) && CoCommentList.size() == 0) {
+                    continue;
+                }
+
+                //댓글 하나당 만들어진 대댓글 리스트를 대댓글 DTO 형태로 변환
+                List<CoCommentDTO> coCommentDTO = CoCommentList.stream()
+                        .filter(cc -> cc.getStatus().equals(PostStatus.ACTIVE) || cc.getStatus().equals(REPORTED) || cc.getStatus().equals(DELETED)) //11/25: 대댓글 삭제시 그냥 삭제. //2/20: 신고된 댓글 표시
+                        .map(cc -> new CoCommentDTO(itemRepository.findItemCommentById(cc.getMentionId()), cc, memberIdByJwt, item.getMember().getId()))
+                        .collect(Collectors.toList());
+                /** 쿼리문 나감. 결론: for 문 안에서 쿼리문 대신 DTO 안에서 해결 */
+                //boolean isLiked = postRepository.checkCommentIsLiked(c.getId(), memberIdByJwt);
+                //4. 댓글 DTO 생성 후 최종 DTOList 에 넣어주기
+                CommentResponse univCommentResponse = new CommentResponse(c, coCommentDTO, memberIdByJwt, item.getMember().getId());
+                univCommentResponseList.add(univCommentResponse);
+            }
+            return univCommentResponseList;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }

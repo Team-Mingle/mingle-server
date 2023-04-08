@@ -1,7 +1,6 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.src.domain.*;
-import community.mingle.app.src.domain.Total.TotalComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +16,7 @@ public class ItemRepository {
     private final EntityManager em;
 
     public List<Item> findItems( Long itemId, Long memberIdByJwt) {
-        return em.createQuery("select i from Item i join feich i.member as m where i.status <> :status1 and i.status <> :status2 and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id < :itemId order by i.createdAt desc", Item.class)
+        return em.createQuery("select i from Item i join fetch i.member as m where i.status <> :status1 and i.status <> :status2 and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id < :itemId order by i.createdAt desc", Item.class)
                 .setParameter("status1", ItemStatus.INACTIVE)
                 .setParameter("status2",ItemStatus.REPORTED)
                 .setParameter("memberIdByJwt", memberIdByJwt)
@@ -26,11 +25,11 @@ public class ItemRepository {
                 .getResultList();
     }
 
-    public ItemLike findItemLike(Long itemId, Long memberIdByJwt) {
+    public List<ItemLike> findItemLike(Long itemId, Long memberIdByJwt) {
         return em.createQuery("select i from ItemLike i where i.id = :itemId and i.member.id = :memberIdByJwt", ItemLike.class)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("itemId", itemId)
-                .getResultList().get(0);
+                .getResultList();
     }
 
     public Long save(Item item) {
@@ -48,7 +47,7 @@ public class ItemRepository {
     }
 
     public Item findItemByIdAndMemberId(Long itemId, Long memberIdByJwt) {
-        return em.createQuery("select i from Item i join feich i.member as m where i.status <> :status1 and i.status <> :status2 and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id = :itemId", Item.class)
+        return em.createQuery("select i from Item i join fetch i.member as m where i.status <> :status1 and i.status <> :status2 and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id = :itemId", Item.class)
                 .setParameter("status1", ItemStatus.INACTIVE)
                 .setParameter("status2",ItemStatus.REPORTED)
                 .setParameter("memberIdByJwt", memberIdByJwt)
@@ -108,4 +107,41 @@ public class ItemRepository {
     public void saveItemComment(ItemComment comment) {
         em.persist(comment);
     }
+
+    public void saveItemNotification(ItemNotification itemNotification) {
+        em.persist(itemNotification);
+    }
+
+    public void deleteItemNotification(Long itemNotificationId) {
+        ItemNotification itemNotification = em.find(ItemNotification.class, itemNotificationId);
+        em.remove(itemNotification);
+    }
+
+    public ItemComment findItemCommentById(Long id) {
+        return em.find(ItemComment.class, id);
+    }
+
+    public List<ItemComment> findItemComments(Long itemId, Long memberIdByJwt) {
+        List<ItemComment> itemCommentList = em.createQuery("select ic from ItemComment ic join ic.item as i" +
+                        " where i.id = :itemId and ic.parentCommentId is null and ic.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt)" +
+                        " order by ic.createdAt asc ", ItemComment.class)
+                .setParameter("itemId", itemId)
+                .setParameter("memberIdByJwt", memberIdByJwt)
+                .getResultList();
+        return itemCommentList;
+    }
+
+    public List<ItemComment> findItemCoComments(Long itemId, Long memberIdByJwt) {
+        List<ItemComment> univCoCommentList = em.createQuery("select ic from ItemComment ic join ic.item as i " +
+                        " where i.id = :itemId and ic.parentCommentId is not null and ic.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) " +
+                        " order by ic.createdAt asc", ItemComment.class)
+                .setParameter("itemId", itemId)
+                .setParameter("memberIdByJwt", memberIdByJwt)
+                .getResultList();
+        return univCoCommentList;
+    }
+
+
+
+
 }

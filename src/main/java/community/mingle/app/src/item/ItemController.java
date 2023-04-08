@@ -9,10 +9,7 @@ import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ItemListResponse;
 import community.mingle.app.src.item.model.PostItemCommentRequest;
 import community.mingle.app.src.item.model.PostItemCommentResponse;
-import community.mingle.app.src.post.model.CreatePostRequest;
-import community.mingle.app.src.post.model.CreatePostResponse;
-import community.mingle.app.src.post.model.PostListDTO;
-import community.mingle.app.src.post.model.PostListResponse;
+import community.mingle.app.src.post.model.*;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -105,6 +102,23 @@ public class ItemController {
     public BaseResponse<PostItemCommentResponse> createItemComment(@RequestBody @Valid PostItemCommentRequest postItemCommentRequest) throws BaseException {
         try {
             PostItemCommentResponse result = itemService.createItemComment(postItemCommentRequest);
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 6.10 거래 댓글 조회 api
+     */
+    @GetMapping("/comment/{itemId}")
+    @Operation(summary = "6.10 comment get API", description = "6.10 거래 댓글 조회")
+    public BaseResponse<List<CommentResponse>> itemComment(@PathVariable Long itemId) {
+        try {
+            List<CommentResponse> itemCommentResponseList = itemService.getItemComments(itemId);
+            return new BaseResponse<>(itemCommentResponseList);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 }

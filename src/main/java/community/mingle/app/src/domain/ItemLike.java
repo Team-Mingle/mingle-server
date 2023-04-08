@@ -29,9 +29,10 @@ public class ItemLike {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
-    public ItemLike(Member member, Item item) {
+    public static ItemLike likesItem(Member member, Item item) {
         ItemLike itemLike = new ItemLike();
-        itemLike.member = member;
-        itemLike.item = item;
+        itemLike.setMember(member);
+        itemLike.setItem(item);
+        return itemLike;
     }
 }

@@ -25,10 +25,6 @@ public class ItemImg {
     @NotNull
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
@@ -38,7 +34,6 @@ public class ItemImg {
         itemImg.setItem(item);
         itemImg.setImgUrl(fileName);
         itemImg.setCreatedAt(LocalDateTime.now());
-        itemImg.setUpdatedAt(LocalDateTime.now());
         return itemImg;
     }
 }

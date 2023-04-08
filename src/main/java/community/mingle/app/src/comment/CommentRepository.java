@@ -2,6 +2,7 @@ package community.mingle.app.src.comment;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponseStatus;
+import community.mingle.app.src.domain.ItemNotification;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
