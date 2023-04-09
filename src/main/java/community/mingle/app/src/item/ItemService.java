@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.config.BaseResponseStatus.CREATE_FAIL_POST;
@@ -359,6 +360,44 @@ public class ItemService {
         item.updateItemPost(request);
     }
 
+    @Transactional
+    public void modifyItemPostWithImage(Long itemId, ModifyItemPostRequest request) throws BaseException {
+        Item item = checkMemberAndItemIsValidAndByAuthor(itemId);
+        item.updateItemPost(request);
+        List<ItemImg> itemImgList = item.getItemImgList();
+        // image to add only
+        if ((request.getItemImageUrlsToDelete() == null || request.getItemImageUrlsToDelete().isEmpty()) && (request.getItemImageUrlsToAdd() != null)) {
+            createItemImage(request, item);
+        }
+        else { //images to delete&add exists
+            //1. remove in ItemImg
+//            //List<ItemImg> itemImgToDelete = imgUrlList.stream().filter(request.getItemImageUrlsToDelete()::contains).collect(Collectors.toList()); //ItemImg imgUrl 이랑 비교해야함..
+            List<ItemImg> itemImgToDelete = itemImgList.stream().filter(itemImg -> request.getItemImageUrlsToDelete().contains(itemImg.getImgUrl()))
+                    .collect(Collectors.toList());
+            //2. remove in s3
+            for (ItemImg itemImg : itemImgToDelete) {
+                itemImg.deleteItemImage();
+                String imgUrl = itemImg.getImgUrl();
+                String fileName = imgUrl.substring(imgUrl.lastIndexOf("/item/") + 6);
+                s3Service.deleteFile(fileName, "item");
+            }
+            //3. add if ItemImageUrlsToAdd exists
+            createItemImage(request, item);
+        }
+    }
+
+    @Transactional
+    void createItemImage(ModifyItemPostRequest request, Item item) throws BaseException {
+        try {
+            List<String> fileNameList = s3Service.uploadFile(request.getItemImageUrlsToAdd(), "item");
+            for (String fileName : fileNameList) {
+                ItemImg itemImg = ItemImg.createItemImg(item, fileName);
+                itemRepository.saveImg(itemImg);
+            }
+        } catch (Exception e) {
+            throw new BaseException(UPLOAD_FAIL_IMAGE);
+        }
+    }
 
     /**
      * 6.5 거래 게시물 삭제 API

@@ -69,7 +69,7 @@ public class S3Service {
     }
 
     public void deleteFile(String fileName, String dirName) throws BaseException {
-        String fileRename = dirName + "/" + fileName;
+        String fileRename = dirName + "/" + fileName; //key
         try{
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileRename));
         } catch (Exception e) {
