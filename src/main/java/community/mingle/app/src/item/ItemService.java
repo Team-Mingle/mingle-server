@@ -61,6 +61,9 @@ public class ItemService {
         return new ItemListResponse(itemListDTOList);
     }
 
+    /**
+     * 6.2 거래 게시물 생성
+     */
     @Transactional
     public String createItemPost(CreateItemRequest createItemRequest) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
@@ -82,7 +85,7 @@ public class ItemService {
                         itemRepository.saveImg(itemImg);
                     }
                 } catch (Exception e) {
-                    postRepository.deleteUnivPost(id);
+                    itemRepository.deleteItem(id);
                     throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }

@@ -163,4 +163,8 @@ public class ItemRepository {
                 .getResultList();
         return itemLikeList.size() != 0;
     }
+
+    public void deleteItem(Long id) {
+        em.remove(id);
+    }
 }
