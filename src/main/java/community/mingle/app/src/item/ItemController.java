@@ -94,14 +94,23 @@ public class ItemController {
      */
     @PatchMapping("{itemId}")
     @Operation(summary = "6.4 modifyItemPost API", description = "6.4 거래 게시물 수정 API")
-    public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @RequestBody ModifyItemPostRequest request) {
+    public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @ModelAttribute ModifyItemPostRequest request) {
         if (request.getTitle() == null || request.getContent() == null || request.getPrice() == null || request.getChatUrl() == null || request.getLocation() == null)
             return new BaseResponse<>(BaseResponseStatus.FIELD_EMPTY_ERROR);
-        try {
-            itemService.modifyItemPost(itemId, request);
-            return new BaseResponse<>("거래 게시물 수정 성공");
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
+        if (request.getItemImageUrlsToAdd() == null && request.getItemImageUrlsToDelete() == null) {
+            try {
+                itemService.modifyItemPost(itemId, request);
+                return new BaseResponse<>("거래 게시물 수정 성공");
+            } catch (BaseException e) {
+                return new BaseResponse<>(e.getStatus());
+            }
+        } else { //사진 같이 수정하는거
+            try {
+                itemService.modifyItemPostWithImage(itemId, request);
+                return new BaseResponse<>("거래 게시물 수정 성공");
+            } catch (BaseException e) {
+                return new BaseResponse<>(e.getStatus());
+            }
         }
     }
 
