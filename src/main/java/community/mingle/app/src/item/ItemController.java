@@ -1,6 +1,5 @@
 package community.mingle.app.src.item;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
@@ -20,12 +19,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag(name = "item", description = "중고거래 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -71,7 +68,6 @@ public class ItemController {
     }
 
 
-
     /**
      * 6.3 거래 게시판 글 상세 api
      */
@@ -88,9 +84,9 @@ public class ItemController {
         }
     }
 
+
     /**
      * 6.4 거래 게시물 수정 api
-     * 사진 수정 논의 필요
      */
     @PatchMapping("{itemId}")
     @Operation(summary = "6.4 modifyItemPost API", description = "6.4 거래 게시물 수정 API")
@@ -107,13 +103,12 @@ public class ItemController {
         } else { //사진 같이 수정하는거
             try {
                 itemService.modifyItemPostWithImage(itemId, request);
-                return new BaseResponse<>("거래 게시물 수정 성공");
+                return new BaseResponse<>("거래 게시물 /사진 수정 성공");
             } catch (BaseException e) {
                 return new BaseResponse<>(e.getStatus());
             }
         }
     }
-
 
     /**
      * 6.5 거래 게시물 삭제 API
@@ -128,7 +123,6 @@ public class ItemController {
             return new BaseResponse<>(e.getStatus());
         }
     }
-
 
 
     /**
