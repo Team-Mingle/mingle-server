@@ -357,6 +357,7 @@ public class ItemService {
         }
         if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
             return new ArrayList<>();
+
         }
         Long memberIdByJwt = jwtService.getUserIdx();
         try {
