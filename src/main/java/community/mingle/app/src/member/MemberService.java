@@ -459,6 +459,14 @@ public class MemberService {
         }
     }
 
+
+    /** 거래 게시판 알림 리스트 추가**/
+//    public List<ItemNotification> getItemNotifications() throws BaseException {
+//
+//
+//    }
+
+
     /**
      * 2.13 알림 읽기 API
      */

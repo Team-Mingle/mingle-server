@@ -1,5 +1,6 @@
 package community.mingle.app.src.post.model;
 
+import community.mingle.app.src.domain.ItemComment;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
@@ -130,6 +131,73 @@ public class CommentResponse {
                 isLiked = false;
             }
         }
+        if (Objects.equals(commentWriter, memberId)) {
+            isMyComment = true;
+        }
+        if (Objects.equals(commentWriter, memberId)) {
+            isMyComment = true;
+        }
+        if (Objects.equals(commentWriter, authorId)){
+            isCommentFromAuthor = true;
+        } else {
+            isCommentFromAuthor = false;
+        }
+
+        if (c.getStatus() == PostStatus.INACTIVE) {
+            isCommentDeleted = true;
+        } else {
+            isCommentDeleted = false;
+        }
+
+        if (c.getStatus() == PostStatus.REPORTED) {
+            isCommentReported = true;
+        } else {
+            isCommentReported = false;
+        }
+        createdAt = convertToDateAndTime(c.getCreatedAt());
+        coCommentsList = cc;
+        isAdmin = c.getMember().getRole().equals("ADMIN");
+    }
+
+    public CommentResponse(ItemComment c, List<CoCommentDTO> cc, Long memberId, Long authorId) { //univ
+        Long commentWriter = c.getMember().getId();
+        commentId = c.getId();
+
+        this.commentId = c.getId();
+        if (c.isAnonymous() == false && !(Objects.equals(commentWriter, authorId))) {
+            this.nickname = c.getMember().getNickname();
+        } else if (c.isAnonymous() && c.getAnonymousId() != 0L){
+            this.nickname = "익명 " + c.getAnonymousId();
+        } else if (!c.isAnonymous() && Objects.equals(commentWriter, authorId)) {
+            this.nickname = c.getMember().getNickname() + "(글쓴이)";
+        } else if (c.isAnonymous() && Objects.equals(commentWriter, authorId)) {
+            this.nickname = "익명(글쓴이)";
+        }
+
+        if (c.getStatus() == PostStatus.REPORTED) {
+            content = "신고된 댓글입니다.";
+            nickname = "(비공개됨)";
+        } else if (c.getStatus() == PostStatus.INACTIVE) {
+            content = "삭제된 댓글입니다.";
+            nickname = "(비공개됨)";
+        }
+        else if (c.getStatus() == PostStatus.DELETED) {
+            content = "운영규칙 위반에 따라 삭제된 글입니다.";
+            nickname = "(비공개됨)";
+        } else {
+            content = c.getContent();
+        }
+
+//        likeCount = c.getUnivCommentLikes().size();
+//
+//        for (UnivCommentLike ucl : c.getUnivCommentLikes()) { //영속성
+//            if (Objects.equals(ucl.getMember().getId(), memberId)) { //배치사이즈?
+//                isLiked = true;
+//                break;
+//            } else {
+//                isLiked = false;
+//            }
+//        }
         if (Objects.equals(commentWriter, memberId)) {
             isMyComment = true;
         }

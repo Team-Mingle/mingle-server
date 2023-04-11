@@ -2,6 +2,7 @@ package community.mingle.app.src.comment;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponseStatus;
+import community.mingle.app.src.domain.ItemNotification;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -142,7 +143,7 @@ public class CommentRepository {
     }
 
 
-    public void deleteLikeTotal(Long commentId, Long memberId) {
+    public void  deleteLikeTotal(Long commentId, Long memberId) {
 //        TotalCommentLike findComment = em.find(TotalCommentLike.class, commentIdx);
         TotalCommentLike findComment = em.createQuery("select tcp from TotalCommentLike tcp where tcp.totalComment.id =:commentId and tcp.member.id =:memberId", TotalCommentLike.class)
                         .setParameter("commentId", commentId)

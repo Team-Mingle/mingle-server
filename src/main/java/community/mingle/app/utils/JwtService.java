@@ -46,7 +46,7 @@ public class JwtService {
         return Long.valueOf(
                 Jwts.parser()
                         .setSigningKey(accessKey.getBytes())
-                        .parseClaimsJws(accessToken)
+                        .parseClaimsJws(accessToken) //io.jsonwebtoken.ExpiredJwtException: JWT expired at 2023-02-17T17:15:04Z. Current time: 2023-04-06T00:51:09Z, a difference of 4088165969 milliseconds.  Allowed clock skew: 0 milliseconds.
                         .getBody()
                         .get("MEMBER_ID", String.class));
     }

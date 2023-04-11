@@ -73,7 +73,8 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<UnivNotification> univNotifications= new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "member")
+    private List<ItemNotification> itemNotifications= new ArrayList<>();
     @OneToMany(mappedBy = "member")
     private List<TotalBlind> totalBlindPost = new ArrayList<>();
 
@@ -85,6 +86,14 @@ public class Member {
 
     @OneToMany(mappedBy = "blockerMember")
     private List<BlockMember> blockerMember= new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "member")
+    private List<ItemComment> itemCommentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Item> itemList = new ArrayList<>();
+
 
     private LocalDateTime agreedAt;
     private LocalDateTime createdAt;

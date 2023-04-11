@@ -587,7 +587,7 @@ public class PostService {
                     pi.deleteTotalImage();
 
                     String imgUrl = pi.getImgUrl();
-                    String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/total/") + 11);
+                    String fileName = imgUrl.substring(imgUrl.lastIndexOf("/total/") + 7);
                     s3Service.deleteFile(fileName, "total");
                 }
             }
@@ -637,7 +637,7 @@ public class PostService {
                     pi.deleteUnivImage();
 
                     String imgUrl = pi.getImgUrl();
-                    String fileName = imgUrl.substring(imgUrl.lastIndexOf(".com/univ/") + 10);
+                    String fileName = imgUrl.substring(imgUrl.lastIndexOf("/univ/") + 6);
                     s3Service.deleteFile(fileName, "univ");
                 }
             }
@@ -1153,7 +1153,7 @@ public class PostService {
     }
 
     @Transactional
-    public void executeMember(Long memberId) throws IOException {
+    public void executeMember(Long memberId) throws IOException, BaseException {
         Member member = postRepository.findMemberbyId(memberId);
         member.modifyStatusAsReported();
         String title = "밍글 계정 사용 정지 알림";
