@@ -1,9 +1,6 @@
 package community.mingle.app.src.member;
 
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.Report;
-import community.mingle.app.src.domain.ReportNotification;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.member.model.*;
@@ -318,6 +315,12 @@ public class MemberRepository {
         em.persist(totalNotification);
     }
 
+    public List<String> findAllFcmToken() {
+        List<String> resultList = em.createQuery("select m.fcmToken from Member m where m.fcmToken is not null and m.status = :status", String.class)
+                .setParameter("status", UserStatus.ACTIVE)
+                .getResultList();
+        return resultList;
+    }
 
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberIdByJwt) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ
