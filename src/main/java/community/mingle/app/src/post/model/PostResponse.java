@@ -145,8 +145,8 @@ public class PostResponse {
             this.content = "사유: " + reportedReason;
         }
         if (totalPost.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 삭제된 글입니다. \n 사유: 이용약관 제 12조 위반";
-            this.content = "";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다. 사유: 이용약관 제 12조 위반";
+            this.content = "사유: 이용약관 제 12조 위반";
         }
         this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
     }
@@ -185,8 +185,8 @@ public class PostResponse {
             this.content = "사유: " + reportedReason;
         }
         if (u.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 삭제된 글입니다. \n 사유: 이용약관 제 12조 위반";
-            this.content = "";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다. 사유: 이용약관 제 12조 위반";
+            this.content = "사유: 이용약관 제 12조 위반";
         }
         this.isAdmin = u.getMember().getRole().equals("ADMIN");
     }
