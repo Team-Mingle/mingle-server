@@ -13,6 +13,7 @@ import community.mingle.app.src.item.model.ItemResponse;
 import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,7 +29,7 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @ApiResponses(value = {
         @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content(schema = @Schema(hidden = true))),
-        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+//        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(hidden = true))),
         @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
 })
 @RestController
@@ -44,6 +45,7 @@ public class ItemController {
      */
     @GetMapping("/list")
     @Operation(summary = "6.1 getItemList API", description = "6.1 거래 게시판 리스트 조회 API")
+    @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = ItemListResponse.class)))
     @ApiResponse(responseCode = "3032", description = "해당 카테고리에 게시물이 없습니다.", content = @Content (schema = @Schema(hidden = true)))
     public BaseResponse<ItemListResponse> getItemList(@RequestParam Long itemId) {
         try {
@@ -62,6 +64,7 @@ public class ItemController {
     @PostMapping("")
     @Operation(summary = "6.2 createItemPost API", description = "6.2 거래 게시판 글 작성 API")
     @ApiResponses(value = {
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3070", description = "이미지 업로드에 실패했습니다,", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3075", description = "최소 1개 이상의 물건 사진을 올려주세요.", content = @Content(schema = @Schema(hidden = true))),
@@ -80,6 +83,7 @@ public class ItemController {
     @GetMapping("{itemId}")
     @Operation(summary = "6.3 getItemPostDetail API", description = "6.3 거래 게시판 글 상세 API")
     @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = ItemResponse.class))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
     })
@@ -100,7 +104,10 @@ public class ItemController {
      */
     @PatchMapping("{itemId}")
     @Operation(summary = "6.4 modifyItemPost API", description = "6.4 거래 게시물 수정 API")
+    @ApiResponses ({
+    @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
     @ApiResponse(responseCode = "2004", description = "필수 항목을 입력해주세요.", content = @Content (schema = @Schema(hidden = true)))
+        })
     public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @ModelAttribute ModifyItemPostRequest request) {
         if (request.getTitle() == null || request.getContent() == null || request.getPrice() == null || request.getChatUrl() == null || request.getLocation() == null)
             return new BaseResponse<>(BaseResponseStatus.FIELD_EMPTY_ERROR);
@@ -126,7 +133,10 @@ public class ItemController {
      */
     @PatchMapping("/status/{itemId}")
     @Operation(summary = "6.5 deleteItemPost API", description = "6.5 거래 게시물 삭제 API")
-    @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true)))
+    @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "3025", description = "게시물 삭제를 실패했습니다.", content = @Content (schema = @Schema(hidden = true)))
+    })
     public BaseResponse<String> deleteItemPost(@PathVariable Long itemId) {
         try {
             itemService.deleteItemPost(itemId);
@@ -143,6 +153,7 @@ public class ItemController {
     @PatchMapping("/item-status/{itemId}")
     @Operation(summary = "6.6 modifyItemStatus API", description = "6.6 판매 상태 변경 API")
     @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3040", description = "게시물 수정 권한이 없습니다.", content = @Content (schema = @Schema(hidden = true))),
@@ -162,6 +173,7 @@ public class ItemController {
     @PostMapping("/like")
     @Operation(summary = "6.7 createItemLike API", description = "6.7 거래 게시물 찜")
     @ApiResponses ({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
     })
@@ -177,6 +189,7 @@ public class ItemController {
      * 6.8 거래 게시물 찜 취소 api
      */
     @DeleteMapping("/unlike")
+    @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class)))
     @Operation(summary = "6.8 itemUnlike API", description = "6.8 거래 게시물 찜 취소")
     public BaseResponse<String> itemUnlike(@RequestParam Long itemId) {
         try {
@@ -192,6 +205,7 @@ public class ItemController {
     @PostMapping("/comment")
     @Operation(summary = "6.9 comment post API", description = "6.9 거래 댓글 작성")
     @ApiResponses(value = {
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = PostItemCommentResponse.class))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "4040", description = "잘못된 parentCommentId / mentionId 입니다.", content = @Content (schema = @Schema(hidden = true)))
     })
@@ -210,6 +224,8 @@ public class ItemController {
     @GetMapping("/comment/{itemId}")
     @Operation(summary = "6.10 comment get API", description = "6.10 거래 댓글 조회")
     @ApiResponses ({
+//            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = CommentResponse.class), array = @ArraySchema())),
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentResponse.class)))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
     })
     public BaseResponse<List<CommentResponse>> itemComment(@PathVariable Long itemId) {
@@ -225,6 +241,7 @@ public class ItemController {
      * 6.11 거래 댓글 삭제 api
      */
     @PatchMapping("comment/{itemCommentId}")
+    @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class)))
     @Operation(summary = "6.11 comment delete API", description = "6.11 거래 댓글 삭제")
     public BaseResponse<String> deleteItemComment(@PathVariable Long itemCommentId) {
         try {
