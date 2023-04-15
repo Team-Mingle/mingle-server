@@ -1,7 +1,12 @@
 package community.mingle.app.src.item.model;
 
 import community.mingle.app.src.domain.Item;
+import community.mingle.app.src.domain.ItemLike;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.Getter;
+
+import java.util.Objects;
+
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
 @Getter
@@ -17,7 +22,9 @@ public class ItemListDTO {
     private String status;
     private String imgThumbnailUrl;
 
-    public ItemListDTO(Item item) {
+    private boolean isLiked;
+
+    public ItemListDTO(Item item, Long memberId) {
         this.id = item.getId();
         this.title = item.getTitle();
         this.price = item.getPrice();
@@ -31,5 +38,7 @@ public class ItemListDTO {
         } else {
             this.imgThumbnailUrl = item.getItemImgList().get(0).getImgUrl();
         }
+        this.isLiked = item.getItemLikeList().stream()
+                .anyMatch(itemLike -> Objects.equals(itemLike.getMember().getId(), memberId));
     }
 }
