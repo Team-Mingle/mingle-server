@@ -52,10 +52,11 @@ public class ItemService {
      * 6.1 거래 게시판 리스트 조회 api
      */
     public ItemListResponse findItems(Long itemId, Long memberId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         List<Item> items = itemRepository.findItems(itemId, memberId);
         if (items.size() == 0) throw new BaseException(EMPTY_POSTS_LIST);
         List<ItemListDTO> itemListDTOList = items.stream()
-                .map(item -> new ItemListDTO(item))
+                .map(item -> new ItemListDTO(item, memberIdByJwt))
                 .collect(Collectors.toList());
         return new ItemListResponse(itemListDTOList);
     }
@@ -227,7 +228,8 @@ public class ItemService {
     @Transactional
     public String createItemLike(Long itemId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-        if (itemRepository.findItemLike(itemId, memberIdByJwt) == null) {
+        List<ItemLike> itemLike1 = itemRepository.findItemLike(itemId, memberIdByJwt);
+        if (!itemRepository.findItemLike(itemId, memberIdByJwt).isEmpty()) {
             throw new BaseException(DUPLICATE_LIKE);
         }
         try {
