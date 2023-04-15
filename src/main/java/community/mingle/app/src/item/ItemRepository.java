@@ -29,7 +29,7 @@ public class ItemRepository {
     }
 
     public List<ItemLike> findItemLike(Long itemId, Long memberIdByJwt) {
-        return em.createQuery("select i from ItemLike i where i.id = :itemId and i.member.id = :memberIdByJwt", ItemLike.class)
+        return em.createQuery("select i from ItemLike i where i.item.id = :itemId and i.member.id = :memberIdByJwt", ItemLike.class)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("itemId", itemId)
                 .getResultList();
