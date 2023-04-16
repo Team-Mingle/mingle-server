@@ -1,6 +1,7 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -64,7 +65,7 @@ public class ItemService {
      * 6.2 거래 게시물 생성
      */
     @Transactional
-    public String createItemPost(CreateItemRequest createItemRequest) throws BaseException {
+    public CreateItemResponse createItemPost(CreateItemRequest createItemRequest) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         Member member = postRepository.findMemberbyId(memberIdByJwt);
         try {
@@ -85,7 +86,7 @@ public class ItemService {
                     throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }
-            return "중고거래 게시물 작성 성공";
+            return new CreateItemResponse(id);
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }

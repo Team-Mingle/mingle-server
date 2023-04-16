@@ -4,13 +4,8 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.domain.Item;
-import community.mingle.app.src.item.model.CreateItemRequest;
-import community.mingle.app.src.item.model.ItemListResponse;
-import community.mingle.app.src.item.model.PostItemCommentRequest;
-import community.mingle.app.src.item.model.PostItemCommentResponse;
+import community.mingle.app.src.item.model.*;
 import community.mingle.app.src.post.model.*;
-import community.mingle.app.src.item.model.ItemResponse;
-import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -69,7 +64,7 @@ public class ItemController {
             @ApiResponse(responseCode = "3070", description = "이미지 업로드에 실패했습니다,", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3075", description = "최소 1개 이상의 물건 사진을 올려주세요.", content = @Content(schema = @Schema(hidden = true))),
     })
-    public BaseResponse<String> createItemPost(@ModelAttribute CreateItemRequest createItemRequest) {
+    public BaseResponse<CreateItemResponse> createItemPost(@ModelAttribute CreateItemRequest createItemRequest) {
         try {
             return new BaseResponse<>(itemService.createItemPost(createItemRequest));
         } catch (BaseException exception) {
