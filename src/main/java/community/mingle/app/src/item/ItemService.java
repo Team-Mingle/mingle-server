@@ -389,6 +389,7 @@ public class ItemService {
     /**
      * 6.11 거래 댓글 삭제 api
      */
+    @Transactional
     public String deleteItemComment(Long itemCommentId) throws BaseException {
         try {
             itemRepository.deleteItemComment(itemCommentId);
