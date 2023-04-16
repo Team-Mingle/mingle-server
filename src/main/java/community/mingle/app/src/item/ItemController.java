@@ -59,7 +59,7 @@ public class ItemController {
     @PostMapping("")
     @Operation(summary = "6.2 createItemPost API", description = "6.2 거래 게시판 글 작성 API")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = CreateItemResponse.class))),
             @ApiResponse(responseCode = "3033", description = "게시물 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3070", description = "이미지 업로드에 실패했습니다,", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3075", description = "최소 1개 이상의 물건 사진을 올려주세요.", content = @Content(schema = @Schema(hidden = true))),
