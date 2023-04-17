@@ -11,6 +11,8 @@ import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
+import community.mingle.app.src.item.model.ItemListDTO;
+import community.mingle.app.src.item.model.ItemListResponse;
 import community.mingle.app.src.member.model.*;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 
@@ -526,5 +529,24 @@ public class MemberService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public ItemListResponse findLikeItems(Long itemId, Long memberId) throws BaseException {
+        List<Item> likedItems = memberRepository.findLikedItems(itemId, memberId);
+        if (likedItems.size() == 0) throw new BaseException(EMPTY_MYPOST_LIST);
+        List<ItemListDTO> itemListDTOList = likedItems.stream()
+                .map(item -> new ItemListDTO(item, memberId))
+                .collect(Collectors.toList());
+        return new ItemListResponse(itemListDTOList, "찜한내역");
+    }
+
+
+    public ItemListResponse findMyItems(Long itemId, Long memberId, String itemStatus) throws BaseException {
+        List<Item> itemList = memberRepository.findMyItemsByItemStatus(itemId, memberId, itemStatus);
+        if (itemList.size() == 0) throw new BaseException(EMPTY_MYPOST_LIST);
+        List<ItemListDTO> itemListDTOList = itemList.stream()
+                .map(item -> new ItemListDTO(item, memberId))
+                .collect(Collectors.toList());
+        return new ItemListResponse(itemListDTOList, "판매내역");
     }
 }
