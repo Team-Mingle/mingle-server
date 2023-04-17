@@ -1,6 +1,7 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -52,10 +53,11 @@ public class ItemService {
      * 6.1 거래 게시판 리스트 조회 api
      */
     public ItemListResponse findItems(Long itemId, Long memberId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
         List<Item> items = itemRepository.findItems(itemId, memberId);
         if (items.size() == 0) throw new BaseException(EMPTY_POSTS_LIST);
         List<ItemListDTO> itemListDTOList = items.stream()
-                .map(item -> new ItemListDTO(item))
+                .map(item -> new ItemListDTO(item, memberIdByJwt))
                 .collect(Collectors.toList());
         return new ItemListResponse(itemListDTOList);
     }
@@ -64,7 +66,7 @@ public class ItemService {
      * 6.2 거래 게시물 생성
      */
     @Transactional
-    public String createItemPost(CreateItemRequest createItemRequest) throws BaseException {
+    public CreateItemResponse createItemPost(CreateItemRequest createItemRequest) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         Member member = postRepository.findMemberbyId(memberIdByJwt);
         try {
@@ -85,7 +87,7 @@ public class ItemService {
                     throw new BaseException(UPLOAD_FAIL_IMAGE);
                 }
             }
-            return "중고거래 게시물 작성 성공";
+            return new CreateItemResponse(id);
         } catch (Exception e) {
             throw new BaseException(CREATE_FAIL_POST);
         }
@@ -227,7 +229,8 @@ public class ItemService {
     @Transactional
     public String createItemLike(Long itemId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-        if (itemRepository.findItemLike(itemId, memberIdByJwt) == null) {
+        List<ItemLike> itemLike1 = itemRepository.findItemLike(itemId, memberIdByJwt);
+        if (!itemRepository.findItemLike(itemId, memberIdByJwt).isEmpty()) {
             throw new BaseException(DUPLICATE_LIKE);
         }
         try {
@@ -388,6 +391,7 @@ public class ItemService {
     /**
      * 6.11 거래 댓글 삭제 api
      */
+    @Transactional
     public String deleteItemComment(Long itemCommentId) throws BaseException {
         try {
             itemRepository.deleteItemComment(itemCommentId);
