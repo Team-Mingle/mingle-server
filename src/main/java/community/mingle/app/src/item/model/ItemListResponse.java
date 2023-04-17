@@ -11,8 +11,8 @@ public class ItemListResponse {
     private String name;
     private List<ItemListDTO> itemListDTO;
 
-    public ItemListResponse(List<ItemListDTO> itemListDTO) {
-        this.name = "거래게시판";
+    public ItemListResponse(List<ItemListDTO> itemListDTO, String boardName) {
+        this.name = boardName;
         this.itemListDTO = itemListDTO;
     }
 
