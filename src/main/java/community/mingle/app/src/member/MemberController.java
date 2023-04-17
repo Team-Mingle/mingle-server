@@ -11,6 +11,7 @@ import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.item.model.ItemListResponse;
+import community.mingle.app.src.item.model.ItemResponse;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.*;
 import community.mingle.app.src.domain.Member;
@@ -413,12 +414,14 @@ public class MemberController {
     }
 
 
-
     /**
      * 2.16 내가 찜한 거래 게시물 조회 api
      */
-    @Operation(summary = "2.16 내가 찜한 거래 게시물 조회 API", description = "2.16 getMyPageItemLikeList api")
-    @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true)))
+    @Operation(summary = "2.16 내가 찜한 거래 게시물 (찜한내역) 조회 API", description = "2.16 getMyPageItemLikeList api")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = ItemListResponse.class))),
+            @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("/items/like")
     public BaseResponse<ItemListResponse> getMyPageItemLikeList(@RequestParam Long itemId) {
         try {
@@ -434,8 +437,11 @@ public class MemberController {
     /**
      * 2.17 내가 쓴 거래 게시물 조회 API
      */
-    @Operation(summary = "2.17 내가 쓴 거래 게시물 조회 API", description = "2.17 getMyItemList api")
+    @Operation(summary = "2.17 내가 쓴 거래 게시물 (판매내역) 조회 API", description = "2.17 getMyItemList api")
+    @ApiResponses({
+    @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = ItemListResponse.class))),
     @ApiResponse(responseCode = "3034", description = "게시글이 없어요.", content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("/items")
     public BaseResponse<ItemListResponse> getMyItemList(@RequestParam Long itemId, @RequestParam String itemStatus) {
         try {
