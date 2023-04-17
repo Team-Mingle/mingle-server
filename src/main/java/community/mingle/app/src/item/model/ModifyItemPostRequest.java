@@ -15,5 +15,5 @@ public class ModifyItemPostRequest {
     private String chatUrl;
 
     private List<String> itemImageUrlsToDelete;
-    private List<MultipartFile> itemImageUrlsToAdd;
+    private List<MultipartFile> itemImagesToAdd;
 }
