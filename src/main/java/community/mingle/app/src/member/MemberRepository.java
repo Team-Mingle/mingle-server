@@ -322,6 +322,37 @@ public class MemberRepository {
         return resultList;
     }
 
+    /**
+     * 2.16 내가 찜한 거래 게시물
+     */
+    public List<Item> findLikedItems(Long itemId, Long memberId) {
+        List<Item> resultList = em.createQuery("select i from ItemLike  il join il.member m join il.item i where i.status <> :status and m.id = :id and " +
+                "i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id < :itemId order by i.createdAt desc", Item.class)
+                .setParameter("status", ItemStatus.INACTIVE)
+                .setParameter("id", memberId)
+                .setParameter("memberIdByJwt",memberId)
+                .setParameter("itemId", itemId)
+                .setMaxResults(20)
+                .getResultList();
+        return resultList;
+    }
+
+
+    /**
+     * 2.17
+     */
+    public List<Item> findMyItemsByItemStatus(Long itemId, Long memberId, String itemStatus) {
+        List<Item> resultList = em.createQuery("select i from Item i join i.member m where i.status = :status and m.id = :id and " +
+                        "i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id < :itemId order by i.createdAt desc", Item.class)
+                .setParameter("status", ItemStatus.valueOf(itemStatus))
+                .setParameter("id", memberId)
+                .setParameter("itemId", itemId)
+                .setMaxResults(20)
+                .getResultList();
+        return resultList;
+    }
+
+
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberIdByJwt) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ
 //        List<UnivPost> resultList = em.createQuery("select p from UnivPostScrap us join us.member m join fetch us.univPost p where m.id = :id order by us.createdAt desc", UnivPost.class)
