@@ -106,7 +106,7 @@ public class ItemController {
     public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @ModelAttribute ModifyItemPostRequest request) {
         if (request.getTitle() == null || request.getContent() == null || request.getPrice() == null || request.getChatUrl() == null || request.getLocation() == null)
             return new BaseResponse<>(BaseResponseStatus.FIELD_EMPTY_ERROR);
-        if (request.getItemImageUrlsToAdd() == null && request.getItemImageUrlsToDelete() == null) {
+        if (request.getItemImagesToAdd() == null && request.getItemImageUrlsToDelete() == null) {
             try {
                 itemService.modifyItemPost(itemId, request);
                 return new BaseResponse<>("거래 게시물 수정 성공");

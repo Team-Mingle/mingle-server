@@ -1,7 +1,6 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -10,11 +9,6 @@ import community.mingle.app.src.member.MemberRepository;
 import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.src.post.model.CoCommentDTO;
 import community.mingle.app.src.post.model.CommentResponse;
-import community.mingle.app.src.domain.*;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalPostImage;
-import community.mingle.app.src.item.model.*;
-import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.src.post.PostService;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
@@ -27,7 +21,6 @@ import java.util.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.config.BaseResponseStatus.CREATE_FAIL_POST;
@@ -153,7 +146,7 @@ public class ItemService {
         Item item = checkMemberAndItemIsValidAndByAuthor(itemId);
         item.updateItemPost(request);
         List<ItemImg> itemImgList = item.getItemImgList();
-        if ((request.getItemImageUrlsToDelete() == null || request.getItemImageUrlsToDelete().isEmpty()) && (request.getItemImageUrlsToAdd() != null)) { // image to add only
+        if ((request.getItemImageUrlsToDelete() == null || request.getItemImageUrlsToDelete().isEmpty()) && (request.getItemImagesToAdd() != null)) { // image to add only
             createItemImage(request, item);
         }
         else { //images to delete&add exists
@@ -173,7 +166,7 @@ public class ItemService {
     @Transactional
     void createItemImage(ModifyItemPostRequest request, Item item) throws BaseException {
         try {
-            List<String> fileNameList = s3Service.uploadFile(request.getItemImageUrlsToAdd(), "item");
+            List<String> fileNameList = s3Service.uploadFile(request.getItemImagesToAdd(), "item");
             for (String fileName : fileNameList) {
                 ItemImg itemImg = ItemImg.createItemImg(item, fileName);
                 itemRepository.saveImg(itemImg);
