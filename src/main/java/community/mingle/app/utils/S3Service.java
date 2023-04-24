@@ -82,6 +82,7 @@ public class S3Service {
         try{
             return UUID.randomUUID().toString().concat(getFileExtension(fileName));
         }catch(Exception e) {
+            e.printStackTrace();
             throw new BaseException(INVALID_IMAGE);
         }
 
@@ -101,12 +102,14 @@ public class S3Service {
             fileValidate.add(".PNG");
             fileValidate.add(".heic");
             fileValidate.add(".HEIC");
+            fileValidate.add(".webp");
             String idxFileName = fileName.substring(fileName.lastIndexOf("."));
             if (!fileValidate.contains(idxFileName)) {
                 throw new BaseException(INVALID_IMAGE_FORMAT);
             }
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(INVALID_IMAGE_FORMAT);
         }
     }
