@@ -1,6 +1,7 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
 import community.mingle.app.src.domain.*;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +38,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RedisUtil redisUtil;
     private final FirebaseCloudMessageService fcmService;
+
+    private final UnivNotificationRepository univNotificationRepository;
+    private final TotalNotificationRepository totalNotificationRepository;
+    private final ReportNotificationRepository reportNotificationRepository;
+    private final ItemNotificationRepository itemNotificationRepository;
 
 
     /**
@@ -463,7 +470,52 @@ public class MemberService {
     }
 
 
-    /** 거래 게시판 알림 리스트 추가**/
+    /**
+     * 2.12 API new
+     */
+    public List<NotificationDTO> get20NotificationsSorted() throws BaseException {
+            List<NotificationDTO> notifications = new ArrayList<>();
+            Long memberId = jwtService.getUserIdx();
+
+            List<UnivNotification> univNotifications = univNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (UnivNotification univNotification : univNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(univNotification);
+                notifications.add(notificationDTO);
+            }
+
+            List<TotalNotification> totalNotifications = totalNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (TotalNotification totalNotification : totalNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(totalNotification);
+                notifications.add(notificationDTO);
+            }
+
+            List<ReportNotification> reportNotifications = reportNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (ReportNotification reportNotification : reportNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(reportNotification);
+                notifications.add(notificationDTO);
+            }
+
+            List<ItemNotification> itemNotifications = itemNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (ItemNotification itemNotification : itemNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(itemNotification);
+                notifications.add(notificationDTO);
+            }
+
+            // Sort the combined list of notifications by createdAt timestamp in descending order
+            Collections.sort(notifications, new NotificationDTOComparator().reversed());
+
+            // Return only the first 20 notifications
+            if (notifications.size() <= 20) {
+                return notifications;
+            } else {
+                return notifications.subList(0, 20);
+            }
+        }
+
+
+
+
+        /** 거래 게시판 알림 리스트 추가**/
 //    public List<ItemNotification> getItemNotifications() throws BaseException {
 //
 //

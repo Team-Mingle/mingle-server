@@ -39,9 +39,11 @@ public class NotificationDTOResult {
             if (t.getReportedPostId() != null) {
                 this.postId = t.getReportedPostId();
                 this.content = t.getReportMessage();
+                this.category = t.getCategory().name();
             }
             else{
                 this.postId = t.getTotalPost().getId();
+                this.category = t.getCategory().name();
                 if (t.getTotalComment().isPresent()) {
                     this.content = t.getTotalComment().get().getContent();//댓글
                 } else {
@@ -53,6 +55,7 @@ public class NotificationDTOResult {
             if (t.getReportedPostId() != null) {
                 this.postId = t.getReportedPostId();
                 this.content = t.getReportMessage();
+                this.category = t.getCategory().name();
             }
             else{
                 this.postId = t.getUnivPost().getId();
@@ -62,13 +65,17 @@ public class NotificationDTOResult {
                     this.content = t.getUnivPost().getTitle();   //인기게시물
                 }
             }
+        } else if (t.getBoardType().equals(BoardType.거래)) {
+            this.postId = t.getItem().getId();
+            if (t.getItemComment().isPresent()) {
+                this.content = t.getItemComment().get().getContent();
+            }
+            this.category = null;
         }
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
-        this.category = t.getCategory().name();
         this.isRead = t.isRead();
-        this.createdAt =convertLocaldatetimeToTime(t.getCreatedAt());
-
+        this.createdAt = convertLocaldatetimeToTime(t.getCreatedAt());
     }
 
 
