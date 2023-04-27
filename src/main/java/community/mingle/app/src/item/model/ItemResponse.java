@@ -35,6 +35,7 @@ public class ItemResponse {
     private final int viewCount;
     private List<String> postImgUrl = new ArrayList<>();
     private boolean isAdmin;
+    private ItemStatus status;
 
 
     /**
@@ -70,6 +71,7 @@ public class ItemResponse {
         }
         this.isReported = false;
         this.isAdmin = item.getMember().getRole().equals("ADMIN");
+        this.status = item.getStatus();
     }
 
     /**
@@ -99,5 +101,6 @@ public class ItemResponse {
             this.content = "";
         }
         this.isAdmin = item.getMember().getRole().equals("ADMIN");
+        this.status = item.getStatus();
     }
 }
