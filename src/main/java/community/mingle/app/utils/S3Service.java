@@ -1,5 +1,6 @@
 package community.mingle.app.utils;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -72,7 +73,8 @@ public class S3Service {
         String fileRename = dirName + "/" + fileName; //key
         try{
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileRename));
-        } catch (Exception e) {
+        } catch (AmazonClientException e) {
+            e.printStackTrace();
             throw new BaseException(DELETE_FAIL_IMAGE);
         }
     }

@@ -159,7 +159,9 @@ public class ItemService {
                 String fileName = imgUrl.substring(imgUrl.lastIndexOf("/item/") + 6);
                 s3Service.deleteFile(fileName, "item");
             }
-            createItemImage(request, item);//3. add if ItemImageUrlsToAdd exists
+            if (request.getItemImagesToAdd() != null) {
+                createItemImage(request, item);//3. add if ItemImageUrlsToAdd exists
+            }
         }
     }
 
