@@ -5,16 +5,13 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.src.auth.model.PostLoginResponse;
-import community.mingle.app.src.domain.ItemNotification;
-import community.mingle.app.src.domain.ReportNotification;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Univ.UnivNotification;
-import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.item.model.ItemListResponse;
 import community.mingle.app.src.item.model.ItemResponse;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.*;
-import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.member.model.*;
@@ -24,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +40,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final JwtService jwtService;
+
 
 
     /**
@@ -327,46 +325,70 @@ public class MemberController {
     }
 
 
-
     /**
-     * 2.12 알림 리스트 보여주기 API
-     **/
-    @GetMapping("/notification")
-    @Operation(summary = " 2.12 getNotification API", description = " 2.12 알림창 리스트 API")
+    * 2.12 알림 리스트 보여주기 API (new)
+    **/
+    @GetMapping("/notifications")
     public BaseResponse<List<NotificationDTOResult>> getNotification() {
         try {
-            List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
-            List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
-            List<ReportNotification> reportNotificationList = memberService.getReportNotifications();
-
-            List<NotificationDTO> result_1 = totalNotificationList.stream()
-                    .map(t-> new NotificationDTO(t))
+            List<NotificationDTO> notificationsSorted = memberService.get20NotificationsSorted();
+            List<NotificationDTOResult> result = notificationsSorted.stream()
+                    .map(n -> new NotificationDTOResult(n))
                     .collect(Collectors.toList());
-
-            List<NotificationDTO> result_2 = univNotificationList.stream()
-                    .map(n-> new NotificationDTO(n))
-                    .collect(Collectors.toList());
-
-            List<NotificationDTO> result_3 = reportNotificationList.stream()
-                    .map(r-> new NotificationDTO(r))
-                    .collect(Collectors.toList());
-
-            List<NotificationDTO> result_4 = Stream.concat(result_1.stream(), result_2.stream())
-                    .collect(Collectors.toList());
-            List<NotificationDTO> final_result = Stream.concat(result_4.stream(), result_3.stream())
-                    .collect(Collectors.toList());
-
-            List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
-            List<NotificationDTOResult> result = notifications.stream()
-                    .map(n-> new NotificationDTOResult(n))
-                    .collect(Collectors.toList());
-
             return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            exception.printStackTrace();
-            return new BaseResponse<>(exception.getStatus());
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
+
+
+    /**
+     * 2.12 알림 리스트 보여주기 API (Old)
+     **/
+//    @GetMapping("/notification")
+//    @Operation(summary = " 2.12 getNotification API", description = " 2.12 알림창 리스트 API")
+//    public BaseResponse<List<NotificationDTOResult>> getNotification() {
+//        try {
+//            List<TotalNotification> totalNotificationList = memberService.getTotalNotifications();
+//            List<UnivNotification> univNotificationList = memberService.getUnivNotifications();
+//            List<ReportNotification> reportNotificationList = memberService.getReportNotifications();
+//            List<ItemNotification> itemNotificationList = memberService.getItemNotifications();
+//
+//            List<NotificationDTO> result_1 = totalNotificationList.stream()
+//                    .map(t-> new NotificationDTO(t))
+//                    .collect(Collectors.toList());
+//
+//            List<NotificationDTO> result_2 = univNotificationList.stream()
+//                    .map(n-> new NotificationDTO(n))
+//                    .collect(Collectors.toList());
+//
+//            List<NotificationDTO> result_3 = reportNotificationList.stream()
+//                    .map(r-> new NotificationDTO(r))
+//                    .collect(Collectors.toList());
+//
+//            List<NotificationDTO> result_4 = itemNotificationList.stream()
+//                    .map(i -> new NotificationDTO(i))
+//                    .collect(Collectors.toList());
+//
+//            List<NotificationDTO> result_5 = Stream.concat(result_1.stream(), result_2.stream())
+//                    .collect(Collectors.toList());
+//            List<NotificationDTO> result_6 = Stream.concat(result_3.stream(), result_4.stream())
+//                    .collect(Collectors.toList());
+//
+//            List<NotificationDTO> final_result = Stream.concat(result_5.stream(), result_6.stream())
+//                    .collect(Collectors.toList());
+//
+//            List<NotificationDTO> notifications = memberService.sortNotifications(final_result);
+//            List<NotificationDTOResult> result = notifications.stream()
+//                    .map(n-> new NotificationDTOResult(n))
+//                    .collect(Collectors.toList());
+//
+//            return new BaseResponse<>(result);
+//        } catch (BaseException exception) {
+////            exception.printStackTrace();
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
 
 
     /**
