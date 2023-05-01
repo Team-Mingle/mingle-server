@@ -91,7 +91,7 @@ public class ItemRepository {
     }
 
     public void deleteItemLike(Long itemId, Long memberIdByJwt) {
-        ItemLike itemLike = em.createQuery("select i from ItemLike i where i.id = :itemId and i.member.id = :memberIdByJwt", ItemLike.class)
+        ItemLike itemLike = em.createQuery("select i from ItemLike i where i.item.id = :itemId and i.member.id = :memberIdByJwt", ItemLike.class)
                 .setParameter("itemId", itemId)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .getSingleResult();
