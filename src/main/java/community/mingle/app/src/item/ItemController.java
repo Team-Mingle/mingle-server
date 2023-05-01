@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "item", description = "중고거래 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -242,6 +243,26 @@ public class ItemController {
         try {
             String deleteItemComment = itemService.deleteItemComment(itemCommentId);
             return new BaseResponse<>(deleteItemComment);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 6.12 거래 검색 api
+     */
+    @Operation(summary = "6.12 search item API", description = "중고거래 게시판 검색")
+    @GetMapping("search")
+    public BaseResponse<ItemListResponse> searchItem(@RequestParam(value = "keyword") String keyword) {
+        try{
+            Long memberId = jwtService.getUserIdx();
+            List<Item> items = itemService.findAllSearch(keyword, memberId);
+            List<ItemListDTO> result = items.stream()
+                    .map(i -> new ItemListDTO(i, memberId))
+                    .collect(Collectors.toList());
+            ItemListResponse searchItemResponse = new ItemListResponse(result, "거래 게시판");
+            return new BaseResponse<>(searchItemResponse);
+
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

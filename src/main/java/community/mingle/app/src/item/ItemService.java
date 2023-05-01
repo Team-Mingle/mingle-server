@@ -159,7 +159,9 @@ public class ItemService {
                 String fileName = imgUrl.substring(imgUrl.lastIndexOf("/item/") + 6);
                 s3Service.deleteFile(fileName, "item");
             }
-            createItemImage(request, item);//3. add if ItemImageUrlsToAdd exists
+            if (request.getItemImagesToAdd() != null) {
+                createItemImage(request, item);//3. add if ItemImageUrlsToAdd exists
+            }
         }
     }
 
@@ -406,5 +408,13 @@ public class ItemService {
         if (!Objects.equals(memberIdByJwt, item.getMember().getId()))
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         return item;
+    }
+
+    public List<Item> findAllSearch(String keyword, Long memberId) throws BaseException {
+        List<Item> searchItemLists = itemRepository.searchItemWithKeyword(keyword, memberId);
+        if (searchItemLists.size() == 0) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        return searchItemLists;
     }
 }
