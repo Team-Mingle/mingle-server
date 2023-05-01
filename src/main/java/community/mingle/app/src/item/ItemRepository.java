@@ -2,10 +2,12 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.TotalPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -173,4 +175,14 @@ public class ItemRepository {
     }
 
 
+    public List<Item> searchItemWithKeyword(String keyword, Long memberIdByJwt) {
+
+        List<Item> items = em.createQuery("SELECT i FROM Item i WHERE (i.title LIKE CONCAT('%',:keyword,'%') OR i.content LIKE CONCAT('%',:keyword,'%')) AND i.status IN (:statuses) and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by i.createdAt desc", Item.class)
+                .setParameter("keyword", keyword)
+                .setParameter("statuses", Arrays.asList(ItemStatus.SELLING, ItemStatus.RESERVED, ItemStatus.SOLDOUT, ItemStatus.NOTIFIED))
+                .setParameter("memberIdByJwt", memberIdByJwt)
+                .getResultList();
+        return items;
+
+    }
 }

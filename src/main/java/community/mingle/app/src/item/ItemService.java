@@ -409,4 +409,12 @@ public class ItemService {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         return item;
     }
+
+    public List<Item> findAllSearch(String keyword, Long memberId) throws BaseException {
+        List<Item> searchItemLists = itemRepository.searchItemWithKeyword(keyword, memberId);
+        if (searchItemLists.size() == 0) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        return searchItemLists;
+    }
 }
