@@ -27,6 +27,7 @@ public class ItemListDTO {
     private String content;
     private String location;
     private List<String> itemImgList;
+    private String chatUrl;
 
     private boolean isLiked;
 
@@ -40,6 +41,7 @@ public class ItemListDTO {
         this.commentCount = item.getItemCommentList().size();
         this.content = item.getContent();
         this.location = item.getLocation();
+        this.chatUrl = item.getChatUrl();
         if (item.getItemImgList().isEmpty()) {
             this.itemImgList = null;
         } else {
