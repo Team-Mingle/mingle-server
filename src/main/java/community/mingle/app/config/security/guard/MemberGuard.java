@@ -21,6 +21,6 @@ public class MemberGuard {
     private boolean hasAuthority() {
 //        Long memberId = authHelper.extractMemberId();
         Set<String> memberRoles = authHelper.extractMemberRoles();
-        return memberRoles.contains(UserRole.USER) || memberRoles.contains(UserRole.ADMIN) || memberRoles.contains(UserRole.KSA)|| memberRoles.contains(UserRole.FRESHMAN);
+        return memberRoles.contains("USER") || memberRoles.contains("ADMIN") || memberRoles.contains("KSA") || memberRoles.contains("FRESHMAN") ;
     }
 }
