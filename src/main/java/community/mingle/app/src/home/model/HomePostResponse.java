@@ -40,7 +40,7 @@ public class HomePostResponse {
             this.nickname = totalPost.getMember().getNickname();
         }
         if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
-            this.nickname = this.nickname+ "🐥";
+            this.nickname = "🐥" + this.nickname;
         }
         this.isFileAttached = totalPost.getIsFileAttached();
         if (totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
@@ -48,7 +48,7 @@ public class HomePostResponse {
         }else{
             this.isBlinded = false;
         }
-        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
+        this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
         this.likeCount = totalPost.getTotalPostLikes().size();
         /** 댓글 개수*/
         List<TotalComment> commentList = totalPost.getTotalPostComments();
@@ -68,7 +68,7 @@ public class HomePostResponse {
             this.nickname = p.getMember().getNickname();
         }
         if (p.getMember().getRole() == UserRole.FRESHMAN) {
-            this.nickname = this.nickname+ "🐥";
+            this.nickname = "🐥" + this.nickname;
         }
         isFileAttached = p.getIsFileAttached();
         if (p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
@@ -76,7 +76,7 @@ public class HomePostResponse {
         }else{
             this.isBlinded = false;
         }
-        this.isAdmin = p.getMember().getRole().equals("ADMIN");
+        this.isAdmin = p.getMember().getRole().equals(UserRole.ADMIN);
         likeCount = p.getUnivPostLikes().size();
         /** 댓글 개수*/
         List<UnivComment> commentList = p.getUnivComments();

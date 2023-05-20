@@ -277,11 +277,11 @@ public class PostService {
             List<PostCategoryResponse> result = postCategory.stream()
                     .map(m -> new PostCategoryResponse(m))
                     .collect(Collectors.toList());
-            if (authority.equals("USER")) {
+            if (authority.equals(UserRole.USER)||authority.equals(UserRole.FRESHMAN)) {
                 result.remove(4); //학생회
                 result.remove(3); //밍글소식
             }
-            if (authority.equals("KSA")) {
+            if (authority.equals(UserRole.KSA)) {
                 result.remove(3);
             }
             return result;

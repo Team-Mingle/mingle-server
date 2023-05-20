@@ -47,7 +47,7 @@ public class CommentResponse {
             this.nickname = "익명(글쓴이)";
         }
         if (totalComment.getMember().getRole() == UserRole.FRESHMAN) {
-            this.nickname = this.nickname+ "🐥";
+            this.nickname = "🐥" + this.nickname;
         }
         if (totalComment.getStatus() == PostStatus.REPORTED) {
             content = "신고된 댓글입니다.";
@@ -91,7 +91,7 @@ public class CommentResponse {
 
         createdAt = convertToDateAndTime(totalComment.getCreatedAt());
         coCommentsList = totalCoCommentDTOList;
-        isAdmin = totalComment.getMember().getRole().equals("ADMIN");
+        isAdmin = totalComment.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 
@@ -111,7 +111,7 @@ public class CommentResponse {
             this.nickname = "익명(글쓴이)";
         }
         if (c.getMember().getRole() == UserRole.FRESHMAN) {
-            this.nickname = this.nickname+ "🐥";
+            this.nickname = "🐥" + this.nickname;
         }
 
         if (c.getStatus() == PostStatus.REPORTED) {
@@ -163,7 +163,7 @@ public class CommentResponse {
         }
         createdAt = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;
-        isAdmin = c.getMember().getRole().equals("ADMIN");
+        isAdmin = c.getMember().getRole().equals(UserRole.ADMIN);
     }
 
     public CommentResponse(ItemComment c, List<CoCommentDTO> cc, Long memberId, Long authorId) { //univ
@@ -230,6 +230,6 @@ public class CommentResponse {
         }
         createdAt = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;
-        isAdmin = c.getMember().getRole().equals("ADMIN");
+        isAdmin = c.getMember().getRole().equals(UserRole.ADMIN);
     }
 }

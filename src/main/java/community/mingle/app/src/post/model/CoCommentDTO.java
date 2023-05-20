@@ -6,6 +6,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivCommentLike;
+import community.mingle.app.src.domain.UserRole;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -102,7 +103,7 @@ public class CoCommentDTO {
             isCommentReported = false;
         }
         this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
-        this.isAdmin = coComment.getMember().getRole().equals("ADMIN");
+        this.isAdmin = coComment.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 
@@ -182,7 +183,7 @@ public class CoCommentDTO {
         }
 
         this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
-        this.isAdmin = coComment.getMember().getRole().equals("ADMIN");
+        this.isAdmin = coComment.getMember().getRole().equals(UserRole.ADMIN);
 
     }
 
@@ -262,7 +263,7 @@ public class CoCommentDTO {
         }
 
         this.createdAt = convertToDateAndTime(coComment.getCreatedAt());
-        this.isAdmin = coComment.getMember().getRole().equals("ADMIN");
+        this.isAdmin = coComment.getMember().getRole().equals(UserRole.ADMIN);
 
     }
 }

@@ -67,7 +67,7 @@ public class PostListDTO {
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
-        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
+        this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 
@@ -110,7 +110,7 @@ public class PostListDTO {
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
-        this.isAdmin = univPost.getMember().getRole().equals("ADMIN");
+        this.isAdmin = univPost.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 }

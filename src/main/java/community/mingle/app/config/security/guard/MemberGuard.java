@@ -1,5 +1,6 @@
 package community.mingle.app.config.security.guard;
 
+import community.mingle.app.src.domain.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,6 @@ public class MemberGuard {
     private boolean hasAuthority() {
 //        Long memberId = authHelper.extractMemberId();
         Set<String> memberRoles = authHelper.extractMemberRoles();
-        return memberRoles.contains("USER") || memberRoles.contains("ADMIN") || memberRoles.contains("KSA");
+        return memberRoles.contains(UserRole.USER) || memberRoles.contains(UserRole.ADMIN) || memberRoles.contains(UserRole.KSA)|| memberRoles.contains(UserRole.FRESHMAN);
     }
 }
