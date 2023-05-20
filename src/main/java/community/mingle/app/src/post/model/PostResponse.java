@@ -7,6 +7,7 @@ import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostImage;
+import community.mingle.app.src.domain.UserRole;
 import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
@@ -50,6 +51,9 @@ public class PostResponse {
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }
+        if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname+ "🐥";
+        }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
@@ -81,6 +85,10 @@ public class PostResponse {
             this.nickname = "익명";
         } else {
             this.nickname = u.getMember().getNickname();
+        }
+
+        if (u.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname+ "🐥";
         }
         this.isFileAttached = u.getIsFileAttached();
         likeCount = u.getUnivPostLikes().size();
@@ -119,6 +127,10 @@ public class PostResponse {
             this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
+        }
+
+        if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname+ "🐥";
         }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
@@ -159,6 +171,9 @@ public class PostResponse {
             this.nickname = "익명";
         } else {
             this.nickname = u.getMember().getNickname();
+        }
+        if (u.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname+ "🐥";
         }
         this.isFileAttached = u.getIsFileAttached();
         likeCount = u.getUnivPostLikes().size();

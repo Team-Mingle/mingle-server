@@ -6,6 +6,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivCommentLike;
+import community.mingle.app.src.domain.UserRole;
 import lombok.Getter;
 
 import java.util.List;
@@ -44,6 +45,9 @@ public class CommentResponse {
             this.nickname = totalComment.getMember().getNickname() + "(글쓴이)";
         } else if ((totalComment.isAnonymous() && Objects.equals(commentWriter, authorId))){
             this.nickname = "익명(글쓴이)";
+        }
+        if (totalComment.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname+ "🐥";
         }
         if (totalComment.getStatus() == PostStatus.REPORTED) {
             content = "신고된 댓글입니다.";
@@ -105,6 +109,9 @@ public class CommentResponse {
             this.nickname = c.getMember().getNickname() + "(글쓴이)";
         } else if (c.isAnonymous() && Objects.equals(commentWriter, authorId)) {
             this.nickname = "익명(글쓴이)";
+        }
+        if (c.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname+ "🐥";
         }
 
         if (c.getStatus() == PostStatus.REPORTED) {

@@ -395,8 +395,6 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getUnivPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
-        Member member;
-        member = postRepository.findMemberbyId(memberIdByJwt);
         boolean isMyPost = false, isLiked = false, isScraped = false, isBlinded = false;
         UnivPost univPost = postRepository.findUnivPostById(postId);
         if (univPost == null) {
