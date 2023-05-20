@@ -3,10 +3,7 @@ package community.mingle.app.src.auth;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.TokenHelper;
 import community.mingle.app.src.auth.model.*;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.UnivEmail;
-import community.mingle.app.src.domain.UnivName;
-import community.mingle.app.src.domain.UserStatus;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
 import lombok.RequiredArgsConstructor;
@@ -260,7 +257,7 @@ public class AuthService {
         }
         try { //토큰 발급
             Long memberId = member.getId();
-            String memberRole = member.getRole();
+            UserRole memberRole = member.getRole();
             TokenHelper.PrivateClaims privateClaims = createPrivateClaims(memberId, memberRole);
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
             String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
@@ -357,7 +354,7 @@ public class AuthService {
     /**
      * PrivateClaim 발급
      */
-    public TokenHelper.PrivateClaims createPrivateClaims(Long memberId, String memberRole) {
+    public TokenHelper.PrivateClaims createPrivateClaims(Long memberId, UserRole memberRole) {
         return new TokenHelper.PrivateClaims(String.valueOf(memberId), memberRole);
     }
 

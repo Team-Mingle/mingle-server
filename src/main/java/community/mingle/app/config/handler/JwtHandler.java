@@ -4,6 +4,7 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponseStatus;
 import community.mingle.app.config.TokenHelper;
 import community.mingle.app.config.exception.BadRequestException;
+import community.mingle.app.src.domain.UserRole;
 import community.mingle.app.utils.RedisService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,7 @@ public class JwtHandler {
      * ㄴ Claim -> privateClaim 변환
      */
     private TokenHelper.PrivateClaims convertClaim(Claims claims) {
-        return new TokenHelper.PrivateClaims(claims.get("MEMBER_ID", String.class), claims.get("ROLE_TYPES", String.class));
+        return new TokenHelper.PrivateClaims(claims.get("MEMBER_ID", String.class), claims.get("ROLE_TYPES", UserRole.class));
     }
 
 
