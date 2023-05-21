@@ -128,6 +128,21 @@ public class Member {
         return member;
     }
 
+    public static Member createFreshman(UnivName univName, String nickname, String email, String pwd) {
+        Member member = new Member();
+        member.setUniv(univName);
+        member.setNickname(nickname);
+        member.setEmail(email);
+        member.setPwd(pwd);
+        member.agreedAt = LocalDateTime.now();
+        member.createdAt = LocalDateTime.now();
+        member.updatedAt = LocalDateTime.now();
+        member.status = UserStatus.ACTIVE;
+        member.role = UserRole.FRESHMAN;
+
+        return member;
+    }
+
 
     public void deleteMember() {
         this.deletedAt = LocalDateTime.now();
