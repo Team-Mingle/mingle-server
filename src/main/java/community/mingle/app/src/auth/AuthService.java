@@ -98,11 +98,11 @@ public class AuthService {
      * 1.4.1 인증번호 생성
      */
     @Transactional
-    public void sendCode(PostEmailRequest request) throws BaseException {
+    public void sendCode(String email) throws BaseException {
         try {
             Random random = new Random();
             String authKey = String.valueOf(random.nextInt(888888) + 111111);
-            sendAuthEmail(request.getEmail(), authKey); /**/
+            sendAuthEmail(email, authKey); /**/
         } catch (BaseException e) {
             e.printStackTrace();
             throw new BaseException(CODE_GENERATE_FAIL);
@@ -149,9 +149,15 @@ public class AuthService {
      * 1.5 인증 코드 검사 API
      */
     public void authCode(String email, String code) throws BaseException {
-        if (code.equals("000000")) {
+        String domain = email.split("@")[1];
+        if (domain.equals("freshman.mingle.com")) {
+            if (!(code.equals(redisUtil.getData(email)))) {
+                throw new BaseException(EMAIL_CODE_FAIL);
+            }
+            redisUtil.deleteData(email);
             return;
         }
+
         if (redisUtil.getData(email) == null) {
             throw new BaseException(EMAIL_CODE_EXPIRED);
         }
@@ -168,6 +174,30 @@ public class AuthService {
      */
     @Transactional //Transaction silently rolled back because it has been marked as rollback-only
     public PostSignupResponse createMember(PostSignupRequest postSignupRequest) throws BaseException {
+        String domain = postSignupRequest.getEmail().split("@")[1];
+        String freshmanEmail = postSignupRequest.getEmail().split("@")[0];
+        if (postSignupRequest.getUnivId() == 6 && domain.equals("freshman.mingle.com")) {
+            String univName = freshmanEmail.split("\\.")[0];
+            switch (univName) {
+                case "hku":
+                    postSignupRequest.setUnivId(1);
+                    break;
+                case "hksut":
+                    postSignupRequest.setUnivId(2);
+                    break;
+                case "cuhk":
+                    postSignupRequest.setUnivId(3);
+                    break;
+                case "cityu":
+                    postSignupRequest.setUnivId(4);
+                    break;
+                case "polyu":
+                    postSignupRequest.setUnivId(5);
+                    break;
+                default:
+                    throw new BaseException(INVALID_UNIV_ID);
+            }
+        }
 
         //닉네임 중복검사 먼저
         if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
@@ -206,10 +236,16 @@ public class AuthService {
         //로직
         try {
             UnivName univName = authRepository.findUniv(postSignupRequest.getUnivId());
+            if (domain.equals("freshman.mingle.com")) {
+                Member member = Member.createFreshman(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
+                Long id = authRepository.save(member);
+                return new PostSignupResponse(id);
+            }
             Member member = Member.createMember(univName, postSignupRequest.getNickname(), postSignupRequest.getEmail(), postSignupRequest.getPwd());
-
             Long id = authRepository.save(member);
             return new PostSignupResponse(id);
+
+
 
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_SIGNUP);
