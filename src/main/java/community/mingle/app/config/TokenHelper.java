@@ -6,6 +6,7 @@ import community.mingle.app.config.exception.BadRequestException;
 import community.mingle.app.config.security.CustomAuthenticationToken;
 import community.mingle.app.config.security.CustomUserDetails;
 import community.mingle.app.config.security.CustomUserDetailsService;
+import community.mingle.app.src.domain.UserRole;
 import community.mingle.app.utils.RedisService;
 import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
@@ -66,7 +67,7 @@ public class TokenHelper {
     }
 
     private PrivateClaims convert(Claims claims) {
-        return new PrivateClaims(claims.get(MEMBER_ID, String.class), claims.get(ROLE_TYPES, String.class));
+        return new PrivateClaims(claims.get(MEMBER_ID, String.class), claims.get(ROLE_TYPES, UserRole.class));
     }
 
     /**
@@ -110,6 +111,6 @@ public class TokenHelper {
     @AllArgsConstructor
     public static class PrivateClaims {
         private String memberId;
-        private String roleTypes;
+        private UserRole roleTypes;
     }
 }
