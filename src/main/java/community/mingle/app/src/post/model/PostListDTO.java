@@ -43,7 +43,7 @@ public class PostListDTO {
             this.nickname = totalPost.getMember().getNickname();
         }
         if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
-            this.nickname = this.nickname + "🐥";
+            this.nickname = "🐥" + this.nickname;
         }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
@@ -86,7 +86,7 @@ public class PostListDTO {
             this.nickname = univPost.getMember().getNickname();
         }
         if (univPost.getMember().getRole() == UserRole.FRESHMAN) {
-            this.nickname = this.nickname + "🐥";
+            this.nickname = "🐥" + this.nickname;
         }
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
