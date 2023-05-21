@@ -20,8 +20,8 @@ public class MemberGuard {
 
     private boolean hasAuthority() {
 //        Long memberId = authHelper.extractMemberId();
-        Set<String> memberRoles = authHelper.extractMemberRoles();
+        Set<UserRole> memberRoles = authHelper.extractMemberRoles();
         //TODO 인증 타입을 UserRole로 통일 할까 아니면 security에서만 String으로 인증할까 (고민)
-        return memberRoles.contains("USER") || memberRoles.contains("ADMIN") || memberRoles.contains("KSA") || memberRoles.contains("FRESHMAN") ;
+        return memberRoles.contains(UserRole.USER) || memberRoles.contains(UserRole.ADMIN) || memberRoles.contains(UserRole.KSA) || memberRoles.contains(UserRole.FRESHMAN) ;
     }
 }

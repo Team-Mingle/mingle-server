@@ -272,10 +272,10 @@ public class PostService {
      */
     public List<PostCategoryResponse> getPostCategory() throws BaseException {
         try {
-            String authority = jwtService.getUserAuthority();
+            UserRole authority = UserRole.valueOf(jwtService.getUserAuthority());
             List<Category> postCategory = postRepository.getPostCategory();
             List<PostCategoryResponse> result = postCategory.stream()
-                    .map(m -> new PostCategoryResponse(m))
+                    .map(PostCategoryResponse::new)
                     .collect(Collectors.toList());
             if (authority.equals(UserRole.USER)||authority.equals(UserRole.FRESHMAN)) {
                 result.remove(4); //학생회
