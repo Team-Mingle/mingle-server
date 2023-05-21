@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -78,8 +80,14 @@ public class TokenHelper {
         String exception = "exception";
 
         try {
-            Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(jwtHandler.untype(token));
-            return getAuthentication(token); //loadByUserName 후 Authentication 형식인 CustomAuthenticationToken 반환 !!
+
+            if (!isDefaultToken(token)) {
+                Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(jwtHandler.untype(token));
+                return getAuthentication(token);
+            } else {
+                return getAuthentication(jwtHandler.untype(token).substring(1));
+            }
+             //loadByUserName 후 Authentication 형식인 CustomAuthenticationToken 반환 !!
         } catch (BadRequestException e) {
             request.setAttribute(exception, "토큰을 입력해주세요. (앞에 'Bearer ' 포함)");
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
@@ -104,6 +112,16 @@ public class TokenHelper {
     private Authentication getAuthentication(String token) {
         CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(token);
         return new CustomAuthenticationToken(userDetails, userDetails.getAuthorities());
+    }
+
+    public Boolean isDefaultToken(String token) {
+        List<String> defaultTokenList = Arrays.asList("mingle-user", "mingle-admin", "mingle-ksa", "mingle-freshman");
+        String untypedToken = jwtHandler.untype(token).substring(1);
+        if (defaultTokenList.stream().noneMatch(it -> it.equals(untypedToken))) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 
