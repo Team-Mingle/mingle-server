@@ -67,10 +67,12 @@ public class ItemResponse {
         this.viewCount = item.getViewCount();
         List<ItemImg> itemImages = item.getItemImgList();
         for (ItemImg img : itemImages) {
-            this.postImgUrl.add(img.getImgUrl());
+            if (img.getDeletedAt() == null) {
+                this.postImgUrl.add(img.getImgUrl());
+            }
         }
         this.isReported = false;
-        this.isAdmin = item.getMember().getRole().equals("ADMIN");
+        this.isAdmin = item.getMember().getRole().equals(UserRole.ADMIN);
         this.status = item.getStatus();
     }
 
@@ -100,7 +102,7 @@ public class ItemResponse {
             this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.content = "";
         }
-        this.isAdmin = item.getMember().getRole().equals("ADMIN");
+        this.isAdmin = item.getMember().getRole().equals(UserRole.ADMIN);
         this.status = item.getStatus();
     }
 }

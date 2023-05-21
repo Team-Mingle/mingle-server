@@ -272,16 +272,16 @@ public class PostService {
      */
     public List<PostCategoryResponse> getPostCategory() throws BaseException {
         try {
-            String authority = jwtService.getUserAuthority();
+            UserRole authority = UserRole.valueOf(jwtService.getUserAuthority());
             List<Category> postCategory = postRepository.getPostCategory();
             List<PostCategoryResponse> result = postCategory.stream()
-                    .map(m -> new PostCategoryResponse(m))
+                    .map(PostCategoryResponse::new)
                     .collect(Collectors.toList());
-            if (authority.equals("USER")) {
+            if (authority.equals(UserRole.USER)||authority.equals(UserRole.FRESHMAN)) {
                 result.remove(4); //학생회
                 result.remove(3); //밍글소식
             }
-            if (authority.equals("KSA")) {
+            if (authority.equals(UserRole.KSA)) {
                 result.remove(3);
             }
             return result;
@@ -395,8 +395,6 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getUnivPost(Long postId) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
-        Member member;
-        member = postRepository.findMemberbyId(memberIdByJwt);
         boolean isMyPost = false, isLiked = false, isScraped = false, isBlinded = false;
         UnivPost univPost = postRepository.findUnivPostById(postId);
         if (univPost == null) {

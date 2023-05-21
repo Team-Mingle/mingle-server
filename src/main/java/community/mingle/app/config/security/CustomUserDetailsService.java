@@ -31,6 +31,6 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     private CustomUserDetails convertTokenToUserDetail(String parsedToken) {
         Optional<TokenHelper.PrivateClaims> privateClaims = jwtHandler.createPrivateClaim(parsedToken);
-        return new CustomUserDetails(privateClaims.get().getMemberId(), new SimpleGrantedAuthority(privateClaims.get().getRoleTypes()));
+        return new CustomUserDetails(privateClaims.get().getMemberId(), new SimpleGrantedAuthority(privateClaims.get().getRoleTypes().toString()));
     }
 }

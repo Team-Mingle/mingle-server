@@ -2,6 +2,7 @@ package community.mingle.app.src.domain;
 
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
+import community.mingle.app.utils.converter.UserRoleConverter;
 import lombok.*;
 /** Setter 주의 */
 
@@ -31,7 +32,10 @@ public class Member {
     private String email; //regex 추가
     private String pwd; //regex 추가
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum")
+    @Convert(converter = UserRoleConverter.class)
+    private UserRole role;
 
     @Column(name = "fcm_token")
     private String fcmToken;
@@ -119,7 +123,22 @@ public class Member {
         member.createdAt = LocalDateTime.now();
         member.updatedAt = LocalDateTime.now();
         member.status = UserStatus.ACTIVE;
-        member.role = "USER";
+        member.role = UserRole.USER;
+
+        return member;
+    }
+
+    public static Member createFreshman(UnivName univName, String nickname, String email, String pwd) {
+        Member member = new Member();
+        member.setUniv(univName);
+        member.setNickname(nickname);
+        member.setEmail(email);
+        member.setPwd(pwd);
+        member.agreedAt = LocalDateTime.now();
+        member.createdAt = LocalDateTime.now();
+        member.updatedAt = LocalDateTime.now();
+        member.status = UserStatus.ACTIVE;
+        member.role = UserRole.FRESHMAN;
 
         return member;
     }
