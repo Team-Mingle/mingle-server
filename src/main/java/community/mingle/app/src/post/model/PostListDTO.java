@@ -5,6 +5,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.UserRole;
 import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
@@ -41,6 +42,9 @@ public class PostListDTO {
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }
+        if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname + "🐥";
+        }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
         /** 댓글 개수*/
@@ -63,7 +67,7 @@ public class PostListDTO {
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
-        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
+        this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 
@@ -80,6 +84,9 @@ public class PostListDTO {
             this.nickname = "익명";
         } else {
             this.nickname = univPost.getMember().getNickname();
+        }
+        if (univPost.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = this.nickname + "🐥";
         }
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
@@ -103,7 +110,7 @@ public class PostListDTO {
             this.contents = "";
         }
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
-        this.isAdmin = univPost.getMember().getRole().equals("ADMIN");
+        this.isAdmin = univPost.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 }
