@@ -67,7 +67,9 @@ public class ItemResponse {
         this.viewCount = item.getViewCount();
         List<ItemImg> itemImages = item.getItemImgList();
         for (ItemImg img : itemImages) {
-            this.postImgUrl.add(img.getImgUrl());
+            if (img.getDeletedAt() == null) {
+                this.postImgUrl.add(img.getImgUrl());
+            }
         }
         this.isReported = false;
         this.isAdmin = item.getMember().getRole().equals(UserRole.ADMIN);
