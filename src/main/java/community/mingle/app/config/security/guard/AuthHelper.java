@@ -2,6 +2,7 @@ package community.mingle.app.config.security.guard;
 
 import community.mingle.app.config.security.CustomAuthenticationToken;
 import community.mingle.app.config.security.CustomUserDetails;
+import community.mingle.app.src.domain.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,11 +24,11 @@ public class AuthHelper {
         return Long.valueOf(getUserDetails().getUserId());
     }
 
-    public Set<String> extractMemberRoles() {
+    public Set<UserRole> extractMemberRoles() {
         return getUserDetails().getAuthorities()
                 .stream()
                 .map(authority -> authority.getAuthority())
-                .map(strAuth -> String.valueOf(strAuth))
+                .map(strAuth -> UserRole.valueOf(String.valueOf(strAuth)))
                 .collect(Collectors.toSet());
     }
 
