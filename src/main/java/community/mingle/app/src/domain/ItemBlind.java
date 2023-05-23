@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter @Setter
@@ -29,4 +31,21 @@ public class ItemBlind {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    public static ItemBlind blindItem(Item item, Member member) {
+        List<ItemBlind> itemBlindList = member.getItemBlind();
+        if (itemBlindList == null || itemBlindList.isEmpty()) {
+        } else {
+            for (ItemBlind itemBlind : itemBlindList) {
+                if (Objects.equals(itemBlind.getItem().getId(), item.getId())) {
+                    return null;
+                }
+            }
+        }
+        ItemBlind itemBlind = new ItemBlind();
+        itemBlind.setMember(member);
+        itemBlind.setItem(item);
+        itemBlind.createdAt = LocalDateTime.now();
+        return itemBlind;
+    }
 }

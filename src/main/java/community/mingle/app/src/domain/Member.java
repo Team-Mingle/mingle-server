@@ -85,6 +85,9 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<UnivBlind> univBlindPost = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member")
+    private List<ItemBlind> itemBlind = new ArrayList<>();
+
     @OneToMany(mappedBy = "blockedMember")
     private List<BlockMember> blockedMember= new ArrayList<>();
 
