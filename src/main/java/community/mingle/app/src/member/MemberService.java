@@ -259,6 +259,10 @@ public class MemberService {
                 reportedMember = memberRepository.findReportedUnivPostMember(reportRequest.getContentId());
             } else if (reportRequest.getTableType() == TableType.UnivComment) {
                 reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContentId());
+            } else if (reportRequest.getTableType() == TableType.Item) {
+                reportedMember = memberRepository.findReportedItemMember(reportRequest.getContentId());
+            } else if (reportRequest.getTableType() == TableType.ItemComment) {
+                reportedMember = memberRepository.findReportedItemCommentMember(reportRequest.getContentId());
             }
             return reportedMember;
         } catch (Exception e) {
@@ -314,9 +318,6 @@ public class MemberService {
                     int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
                     //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
                     reportedTotalPost.modifyStatusAsNotified();
-//                for (TotalComment tc : reportedTotalComments) {
-//                    tc.modifyInactiveStatus();
-//                }
                 }
 
                 //total comment
