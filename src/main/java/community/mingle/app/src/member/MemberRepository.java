@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 
@@ -192,6 +193,20 @@ public class MemberRepository {
 
     public Member findReportedUnivCommentMember(Long contentId) {
         Member reportedMember = em.createQuery("select m from UnivComment uc join uc.member m where uc.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
+    public Member findReportedItemMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from Item i join i.member m where i.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
+    public Member findReportedItemCommentMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from ItemComment i join i.member m where i.id = :contentId", Member.class)
                 .setParameter("contentId", contentId)
                 .getSingleResult();
         return reportedMember;
