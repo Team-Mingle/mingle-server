@@ -264,6 +264,10 @@ public class ItemService {
     public PostItemCommentResponse createItemComment(PostItemCommentRequest postItemCommentRequest) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         Item item = itemRepository.findItemById(postItemCommentRequest.getItemId());
+        ItemStatus status = item.getStatus();
+        if (status.equals(ItemStatus.INACTIVE) || status.equals(ItemStatus.REPORTED) || status.equals(ItemStatus.NOTIFIED) || status.equals(ItemStatus.DELETED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         List<ItemComment> itemCommentList = item.getItemCommentList();
         boolean parentFlag = false;
         boolean mentionFlag = false;
@@ -355,7 +359,6 @@ public class ItemService {
         }
         if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
             return new ArrayList<>();
-
         }
         Long memberIdByJwt = jwtService.getUserIdx();
         try {
@@ -403,7 +406,7 @@ public class ItemService {
         Item item = itemRepository.findItemById(itemId);
         if (item == null)
             throw new BaseException(POST_NOT_EXIST);
-        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED))
+        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED) || item.getStatus().equals(ItemStatus.INACTIVE))
             throw new BaseException(REPORTED_DELETED_POST);
         if (!Objects.equals(memberIdByJwt, item.getMember().getId()))
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
@@ -421,11 +424,11 @@ public class ItemService {
     public String blindItem(Long itemId) throws BaseException {
         Long memberId = jwtService.getUserIdx();
         Item item = itemRepository.findItemById(itemId);
-        if (item.getStatus().equals(ItemStatus.INACTIVE) || item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
         if (item == null) {
             throw new BaseException(POST_NOT_EXIST);
+        }
+        if (item.getStatus().equals(ItemStatus.INACTIVE) || item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
         }
         Member member = postRepository.findMemberbyId(memberId);
         ItemBlind itemBlind = ItemBlind.blindItem(item, member);
