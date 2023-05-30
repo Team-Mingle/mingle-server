@@ -322,9 +322,6 @@ public class ItemService {
                 firebaseCloudMessageService.sendMessageTo(itemMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postItemCommentRequest.getContent(), TableType.Item, item.getId());
                 ItemNotification itemNotification = ItemNotification.saveItemNotification(item, itemMember,comment);
                 itemRepository.saveItemNotification(itemNotification);
-                if (itemMember.getTotalNotifications().size() +itemMember.getUnivNotifications().size()+itemMember.getItemNotifications().size()> 20) {
-                    itemRepository.deleteItemNotification(itemMember.getItemNotifications().get(0).getId());
-                }
             }
         } else if (postItemCommentRequest.getParentCommentId()!= null) {
             Member parentMember = itemRepository.findItemCommentById(postItemCommentRequest.getParentCommentId()).getMember();
@@ -346,9 +343,6 @@ public class ItemService {
                     firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postItemCommentRequest.getContent(), TableType.Item, item.getId());
                     ItemNotification itemNotification = ItemNotification.saveItemNotification(item, member,comment);
                     itemRepository.saveItemNotification(itemNotification);
-                    if (itemMember.getTotalNotifications().size() +itemMember.getUnivNotifications().size()+itemMember.getItemNotifications().size()> 20) {
-                        itemRepository.deleteItemNotification(itemMember.getItemNotifications().get(0).getId());
-                    }
                 }
             }
         }
