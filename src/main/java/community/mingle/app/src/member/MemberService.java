@@ -47,9 +47,9 @@ public class MemberService {
     private final ReportNotificationRepository reportNotificationRepository;
     private final ItemNotificationRepository itemNotificationRepository;
 
-    private ItemRepository itemRepository;
-    private PostRepository postRepository;
-    private CommentRepository commentRepository;
+    private final ItemRepository itemRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
 
     /**
@@ -481,6 +481,7 @@ public class MemberService {
     /**
      * 2.12 API new
      */
+    @Transactional
     public List<NotificationDTO> get20NotificationsSorted() throws BaseException {
             List<NotificationDTO> notifications = new ArrayList<>();
             Long memberId = jwtService.getUserIdx();
@@ -523,8 +524,8 @@ public class MemberService {
             }
         }
 
-
-    private void deleteNotification(List<NotificationDTO> notificationDTO) {
+        @Transactional
+        void deleteNotification(List<NotificationDTO> notificationDTO) {
         notificationDTO.forEach(n -> {
             if (n.getItem() != null) {
                 itemRepository.deleteItemNotification(n.getNotificationId());
