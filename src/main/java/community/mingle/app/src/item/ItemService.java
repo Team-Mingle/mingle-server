@@ -417,4 +417,38 @@ public class ItemService {
         }
         return searchItemLists;
     }
+@Transactional
+    public String blindItem(Long itemId) throws BaseException {
+        Long memberId = jwtService.getUserIdx();
+        Item item = itemRepository.findItemById(itemId);
+        if (item.getStatus().equals(ItemStatus.INACTIVE) || item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
+        if (item == null) {
+            throw new BaseException(POST_NOT_EXIST);
+        }
+        Member member = postRepository.findMemberbyId(memberId);
+        ItemBlind itemBlind = ItemBlind.blindItem(item, member);
+        if (itemBlind == null) {
+            throw new BaseException(DUPLICATE_BLIND);
+        } else {
+            try {
+                itemRepository.saveBlind(itemBlind);
+                return "게시물을 가렸어요.";
+            } catch (Exception e) {
+                throw new BaseException(DATABASE_ERROR);
+            }
+        }
+    }
+
+    @Transactional
+    public String unblindItem(Long itemId) throws BaseException {
+        Long memberId = jwtService.getUserIdx();
+        try {
+            itemRepository.deleteItemBlind(memberId, itemId);
+            return "가리기를 취소했습니다.";
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

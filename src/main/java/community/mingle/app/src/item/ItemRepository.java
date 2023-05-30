@@ -2,7 +2,9 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.TotalBlind;
 import community.mingle.app.src.domain.Total.TotalPost;
+import community.mingle.app.src.domain.Univ.UnivBlind;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -184,5 +186,18 @@ public class ItemRepository {
                 .getResultList();
         return items;
 
+    }
+
+    public Long saveBlind(ItemBlind itemBlind) {
+        em.persist(itemBlind);
+        return itemBlind.getId();
+    }
+
+    public void deleteItemBlind(Long memberId, Long itemId) {
+        ItemBlind itemBlind = em.createQuery("select ib from ItemBlind ib where ib.member.id = :memberId and ib.item.id = :itemId", ItemBlind.class)
+                .setParameter("memberId", memberId)
+                .setParameter("itemId", itemId)
+                .getSingleResult();
+        em.remove(itemBlind);
     }
 }
