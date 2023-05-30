@@ -150,6 +150,7 @@ public class ItemController {
     @Operation(summary = "6.6 modifyItemStatus API", description = "6.6 판매 상태 변경 API")
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "2060", description = "유효하지 않은 itemStatus 입니다.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3040", description = "게시물 수정 권한이 없습니다.", content = @Content(schema = @Schema(hidden = true))),
