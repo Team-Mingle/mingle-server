@@ -4,6 +4,7 @@ import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
+import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -12,9 +13,11 @@ import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
+import community.mingle.app.src.item.ItemRepository;
 import community.mingle.app.src.item.model.ItemListDTO;
 import community.mingle.app.src.item.model.ItemListResponse;
 import community.mingle.app.src.member.model.*;
+import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +46,10 @@ public class MemberService {
     private final TotalNotificationRepository totalNotificationRepository;
     private final ReportNotificationRepository reportNotificationRepository;
     private final ItemNotificationRepository itemNotificationRepository;
+
+    private final ItemRepository itemRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
 
     /**
@@ -474,6 +481,7 @@ public class MemberService {
     /**
      * 2.12 API new
      */
+    @Transactional
     public List<NotificationDTO> get20NotificationsSorted() throws BaseException {
             List<NotificationDTO> notifications = new ArrayList<>();
             Long memberId = jwtService.getUserIdx();
@@ -506,12 +514,31 @@ public class MemberService {
             Collections.sort(notifications, new NotificationDTOComparator().reversed());
 
             // Return only the first 20 notifications
+            //5/30 추가: delete notification if >20
+            //알림 보내는 API에서(댓글작성 등) delete notification 로직 삭제
             if (notifications.size() <= 20) {
                 return notifications;
             } else {
+                deleteNotification(notifications.subList(20, notifications.size()));
                 return notifications.subList(0, 20);
             }
         }
+
+        @Transactional
+        void deleteNotification(List<NotificationDTO> notificationDTO) {
+        notificationDTO.forEach(n -> {
+            if (n.getItem() != null) {
+                itemRepository.deleteItemNotification(n.getNotificationId());
+            } else if (n.getUnivPost() != null) {
+                commentRepository.deleteUnivNotification(n.getNotificationId());
+            } else if (n.getTotalPost() != null) {
+                commentRepository.deleteTotalNotification(n.getNotificationId());
+            } else if (n.getReportedPostId() != null) {
+                reportNotificationRepository.deleteById(n.getNotificationId());
+            }
+        });
+    }
+
 
 
 

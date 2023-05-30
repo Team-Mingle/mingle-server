@@ -150,9 +150,6 @@ public class CommentService {
                 //알림 저장
                 TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, postMember,comment);
                 memberRepository.saveTotalNotification(totalNotification);
-                if (postMember.getTotalNotifications().size() +postMember.getUnivNotifications().size()> 20) {
-                    commentRepository.deleteTotalNotification(postMember.getTotalNotifications().get(0).getId());
-                }
             }
         } else if (postTotalCommentRequest.getParentCommentId()!= null) {
             Member parentMember = commentRepository.findTotalCommentById(postTotalCommentRequest.getParentCommentId()).getMember();
@@ -267,9 +264,6 @@ public class CommentService {
                 fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, TableType.UnivPost, univPost.getId());
                 UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, postWriter, comment);
                 memberRepository.saveUnivNotification(univNotification);
-                if (postWriter.getUnivNotifications().size() + postWriter.getTotalNotifications().size()> 20) {
-                    commentRepository.deleteUnivNotification(postWriter.getUnivNotifications().get(0).getId());
-                }
             }
         }
 
