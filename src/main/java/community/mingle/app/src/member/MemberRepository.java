@@ -357,9 +357,11 @@ public class MemberRepository {
      * 2.17
      */
     public List<Item> findMyItemsByItemStatus(Long itemId, Long memberId, String itemStatus) {
-        List<Item> resultList = em.createQuery("select i from Item i join i.member m where i.status = :status and m.id = :memberId and " +
+        List<Item> resultList = em.createQuery("select i from Item i join i.member m where i.status = :status and i.status <> :status1 and i.status <> :status2 and m.id = :memberId and " +
                         "i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberId) and i.id < :itemId order by i.createdAt desc", Item.class)
                 .setParameter("status", ItemStatus.valueOf(itemStatus))
+                .setParameter("status1", ItemStatus.INACTIVE)
+                .setParameter("status2",ItemStatus.REPORTED)
                 .setParameter("memberId", memberId)
                 .setParameter("itemId", itemId)
                 .setMaxResults(20)

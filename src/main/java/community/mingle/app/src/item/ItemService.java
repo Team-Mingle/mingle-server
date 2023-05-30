@@ -1,6 +1,7 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -26,6 +27,8 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.config.BaseResponseStatus.CREATE_FAIL_POST;
 import static community.mingle.app.src.domain.PostStatus.DELETED;
 import static community.mingle.app.src.domain.PostStatus.REPORTED;
+import static community.mingle.app.utils.ValidationRegex.isRegexChatUrl;
+import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
 @Service
 @Transactional(readOnly = true)
@@ -60,6 +63,9 @@ public class ItemService {
      */
     @Transactional
     public CreateItemResponse createItemPost(CreateItemRequest createItemRequest) throws BaseException {
+        if (!isRegexChatUrl(createItemRequest.getChatUrl())) {
+            throw new BaseException(URL_FORMAT_ERROR);
+        }
         Long memberIdByJwt = jwtService.getUserIdx();
         Member member = postRepository.findMemberbyId(memberIdByJwt);
         try {
@@ -264,6 +270,10 @@ public class ItemService {
     public PostItemCommentResponse createItemComment(PostItemCommentRequest postItemCommentRequest) throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
         Item item = itemRepository.findItemById(postItemCommentRequest.getItemId());
+        ItemStatus status = item.getStatus();
+        if (status.equals(ItemStatus.INACTIVE) || status.equals(ItemStatus.REPORTED) || status.equals(ItemStatus.NOTIFIED) || status.equals(ItemStatus.DELETED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
+        }
         List<ItemComment> itemCommentList = item.getItemCommentList();
         boolean parentFlag = false;
         boolean mentionFlag = false;
@@ -355,7 +365,6 @@ public class ItemService {
         }
         if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
             return new ArrayList<>();
-
         }
         Long memberIdByJwt = jwtService.getUserIdx();
         try {
@@ -403,7 +412,7 @@ public class ItemService {
         Item item = itemRepository.findItemById(itemId);
         if (item == null)
             throw new BaseException(POST_NOT_EXIST);
-        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED))
+        if (item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED) || item.getStatus().equals(ItemStatus.INACTIVE))
             throw new BaseException(REPORTED_DELETED_POST);
         if (!Objects.equals(memberIdByJwt, item.getMember().getId()))
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
@@ -421,11 +430,11 @@ public class ItemService {
     public String blindItem(Long itemId) throws BaseException {
         Long memberId = jwtService.getUserIdx();
         Item item = itemRepository.findItemById(itemId);
-        if (item.getStatus().equals(ItemStatus.INACTIVE) || item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
-            throw new BaseException(REPORTED_DELETED_POST);
-        }
         if (item == null) {
             throw new BaseException(POST_NOT_EXIST);
+        }
+        if (item.getStatus().equals(ItemStatus.INACTIVE) || item.getStatus().equals(ItemStatus.REPORTED) || item.getStatus().equals(ItemStatus.DELETED)) {
+            throw new BaseException(REPORTED_DELETED_POST);
         }
         Member member = postRepository.findMemberbyId(memberId);
         ItemBlind itemBlind = ItemBlind.blindItem(item, member);
