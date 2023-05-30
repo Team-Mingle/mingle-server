@@ -24,5 +24,13 @@ public class ValidationRegex {
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
     }
+
+    public static boolean isRegexChatUrl(String chatUrl) {
+        String regex = "^https:\\/\\/open\\.kakao\\.com\\/.*$";
+        Pattern pattern = Pattern.compile(regex);
+        if (chatUrl == null) return false;
+        Matcher matcher = pattern.matcher(chatUrl);
+        return matcher.matches();
+    }
 }
 

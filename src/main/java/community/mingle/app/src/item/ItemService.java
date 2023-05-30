@@ -1,6 +1,7 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -26,6 +27,8 @@ import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.config.BaseResponseStatus.CREATE_FAIL_POST;
 import static community.mingle.app.src.domain.PostStatus.DELETED;
 import static community.mingle.app.src.domain.PostStatus.REPORTED;
+import static community.mingle.app.utils.ValidationRegex.isRegexChatUrl;
+import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
 @Service
 @Transactional(readOnly = true)
@@ -60,6 +63,9 @@ public class ItemService {
      */
     @Transactional
     public CreateItemResponse createItemPost(CreateItemRequest createItemRequest) throws BaseException {
+        if (!isRegexChatUrl(createItemRequest.getChatUrl())) {
+            throw new BaseException(URL_FORMAT_ERROR);
+        }
         Long memberIdByJwt = jwtService.getUserIdx();
         Member member = postRepository.findMemberbyId(memberIdByJwt);
         try {

@@ -27,6 +27,7 @@ public enum BaseResponseStatus {
 
     FIELD_EMPTY_ERROR(false, 2004, "필수 항목을 입력해주세요."),
 
+    URL_FORMAT_ERROR(false, 2005, "유효한 오픈채팅방 링크를 올려주세요."),
 
     /** 1. /auth  */
 
