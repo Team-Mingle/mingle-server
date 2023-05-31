@@ -177,6 +177,14 @@ public class ItemRepository {
         em.remove(itemComment);
     }
 
+    public void deleteLikeItem(Long commentId, Long memberId) {
+        ItemCommentLike itemCommentLike = em.createQuery("select icl from ItemCommentLike icl where icl.itemComment.id = :commentId and icl.member.id = :memberId", ItemCommentLike.class)
+                .setParameter("commentId", commentId)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+        em.remove(itemCommentLike);
+    }
+
 
     public List<Item> searchItemWithKeyword(String keyword, Long memberIdByJwt) {
 

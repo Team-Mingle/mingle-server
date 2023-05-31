@@ -22,6 +22,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static community.mingle.app.config.BaseResponseStatus.URL_FORMAT_ERROR;
+import static community.mingle.app.utils.ValidationRegex.isRegexChatUrl;
+
 @Tag(name = "item", description = "중고거래 API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @ApiResponses(value = {
@@ -105,9 +108,12 @@ public class ItemController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "2004", description = "필수 항목을 입력해주세요.", content = @Content(schema = @Schema(hidden = true)))
     })
-    public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @ModelAttribute ModifyItemPostRequest request) {
+    public BaseResponse<String> modifyItemPost(@PathVariable Long itemId, @ModelAttribute ModifyItemPostRequest request) throws BaseException {
         if (request.getTitle() == null || request.getContent() == null || request.getPrice() == null || request.getChatUrl() == null || request.getLocation() == null)
             return new BaseResponse<>(BaseResponseStatus.FIELD_EMPTY_ERROR);
+        if (!isRegexChatUrl(request.getChatUrl())) {
+            throw new BaseException(URL_FORMAT_ERROR);
+        }
         if (request.getItemImagesToAdd() == null && request.getItemImageUrlsToDelete() == null) {
             try {
                 itemService.modifyItemPost(itemId, request);
@@ -322,6 +328,21 @@ public class ItemController {
             return new BaseResponse<>(itemService.likeItemComment(commentId));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 6.16 거래 게시물 댓글 좋아요 취소 api
+     */
+    @Operation(summary = "6.16 unlikeItemComment API", description =  "6.16 중고장터 게시물 댓글 좋아요 취소 API")
+    @DeleteMapping("comment/like/unlike")
+    public BaseResponse<String> unlikeItemComment (@RequestParam Long commentId) throws BaseException {
+        try {
+            itemService.unlikeItemComment(commentId);
+            String result = "좋아요가 취소되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
         }
     }
 }
