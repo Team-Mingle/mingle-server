@@ -137,4 +137,8 @@ public class Item {
                 throw new BaseException(INVALID_ITEM_STATUS);
         }
     }
+
+    public void modifyStatusAsNotified() {
+        this.status = ItemStatus.NOTIFIED;
+    }
 }

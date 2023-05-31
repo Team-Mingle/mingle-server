@@ -355,6 +355,18 @@ public class MemberService {
                     //해당 댓글을 REPORTED status로 만들어 줌
                     reportedUnivComment.modifyStatusAsNotified();
                 }
+
+                //item
+                else if (reportRequest.getTableType() == TableType.Item) {
+                    Item reportedItem = memberRepository.findReportedItemByItemId(reportRequest.getContentId());
+                    int reportedItemComments = memberRepository.findReportedItemCommentsByItemId(reportRequest.getContentId());
+                    reportedItem.modifyStatusAsNotified();
+
+                //itemComment
+                } else if (reportRequest.getTableType() == TableType.ItemComment) {
+                    ItemComment reportedItemComment = memberRepository.findReportedItemCommentById(reportRequest.getContentId());
+                    reportedItemComment.modifyStatusAsNotified();
+                }
             }
             return reportDTO;
         } catch (Exception e) {
