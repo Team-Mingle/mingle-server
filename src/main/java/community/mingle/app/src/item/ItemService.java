@@ -1,7 +1,6 @@
 package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
@@ -25,10 +24,10 @@ import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.config.BaseResponseStatus.CREATE_FAIL_POST;
+import static community.mingle.app.src.domain.PostStatus.*;
 import static community.mingle.app.src.domain.PostStatus.DELETED;
 import static community.mingle.app.src.domain.PostStatus.REPORTED;
 import static community.mingle.app.utils.ValidationRegex.isRegexChatUrl;
-import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 
 @Service
 @Transactional(readOnly = true)
@@ -306,6 +305,7 @@ public class ItemService {
             sendItemPush(item, postItemCommentRequest, member, comment); //알림 저장 포함
             return new PostItemCommentResponse(anonymousId, comment, item.getMember().getId());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -454,4 +454,25 @@ public class ItemService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 거래 댓글 좋아요 api
+     */
+    @Transactional
+    public ItemCommentLikeResponse likeItemComment(Long commentId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        ItemComment comment = itemRepository.findItemCommentById(commentId);
+        if (comment == null) {
+            throw new BaseException(COMMENT_NOT_EXIST);
+        }
+        if (comment.getStatus().equals(INACTIVE) || comment.getStatus().equals(REPORTED)){
+            throw new BaseException(REPORTED_DELETED_COMMENT);
+        }
+        Member member = memberRepository.findMember(memberIdByJwt);
+        ItemCommentLike itemCommentLike = ItemCommentLike.likeItemComment(comment, member); //중복 좋아요일시 throw BaseException(DUPLICATE_LIKE)
+        Long id = itemRepository.saveItemCommentLike(itemCommentLike);
+        int likeCount = comment.getItemCommentLikes().size();
+        return new ItemCommentLikeResponse(id, likeCount);
+    }
+
 }

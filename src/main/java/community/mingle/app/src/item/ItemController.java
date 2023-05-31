@@ -3,6 +3,7 @@ package community.mingle.app.src.item;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
+import community.mingle.app.src.comment.model.PostCommentLikesTotalResponse;
 import community.mingle.app.src.domain.Item;
 import community.mingle.app.src.item.model.*;
 import community.mingle.app.src.post.model.*;
@@ -300,6 +301,25 @@ public class ItemController {
     public BaseResponse<String> unblindItem(@RequestParam Long itemId) {
         try {
             return new BaseResponse<>(itemService.unblindItem(itemId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
+    /**
+     * 6.15 거래 게시물 댓글 좋아요 api
+     */
+    @Operation(summary = "6.15 likeItemComment API", description =  "6.15 중고장터 게시물 댓글 좋아요 API")
+    @ApiResponses ({
+            @ApiResponse(responseCode = "4035", description = "댓글이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4050", description = "삭제되거나 신고된 댓글 입니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
+    })
+    @PostMapping("comment/like")
+    public BaseResponse<ItemCommentLikeResponse> likeItemComment(@RequestParam Long commentId) {
+        try {
+            return new BaseResponse<>(itemService.likeItemComment(commentId));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

@@ -1,6 +1,7 @@
 package community.mingle.app.src.domain;
 
 import community.mingle.app.src.domain.Total.TotalComment;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,6 +37,9 @@ public class ItemComment {
 
     @Column(name = "mention_id")
     private Long mentionId;
+
+    @OneToMany(mappedBy = "itemComment")
+    private List<ItemCommentLike> itemCommentLikes = new ArrayList<>();
 
     /** 익명방법? */
     @Column(name = "is_anonymous")

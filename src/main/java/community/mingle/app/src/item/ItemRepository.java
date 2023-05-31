@@ -3,6 +3,7 @@ package community.mingle.app.src.item;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalBlind;
+import community.mingle.app.src.domain.Total.TotalCommentLike;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivBlind;
 import lombok.RequiredArgsConstructor;
@@ -200,4 +201,10 @@ public class ItemRepository {
                 .getSingleResult();
         em.remove(itemBlind);
     }
+
+    public Long saveItemCommentLike(ItemCommentLike itemCommentLike) {
+        em.persist(itemCommentLike);
+        return itemCommentLike.getId();
+    }
+
 }
