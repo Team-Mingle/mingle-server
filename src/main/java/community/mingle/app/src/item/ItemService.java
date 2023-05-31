@@ -475,4 +475,13 @@ public class ItemService {
         return new ItemCommentLikeResponse(id, likeCount);
     }
 
+    @Transactional
+    public void unlikeItemComment(Long commentId) throws BaseException {
+        Long userIdx = jwtService.getUserIdx();
+        try {
+            itemRepository.deleteLikeItem(commentId, userIdx);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

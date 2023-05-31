@@ -115,6 +115,7 @@ public class Item {
         this.setPrice(request.getPrice());
         this.setLocation(request.getLocation());
         this.updatedAt = LocalDateTime.now();
+        this.isAnonymous = request.isAnonymous();
     }
 
     public void deleteItemPost() {

@@ -14,6 +14,7 @@ public class ModifyItemPostRequest {
     private Long price;
     private String location;
     private String chatUrl;
+    private boolean isAnonymous;
 
     private List<String> itemImageUrlsToDelete;
     private List<MultipartFile> itemImagesToAdd;
