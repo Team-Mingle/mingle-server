@@ -85,4 +85,8 @@ public class ItemComment {
 
         return itemComment;
     }
+
+    public void modifyStatusAsNotified() {
+        this.status = PostStatus.NOTIFIED;
+    }
 }

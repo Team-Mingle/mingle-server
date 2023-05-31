@@ -274,6 +274,33 @@ public class MemberRepository {
         return reportedUnivComment;
     }
 
+    /**
+     * 거래게시판
+     */
+    public Item findReportedItemByItemId(Long itemId) {
+        Item reportedItem = em.createQuery("select i from Item i where i.id = :itemId", Item.class)
+                .setParameter("itemId", itemId)
+                .getSingleResult();
+        return reportedItem;
+    }
+
+    public int findReportedItemCommentsByItemId(Long itemId) {
+        int reportedItemComments = em.createQuery("update ItemComment ic set ic.status = 'INACTIVE' where ic.item.id = :itemId")
+                .setParameter("itemId", itemId)
+                .executeUpdate();
+        return reportedItemComments;
+    }
+
+    public ItemComment findReportedItemCommentById(Long id) {
+        ItemComment reportedItemComment = em.createQuery("select ic from ItemComment ic where ic.id = :id", ItemComment.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return reportedItemComment;
+    }
+
+
+
+
 
     /**
      * 알림 리스트
