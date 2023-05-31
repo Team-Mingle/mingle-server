@@ -1,5 +1,6 @@
 package community.mingle.app.src.domain;
 
+import community.mingle.app.config.BaseException;
 import community.mingle.app.src.item.model.CreateItemRequest;
 import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import lombok.Getter;
@@ -11,6 +12,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static community.mingle.app.config.BaseResponseStatus.INVALID_ITEM_STATUS;
 
 @Getter
 @Setter
@@ -119,17 +122,19 @@ public class Item {
         this.status = ItemStatus.INACTIVE;
     }
 
-    public void modifyItemStatus(String itemStatus) {
+    public void modifyItemStatus(String itemStatus) throws BaseException {
         switch (itemStatus) {
-            case "판매중" :
+            case "SELLING" :
                 this.status = ItemStatus.SELLING;
                 break;
-            case "예약중" :
+            case "RESERVED" :
                 this.status = ItemStatus.RESERVED;
                 break;
-            case "판매완료" :
+            case "SOLDOUT" :
                 this.status = ItemStatus.SOLDOUT;
                 break;
+            default:
+                throw new BaseException(INVALID_ITEM_STATUS);
         }
     }
 }
