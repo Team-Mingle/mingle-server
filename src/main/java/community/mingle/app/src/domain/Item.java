@@ -124,13 +124,13 @@ public class Item {
 
     public void modifyItemStatus(String itemStatus) throws BaseException {
         switch (itemStatus) {
-            case "판매중" :
+            case "SELLING" :
                 this.status = ItemStatus.SELLING;
                 break;
-            case "예약중" :
+            case "RESERVED" :
                 this.status = ItemStatus.RESERVED;
                 break;
-            case "판매완료" :
+            case "SOLDOUT" :
                 this.status = ItemStatus.SOLDOUT;
                 break;
             default:
