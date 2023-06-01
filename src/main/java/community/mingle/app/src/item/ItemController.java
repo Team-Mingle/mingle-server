@@ -243,7 +243,7 @@ public class ItemController {
 
     /**
      * 6.11 거래 댓글 삭제 api
-     */
+//     */
     @PatchMapping("comment/{itemCommentId}")
     @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class)))
     @Operation(summary = "6.11 comment delete API", description = "6.11 거래 댓글 삭제")

@@ -3,6 +3,7 @@ package community.mingle.app.src.item;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.src.item.model.*;
 import community.mingle.app.src.member.MemberRepository;
@@ -391,11 +392,23 @@ public class ItemService {
      */
     @Transactional
     public String deleteItemComment(Long itemCommentId) throws BaseException {
+        Long memberIdByJwt = jwtService.getUserIdx();
+        Member member = memberRepository.findMember(memberIdByJwt);
+        if (member == null) {
+            throw new BaseException(USER_NOT_EXIST);
+        }
+        ItemComment itemComment = itemRepository.findItemCommentById(itemCommentId);
+        if (itemComment == null) {
+            throw new BaseException(COMMENT_NOT_EXIST);
+        }
+        if (!Objects.equals(memberIdByJwt, itemComment.getMember().getId())) {
+            throw new BaseException(MODIFY_NOT_AUTHORIZED);
+        }
         try {
-            itemRepository.deleteItemComment(itemCommentId);
+            itemComment.deleteItemComment();
             return "삭제에 성공했습니다.";
         } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+            throw new BaseException(DELETE_FAIL_COMMENT);
         }
     }
 
