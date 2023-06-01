@@ -37,6 +37,8 @@ public class ItemResponse {
     private boolean isAdmin;
     private ItemStatus status;
 
+    private boolean isAnonymous;
+
 
     /**
      * 정상 게시물
@@ -74,6 +76,7 @@ public class ItemResponse {
         this.isReported = false;
         this.isAdmin = item.getMember().getRole().equals(UserRole.ADMIN);
         this.status = item.getStatus();
+        this.isAnonymous = item.getIsAnonymous();
     }
 
     /**
@@ -104,5 +107,6 @@ public class ItemResponse {
         }
         this.isAdmin = item.getMember().getRole().equals(UserRole.ADMIN);
         this.status = item.getStatus();
+        this.isAnonymous = item.getIsAnonymous();
     }
 }
