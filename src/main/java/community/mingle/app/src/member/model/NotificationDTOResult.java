@@ -2,19 +2,9 @@ package community.mingle.app.src.member.model;
 
 
 import community.mingle.app.src.domain.BoardType;
-import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.NotificationType;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalNotification;
-import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivComment;
-import community.mingle.app.src.domain.Univ.UnivNotification;
-import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
@@ -65,7 +55,7 @@ public class NotificationDTOResult {
                     this.content = t.getUnivPost().getTitle();   //인기게시물
                 }
             }
-        } else if (t.getBoardType().equals(BoardType.거래)) {
+        } else if (t.getBoardType().equals(BoardType.밍끼마켓)) {
             this.postId = t.getItem().getId();
             if (t.getItemComment().isPresent()) {
                 this.content = t.getItemComment().get().getContent();
