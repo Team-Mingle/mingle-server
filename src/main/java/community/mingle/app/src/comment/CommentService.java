@@ -426,7 +426,7 @@ public class CommentService {
             throw new BaseException(COMMENT_NOT_EXIST);
         }
 
-        if (memberIdByJwt != totalComment.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, totalComment.getMember().getId())) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
@@ -456,7 +456,7 @@ public class CommentService {
             throw new BaseException(COMMENT_NOT_EXIST);
         }
 
-        if (memberIdByJwt != univComment.getMember().getId()) {
+        if (!Objects.equals(memberIdByJwt, univComment.getMember().getId())) {
             throw new BaseException(MODIFY_NOT_AUTHORIZED);
         }
         try {
