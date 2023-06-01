@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
+import static community.mingle.app.src.domain.BoardType.밍끼마켓;
 
 @Service
 @RequiredArgsConstructor
@@ -569,17 +570,17 @@ public class MemberService {
     public void  readNotification(NotificationRequest notificationRequest) throws BaseException {
         try {
             if (notificationRequest.getBoardType().equals(BoardType.광장)){
-                TotalNotification totalNotification;
-                totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
+                TotalNotification totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
                 totalNotification.readNotification();
             }
             else if (notificationRequest.getBoardType().equals(BoardType.잔디밭)) {
-                UnivNotification univNotification;
-                univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
+                UnivNotification univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
                univNotification.readNotification();
+            } else if (notificationRequest.getBoardType().equals(밍끼마켓)) {
+                ItemNotification itemNotification = memberRepository.findItemNotification(notificationRequest.getNotificationId());
+                itemNotification.readNotification();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }

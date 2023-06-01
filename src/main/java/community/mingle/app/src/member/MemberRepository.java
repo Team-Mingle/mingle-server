@@ -349,6 +349,13 @@ public class MemberRepository {
         return readTotalNotification;
     }
 
+    public ItemNotification findItemNotification(Long notificationId) {
+        ItemNotification readItemNotification = em.createQuery("select i from ItemNotification i where i.id = :notificationId", ItemNotification.class)
+                .setParameter("notificationId", notificationId)
+                .getSingleResult();
+        return readItemNotification;
+    }
+
 
     public void saveUnivNotification(UnivNotification univNotification){
         em.persist(univNotification);
@@ -395,7 +402,6 @@ public class MemberRepository {
                 .getResultList();
         return resultList;
     }
-
 
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberIdByJwt) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ

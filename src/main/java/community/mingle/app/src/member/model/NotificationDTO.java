@@ -13,8 +13,6 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
-
 
 @Getter
 @AllArgsConstructor
@@ -83,7 +81,7 @@ public class NotificationDTO { //noti //univnoti //totalnoti
         this.notificationId = r.getId();
         this.item = r.getItem();
         this.memberId = r.getMember().getId();
-        this.boardType = BoardType.거래; //Database에는 없음. 그냥 DTO 만들때 넣어주기 -> 괜찮겠지?
+        this.boardType = BoardType.밍끼마켓;
         this.category = null;
         this.itemComment = Optional.ofNullable(r.getItemComment());
         this.notificationType = r.getNotificationType(); //거래

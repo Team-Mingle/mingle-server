@@ -52,4 +52,8 @@ public class ItemNotification {
         itemNotification.notificationType = NotificationType.거래;
         return itemNotification;
     }
+
+    public void readNotification() {
+        this.isRead = true;
+    }
 }
