@@ -436,7 +436,7 @@ public class AuthController {
     /**
      * 새내기 유저 미리 인증번호 등록해두기
      */
-    @Operation(summary = "register freshman", description = "새내기 유저 미리 인증번호 등록해두기")
+    @Operation(summary = "새내기 유저 이메일+인증번호 발급", description = "새내기 유저 미리 인증번호 등록해두기")
     @PostMapping("freshman-register")
     public BaseResponse<FreshmanRegisterResponse> registerFreshman(@RequestParam int univId) throws BaseException {
         String univName;
@@ -459,8 +459,7 @@ public class AuthController {
             default:
                 throw new BaseException(INVALID_UNIV_ID);
         }
-        String freshmanEmail = univName + "." + generateRandomCode(4) + "@freshman.mingle.com";
-
+        String freshmanEmail = authService.generateFreshmanEmail(univName);
         Random random = new Random();
         String authKey = String.valueOf(random.nextInt(888888) + 111111);
         redisUtil.setData(freshmanEmail, authKey);
@@ -469,18 +468,7 @@ public class AuthController {
 
     }
 
-    private static String generateRandomCode(int length) {
-        String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        Random random = new Random(System.currentTimeMillis());
-        StringBuilder code = new StringBuilder();
 
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(chars.length());
-            code.append(chars.charAt(index));
-        }
-
-        return code.toString();
-    }
 
 }
 

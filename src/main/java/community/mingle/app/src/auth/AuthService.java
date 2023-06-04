@@ -408,7 +408,38 @@ public class AuthService {
         }
     }
 
+    public String generateFreshmanEmail(String univName) throws BaseException {
+        while (true) {
+        String freshmanEmail = univName + "." + generateRandomCode(3) + "@freshman.mingle.com";
+        boolean isDuplicate = validateRandomEmail(freshmanEmail);
+            if (isDuplicate == false) {
+                return freshmanEmail;
+            }
+        }
+    }
 
+    public boolean validateRandomEmail(String freshmanEmail) throws BaseException {
+        String encryptedEmail;
+        try {
+            encryptedEmail = new SHA256().encrypt(freshmanEmail);
+        } catch (Exception ignored) {
+            throw new BaseException(EMAIL_ENCRYPTION_ERROR);
+        }
+        return authRepository.findEmail(encryptedEmail);
+    }
+
+    private static String generateRandomCode(int length) {
+        String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+        Random random = new Random(System.currentTimeMillis());
+        StringBuilder code = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(chars.length());
+            code.append(chars.charAt(index));
+        }
+
+        return code.toString();
+    }
 
 
 }
