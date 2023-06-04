@@ -17,14 +17,15 @@ public class NotificationDTOResult {
     private NotificationType notificationType;
     private Long postId;
     private String content;
-    private BoardType boardType;
     private String category;
+    private BoardType boardType;
     private boolean isRead;
     private String createdAt;
 
 
     public NotificationDTOResult(NotificationDTO t) {
-        this.notificationId= t.getNotificationId();
+        //default 값 비어있는 string 으로
+        this.notificationId = t.getNotificationId();
         if (t.getBoardType().equals(BoardType.광장)) {
             if (t.getReportedPostId() != null) {
                 this.postId = t.getReportedPostId();
@@ -49,6 +50,7 @@ public class NotificationDTOResult {
             }
             else{
                 this.postId = t.getUnivPost().getId();
+                this.category = t.getCategory().name();
                 if (t.getUnivComment().isPresent()) { //댓글
                     this.content = t.getUnivComment().get().getContent();
                 } else {
@@ -60,7 +62,7 @@ public class NotificationDTOResult {
             if (t.getItemComment().isPresent()) {
                 this.content = t.getItemComment().get().getContent();
             }
-            this.category = null;
+            this.category = "";
         }
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
