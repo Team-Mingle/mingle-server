@@ -25,7 +25,9 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
+    FIELD_EMPTY_ERROR(false, 2004, "필수 항목을 입력해주세요."),
 
+    URL_FORMAT_ERROR(false, 2005, "유효한 오픈채팅방 링크를 올려주세요."),
 
     /** 1. /auth  */
 
@@ -60,6 +62,11 @@ public enum BaseResponseStatus {
 
     /** 4. /comment  */
 
+    /**
+     * 6. item
+     */
+
+    INVALID_ITEM_STATUS(false,2060, "유효하지 않은 itemStatus 입니다."),
 
 
 
@@ -124,6 +131,8 @@ public enum BaseResponseStatus {
     INVALID_IMAGE(false, 3072,"유효하지 않은 이미지입니다"),
     INVALID_IMAGE_NUMBER(false, 3073, "이미지 개수를 초과하였습니다"),
     DELETE_FAIL_IMAGE(false, 3074,"이미지 삭제에 실패했습니다"),
+
+    IMG_UPLOAD_REQUIRED(false,3075,"최소 1개 이상의 물건 사진을 올려주세요."),
 
 
     /** 4. /comment  */

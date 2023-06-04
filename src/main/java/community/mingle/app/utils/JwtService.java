@@ -1,25 +1,27 @@
 package community.mingle.app.utils;
 
 
-import community.mingle.app.config.exception.BadRequestException;
+import community.mingle.app.config.TokenHelper;
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.handler.JwtHandler;
+import community.mingle.app.src.domain.UserRole;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+
+    private final TokenHelper tokenHelper;
+    private final JwtHandler jwtHandler;
 
     String type = "Bearer";
 
@@ -42,11 +44,23 @@ public class JwtService {
 
         //1. JWT 추출
         String accessToken = untype(getJwt());
+        if (tokenHelper.isDefaultToken("Bearer" + accessToken)) {
+            switch (accessToken.substring(1)) {
+                case "mingle-user":
+                    return 657L;
+                case "mingle-admin":
+                    return 658L;
+                case "mingle-ksa":
+                    return 659L;
+                case "mingle-freshman":
+                    return 660L;
+            }
+        }
         // 2. userIdx 추출
         return Long.valueOf(
                 Jwts.parser()
                         .setSigningKey(accessKey.getBytes())
-                        .parseClaimsJws(accessToken)
+                        .parseClaimsJws(accessToken) //io.jsonwebtoken.ExpiredJwtException: JWT expired at 2023-02-17T17:15:04Z. Current time: 2023-04-06T00:51:09Z, a difference of 4088165969 milliseconds.  Allowed clock skew: 0 milliseconds.
                         .getBody()
                         .get("MEMBER_ID", String.class));
     }

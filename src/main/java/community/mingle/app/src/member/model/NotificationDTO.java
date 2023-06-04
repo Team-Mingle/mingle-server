@@ -1,9 +1,6 @@
 package community.mingle.app.src.member.model;
 
-import community.mingle.app.src.domain.BoardType;
-import community.mingle.app.src.domain.CategoryType;
-import community.mingle.app.src.domain.NotificationType;
-import community.mingle.app.src.domain.ReportNotification;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -16,8 +13,6 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
-
 
 @Getter
 @AllArgsConstructor
@@ -28,11 +23,13 @@ public class NotificationDTO { //noti //univnoti //totalnoti
     //post en
     private TotalPost totalPost;
     private UnivPost univPost;
+    private Item item; //추가
     private Long reportedPostId;
     private String reportMessage;
     private int tableId;
     private Optional<UnivComment> univComment;
     private Optional<TotalComment> totalComment;
+    private Optional<ItemComment> itemComment; //추가
     private NotificationType notificationType;
     private BoardType boardType;
     private CategoryType category;
@@ -79,6 +76,19 @@ public class NotificationDTO { //noti //univnoti //totalnoti
         this.createdAt = r.getCreatedAt();
         this.reportMessage = "다른 사용자의 신고로 인해 삭제된 컨텐츠입니다.";
     }
+
+    public NotificationDTO(ItemNotification r) {
+        this.notificationId = r.getId();
+        this.item = r.getItem();
+        this.memberId = r.getMember().getId();
+        this.boardType = BoardType.밍끼마켓;
+        this.category = null;
+        this.itemComment = Optional.ofNullable(r.getItemComment());
+        this.notificationType = r.getNotificationType(); //거래
+        this.isRead = r.getIsRead();
+        this.createdAt = r.getCreatedAt();
+    }
+
 
 
 }

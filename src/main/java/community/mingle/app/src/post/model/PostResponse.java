@@ -7,6 +7,7 @@ import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Univ.UnivPostImage;
+import community.mingle.app.src.domain.UserRole;
 import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
@@ -50,6 +51,9 @@ public class PostResponse {
         } else {
             this.nickname = totalPost.getMember().getNickname();
         }
+        if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = "🐥" + this.nickname;
+        }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
         this.scrapCount = totalPost.getTotalPostScraps().size();
@@ -70,7 +74,7 @@ public class PostResponse {
             }
         }
         this.isReported = false;
-        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
+        this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
     }
 
     public PostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded) {
@@ -81,6 +85,10 @@ public class PostResponse {
             this.nickname = "익명";
         } else {
             this.nickname = u.getMember().getNickname();
+        }
+
+        if (u.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = "🐥" + this.nickname;
         }
         this.isFileAttached = u.getIsFileAttached();
         likeCount = u.getUnivPostLikes().size();
@@ -102,7 +110,7 @@ public class PostResponse {
             }
         }
         this.isReported = false; // 2/17 추가
-        this.isAdmin = u.getMember().getRole().equals("ADMIN");
+        this.isAdmin = u.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 
@@ -119,6 +127,10 @@ public class PostResponse {
             this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
+        }
+
+        if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = "🐥" + this.nickname;
         }
         this.isFileAttached = totalPost.getIsFileAttached();
         this.likeCount = totalPost.getTotalPostLikes().size();
@@ -145,10 +157,10 @@ public class PostResponse {
             this.content = "사유: " + reportedReason;
         }
         if (totalPost.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다. 사유: 이용약관 제 12조 위반";
             this.content = "사유: 이용약관 제 12조 위반";
         }
-        this.isAdmin = totalPost.getMember().getRole().equals("ADMIN");
+        this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
     }
 
     public PostResponse(UnivPost u, boolean isMyPost, boolean isLiked, boolean isScraped, boolean isBlinded, String reportedReason) {
@@ -159,6 +171,9 @@ public class PostResponse {
             this.nickname = "익명";
         } else {
             this.nickname = u.getMember().getNickname();
+        }
+        if (u.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = "🐥" + this.nickname;
         }
         this.isFileAttached = u.getIsFileAttached();
         likeCount = u.getUnivPostLikes().size();
@@ -185,9 +200,9 @@ public class PostResponse {
             this.content = "사유: " + reportedReason;
         }
         if (u.getStatus().equals(DELETED)) {
-            this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
+            this.title = "운영규칙 위반에 따라 삭제된 글입니다. 사유: 이용약관 제 12조 위반";
             this.content = "사유: 이용약관 제 12조 위반";
         }
-        this.isAdmin = u.getMember().getRole().equals("ADMIN");
+        this.isAdmin = u.getMember().getRole().equals(UserRole.ADMIN);
     }
 }

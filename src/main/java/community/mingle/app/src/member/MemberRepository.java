@@ -1,9 +1,6 @@
 package community.mingle.app.src.member;
 
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostStatus;
-import community.mingle.app.src.domain.Report;
-import community.mingle.app.src.domain.ReportNotification;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
 import community.mingle.app.src.member.model.*;
@@ -11,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 
@@ -200,6 +198,20 @@ public class MemberRepository {
         return reportedMember;
     }
 
+    public Member findReportedItemMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from Item i join i.member m where i.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
+    public Member findReportedItemCommentMember(Long contentId) {
+        Member reportedMember = em.createQuery("select m from ItemComment i join i.member m where i.id = :contentId", Member.class)
+                .setParameter("contentId", contentId)
+                .getSingleResult();
+        return reportedMember;
+    }
+
     public Long reportSave(Report report) {
         em.persist(report);
         return report.getReportId();
@@ -262,6 +274,33 @@ public class MemberRepository {
         return reportedUnivComment;
     }
 
+    /**
+     * 거래게시판
+     */
+    public Item findReportedItemByItemId(Long itemId) {
+        Item reportedItem = em.createQuery("select i from Item i where i.id = :itemId", Item.class)
+                .setParameter("itemId", itemId)
+                .getSingleResult();
+        return reportedItem;
+    }
+
+    public int findReportedItemCommentsByItemId(Long itemId) {
+        int reportedItemComments = em.createQuery("update ItemComment ic set ic.status = 'INACTIVE' where ic.item.id = :itemId")
+                .setParameter("itemId", itemId)
+                .executeUpdate();
+        return reportedItemComments;
+    }
+
+    public ItemComment findReportedItemCommentById(Long id) {
+        ItemComment reportedItemComment = em.createQuery("select ic from ItemComment ic where ic.id = :id", ItemComment.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return reportedItemComment;
+    }
+
+
+
+
 
     /**
      * 알림 리스트
@@ -310,6 +349,13 @@ public class MemberRepository {
         return readTotalNotification;
     }
 
+    public ItemNotification findItemNotification(Long notificationId) {
+        ItemNotification readItemNotification = em.createQuery("select i from ItemNotification i where i.id = :notificationId", ItemNotification.class)
+                .setParameter("notificationId", notificationId)
+                .getSingleResult();
+        return readItemNotification;
+    }
+
 
     public void saveUnivNotification(UnivNotification univNotification){
         em.persist(univNotification);
@@ -318,6 +364,44 @@ public class MemberRepository {
         em.persist(totalNotification);
     }
 
+    public List<String> findAllFcmToken() {
+        List<String> resultList = em.createQuery("select m.fcmToken from Member m where m.fcmToken is not null and m.status = :status", String.class)
+                .setParameter("status", UserStatus.ACTIVE)
+                .getResultList();
+        return resultList;
+    }
+
+    /**
+     * 2.16 내가 찜한 거래 게시물
+     */
+    public List<Item> findLikedItems(Long itemId, Long memberId) {
+        List<Item> resultList = em.createQuery("select i from ItemLike  il join il.member m join il.item i where i.status <> :status and m.id = :id and " +
+                "i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id < :itemId order by i.createdAt desc", Item.class)
+                .setParameter("status", ItemStatus.INACTIVE)
+                .setParameter("id", memberId)
+                .setParameter("memberIdByJwt",memberId)
+                .setParameter("itemId", itemId)
+                .setMaxResults(20)
+                .getResultList();
+        return resultList;
+    }
+
+
+    /**
+     * 2.17
+     */
+    public List<Item> findMyItemsByItemStatus(Long itemId, Long memberId, String itemStatus) {
+        List<Item> resultList = em.createQuery("select i from Item i join i.member m where i.status = :status and i.status <> :status1 and i.status <> :status2 and m.id = :memberId and " +
+                        "i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberId) and i.id < :itemId order by i.createdAt desc", Item.class)
+                .setParameter("status", ItemStatus.valueOf(itemStatus))
+                .setParameter("status1", ItemStatus.INACTIVE)
+                .setParameter("status2",ItemStatus.REPORTED)
+                .setParameter("memberId", memberId)
+                .setParameter("itemId", itemId)
+                .setMaxResults(20)
+                .getResultList();
+        return resultList;
+    }
 
 
 //    public List<UnivPost> findUnivScrapsV2(Long memberIdByJwt) { // join fetch 했을경우: 다 가져옴 리스트까지. / fetch join 은 별칭이 안됨.? Hibernate 는 됨? 에러. ㅠㅠ

@@ -5,6 +5,7 @@ import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.UserRole;
 import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
@@ -61,7 +62,7 @@ public class MyPagePostDTO {
             this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.contents = "";
         }
-        this.isAdmin = p.getMember().getRole().equals("ADMIN");
+        this.isAdmin = p.getMember().getRole().equals(UserRole.ADMIN);
     }
 
     public MyPagePostDTO (UnivPost p, Long memberId) {
@@ -94,7 +95,7 @@ public class MyPagePostDTO {
             this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.contents = "";
         }
-        this.isAdmin = p.getMember().getRole().equals("ADMIN");
+        this.isAdmin = p.getMember().getRole().equals(UserRole.ADMIN);
     }
 
 }

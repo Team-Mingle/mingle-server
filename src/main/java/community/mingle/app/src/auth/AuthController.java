@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
@@ -50,6 +51,8 @@ public class AuthController {
     private final RedisService redisService;
     private final RedisTemplate redisTemplate;
     private final PostService postService;
+
+    private final RedisUtil redisUtil;
 
 
     /**
@@ -142,7 +145,11 @@ public class AuthController {
             if (!isRegexEmail(req.getEmail())) { //이메일 형식(정규식) 검증
                 return new BaseResponse<>(EMAIL_FORMAT_ERROR);
             }
-            authService.sendCode(req);
+            String domain = req.getEmail().split("@")[1];
+            if (domain.equals("freshman.mingle.com")) {
+                return new BaseResponse<>("새내기용 이메일입니다.");
+            }
+            authService.sendCode(req.getEmail());
             //return ResponseEntity.ok().build();
             String result = "인증번호가 전송되었습니다.";
             return new BaseResponse<>(result);
@@ -422,8 +429,57 @@ public class AuthController {
     }
 
     @PatchMapping("/report-member")
-    public void executeMember(@RequestParam Long memberId) throws IOException {
+    public void executeMember(@RequestParam Long memberId) throws IOException, BaseException {
         postService.executeMember(memberId);
+    }
+
+    /**
+     * 새내기 유저 미리 인증번호 등록해두기
+     */
+    @Operation(summary = "register freshman", description = "새내기 유저 미리 인증번호 등록해두기")
+    @PostMapping("freshman-register")
+    public BaseResponse<FreshmanRegisterResponse> registerFreshman(@RequestParam int univId) throws BaseException {
+        String univName;
+        switch (univId) {
+            case 1:
+                univName = "hku";
+                break;
+            case 2:
+                univName = "hkust";
+                break;
+            case 3:
+                univName = "cuhk";
+                break;
+            case 4:
+                univName = "cityu";
+                break;
+            case 5:
+                univName = "polyu";
+                break;
+            default:
+                throw new BaseException(INVALID_UNIV_ID);
+        }
+        String freshmanEmail = univName + "." + generateRandomCode(4) + "@freshman.mingle.com";
+
+        Random random = new Random();
+        String authKey = String.valueOf(random.nextInt(888888) + 111111);
+        redisUtil.setData(freshmanEmail, authKey);
+        FreshmanRegisterResponse freshmanRegisterResponse = new FreshmanRegisterResponse(freshmanEmail, authKey);
+        return new BaseResponse<>(freshmanRegisterResponse);
+
+    }
+
+    private static String generateRandomCode(int length) {
+        String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random(System.currentTimeMillis());
+        StringBuilder code = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(chars.length());
+            code.append(chars.charAt(index));
+        }
+
+        return code.toString();
     }
 
 }

@@ -1,5 +1,6 @@
 package community.mingle.app.utils;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -69,10 +70,11 @@ public class S3Service {
     }
 
     public void deleteFile(String fileName, String dirName) throws BaseException {
-        String fileRename = dirName + "/" + fileName;
+        String fileRename = dirName + "/" + fileName; //key
         try{
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileRename));
-        } catch (Exception e) {
+        } catch (AmazonClientException e) {
+            e.printStackTrace();
             throw new BaseException(DELETE_FAIL_IMAGE);
         }
     }
@@ -82,6 +84,7 @@ public class S3Service {
         try{
             return UUID.randomUUID().toString().concat(getFileExtension(fileName));
         }catch(Exception e) {
+            e.printStackTrace();
             throw new BaseException(INVALID_IMAGE);
         }
 
@@ -101,12 +104,14 @@ public class S3Service {
             fileValidate.add(".PNG");
             fileValidate.add(".heic");
             fileValidate.add(".HEIC");
+            fileValidate.add(".webp");
             String idxFileName = fileName.substring(fileName.lastIndexOf("."));
             if (!fileValidate.contains(idxFileName)) {
                 throw new BaseException(INVALID_IMAGE_FORMAT);
             }
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(INVALID_IMAGE_FORMAT);
         }
     }

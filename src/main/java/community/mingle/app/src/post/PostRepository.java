@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static community.mingle.app.config.BaseResponseStatus.USER_NOT_EXIST;
+
 @Repository
 @RequiredArgsConstructor
 public class PostRepository {
@@ -120,14 +122,14 @@ public class PostRepository {
     }
 
 
-    public Member findMemberbyId(Long id) {
+    public Member findMemberbyId(Long id) throws BaseException {
         try {
             return em.createQuery("select m from Member m where m.id = :id and m.status = :status", Member.class)
                     .setParameter("id", id)
                     .setParameter("status", UserStatus.ACTIVE)
                     .getSingleResult();
         } catch (Exception e) {
-            return null;
+            throw new BaseException(USER_NOT_EXIST);
         }
 //        return em.find(Member.class, id);
     }

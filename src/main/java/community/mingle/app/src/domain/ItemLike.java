@@ -1,6 +1,8 @@
 package community.mingle.app.src.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @Entity
 @Table(name = "item_like")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +29,10 @@ public class ItemLike {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
+    public static ItemLike likesItem(Member member, Item item) {
+        ItemLike itemLike = new ItemLike();
+        itemLike.setMember(member);
+        itemLike.setItem(item);
+        return itemLike;
+    }
 }

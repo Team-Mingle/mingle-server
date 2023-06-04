@@ -1,9 +1,6 @@
 package community.mingle.app.src.domain.Total;
 
-import community.mingle.app.src.domain.BoardType;
-import community.mingle.app.src.domain.CategoryType;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.NotificationType;
+import community.mingle.app.src.domain.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -36,19 +36,19 @@ public class UnivBlind {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public static UnivBlind blindUnivPost(UnivPost Univpost, Member member) {
+    public static UnivBlind blindUnivPost(UnivPost univpost, Member member) {
         List<UnivBlind> univBlindList = member.getUnivBlindPost();
         if (univBlindList == null || univBlindList.isEmpty()) {
         } else {
             for (UnivBlind univBlind : univBlindList) {
-                if (Objects.equals(univBlind.getUnivPost().getId(), univBlind.getId())) {
+                if (Objects.equals(univBlind.getUnivPost().getId(), univpost.getId())) {
                     return null;
                 }
             }
         }
         UnivBlind univBlind = new UnivBlind();
         univBlind.setMember(member);
-        univBlind.setUnivPost(Univpost);
+        univBlind.setUnivPost(univpost);
         univBlind.createdAt = LocalDateTime.now();
         return univBlind;
     }

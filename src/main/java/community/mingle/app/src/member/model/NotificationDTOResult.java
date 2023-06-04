@@ -2,19 +2,9 @@ package community.mingle.app.src.member.model;
 
 
 import community.mingle.app.src.domain.BoardType;
-import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.NotificationType;
-import community.mingle.app.src.domain.Total.TotalComment;
-import community.mingle.app.src.domain.Total.TotalNotification;
-import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivComment;
-import community.mingle.app.src.domain.Univ.UnivNotification;
-import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
 
@@ -39,9 +29,11 @@ public class NotificationDTOResult {
             if (t.getReportedPostId() != null) {
                 this.postId = t.getReportedPostId();
                 this.content = t.getReportMessage();
+                this.category = t.getCategory().name();
             }
             else{
                 this.postId = t.getTotalPost().getId();
+                this.category = t.getCategory().name();
                 if (t.getTotalComment().isPresent()) {
                     this.content = t.getTotalComment().get().getContent();//댓글
                 } else {
@@ -53,6 +45,7 @@ public class NotificationDTOResult {
             if (t.getReportedPostId() != null) {
                 this.postId = t.getReportedPostId();
                 this.content = t.getReportMessage();
+                this.category = t.getCategory().name();
             }
             else{
                 this.postId = t.getUnivPost().getId();
@@ -62,13 +55,17 @@ public class NotificationDTOResult {
                     this.content = t.getUnivPost().getTitle();   //인기게시물
                 }
             }
+        } else if (t.getBoardType().equals(BoardType.밍끼마켓)) {
+            this.postId = t.getItem().getId();
+            if (t.getItemComment().isPresent()) {
+                this.content = t.getItemComment().get().getContent();
+            }
+            this.category = null;
         }
         this.notificationType= t.getNotificationType();
         this.boardType = t.getBoardType();
-        this.category = t.getCategory().name();
         this.isRead = t.isRead();
-        this.createdAt =convertLocaldatetimeToTime(t.getCreatedAt());
-
+        this.createdAt = convertLocaldatetimeToTime(t.getCreatedAt());
     }
 
 

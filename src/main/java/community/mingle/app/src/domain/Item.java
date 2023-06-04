@@ -1,13 +1,19 @@
 package community.mingle.app.src.domain;
 
+import community.mingle.app.config.BaseException;
+import community.mingle.app.src.item.model.CreateItemRequest;
+import community.mingle.app.src.item.model.ModifyItemPostRequest;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static community.mingle.app.config.BaseResponseStatus.INVALID_ITEM_STATUS;
 
 @Getter
 @Setter
@@ -62,11 +68,78 @@ public class Item {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum", name = "status", nullable = false)
-    private PostStatus status;
+    private ItemStatus status;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+
+    @OneToMany(mappedBy = "item")
+    private List<ItemLike> itemLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item")
+    private List<ItemComment> itemCommentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item")
+    private List<ItemImg> itemImgList = new ArrayList<>();
+
+    public static Item createItemPost(Member member, CreateItemRequest createItemRequest) {
+        Item item = new Item();
+        item.setTitle(createItemRequest.getTitle());
+        item.setPrice(createItemRequest.getPrice());
+        item.setContent(createItemRequest.getContent());
+        item.setLocation(createItemRequest.getLocation());
+        item.setChatUrl(createItemRequest.getChatUrl());
+        item.setIsAnonymous(createItemRequest.getIsAnonymous());
+        item.setCreatedAt(LocalDateTime.now());
+        item.setUpdatedAt(LocalDateTime.now());
+        item.setStatus(ItemStatus.SELLING);
+        item.setMember(member);
+        return item;
+    }
+
+    public void updateView() {
+        if (viewCount == 0) {
+            this.viewCount = 1;
+        } else {
+            this.viewCount += 1;
+        }
+    }
+
+    public void updateItemPost(ModifyItemPostRequest request) {
+        this.setTitle(request.getTitle());
+        this.setContent(request.getContent());
+        this.setChatUrl(request.getChatUrl());
+        this.setPrice(request.getPrice());
+        this.setLocation(request.getLocation());
+        this.updatedAt = LocalDateTime.now();
+        this.isAnonymous = request.isAnonymous();
+    }
+
+    public void deleteItemPost() {
+        this.deletedAt = LocalDateTime.now();
+        this.status = ItemStatus.INACTIVE;
+    }
+
+    public void modifyItemStatus(String itemStatus) throws BaseException {
+        switch (itemStatus) {
+            case "SELLING" :
+                this.status = ItemStatus.SELLING;
+                break;
+            case "RESERVED" :
+                this.status = ItemStatus.RESERVED;
+                break;
+            case "SOLDOUT" :
+                this.status = ItemStatus.SOLDOUT;
+                break;
+            default:
+                throw new BaseException(INVALID_ITEM_STATUS);
+        }
+    }
+
+    public void modifyStatusAsNotified() {
+        this.status = ItemStatus.NOTIFIED;
+    }
 }

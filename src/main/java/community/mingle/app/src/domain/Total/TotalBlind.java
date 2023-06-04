@@ -42,7 +42,7 @@ public class TotalBlind {
         if (totalBlindList == null || totalBlindList.isEmpty()) {
         } else {
             for (TotalBlind totalBlind : totalBlindList) {
-                if (Objects.equals(totalBlind.getTotalPost().getId(), totalBlind.getId())) {
+                if (Objects.equals(totalBlind.getTotalPost().getId(), totalpost.getId())) {
                     return null;
                 }
             }

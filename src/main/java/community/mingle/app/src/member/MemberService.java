@@ -1,8 +1,10 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
+import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalNotification;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -11,17 +13,25 @@ import community.mingle.app.src.domain.Univ.UnivNotification;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
+import community.mingle.app.src.item.ItemRepository;
+import community.mingle.app.src.item.model.ItemListDTO;
+import community.mingle.app.src.item.model.ItemListResponse;
 import community.mingle.app.src.member.model.*;
+import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
+import static community.mingle.app.src.domain.BoardType.밍끼마켓;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +42,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RedisUtil redisUtil;
     private final FirebaseCloudMessageService fcmService;
+
+    private final UnivNotificationRepository univNotificationRepository;
+    private final TotalNotificationRepository totalNotificationRepository;
+    private final ReportNotificationRepository reportNotificationRepository;
+    private final ItemNotificationRepository itemNotificationRepository;
+
+    private final ItemRepository itemRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
 
     /**
@@ -248,6 +267,10 @@ public class MemberService {
                 reportedMember = memberRepository.findReportedUnivPostMember(reportRequest.getContentId());
             } else if (reportRequest.getTableType() == TableType.UnivComment) {
                 reportedMember = memberRepository.findReportedUnivCommentMember(reportRequest.getContentId());
+            } else if (reportRequest.getTableType() == TableType.Item) {
+                reportedMember = memberRepository.findReportedItemMember(reportRequest.getContentId());
+            } else if (reportRequest.getTableType() == TableType.ItemComment) {
+                reportedMember = memberRepository.findReportedItemCommentMember(reportRequest.getContentId());
             }
             return reportedMember;
         } catch (Exception e) {
@@ -303,9 +326,6 @@ public class MemberService {
                     int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
                     //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
                     reportedTotalPost.modifyStatusAsNotified();
-//                for (TotalComment tc : reportedTotalComments) {
-//                    tc.modifyInactiveStatus();
-//                }
                 }
 
                 //total comment
@@ -335,6 +355,18 @@ public class MemberService {
                     UnivComment reportedUnivComment = memberRepository.findReportedUnivCommentByCommentId(reportRequest.getContentId());
                     //해당 댓글을 REPORTED status로 만들어 줌
                     reportedUnivComment.modifyStatusAsNotified();
+                }
+
+                //item
+                else if (reportRequest.getTableType() == TableType.Item) {
+                    Item reportedItem = memberRepository.findReportedItemByItemId(reportRequest.getContentId());
+                    int reportedItemComments = memberRepository.findReportedItemCommentsByItemId(reportRequest.getContentId());
+                    reportedItem.modifyStatusAsNotified();
+
+                //itemComment
+                } else if (reportRequest.getTableType() == TableType.ItemComment) {
+                    ItemComment reportedItemComment = memberRepository.findReportedItemCommentById(reportRequest.getContentId());
+                    reportedItemComment.modifyStatusAsNotified();
                 }
             }
             return reportDTO;
@@ -458,6 +490,79 @@ public class MemberService {
         }
     }
 
+
+    /**
+     * 2.12 API new
+     */
+    @Transactional
+    public List<NotificationDTO> get20NotificationsSorted() throws BaseException {
+            List<NotificationDTO> notifications = new ArrayList<>();
+            Long memberId = jwtService.getUserIdx();
+
+            List<UnivNotification> univNotifications = univNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (UnivNotification univNotification : univNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(univNotification);
+                notifications.add(notificationDTO);
+            }
+
+            List<TotalNotification> totalNotifications = totalNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (TotalNotification totalNotification : totalNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(totalNotification);
+                notifications.add(notificationDTO);
+            }
+
+            List<ReportNotification> reportNotifications = reportNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (ReportNotification reportNotification : reportNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(reportNotification);
+                notifications.add(notificationDTO);
+            }
+
+            List<ItemNotification> itemNotifications = itemNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            for (ItemNotification itemNotification : itemNotifications) {
+                NotificationDTO notificationDTO = new NotificationDTO(itemNotification);
+                notifications.add(notificationDTO);
+            }
+
+            // Sort the combined list of notifications by createdAt timestamp in descending order
+            Collections.sort(notifications, new NotificationDTOComparator().reversed());
+
+            // Return only the first 20 notifications
+            //5/30 추가: delete notification if >20
+            //알림 보내는 API에서(댓글작성 등) delete notification 로직 삭제
+            if (notifications.size() <= 20) {
+                return notifications;
+            } else {
+                deleteNotification(notifications.subList(20, notifications.size()));
+                return notifications.subList(0, 20);
+            }
+        }
+
+        @Transactional
+        void deleteNotification(List<NotificationDTO> notificationDTO) {
+        notificationDTO.forEach(n -> {
+            if (n.getItem() != null) {
+                itemRepository.deleteItemNotification(n.getNotificationId());
+            } else if (n.getUnivPost() != null) {
+                commentRepository.deleteUnivNotification(n.getNotificationId());
+            } else if (n.getTotalPost() != null) {
+                commentRepository.deleteTotalNotification(n.getNotificationId());
+            } else if (n.getReportedPostId() != null) {
+                reportNotificationRepository.deleteById(n.getNotificationId());
+            }
+        });
+    }
+
+
+
+
+
+        /** 거래 게시판 알림 리스트 추가**/
+//    public List<ItemNotification> getItemNotifications() throws BaseException {
+//
+//
+//    }
+
+
     /**
      * 2.13 알림 읽기 API
      */
@@ -465,17 +570,17 @@ public class MemberService {
     public void  readNotification(NotificationRequest notificationRequest) throws BaseException {
         try {
             if (notificationRequest.getBoardType().equals(BoardType.광장)){
-                TotalNotification totalNotification;
-                totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
+                TotalNotification totalNotification = memberRepository.findTotalNotification(notificationRequest.getNotificationId());
                 totalNotification.readNotification();
             }
             else if (notificationRequest.getBoardType().equals(BoardType.잔디밭)) {
-                UnivNotification univNotification;
-                univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
+                UnivNotification univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
                univNotification.readNotification();
+            } else if (notificationRequest.getBoardType().equals(밍끼마켓)) {
+                ItemNotification itemNotification = memberRepository.findItemNotification(notificationRequest.getNotificationId());
+                itemNotification.readNotification();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -508,5 +613,33 @@ public class MemberService {
     }
 
 
+    public void sendPushNotificationToAll(SendPushNotificationRequest request) throws BaseException {
+        List<String> allFcmToken = memberRepository.findAllFcmToken();
+        try {
+            for (String fcmToken : allFcmToken) {
+                    fcmService.sendMessageTo(fcmToken, request.getTitle(), request.getBody(), TableType.TotalPost, request.getPostId());
+            }
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
+    public ItemListResponse findLikeItems(Long itemId, Long memberId) throws BaseException {
+        List<Item> likedItems = memberRepository.findLikedItems(itemId, memberId);
+        if (likedItems.size() == 0) throw new BaseException(EMPTY_MYPOST_LIST);
+        List<ItemListDTO> itemListDTOList = likedItems.stream()
+                .map(item -> new ItemListDTO(item, memberId))
+                .collect(Collectors.toList());
+        return new ItemListResponse(itemListDTOList, "찜한내역");
+    }
+
+
+    public ItemListResponse findMyItems(Long itemId, Long memberId, String itemStatus) throws BaseException {
+        List<Item> itemList = memberRepository.findMyItemsByItemStatus(itemId, memberId, itemStatus);
+        if (itemList.size() == 0) throw new BaseException(EMPTY_MYPOST_LIST);
+        List<ItemListDTO> itemListDTOList = itemList.stream()
+                .map(item -> new ItemListDTO(item, memberId))
+                .collect(Collectors.toList());
+        return new ItemListResponse(itemListDTOList, "판매내역");
+    }
 }
