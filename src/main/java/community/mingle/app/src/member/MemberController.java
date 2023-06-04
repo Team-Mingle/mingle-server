@@ -328,7 +328,7 @@ public class MemberController {
     /**
     * 2.12 알림 리스트 보여주기 API (new)
     **/
-    @GetMapping("/notifications")
+    @GetMapping("/notification")
     public BaseResponse<List<NotificationDTOResult>> getNotification() {
         try {
             List<NotificationDTO> notificationsSorted = memberService.get20NotificationsSorted();
