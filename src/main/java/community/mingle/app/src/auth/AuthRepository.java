@@ -99,13 +99,7 @@ public class AuthRepository {
         List<Member> duplicatedEmail= em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
                 .getResultList();
-        if (duplicatedEmail.size() != 0) {
-            return true;
-        }
-        else if (duplicatedEmail.size() == 0){
-            return false;
-        }
-        else return false;
+        return duplicatedEmail.size() != 0;
     }
 
 //    public String getPrivacyTerms() {
