@@ -69,7 +69,7 @@ public class TokenHelper {
     }
 
     private PrivateClaims convert(Claims claims) {
-        return new PrivateClaims(claims.get(MEMBER_ID, String.class), claims.get(ROLE_TYPES, UserRole.class));
+        return new PrivateClaims(claims.get(MEMBER_ID, String.class), UserRole.valueOf(claims.get(ROLE_TYPES, String.class)));
     }
 
     /**
@@ -91,17 +91,17 @@ public class TokenHelper {
         } catch (BadRequestException e) {
             request.setAttribute(exception, "토큰을 입력해주세요. (앞에 'Bearer ' 포함)");
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
-            request.setAttribute(exception, "잘못된 토큰입니다."); //토큰의 형식을 확인하세요
+            request.setAttribute(exception, "잘못된 토큰입니다."); //토큰의 형식을 확인하세요. Bearer 없음
         } catch (ExpiredJwtException e) {
             request.setAttribute(exception, "토큰이 만료되었습니다.");
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) { //Authorization, Bearer
             request.setAttribute(exception, "토큰을 입력해주세요.");
-//        } catch (JwtException e) {
-//            e.printStackTrace();
-//            request.setAttribute(exception, "토큰을 확인해주세요."); //추가
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            request.setAttribute(exception, "general exception"); //추가
+        } catch (JwtException e) {
+            e.printStackTrace();
+            request.setAttribute(exception, "토큰을 확인해주세요."); //추가
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute(exception, "general exception"); //추가
         }
         return null;
     }
@@ -115,9 +115,10 @@ public class TokenHelper {
     }
 
     public Boolean isDefaultToken(String token) {
-        List<String> defaultTokenList = Arrays.asList("mingle-user", "mingle-admin", "mingle-ksa", "mingle-freshman");
-        String untypedToken = jwtHandler.untype(token).substring(1);
-        if (defaultTokenList.stream().noneMatch(it -> it.equals(untypedToken))) {
+        List<String> defaultTokenList = Arrays.asList("Bearer mingle-user", "Bearer mingle-admin", "Bearer mingle-ksa", "Bearer mingle-freshman");
+//        String jwtcheck = jwtHandler.untype(token);
+//        String untypedToken = jwtHandler.untype(token).substring(1); //Bearer 띄어쓰기
+        if (defaultTokenList.stream().noneMatch(it -> it.equals(token))) {
             return false;
         } else {
             return true;
