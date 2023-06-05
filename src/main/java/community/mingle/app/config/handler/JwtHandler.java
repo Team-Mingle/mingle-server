@@ -53,7 +53,7 @@ public class JwtHandler {
     }
 
     /**
-     * ㄴ 토큰 parse : getBody()
+     * ㄴ 토큰 parse : getBody() - return Claim
      */
     public Optional<Claims> parseAccessToken(String key, String token) {
         try {
