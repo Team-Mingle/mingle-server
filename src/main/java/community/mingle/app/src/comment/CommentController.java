@@ -21,6 +21,7 @@ import javax.validation.Valid;
         @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(hidden = true))),
         @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
 })
+
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
