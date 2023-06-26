@@ -311,11 +311,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (totalPostLikeList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return totalPostLikeList.size() != 0;
     }
 
 
@@ -325,11 +321,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (totalPostLikeList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return totalPostLikeList.size() != 0;
     }
 
     public boolean checkTotalIsScraped(Long postId, Long memberId) {
@@ -337,11 +329,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (totalPostScrapList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return totalPostScrapList.size() != 0;
     }
 
     /**
@@ -370,11 +358,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (univPostLikeList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return univPostLikeList.size() != 0;
     }
 
 
@@ -383,11 +367,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (univPostScrapList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return univPostScrapList.size() != 0;
     }
 
 
@@ -433,11 +413,7 @@ public class PostRepository {
                 .setParameter("commentId", commentId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (univCommentLikes.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return univCommentLikes.size() != 0;
     }
 
 
@@ -509,11 +485,7 @@ public class PostRepository {
                 .setParameter("totalPostId", totalPostId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return resultList.size() != 0;
     }
 
     public boolean checkUnivPostIsBlinded(Long postId, Long memberId) throws BaseException {
@@ -521,11 +493,7 @@ public class PostRepository {
                 .setParameter("univPostId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return resultList.size() != 0;
     }
 
 
@@ -584,10 +552,10 @@ public class PostRepository {
     }
 
 
-    public List<TotalPost> getReportedTotalPostList(){
-    return em.createQuery("select tp from TotalPost tp where tp.status = :status", TotalPost.class)
-            .setParameter("status", PostStatus.NOTIFIED)
-            .getResultList();
+    public List<TotalPost> getReportedTotalPostList() {
+        return em.createQuery("select tp from TotalPost tp where tp.status = :status", TotalPost.class)
+                .setParameter("status", PostStatus.NOTIFIED)
+                .getResultList();
     }
 
     public List<UnivPost> getReportedUnivPostList() {
@@ -618,5 +586,24 @@ public class PostRepository {
 
     public void saveReportNotification(ReportNotification reportNotification) {
         em.persist(reportNotification);
+    }
+
+    public List<TotalPost> findTotalPostsByIdAndMemberId(Long postId, Long memberIdByJwt) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
+                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
+    }
+
+    public List<UnivPost> findUnivPostsByIdAndMemberId(Long postId, int univId, Long memberIdByJwt) {
+        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status <> :status and p.univName.id = :univId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
+                .setParameter("univId", univId)
+                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
     }
 }
