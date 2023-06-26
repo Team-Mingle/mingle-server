@@ -1150,10 +1150,7 @@ public class PostService {
         }
         return totalPostList;
     }
-
-    /**
-     * 3.5 학교 게시판 리스트 API
-     */
+    
     public List<UnivPost> findUnivPostsByIdAndMemberId(Long postId, int univId, Long memberId) throws BaseException {
         List<UnivPost> getUnivAll = postRepository.findUnivPostsByIdAndMemberId(postId, univId, memberId);
         if (getUnivAll.size() == 0) {
