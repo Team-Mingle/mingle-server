@@ -168,11 +168,8 @@ public class HomeController {
     public BaseResponse<List<HomePostResponse>> getUniteBest() {
         try {
             Long memberId = jwtService.getUserIdx();
-            List<UnivPost> univPosts = homeService.findAllUnivPostsWithMemberLikeCommentCount();
-            List<HomePostResponse> result = univPosts.stream()
-                    .map(p -> new HomePostResponse(p, memberId))
-                    .collect(Collectors.toList());
-            return new BaseResponse<>(result);
+            List<HomePostResponse> unitedBestPosts = homeService.findAllUnitedPostsWithMemberLikeCommentCount(memberId);
+            return new BaseResponse<>(unitedBestPosts);
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

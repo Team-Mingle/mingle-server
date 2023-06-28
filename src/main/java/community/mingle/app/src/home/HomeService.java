@@ -7,13 +7,17 @@ import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.home.model.CreateBannerRequest;
 import community.mingle.app.src.home.model.CreateBannerResponse;
+import community.mingle.app.src.home.model.HomePostResponse;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 
@@ -122,5 +126,21 @@ public class HomeService {
         return univPosts;
     }
 
-   
+    public List<HomePostResponse> findAllUnitedPostsWithMemberLikeCommentCount(Long memberId) throws BaseException {
+        Member member = homeRepository.findMemberbyId(memberId);
+        if (member == null) {
+            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
+        }
+        List<UnivPost> univPosts = homeRepository.findAllUnivPostsWithMemberLikeCommentCount(member);
+        List<HomePostResponse> univBestPosts = univPosts.stream()
+                .map(p -> new HomePostResponse(p, memberId))
+                .collect(Collectors.toList());
+        List<TotalPost> totalPosts = homeRepository.findAllTotalPostWithMemberLikeComment(memberId);
+        List<HomePostResponse> totalBestPosts = totalPosts.stream()
+                .map(m -> new HomePostResponse(m, memberId))
+                .collect(Collectors.toList());
+
+        return Stream.concat(univBestPosts.stream(), totalBestPosts.stream()).sorted(Comparator.comparing(HomePostResponse::getCreatedAt)).collect(Collectors.toList());
+    }
+
 }
