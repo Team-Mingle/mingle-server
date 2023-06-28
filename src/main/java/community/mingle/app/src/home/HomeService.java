@@ -2,16 +2,11 @@ package community.mingle.app.src.home;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Category;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.home.model.CreateBannerRequest;
 import community.mingle.app.src.home.model.CreateBannerResponse;
-import community.mingle.app.src.post.PostRepository;
-import community.mingle.app.src.post.model.CreatePostRequest;
-import community.mingle.app.src.post.model.CreatePostResponse;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +23,6 @@ public class HomeService {
     private final JwtService jwtService;
     private final HomeRepository homeRepository;
     private final S3Service s3Service;
-
 
 
     /**
@@ -54,7 +48,7 @@ public class HomeService {
         try {
             List<String> fileNameList = null;
             int finalId = 0;
-            if (createBannerRequest.getMultipartFile()!=null && !createBannerRequest.getMultipartFile().isEmpty()) {
+            if (createBannerRequest.getMultipartFile() != null && !createBannerRequest.getMultipartFile().isEmpty()) {
                 fileNameList = s3Service.uploadFile(createBannerRequest.getMultipartFile(), "banner");
                 for (String fileName : fileNameList) { //Banner사진 여러개 올리기 가능? 일단 for loop 남겨둠.
                     Banner banner = Banner.createBanner(member, createBannerRequest, fileName, createBannerRequest.getLink());
@@ -72,9 +66,9 @@ public class HomeService {
     /**
      * 5.2 홈 전체 배스트 게시판 API
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment() throws BaseException {
+    public List<TotalPost> findAllTotalPostsWithMemberLikeComment() throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
-        List<TotalPost> totalPosts = homeRepository.findTotalPostWithMemberLikeComment(memberIdByJwt);
+        List<TotalPost> totalPosts = homeRepository.findAllTotalPostWithMemberLikeComment(memberIdByJwt);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -84,13 +78,13 @@ public class HomeService {
     /**
      * 5.3 홈 학교 베스트 게시판 API
      */
-    public List<UnivPost> findAllWithMemberLikeCommentCount() throws BaseException {
+    public List<UnivPost> findAllUnivPostsWithMemberLikeCommentCount() throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
         Member member = homeRepository.findMemberbyId(memberIdByJwt);
         if (member == null) {
             throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
         }
-        List<UnivPost> univPosts = homeRepository.findAllWithMemberLikeCommentCount(member);
+        List<UnivPost> univPosts = homeRepository.findAllUnivPostsWithMemberLikeCommentCount(member);
         if (univPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -118,7 +112,7 @@ public class HomeService {
         Member member = homeRepository.findMemberbyId(memberIdByJwt);
         List<UnivPost> univPosts;
         try {
-          univPosts = homeRepository.findUnivRecentPosts(member);
+            univPosts = homeRepository.findUnivRecentPosts(member);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -128,4 +122,5 @@ public class HomeService {
         return univPosts;
     }
 
+   
 }
