@@ -1,43 +1,45 @@
 package community.mingle.app.src.post.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.UserRole;
-import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertStringToLocalDateTime;
 import static community.mingle.app.src.domain.PostStatus.DELETED;
 import static community.mingle.app.src.domain.PostStatus.REPORTED;
 
 @Getter
 public class PostListDTO {
 
-    private Long postId;
+    private final Long postId;
     private String title;
     private String contents;
     private String nickname;
-    private boolean isFileAttached;
-    private boolean isBlinded;
-    private boolean isReported;
-    private int likeCount;
-    private int commentCount;
-    private String createdAt;
-    private boolean isAdmin;
+    private final boolean isFileAttached;
+    private final boolean isBlinded;
+    private final boolean isReported;
+    private final int likeCount;
+    private final int commentCount;
+    private final String createdAt;
+    private final boolean isAdmin;
 
 
     public PostListDTO(TotalPost totalPost, Long memberId) {
         this.postId = totalPost.getId();
         this.title = totalPost.getTitle();
         this.contents = totalPost.getContent();
-        if (totalPost.getIsAnonymous() == true) {
+        if (totalPost.getIsAnonymous()) {
             this.nickname = "익명";
         } else {
             this.nickname = totalPost.getMember().getNickname();
@@ -51,11 +53,7 @@ public class PostListDTO {
         List<TotalComment> commentList = totalPost.getTotalPostComments();
         List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
-        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
-            this.isBlinded = true;
-        } else{
-            this.isBlinded = false;
-        }
+        this.isBlinded = totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId));
 //        this.isReported = false; // 2/17 추가
         this.isReported = totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED); // 2/17 추가
         if (totalPost.getStatus().equals(REPORTED)) {
@@ -73,6 +71,7 @@ public class PostListDTO {
 
     /**
      * 3.5 대학 게시물 리스트 w Report (w/o reason)
+     *
      * @param univPost
      * @param memberId
      */
@@ -80,7 +79,7 @@ public class PostListDTO {
         this.postId = univPost.getId();
         this.title = univPost.getTitle();
         this.contents = univPost.getContent();
-        if (univPost.getIsAnonymous() == true) {
+        if (univPost.getIsAnonymous()) {
             this.nickname = "익명";
         } else {
             this.nickname = univPost.getMember().getNickname();
@@ -90,11 +89,7 @@ public class PostListDTO {
         }
         this.isFileAttached = univPost.getIsFileAttached();
         this.likeCount = univPost.getUnivPostLikes().size();
-        if (univPost.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
-            this.isBlinded = true;
-        } else{
-            this.isBlinded = false;
-        }
+        this.isBlinded = univPost.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId));
         /** 댓글 개수*/
         List<UnivComment> commentList = univPost.getUnivComments();
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
@@ -111,6 +106,11 @@ public class PostListDTO {
         }
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
         this.isAdmin = univPost.getMember().getRole().equals(UserRole.ADMIN);
+    }
+
+    @JsonIgnore
+    public LocalDateTime getCreatedAtDateTime() {
+        return convertStringToLocalDateTime(createdAt);
     }
 
 }

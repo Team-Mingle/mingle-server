@@ -744,5 +744,24 @@ public class PostController {
         }
     }
 
+    /**
+     * 3.33 통합 배스트 게시판 API
+     */
+    @GetMapping("/unite/best")
+    @Operation(summary = "3.33 통합 배스트 게시판 API", description = "3.33 통합 배스트 게시판 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<PostListResponse> getUnitedBestPosts(@RequestParam Long totalPost, @RequestParam Long univPost) {
+
+        try {
+            Long memberId = jwtService.getUserIdx();
+            List<PostListDTO> postListDtos = postService.findUnitePostWithMemberLikeCount(totalPost, univPost, memberId);
+            PostListResponse bestTotalPostListResponse = new PostListResponse(postListDtos);
+            return new BaseResponse<>(bestTotalPostListResponse);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
 
