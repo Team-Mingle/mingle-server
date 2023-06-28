@@ -14,11 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.src.domain.PostStatus.DELETED;
@@ -1150,12 +1148,39 @@ public class PostService {
         }
         return totalPostList;
     }
-    
+
     public List<UnivPost> findUnivPostsByIdAndMemberId(Long postId, int univId, Long memberId) throws BaseException {
         List<UnivPost> getUnivAll = postRepository.findUnivPostsByIdAndMemberId(postId, univId, memberId);
         if (getUnivAll.size() == 0) {
             throw new BaseException(EMPTY_POSTS_LIST);
         }
         return getUnivAll;
+    }
+
+    public List<PostListDTO> findUnitePostWithMemberLikeCount(Long totalPostId, Long univPostId, Long memberId) throws BaseException {
+        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(totalPostId, memberId);
+        if (totalPosts.size() == 0) {
+            throw new BaseException(EMPTY_BEST_POSTS);
+        }
+        List<PostListDTO> totalPostDtos = totalPosts.stream()
+                .map(m -> new PostListDTO(m, memberId))
+                .collect(Collectors.toList());
+        Member member = postRepository.findMemberbyId(memberId);
+        if (member == null) {
+            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
+        }
+        List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member, univPostId);
+        if (univPosts.size() == 0) {
+            throw new BaseException(EMPTY_BEST_POSTS);
+        }
+        List<PostListDTO> univPostDtos = univPosts.stream()
+                .map(p -> new PostListDTO(p, memberId))
+                .collect(Collectors.toList());
+        return Stream.concat(totalPostDtos.stream(), univPostDtos.stream())
+                .sorted(Comparator.comparing(PostListDTO::getCreatedAtDateTime)
+                        .reversed())
+                .collect(Collectors.toList());
+
+
     }
 }
