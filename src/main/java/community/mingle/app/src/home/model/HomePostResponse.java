@@ -1,5 +1,6 @@
 package community.mingle.app.src.home.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -8,11 +9,13 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.UserRole;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertStringToLocalDateTime;
 
 @Getter
 public class HomePostResponse {
@@ -76,8 +79,10 @@ public class HomePostResponse {
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    @JsonIgnore
+    public LocalDateTime getCreatedAtDateTime() {
+        return convertStringToLocalDateTime(createdAt);
     }
+
 
 }

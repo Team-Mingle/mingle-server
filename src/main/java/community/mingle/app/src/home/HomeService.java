@@ -140,7 +140,13 @@ public class HomeService {
                 .map(m -> new HomePostResponse(m, memberId))
                 .collect(Collectors.toList());
 
-        return Stream.concat(univBestPosts.stream(), totalBestPosts.stream()).sorted(Comparator.comparing(HomePostResponse::getCreatedAt)).collect(Collectors.toList());
+        List<HomePostResponse> homePostResponses = Stream.concat(univBestPosts.stream(), totalBestPosts.stream())
+                .collect(Collectors.toList());
+        List<HomePostResponse> sortedHomePostResponses = homePostResponses.stream().sorted(Comparator.comparing(HomePostResponse::getCreatedAtDateTime)
+                .reversed()
+        ).collect(Collectors.toList());
+
+        return sortedHomePostResponses;
     }
 
 }
