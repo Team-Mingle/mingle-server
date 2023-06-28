@@ -161,7 +161,7 @@ public class HomeController {
      * 5.6 홈 광장, 잔디밭 통합 베스트 게시판 API
      */
     @GetMapping("/unite/best")
-    @Operation(summary = "5.6 getHomeUniteBest Posts API", description = "5.6 홈 광장, 잔디밭 통합 베스트 게시판 API")
+    @Operation(summary = "5.6 홈 광장, 잔디밭 통합 베스트 게시판 API", description = "5.6 홈 광장, 잔디밭 통합 베스트 게시판 API")
     @ApiResponses({
             @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
     })
