@@ -1,5 +1,6 @@
 package community.mingle.app.src.home.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -8,26 +9,27 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.UserRole;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
+import static community.mingle.app.config.DateTimeConverter.convertStringToLocalDateTime;
 
 @Getter
 public class HomePostResponse {
 
-    private Long postId;
-    private String title;
-    private String contents;
+    private final Long postId;
+    private final String title;
+    private final String contents;
+    private final boolean isFileAttached;
+    private final boolean isBlinded;
+    private final boolean isAdmin;
+    private final int likeCount;
+    private final int commentCount;
+    private final String createdAt;
     private String nickname;
-    private boolean isFileAttached;
-    private boolean isBlinded;
-    private boolean isAdmin;
-    private int likeCount;
-    private int commentCount;
-    private String createdAt;
-
 
 
     public HomePostResponse(TotalPost totalPost, Long memberId) {
@@ -43,11 +45,7 @@ public class HomePostResponse {
             this.nickname = "🐥" + this.nickname;
         }
         this.isFileAttached = totalPost.getIsFileAttached();
-        if (totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
-            this.isBlinded = true;
-        }else{
-            this.isBlinded = false;
-        }
+        this.isBlinded = totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId));
         this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
         this.likeCount = totalPost.getTotalPostLikes().size();
         /** 댓글 개수*/
@@ -71,11 +69,7 @@ public class HomePostResponse {
             this.nickname = "🐥" + this.nickname;
         }
         isFileAttached = p.getIsFileAttached();
-        if (p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
-            this.isBlinded = true;
-        }else{
-            this.isBlinded = false;
-        }
+        this.isBlinded = p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId));
         this.isAdmin = p.getMember().getRole().equals(UserRole.ADMIN);
         likeCount = p.getUnivPostLikes().size();
         /** 댓글 개수*/
@@ -84,5 +78,11 @@ public class HomePostResponse {
         this.commentCount = activeComments.size();
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
     }
+
+    @JsonIgnore
+    public LocalDateTime getCreatedAtDateTime() {
+        return convertStringToLocalDateTime(createdAt);
+    }
+
 
 }

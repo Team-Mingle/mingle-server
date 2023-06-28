@@ -22,7 +22,7 @@ public class HomeRepository {
     /**
      * 5.1 광고 배너 API
      */
-    public List<Banner> findBanner(){
+    public List<Banner> findBanner() {
         return em.createQuery("select b from Banner b", Banner.class)
                 .getResultList();
     }
@@ -43,6 +43,7 @@ public class HomeRepository {
         em.persist(banner);
         return banner.getId();
     }
+
     public void save(TotalPostImage totalPostImage) {
         em.persist(totalPostImage);
     }
@@ -50,7 +51,7 @@ public class HomeRepository {
     /**
      * 5.2 홈 전체 베스트 게시판 api
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment(Long memberIdByJwt) {
+    public List<TotalPost> findAllTotalPostWithMemberLikeComment(Long memberIdByJwt) {
         List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.totalPostLikes.size > 9 and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("memberIdByJwt", memberIdByJwt)
@@ -62,9 +63,10 @@ public class HomeRepository {
 
     /**
      * 5.3 홈 학교 베스트 게시판 api
+     *
      * @param member
      */
-    public List<UnivPost> findAllWithMemberLikeCommentCount(Member member) {
+    public List<UnivPost> findAllUnivPostsWithMemberLikeCommentCount(Member member) {
         return em.createQuery(
                         "select p from UnivPost p join fetch p.member m where p.status = :status and p.univName.id = :univId  and p.univPostLikes.size > 4 and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc ", UnivPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
@@ -81,17 +83,16 @@ public class HomeRepository {
     public List<TotalPost> findTotalRecentPosts(Long memberIdByJwt) {
         return em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt",memberIdByJwt)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setFirstResult(0)
                 .setMaxResults(4)
                 .getResultList();
     }
 
 
-
-
     /**
      * 5.5 홈 학교 최신 게시글 api
+     *
      * @param member
      */
     public List<UnivPost> findUnivRecentPosts(Member member) {
