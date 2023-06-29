@@ -12,14 +12,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Random;
 
@@ -44,21 +42,32 @@ public class AuthService {
 
 
     @Value("${spring.mail.username}")
-    private  String from;
+    private String from;
+
+    private static String generateRandomCode(int length) {
+        String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+        Random random = new Random(System.currentTimeMillis());
+        StringBuilder code = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(chars.length());
+            code.append(chars.charAt(index));
+        }
+
+        return code.toString();
+    }
 
     /**
      * 1.1 학교 리스트 전송 API
      */
-    public List<UnivName> findUniv() throws BaseException{
-        try{
+    public List<UnivName> findUniv() throws BaseException {
+        try {
             List<UnivName> univName = authRepository.findAll();
             return univName;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-
 
     /**
      * 1.2 학교별 도메인 리스트 전송 API
@@ -72,7 +81,6 @@ public class AuthService {
         }
     }
 
-
     /**
      * 1.3 이메일 입력 & 중복검사 API
      */
@@ -84,15 +92,14 @@ public class AuthService {
         } catch (Exception ignored) {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
-        if ((authRepository.findEmail(postUserEmailRequest.getEmail()) == true)) {
+        if ((authRepository.findEmail(postUserEmailRequest.getEmail()))) {
             if (authRepository.findMember(postUserEmailRequest.getEmail()).getStatus().equals(UserStatus.INACTIVE)) {
                 throw new BaseException(USER_DELETED_ERROR);
             } else {
-            throw new BaseException(USER_EXISTS_EMAIL);
+                throw new BaseException(USER_EXISTS_EMAIL);
             }
         }
     }
-
 
     /**
      * 1.4.1 인증번호 생성
@@ -129,7 +136,7 @@ public class AuthService {
             helper.addInline("image", new ClassPathResource("templates/images/image-1.jpeg"));
             javaMailSender.send(mimeMessage);
 
-        } catch(MessagingException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
             throw new BaseException(EMAIL_SEND_FAIL);
         } catch (Exception e) {
@@ -165,7 +172,6 @@ public class AuthService {
             throw new BaseException(EMAIL_CODE_FAIL);
         }
         if (code.equals(redisUtil.getData(email))) {
-            return;
         }
     }
 
@@ -200,7 +206,7 @@ public class AuthService {
         }
 
         //닉네임 중복검사 먼저
-        if (authRepository.findNickname(postSignupRequest.getNickname()) == true) {
+        if (authRepository.findNickname(postSignupRequest.getNickname())) {
             throw new BaseException(USER_EXISTS_NICKNAME);
         }
         //없는 univId 일때 추가
@@ -225,11 +231,11 @@ public class AuthService {
         }
 
         //이메일 중복검사
-        if ((authRepository.findEmail(email) == true)) {  //탈퇴 유저 재가입 방지
+        if ((authRepository.findEmail(email))) {  //탈퇴 유저 재가입 방지
             if (authRepository.findMember(email).getStatus().equals(UserStatus.INACTIVE)) {
                 throw new BaseException(USER_DELETED_ERROR);
             } else {
-            throw new BaseException(USER_EXISTS_EMAIL);
+                throw new BaseException(USER_EXISTS_EMAIL);
             }
         }
 
@@ -246,7 +252,6 @@ public class AuthService {
             return new PostSignupResponse(id);
 
 
-
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_SIGNUP);
         }
@@ -257,7 +262,7 @@ public class AuthService {
      * 1.9 로그인 api
      */
     @Transactional
-    public PostLoginResponse logIn (PostLoginRequest postLoginRequest) throws BaseException {
+    public PostLoginResponse logIn(PostLoginRequest postLoginRequest) throws BaseException {
         //이메일 암호화
         String email;
         try {
@@ -298,7 +303,7 @@ public class AuthService {
             String accessToken = accessTokenHelper.createAccessToken(privateClaims);
             String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, postLoginRequest.getEmail());
             member.setFcmToken(postLoginRequest.getFcmToken());
-            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), member.getNickname(),member.getUniv().getUnivName().substring(0,3) ,accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
+            return new PostLoginResponse(memberId, postLoginRequest.getEmail(), member.getNickname(), member.getUniv().getUnivName().substring(0, 3), accessToken, refreshToken); //비교해서 이상이 없다면 jwt를 발급
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e);
@@ -310,7 +315,7 @@ public class AuthService {
      * 1.10 비밀번호 재설정 api
      */
     @Transactional
-    public void updatePwd (PatchUpdatePwdRequest patchUpdatePwdRequest) throws BaseException {
+    public void updatePwd(PatchUpdatePwdRequest patchUpdatePwdRequest) throws BaseException {
         //이메일 암호화
         String email;
         try {
@@ -349,15 +354,15 @@ public class AuthService {
      * 등록된 이메일인지 확인 후 sendAuthEmail
      */
     @Transactional
-    public void sendCodeForPwd (PostEmailRequest req) throws BaseException {
+    public void sendCodeForPwd(PostEmailRequest req) throws BaseException {
         String encryptedEmail;
         try {
-             encryptedEmail = new SHA256().encrypt(req.getEmail());
+            encryptedEmail = new SHA256().encrypt(req.getEmail());
         } catch (Exception ignored) {
             throw new BaseException(EMAIL_ENCRYPTION_ERROR);
         }
 
-        if ((authRepository.findEmail(encryptedEmail) == false)) {
+        if ((!authRepository.findEmail(encryptedEmail))) {
             throw new BaseException(USER_NOT_EXIST);
         }
 
@@ -371,11 +376,10 @@ public class AuthService {
         }
     }
 
-
     /**
      * 1.12 refresh token으로 access Token 발급
      */
-    public ReissueAccessTokenDTO reissueAccessToken(String rToken, String email) throws BaseException{
+    public ReissueAccessTokenDTO reissueAccessToken(String rToken, String email) throws BaseException {
 
         //orElseThrow 알아보기
         TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.parseRefreshToken(rToken, email).orElseThrow();
@@ -384,8 +388,6 @@ public class AuthService {
         String refreshToken = refreshTokenHelper.createRefreshToken(privateClaims, email);
         return new ReissueAccessTokenDTO(accessToken, refreshToken);
     }
-
-
 
     /**
      * PrivateClaim 발급
@@ -410,9 +412,9 @@ public class AuthService {
 
     public String generateFreshmanEmail(String univName) throws BaseException {
         while (true) {
-        String freshmanEmail = univName + "." + generateRandomCode(3) + "@freshman.mingle.com";
-        boolean isDuplicate = validateRandomEmail(freshmanEmail);
-            if (isDuplicate == false) {
+            String freshmanEmail = univName + "." + generateRandomCode(3) + "@freshman.mingle.com";
+            boolean isDuplicate = validateRandomEmail(freshmanEmail);
+            if (!isDuplicate) {
                 return freshmanEmail;
             }
         }
@@ -428,17 +430,13 @@ public class AuthService {
         return authRepository.findEmail(encryptedEmail);
     }
 
-    private static String generateRandomCode(int length) {
-        String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-        Random random = new Random(System.currentTimeMillis());
-        StringBuilder code = new StringBuilder();
-
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(chars.length());
-            code.append(chars.charAt(index));
+    public List<Country> findCountries() throws BaseException {
+        try {
+            List<Country> countries = authRepository.findAllCountry();
+            return countries;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
         }
-
-        return code.toString();
     }
 
 
