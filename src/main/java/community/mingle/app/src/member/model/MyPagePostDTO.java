@@ -6,7 +6,6 @@ import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivComment;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.domain.UserRole;
-import community.mingle.app.src.domain.UserStatus;
 import lombok.Getter;
 
 import java.util.List;
@@ -19,59 +18,59 @@ import static community.mingle.app.src.domain.PostStatus.REPORTED;
 
 @Getter
 public class MyPagePostDTO {
-    private Long postId;
+    private final Long postId;
     private String title;
     private String contents;
     private String nickname;
-    private boolean isFileAttached;
-    private boolean isBlinded;
-    private boolean isReported;
+    private final boolean isFileAttached;
+    private final boolean isBlinded;
+    private final boolean isReported;
 
-    private int likeCount;
-    private int commentCount;
-    private String createdAt;
-    private boolean isAdmin;
+    private final int likeCount;
+    private final int commentCount;
+    private final String createdAt;
+    private final boolean isAdmin;
 
-    public MyPagePostDTO (TotalPost p, Long memberId) {
-        this.postId = p.getId();
-        this.title = p.getTitle();
-        this.contents = p.getContent();
-        if (p.getIsAnonymous() == true) {
+    public MyPagePostDTO(TotalPost totalPost, Long memberId) {
+        this.postId = totalPost.getId();
+        this.title = totalPost.getTitle();
+        this.contents = totalPost.getContent();
+        if (totalPost.getIsAnonymous()) {
             this.nickname = "익명";
-        } else{
-            this.nickname = p.getMember().getNickname();
+        } else {
+            this.nickname = totalPost.getMember().getNickname();
         }
-        this.isFileAttached = p.getIsFileAttached();
-        this.likeCount = p.getTotalPostLikes().size();
+
+        if (totalPost.getMember().getRole() == UserRole.FRESHMAN) {
+            this.nickname = "🐥" + this.nickname;
+        }
+        this.isFileAttached = totalPost.getIsFileAttached();
+        this.likeCount = totalPost.getTotalPostLikes().size();
         /** 댓글 개수*/
-        List<TotalComment> commentList = p.getTotalPostComments();
+        List<TotalComment> commentList = totalPost.getTotalPostComments();
         List<TotalComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
-        this.createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
-        if (p.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
-            this.isBlinded = true;
-        } else{
-            this.isBlinded = false;
-        }
-        this.isReported = p.getStatus().equals(REPORTED) || p.getStatus().equals(DELETED); // 2/17 추가
-        if (p.getStatus().equals(REPORTED)) {
+        this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
+        this.isBlinded = totalPost.getTotalBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId));
+        this.isReported = totalPost.getStatus().equals(REPORTED) || totalPost.getStatus().equals(DELETED); // 2/17 추가
+        if (totalPost.getStatus().equals(REPORTED)) {
             this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
             this.contents = "";
         }
-        if (p.getStatus().equals(DELETED)) {
+        if (totalPost.getStatus().equals(DELETED)) {
             this.title = "운영규칙 위반에 따라 삭제된 글입니다.";
             this.contents = "";
         }
-        this.isAdmin = p.getMember().getRole().equals(UserRole.ADMIN);
+        this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
     }
 
-    public MyPagePostDTO (UnivPost p, Long memberId) {
+    public MyPagePostDTO(UnivPost p, Long memberId) {
         this.postId = p.getId();
         this.title = p.getTitle();
         this.contents = p.getContent();
-        if (p.getIsAnonymous() == true) {
+        if (p.getIsAnonymous()) {
             this.nickname = "익명";
-        } else{
+        } else {
             this.nickname = p.getMember().getNickname();
         }
         this.isFileAttached = p.getIsFileAttached();
@@ -81,11 +80,7 @@ public class MyPagePostDTO {
         List<UnivComment> activeComments = commentList.stream().filter(ac -> ac.getStatus().equals(PostStatus.ACTIVE)).collect(Collectors.toList());
         this.commentCount = activeComments.size();
         this.createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
-        if (p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId))) {
-            this.isBlinded = true;
-        } else{
-            this.isBlinded = false;
-        }
+        this.isBlinded = p.getUnivBlinds().stream().anyMatch(bm -> Objects.equals(bm.getMember().getId(), memberId));
         this.isReported = p.getStatus().equals(REPORTED) || p.getStatus().equals(DELETED); // 2/17 추가
         if (p.getStatus().equals(REPORTED)) {
             this.title = "다른 사용자들의 신고에 의해 삭제된 글 입니다.";
