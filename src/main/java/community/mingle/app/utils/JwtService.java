@@ -80,18 +80,6 @@ public class JwtService {
     public String getUserAuthority() throws BaseException{
         //1. JWT 추출
         String accessToken = untype(getJwt());
-        if (tokenHelper.isDefaultToken("Bearer" + accessToken)) {
-            switch (accessToken.substring(1)) {
-                case "mingle-user":
-                    return UserRole.USER.toString();
-                case "mingle-admin":
-                    return UserRole.ADMIN.toString();
-                case "mingle-ksa":
-                    return UserRole.KSA.toString();
-                case "mingle-freshman":
-                    return UserRole.FRESHMAN.toString();
-            }
-        }
         // 2. 권한 추출
         return String.valueOf(
                 Jwts.parser()
