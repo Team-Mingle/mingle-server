@@ -1,6 +1,7 @@
 package community.mingle.app.src.post.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import community.mingle.app.src.domain.BoardType;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -23,9 +24,6 @@ import static community.mingle.app.src.domain.PostStatus.REPORTED;
 public class PostListDTO {
 
     private final Long postId;
-    private String title;
-    private String contents;
-    private String nickname;
     private final boolean isFileAttached;
     private final boolean isBlinded;
     private final boolean isReported;
@@ -33,6 +31,10 @@ public class PostListDTO {
     private final int commentCount;
     private final String createdAt;
     private final boolean isAdmin;
+    private final BoardType boardType;
+    private String title;
+    private String contents;
+    private String nickname;
 
 
     public PostListDTO(TotalPost totalPost, Long memberId) {
@@ -66,6 +68,7 @@ public class PostListDTO {
         }
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
         this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
+        this.boardType = BoardType.광장;
     }
 
 
@@ -106,6 +109,7 @@ public class PostListDTO {
         }
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
         this.isAdmin = univPost.getMember().getRole().equals(UserRole.ADMIN);
+        this.boardType = BoardType.잔디밭;
     }
 
     @JsonIgnore
