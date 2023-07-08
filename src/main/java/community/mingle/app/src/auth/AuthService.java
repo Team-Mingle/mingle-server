@@ -188,7 +188,7 @@ public class AuthService {
                 case "hku":
                     postSignupRequest.setUnivId(1);
                     break;
-                case "hksut":
+                case "hkust":
                     postSignupRequest.setUnivId(2);
                     break;
                 case "cuhk":
