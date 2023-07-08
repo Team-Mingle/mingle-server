@@ -439,5 +439,15 @@ public class AuthService {
         }
     }
 
+    public List<UnivName> findUnivByCountryId(int countryId) throws BaseException {
+        try {
+            List<UnivName> univNames = authRepository.findUnivByCountryId(countryId);
+            return univNames;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 
 }

@@ -58,6 +58,7 @@ public class AuthController {
     /**
      * 1.1 학교 리스트 전송 API
      */
+    @Deprecated(since = "다국가 서비스에 따라서 1.15 학교 리스트 전송 api로 변경")
     @Operation(summary = "1.1 get univ list API", description = "1.1 대학교 리스트 가져오기")
     @GetMapping("/univlist")
     public BaseResponse<List<GetUnivListResponse>> univName() {
@@ -477,6 +478,24 @@ public class AuthController {
             List<Country> countries = authService.findCountries();
             List<GetCountryListResponse> result = countries.stream()
                     .map(m -> new GetCountryListResponse(m))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 1.15 학교 리스트 전송 API
+     */
+    @Operation(summary = "1.15 학교 리스트 전송 API", description = "1.15 학교 리스트 전송 API")
+    @GetMapping("/univlist/{countryId}")
+    public BaseResponse<List<GetUnivListResponse>> univNameByCountryId(@PathVariable int countryId) {
+        try {
+            List<UnivName> findUnivNames = authService.findUnivByCountryId(countryId);
+            List<GetUnivListResponse> result = findUnivNames.stream()
+                    .map(m -> new GetUnivListResponse(m))
                     .collect(Collectors.toList());
             return new BaseResponse<>(result);
 
