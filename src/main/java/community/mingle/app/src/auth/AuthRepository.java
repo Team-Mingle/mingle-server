@@ -124,4 +124,9 @@ public class AuthRepository {
     }
 
 
+    public List<UnivName> findUnivByCountryId(int countryId) {
+        return em.createQuery("select u from UnivName u where u.country.id = :countryId", UnivName.class)
+                .setParameter("countryId", countryId)
+                .getResultList();
+    }
 }
