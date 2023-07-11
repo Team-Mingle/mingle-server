@@ -36,6 +36,11 @@ public class ItemListDTO {
         this.title = item.getTitle();
         this.price = item.getPrice();
         this.nickName = item.getMember().getNickname();
+        if (item.getIsAnonymous()) {
+            this.nickName = "익명";
+        } else {
+            this.nickName = item.getMember().getNickname();
+        }
         this.createdAt = convertLocaldatetimeToTime(item.getCreatedAt());
         this.likeCount = item.getItemLikeList().size();
         this.commentCount = item.getItemCommentList().size();
