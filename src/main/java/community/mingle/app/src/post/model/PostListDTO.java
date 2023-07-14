@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.DateTimeConverter.convertLocaldatetimeToTime;
-import static community.mingle.app.config.DateTimeConverter.convertStringToLocalDateTime;
 import static community.mingle.app.src.domain.PostStatus.DELETED;
 import static community.mingle.app.src.domain.PostStatus.REPORTED;
 
@@ -34,6 +33,8 @@ public class PostListDTO {
     private final boolean isAdmin;
     private final BoardType boardType;
     private final CategoryType categoryType;
+    @JsonIgnore
+    private final LocalDateTime createdAtInLocalDateTime;
     private String title;
     private String contents;
     private String nickname;
@@ -72,6 +73,7 @@ public class PostListDTO {
         this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
         this.boardType = BoardType.광장;
         this.categoryType = CategoryType.valueOf(totalPost.getCategory().getName());
+        this.createdAtInLocalDateTime = totalPost.getCreatedAt();
     }
 
 
@@ -113,12 +115,14 @@ public class PostListDTO {
         this.createdAt = convertLocaldatetimeToTime(univPost.getCreatedAt());
         this.isAdmin = univPost.getMember().getRole().equals(UserRole.ADMIN);
         this.boardType = BoardType.잔디밭;
+        String c = univPost.getCategory().getName();
         this.categoryType = CategoryType.valueOf(univPost.getCategory().getName());
+        this.createdAtInLocalDateTime = univPost.getCreatedAt();
     }
 
     @JsonIgnore
     public LocalDateTime getCreatedAtDateTime() {
-        return convertStringToLocalDateTime(createdAt);
+        return createdAtInLocalDateTime;
     }
 
 }
