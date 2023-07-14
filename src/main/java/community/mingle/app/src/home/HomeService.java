@@ -146,7 +146,7 @@ public class HomeService {
                 .reversed()
         ).collect(Collectors.toList());
 
-        return sortedHomePostResponses;
+        return sortedHomePostResponses.subList(0, 4);
     }
 
 }
