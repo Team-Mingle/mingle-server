@@ -37,10 +37,11 @@ public class PostRepository {
     /**
      * 2.2 전체 베스트 게시판 api +
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Long memberIdByJwt) {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
+    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Member member) {
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.univ.country.id = :memberCountry and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setParameter("postId", postId)
                 .setMaxResults(50) //수정 필요
                 .getResultList();
@@ -96,11 +97,12 @@ public class PostRepository {
     /**
      * 2.4 광장 게시판 api +
      */
-    public List<TotalPost> findTotalPost(int category, Long postId, Long memberIdByJwt) {
-        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+    public List<TotalPost> findTotalPost(int category, Long postId, Member member) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and c.id = :categoryId and p.member.univ.country.id = :memberCountry and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
                 .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("categoryId", category)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setParameter("postId", postId)
                 .setMaxResults(50)
                 .getResultList();
@@ -431,12 +433,13 @@ public class PostRepository {
      * @param keyword
      * @return totalPosts
      */
-    public List<TotalPost> searchTotalPostWithKeyword(String keyword, Long memberIdByJwt) {
+    public List<TotalPost> searchTotalPostWithKeyword(String keyword, Member member) {
 
-        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc", TotalPost.class)
+        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.univ.country.id = :memberCountry and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc", TotalPost.class)
                 .setParameter("keyword", keyword)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member)
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .getResultList();
         return totalPosts;
 
@@ -588,10 +591,11 @@ public class PostRepository {
         em.persist(reportNotification);
     }
 
-    public List<TotalPost> findTotalPostsByIdAndMemberId(Long postId, Long memberIdByJwt) {
-        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+    public List<TotalPost> findTotalPostsByIdAndMember(Long postId, Member member) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and p.member.univ.country.id = :memberCountry and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
                 .setParameter("status", PostStatus.INACTIVE)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setParameter("postId", postId)
                 .setMaxResults(50)
                 .getResultList();
