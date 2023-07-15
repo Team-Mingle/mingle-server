@@ -77,8 +77,8 @@ public class HomeRepository {
      */
     public List<TotalPost> findTotalRecentPosts(Long memberIdByJwt) {
         return em.createQuery("select p from TotalPost p join fetch p.member m where p.status <> :status1 and p.status <> :status2 and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
-                .setParameter("status1", ItemStatus.INACTIVE)
-                .setParameter("status2",ItemStatus.REPORTED)
+                .setParameter("status1", PostStatus.INACTIVE)
+                .setParameter("status2",PostStatus.REPORTED)
                 .setParameter("memberIdByJwt",memberIdByJwt)
                 .setFirstResult(0)
                 .setMaxResults(4)
