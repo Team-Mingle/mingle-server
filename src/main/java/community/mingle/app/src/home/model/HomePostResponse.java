@@ -2,6 +2,7 @@ package community.mingle.app.src.home.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import community.mingle.app.src.domain.BoardType;
+import community.mingle.app.src.domain.CategoryType;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -31,6 +32,7 @@ public class HomePostResponse {
     private final int commentCount;
     private final String createdAt;
     private final BoardType boardType;
+    private final CategoryType categoryType;
     private String nickname;
 
 
@@ -56,6 +58,7 @@ public class HomePostResponse {
         this.commentCount = activeComments.size();
         this.createdAt = convertLocaldatetimeToTime(totalPost.getCreatedAt());
         this.boardType = BoardType.광장;
+        this.categoryType = CategoryType.valueOf(totalPost.getCategory().getName());
     }
 
     public HomePostResponse(UnivPost p, Long memberId) {
@@ -81,6 +84,8 @@ public class HomePostResponse {
         this.commentCount = activeComments.size();
         createdAt = convertLocaldatetimeToTime(p.getCreatedAt());
         this.boardType = BoardType.잔디밭;
+        this.categoryType = CategoryType.valueOf(p.getCategory().getName());
+
     }
 
     @JsonIgnore
