@@ -323,7 +323,7 @@ public class MemberService {
                     //신고 된 total post 찾음
                     TotalPost reportedTotalPost = memberRepository.findReportedTotalPost(reportRequest.getContentId());
                     //해당 total post에 딸린 total comments들도 찾음
-                    int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
+//                    int reportedTotalComments = memberRepository.findReportedTotalCommentsByPostId(reportRequest.getContentId());
                     //total post는 REPORTED status로 total comments는 INACTIVE status로 만들어 줌
                     reportedTotalPost.modifyStatusAsNotified();
                 }
