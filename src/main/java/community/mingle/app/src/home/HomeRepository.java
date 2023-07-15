@@ -1,12 +1,9 @@
 package community.mingle.app.src.home;
 
-import community.mingle.app.src.domain.Banner;
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.PostStatus;
+import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.domain.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -79,8 +76,9 @@ public class HomeRepository {
      * 5.4 홈 전체 최신 게시글 api
      */
     public List<TotalPost> findTotalRecentPosts(Long memberIdByJwt) {
-        return em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
-                .setParameter("status", PostStatus.ACTIVE)
+        return em.createQuery("select p from TotalPost p join fetch p.member m where p.status <> :status1 and p.status <> :status2 and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
+                .setParameter("status1", ItemStatus.INACTIVE)
+                .setParameter("status2",ItemStatus.REPORTED)
                 .setParameter("memberIdByJwt",memberIdByJwt)
                 .setFirstResult(0)
                 .setMaxResults(4)
