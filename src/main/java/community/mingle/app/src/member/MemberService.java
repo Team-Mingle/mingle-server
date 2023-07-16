@@ -21,10 +21,12 @@ import community.mingle.app.src.post.PostRepository;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.SHA256;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -498,14 +500,15 @@ public class MemberService {
     public List<NotificationDTO> get20NotificationsSorted() throws BaseException {
             List<NotificationDTO> notifications = new ArrayList<>();
             Long memberId = jwtService.getUserIdx();
+            Pageable pageable = PageRequest.of(0, 20);
 
-            List<UnivNotification> univNotifications = univNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            List<UnivNotification> univNotifications = univNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId, PostStatus.INACTIVE, PostStatus.REPORTED, pageable);
             for (UnivNotification univNotification : univNotifications) {
                 NotificationDTO notificationDTO = new NotificationDTO(univNotification);
                 notifications.add(notificationDTO);
             }
 
-            List<TotalNotification> totalNotifications = totalNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+            List<TotalNotification> totalNotifications = totalNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId, PostStatus.INACTIVE, PostStatus.REPORTED, pageable);
             for (TotalNotification totalNotification : totalNotifications) {
                 NotificationDTO notificationDTO = new NotificationDTO(totalNotification);
                 notifications.add(notificationDTO);
@@ -517,7 +520,7 @@ public class MemberService {
                 notifications.add(notificationDTO);
             }
 
-            List<ItemNotification> itemNotifications = itemNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId);
+        List<ItemNotification> itemNotifications = itemNotificationRepository.findFirst20ByMemberIdOrderByCreatedAtDesc(memberId, ItemStatus.INACTIVE, ItemStatus.REPORTED, pageable);
             for (ItemNotification itemNotification : itemNotifications) {
                 NotificationDTO notificationDTO = new NotificationDTO(itemNotification);
                 notifications.add(notificationDTO);
