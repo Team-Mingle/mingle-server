@@ -81,10 +81,13 @@ public class HomeRepository {
     /**
      * 5.4 홈 전체 최신 게시글 api
      */
+
     public List<TotalPost> findTotalRecentPosts(Member member) {
-        return em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.univ.country.id = :memberCountry and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
-                .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt", member.getId())
+        
+        return em.createQuery("select p from TotalPost p join fetch p.member m where p.status <> :status1 and p.status <> :status2 and p.member.univ.country.id = :memberCountry and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
+                .setParameter("status1", PostStatus.INACTIVE)
+                .setParameter("status2", PostStatus.REPORTED)
+                .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setFirstResult(0)
                 .setMaxResults(4)
