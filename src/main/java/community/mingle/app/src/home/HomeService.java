@@ -8,6 +8,7 @@ import community.mingle.app.src.domain.Univ.UnivPost;
 import community.mingle.app.src.home.model.CreateBannerRequest;
 import community.mingle.app.src.home.model.CreateBannerResponse;
 import community.mingle.app.src.home.model.HomePostResponse;
+import community.mingle.app.src.member.MemberRepository;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class HomeService {
     private final JwtService jwtService;
     private final HomeRepository homeRepository;
     private final S3Service s3Service;
+    private final MemberRepository memberRepository;
 
 
     /**
@@ -72,7 +74,8 @@ public class HomeService {
      */
     public List<TotalPost> findAllTotalPostsWithMemberLikeComment() throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();  // jwtService 의 메소드 안에서 throw 해줌 -> controller 로 넘어감
-        List<TotalPost> totalPosts = homeRepository.findAllTotalPostWithMemberLikeComment(memberIdByJwt);
+        Member member = memberRepository.findMember(memberIdByJwt);
+        List<TotalPost> totalPosts = homeRepository.findAllTotalPostWithMemberLikeComment(member);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -100,8 +103,9 @@ public class HomeService {
      */
     public List<TotalPost> findTotalRecentPosts() throws BaseException {
         Long memberIdByJwt = jwtService.getUserIdx();
-//        Member member = homeRepository.findMemberbyId(memberIdByJwt);
-        List<TotalPost> totalPosts = homeRepository.findTotalRecentPosts(memberIdByJwt);
+
+        Member member = homeRepository.findMemberbyId(memberIdByJwt);
+        List<TotalPost> totalPosts = homeRepository.findTotalRecentPosts(member);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_RECENT_POSTS);
         }
@@ -135,7 +139,7 @@ public class HomeService {
         List<HomePostResponse> univBestPosts = univPosts.stream()
                 .map(p -> new HomePostResponse(p, memberId))
                 .collect(Collectors.toList());
-        List<TotalPost> totalPosts = homeRepository.findAllTotalPostWithMemberLikeComment(memberId);
+        List<TotalPost> totalPosts = homeRepository.findAllTotalPostWithMemberLikeComment(member);
         List<HomePostResponse> totalBestPosts = totalPosts.stream()
                 .map(m -> new HomePostResponse(m, memberId))
                 .collect(Collectors.toList());
