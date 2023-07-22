@@ -450,4 +450,12 @@ public class AuthService {
     }
 
 
+    public UnivEmail findEmailDomainByMember(
+            Long memberId
+    ) {
+        Member member = authRepository.findMemberById(memberId);
+        int univId = member.getUniv().getId();
+        return authRepository.findDomainByUnivId(univId).get(0);
+
+    }
 }

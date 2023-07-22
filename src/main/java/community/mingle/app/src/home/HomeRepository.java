@@ -1,9 +1,12 @@
 package community.mingle.app.src.home;
 
-import community.mingle.app.src.domain.*;
+import community.mingle.app.src.domain.Banner;
+import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Total.TotalPostImage;
 import community.mingle.app.src.domain.Univ.UnivPost;
+import community.mingle.app.src.domain.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -48,10 +51,11 @@ public class HomeRepository {
     /**
      * 5.2 홈 전체 베스트 게시판 api
      */
-    public List<TotalPost> findAllTotalPostWithMemberLikeComment(Long memberIdByJwt) {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.totalPostLikes.size > 9 and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
+    public List<TotalPost> findAllTotalPostWithMemberLikeComment(Member member) {
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.univ.country.id = :memberCountry and p.totalPostLikes.size > 9 and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setFirstResult(0)
                 .setMaxResults(4)
                 .getResultList();
@@ -77,11 +81,14 @@ public class HomeRepository {
     /**
      * 5.4 홈 전체 최신 게시글 api
      */
-    public List<TotalPost> findTotalRecentPosts(Long memberIdByJwt) {
-        return em.createQuery("select p from TotalPost p join fetch p.member m where p.status <> :status1 and p.status <> :status2 and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
+
+    public List<TotalPost> findTotalRecentPosts(Member member) {
+
+        return em.createQuery("select p from TotalPost p join fetch p.member m where p.status <> :status1 and p.status <> :status2 and p.member.univ.country.id = :memberCountry and p.member.id  not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by p.createdAt desc", TotalPost.class)
                 .setParameter("status1", PostStatus.INACTIVE)
-                .setParameter("status2",PostStatus.REPORTED)
-                .setParameter("memberIdByJwt",memberIdByJwt)
+                .setParameter("status2", PostStatus.REPORTED)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setFirstResult(0)
                 .setMaxResults(4)
                 .getResultList();

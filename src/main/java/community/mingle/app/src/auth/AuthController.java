@@ -504,6 +504,22 @@ public class AuthController {
         }
     }
 
-
+    /**
+     * 1.16 유저별 학교 이메일 api
+     */
+    @Operation(summary = "1.16 유저별 학교 이메일 api", description = "1.16 유저별 학교 이메일 api")
+    @ResponseBody
+    @GetMapping("/member/domain")
+    public BaseResponse<GetUnivDomainResponse> getMemberEmailDomain() {
+        try {
+            Long userIdx = jwtService.getUserIdx();
+            UnivEmail emailDomainByMember = authService.findEmailDomainByMember(userIdx);
+            GetUnivDomainResponse getUnivDomainResponse = new GetUnivDomainResponse(emailDomainByMember.getId(), emailDomainByMember.getDomain());
+            return new BaseResponse<>(getUnivDomainResponse);
+        } catch (BaseException exception) {
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
 

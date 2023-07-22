@@ -2,10 +2,6 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.domain.*;
-import community.mingle.app.src.domain.Total.TotalBlind;
-import community.mingle.app.src.domain.Total.TotalCommentLike;
-import community.mingle.app.src.domain.Total.TotalPost;
-import community.mingle.app.src.domain.Univ.UnivBlind;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,11 +19,12 @@ public class ItemRepository {
 
     private final EntityManager em;
 
-    public List<Item> findItems( Long itemId, Long memberIdByJwt) {
-        return em.createQuery("select i from Item i join fetch i.member as m where i.status <> :status1 and i.status <> :status2 and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id < :itemId order by i.createdAt desc", Item.class)
+    public List<Item> findItems(Long itemId, Member member) {
+        return em.createQuery("select i from Item i join fetch i.member as m where i.status <> :status1 and i.status <> :status2 and i.member.univ.country.id = :memberCountry and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id < :itemId order by i.createdAt desc", Item.class)
                 .setParameter("status1", ItemStatus.INACTIVE)
-                .setParameter("status2",ItemStatus.REPORTED)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("status2", ItemStatus.REPORTED)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setParameter("itemId", itemId)
                 .setMaxResults(50)
                 .getResultList();
@@ -87,7 +84,7 @@ public class ItemRepository {
     public Item findItemByIdAndMemberId(Long itemId, Long memberIdByJwt) {
         return em.createQuery("select i from Item i join fetch i.member as m where i.status <> :status1 and i.status <> :status2 and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and i.id = :itemId", Item.class)
                 .setParameter("status1", ItemStatus.INACTIVE)
-                .setParameter("status2",ItemStatus.REPORTED)
+                .setParameter("status2", ItemStatus.REPORTED)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .setParameter("itemId", itemId)
                 .getSingleResult();
@@ -186,12 +183,13 @@ public class ItemRepository {
     }
 
 
-    public List<Item> searchItemWithKeyword(String keyword, Long memberIdByJwt) {
+    public List<Item> searchItemWithKeyword(String keyword, Member member) {
 
-        List<Item> items = em.createQuery("SELECT i FROM Item i WHERE (i.title LIKE CONCAT('%',:keyword,'%') OR i.content LIKE CONCAT('%',:keyword,'%')) AND i.status IN (:statuses) and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by i.createdAt desc", Item.class)
+        List<Item> items = em.createQuery("SELECT i FROM Item i WHERE (i.title LIKE CONCAT('%',:keyword,'%') OR i.content LIKE CONCAT('%',:keyword,'%')) AND i.member.univ.country.id = :memberCountry AND i.status IN (:statuses) and i.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by i.createdAt desc", Item.class)
                 .setParameter("keyword", keyword)
                 .setParameter("statuses", Arrays.asList(ItemStatus.SELLING, ItemStatus.RESERVED, ItemStatus.SOLDOUT, ItemStatus.NOTIFIED))
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .getResultList();
         return items;
 

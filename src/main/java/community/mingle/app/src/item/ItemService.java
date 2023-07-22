@@ -3,14 +3,13 @@ package community.mingle.app.src.item;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.comment.CommentRepository;
 import community.mingle.app.src.domain.*;
-import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.src.item.model.*;
 import community.mingle.app.src.member.MemberRepository;
 import community.mingle.app.src.post.PostRepository;
+import community.mingle.app.src.post.PostService;
 import community.mingle.app.src.post.model.CoCommentDTO;
 import community.mingle.app.src.post.model.CommentResponse;
-import community.mingle.app.src.post.PostService;
 import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
-import static community.mingle.app.config.BaseResponseStatus.CREATE_FAIL_POST;
 import static community.mingle.app.src.domain.PostStatus.*;
-import static community.mingle.app.src.domain.PostStatus.DELETED;
-import static community.mingle.app.src.domain.PostStatus.REPORTED;
 import static community.mingle.app.utils.ValidationRegex.isRegexChatUrl;
 
 @Service
@@ -49,11 +43,11 @@ public class ItemService {
      * 6.1 거래 게시판 리스트 조회 api
      */
     public ItemListResponse findItems(Long itemId, Long memberId) throws BaseException {
-        Long memberIdByJwt = jwtService.getUserIdx();
-        List<Item> items = itemRepository.findItems(itemId, memberId);
+        Member member = memberRepository.findMember(memberId);
+        List<Item> items = itemRepository.findItems(itemId, member);
         if (items.size() == 0) throw new BaseException(EMPTY_POSTS_LIST);
         List<ItemListDTO> itemListDTOList = items.stream()
-                .map(item -> new ItemListDTO(item, memberIdByJwt))
+                .map(item -> new ItemListDTO(item, memberId))
                 .collect(Collectors.toList());
         return new ItemListResponse(itemListDTOList, "거래게시판");
     }
@@ -96,12 +90,13 @@ public class ItemService {
     /**
      * 6.3 거래 게시판 글 상세 api
      */
-    public Item getItem (Long itemId) throws BaseException {
+    public Item getItem(Long itemId) throws BaseException {
         Item item = itemRepository.findItemById(itemId);
         if (item == null)
             throw new BaseException(POST_NOT_EXIST);
         return item;
     }
+
     @Transactional
     public void updateView(Item item) {
         item.updateView();
@@ -137,7 +132,6 @@ public class ItemService {
     }
 
 
-
     /**
      * 6.4 거래 게시물 수정 API
      */
@@ -154,8 +148,7 @@ public class ItemService {
         List<ItemImg> itemImgList = item.getItemImgList();
         if ((request.getItemImageUrlsToDelete() == null || request.getItemImageUrlsToDelete().isEmpty()) && (request.getItemImagesToAdd() != null)) { // image to add only
             createItemImage(request, item);
-        }
-        else { //images to delete&add exists
+        } else { //images to delete&add exists
 //            //List<ItemImg> itemImgToDelete = imgUrlList.stream().filter(request.getItemImageUrlsToDelete()::contains).collect(Collectors.toList()); //ItemImg imgUrl 이랑 비교해야함..
             List<ItemImg> itemImgToDelete = itemImgList.stream().filter(itemImg -> request.getItemImageUrlsToDelete().contains(itemImg.getImgUrl())) //1. remove in ItemImg
                     .collect(Collectors.toList());
@@ -247,7 +240,6 @@ public class ItemService {
     }
 
 
-
     /**
      * 6.8 거래 게시물 찜 취소 api
      */
@@ -317,14 +309,12 @@ public class ItemService {
         String messageTitle = "거래게시판";
         if (postItemCommentRequest.getParentCommentId() == null) {
             if (Objects.equals(itemMember.getId(), creatorMember.getId())) {
-                return;
-            }
-            else {
+            } else {
                 firebaseCloudMessageService.sendMessageTo(itemMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postItemCommentRequest.getContent(), TableType.Item, item.getId());
-                ItemNotification itemNotification = ItemNotification.saveItemNotification(item, itemMember,comment);
+                ItemNotification itemNotification = ItemNotification.saveItemNotification(item, itemMember, comment);
                 itemRepository.saveItemNotification(itemNotification);
             }
-        } else if (postItemCommentRequest.getParentCommentId()!= null) {
+        } else if (postItemCommentRequest.getParentCommentId() != null) {
             Member parentMember = itemRepository.findItemCommentById(postItemCommentRequest.getParentCommentId()).getMember();
             Member mentionMember;
             if (postItemCommentRequest.getMentionId() == null) {
@@ -340,9 +330,9 @@ public class ItemService {
             for (Member member : map.keySet()) {
                 if (Objects.equals(map.get(member), "creatorMemberId")) {
                     continue;
-                }else{
+                } else {
                     firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postItemCommentRequest.getContent(), TableType.Item, item.getId());
-                    ItemNotification itemNotification = ItemNotification.saveItemNotification(item, member,comment);
+                    ItemNotification itemNotification = ItemNotification.saveItemNotification(item, member, comment);
                     itemRepository.saveItemNotification(itemNotification);
                 }
             }
@@ -370,7 +360,7 @@ public class ItemService {
                 List<ItemComment> CoCommentList = itemCoComments.stream()
                         .filter(cc -> c.getId().equals(cc.getParentCommentId()))
                         .collect(Collectors.toList());
-                if ((c.getStatus() == PostStatus.INACTIVE ) && CoCommentList.size() == 0) {
+                if ((c.getStatus() == PostStatus.INACTIVE) && CoCommentList.size() == 0) {
                     continue;
                 }
                 List<CoCommentDTO> coCommentDTO = CoCommentList.stream()
@@ -427,13 +417,15 @@ public class ItemService {
     }
 
     public List<Item> findAllSearch(String keyword, Long memberId) throws BaseException {
-        List<Item> searchItemLists = itemRepository.searchItemWithKeyword(keyword, memberId);
+        Member member = memberRepository.findMember(memberId);
+        List<Item> searchItemLists = itemRepository.searchItemWithKeyword(keyword, member);
         if (searchItemLists.size() == 0) {
             throw new BaseException(POST_NOT_EXIST);
         }
         return searchItemLists;
     }
-@Transactional
+
+    @Transactional
     public String blindItem(Long itemId) throws BaseException {
         Long memberId = jwtService.getUserIdx();
         Item item = itemRepository.findItemById(itemId);
@@ -478,7 +470,7 @@ public class ItemService {
         if (comment == null) {
             throw new BaseException(COMMENT_NOT_EXIST);
         }
-        if (comment.getStatus().equals(INACTIVE) || comment.getStatus().equals(REPORTED)){
+        if (comment.getStatus().equals(INACTIVE) || comment.getStatus().equals(REPORTED)) {
             throw new BaseException(REPORTED_DELETED_COMMENT);
         }
         Member member = memberRepository.findMember(memberIdByJwt);

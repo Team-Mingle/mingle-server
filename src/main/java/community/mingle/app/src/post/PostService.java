@@ -110,7 +110,8 @@ public class PostService {
      * 3.2 홍콩 배스트 게시판 API
      */
     public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Long memberId) throws BaseException {
-        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(postId, memberId);
+        Member member = memberRepository.findMember(memberId);
+        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(postId, member);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
@@ -140,7 +141,8 @@ public class PostService {
      * 3.4 광장 게시판 리스트 API
      */
     public List<TotalPost> findTotalPost(int category, Long postId, Long memberId) throws BaseException {
-        List<TotalPost> totalPostList = postRepository.findTotalPost(category, postId, memberId);
+        Member member = memberRepository.findMember(memberId);
+        List<TotalPost> totalPostList = postRepository.findTotalPost(category, postId, member);
         if (totalPostList.size() == 0) {
             throw new BaseException(EMPTY_POSTS_LIST);
         }
@@ -935,7 +937,8 @@ public class PostService {
      */
     @Transactional
     public List<TotalPost> findAllSearch(String keyword, Long memberId) throws BaseException {
-        List<TotalPost> searchTotalPostLists = postRepository.searchTotalPostWithKeyword(keyword, memberId);
+        Member member = memberRepository.findMember(memberId);
+        List<TotalPost> searchTotalPostLists = postRepository.searchTotalPostWithKeyword(keyword, member);
         if (searchTotalPostLists.size() == 0) {
             throw new BaseException(POST_NOT_EXIST);
         }
@@ -1144,7 +1147,8 @@ public class PostService {
     }
 
     public List<TotalPost> findTotalPostsByIdAndMemberId(Long postId, Long memberId) throws BaseException {
-        List<TotalPost> totalPostList = postRepository.findTotalPostsByIdAndMemberId(postId, memberId);
+        Member member = memberRepository.findMember(memberId);
+        List<TotalPost> totalPostList = postRepository.findTotalPostsByIdAndMember(postId, member);
         if (totalPostList.size() == 0) {
             throw new BaseException(EMPTY_POSTS_LIST);
         }
@@ -1160,14 +1164,14 @@ public class PostService {
     }
 
     public List<PostListDTO> findUnitePostWithMemberLikeCount(Long totalPostId, Long univPostId, Long memberId) throws BaseException {
-        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(totalPostId, memberId);
+        Member member = postRepository.findMemberbyId(memberId);
+        List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(totalPostId, member);
         if (totalPosts.size() == 0) {
             throw new BaseException(EMPTY_BEST_POSTS);
         }
         List<PostListDTO> totalPostDtos = totalPosts.stream()
                 .map(m -> new PostListDTO(m, memberId))
                 .collect(Collectors.toList());
-        Member member = postRepository.findMemberbyId(memberId);
         if (member == null) {
             throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
         }
