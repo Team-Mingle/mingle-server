@@ -494,6 +494,6 @@ public class ItemService {
     public List<Currency> getCurrencyList(Long memberId) {
         Member member = memberRepository.findMember(memberId);
         Country country = member.getUniv().getCountry();
-        return Arrays.stream(Currency.values()).filter(it -> it.getCountires().contains(country)).collect(Collectors.toList());
+        return Arrays.stream(Currency.values()).filter(it -> it.getCountires().contains(country.getCountryName())).collect(Collectors.toList());
     }
 }
