@@ -39,6 +39,8 @@ public class ItemService {
     private final CommentRepository commentRepository;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
 
+    private final ItemImgRepository itemImgRepository;
+
 
     /**
      * 6.1 거래 게시판 리스트 조회 api
@@ -154,7 +156,8 @@ public class ItemService {
             List<ItemImg> itemImgToDelete = itemImgList.stream().filter(itemImg -> request.getItemImageUrlsToDelete().contains(itemImg.getImgUrl())) //1. remove in ItemImg
                     .collect(Collectors.toList());
             for (ItemImg itemImg : itemImgToDelete) { //2. remove in s3
-                itemImg.deleteItemImage();
+//                itemImg.deleteItemImage(); // Old: mark as deletedAt
+                itemImgRepository.delete(itemImg); // remove row from database OR mark deletedAt
                 String imgUrl = itemImg.getImgUrl();
                 String fileName = imgUrl.substring(imgUrl.lastIndexOf("/item/") + 6);
                 s3Service.deleteFile(fileName, "item");
