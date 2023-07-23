@@ -5,6 +5,7 @@ import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public class BackOfficeService {
 
     private final PostRepository postRepository;
 
+
+    @Transactional
     public void moveCareerToQuestions() {
         Category careerCategory = postRepository.findCategoryById(3);
         Category questionCategory = postRepository.findCategoryById(2);
@@ -21,14 +24,12 @@ public class BackOfficeService {
         List<UnivPost> univCareerPosts = postRepository.findAllUnivPostsByCategory(careerCategory.getName());
         totalCareerPosts
                 .forEach(totalPost -> {
-                            totalPost.setCategory(questionCategory);
-                            postRepository.save(totalPost);
+                            totalPost.changeCategory(questionCategory);
                         }
                 );
         univCareerPosts
                 .forEach(univPost -> {
-                    univPost.setCategory(questionCategory);
-                    postRepository.save(univPost);
+                    univPost.changeCategory(questionCategory);
                 });
     }
 

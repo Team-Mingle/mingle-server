@@ -105,6 +105,7 @@ public class BackOfficeController {
 
     @PatchMapping("/questions/move-from-career")
     public String moveCareerToQuestions() {
-            backOfficeService.moveCareerToQuestions()
+            backOfficeService.moveCareerToQuestions();
+            return "ok";
     }
 }
