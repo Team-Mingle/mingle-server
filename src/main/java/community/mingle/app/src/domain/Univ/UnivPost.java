@@ -162,4 +162,8 @@ public class UnivPost {
         }
 
     }
+
+    public void changeCategory(Category category) {
+        this.category = category;
+    }
 }

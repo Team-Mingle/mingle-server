@@ -36,6 +36,7 @@ public class FcmMessage {
     @Getter
     public static class Data {
         private String tableId;
+        private String categoryType;
         private String postId;
     }
 

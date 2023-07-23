@@ -691,7 +691,7 @@ public class PostService {
         } else if (recentPost.contains(totalpost)) {
             String title = "전체 게시글";
             String body = "인기 게시물로 지정되었어요";
-            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.TotalPost, totalpost.getId());
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.TotalPost,  CategoryType.valueOf(totalpost.getCategory().getName()), totalpost.getId());
         }
     }
 
@@ -755,7 +755,7 @@ public class PostService {
         } else if (recentPost.contains(univpost)) {
             String title = "학교 게시글";
             String body = "인기 게시물로 지정되었어요";
-            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.UnivPost, univpost.getId());
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.UnivPost, CategoryType.valueOf(univpost.getCategory().getName()), univpost.getId());
         }
     }
 
@@ -1101,7 +1101,7 @@ public class PostService {
         postRepository.saveReportNotification(reportNotification);
         String title = "광장 게시글 차단";
         String body = "다른 사용자들의 신고에 의해 글이 삭제되었습니다.";
-        fcmService.sendMessageTo(totalPost.getMember().getFcmToken(), title, body, TableType.TotalPost, totalPost.getId());
+        fcmService.sendMessageTo(totalPost.getMember().getFcmToken(), title, body, TableType.TotalPost,  CategoryType.valueOf(totalPost.getCategory().getName()), totalPost.getId());
     }
 
     @Transactional
