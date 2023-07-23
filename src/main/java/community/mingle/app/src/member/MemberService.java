@@ -617,10 +617,11 @@ public class MemberService {
 
 
     public void sendPushNotificationToAll(SendPushNotificationRequest request) throws BaseException {
+        TotalPost totalPost = postRepository.findTotalPostById(request.getPostId());
         List<String> allFcmToken = memberRepository.findAllFcmToken();
         try {
             for (String fcmToken : allFcmToken) {
-                    fcmService.sendMessageTo(fcmToken, request.getTitle(), request.getBody(), TableType.TotalPost, request.getPostId());
+                    fcmService.sendMessageTo(fcmToken, request.getTitle(), request.getBody(), TableType.TotalPost,  CategoryType.valueOf(totalPost.getCategory().getName()), request.getPostId());
             }
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);

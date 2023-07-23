@@ -2,6 +2,7 @@ package community.mingle.app.src.comment;
 
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.src.domain.CategoryType;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.comment.model.*;
 import community.mingle.app.src.domain.PostStatus;
@@ -146,7 +147,7 @@ public class CommentService {
             }
             else {
                 //이게 방금 살린거
-                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
+                firebaseCloudMessageService.sendMessageTo(postMember.getFcmToken(), messageTitle, "새로운 댓글이 달렸어요: " + postTotalCommentRequest.getContent(), TableType.TotalPost,  CategoryType.valueOf(post.getCategory().getName()), post.getId());
                 //알림 저장
                 TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, postMember,comment);
                 memberRepository.saveTotalNotification(totalNotification);
@@ -168,7 +169,7 @@ public class CommentService {
                 if (Objects.equals(map.get(member), "creatorMemberId")) {
                     continue;
                 }else{
-                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent(), TableType.TotalPost, post.getId());
+                    firebaseCloudMessageService.sendMessageTo(member.getFcmToken(), messageTitle, postTotalCommentRequest.getContent(), TableType.TotalPost, CategoryType.valueOf(post.getCategory().getName()), post.getId());
                     //알림 저장
                     TotalNotification totalNotification = TotalNotification.saveTotalNotification(post, member,comment);
                     memberRepository.saveTotalNotification(totalNotification);
@@ -261,7 +262,7 @@ public class CommentService {
                 return;
             } else {
                 String body = "새로운 댓글이 달렸어요: " + request.getContent();
-                fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, TableType.UnivPost, univPost.getId());
+                fcmService.sendMessageTo(postWriter.getFcmToken(), title, body, TableType.UnivPost, CategoryType.valueOf(univPost.getCategory().getName()),  univPost.getId());
                 UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, postWriter, comment);
                 memberRepository.saveUnivNotification(univNotification);
             }
@@ -294,7 +295,7 @@ public class CommentService {
                 String token = member.getFcmToken();
                 String body = "새로운 대댓글이 달렸어요: " + request.getContent();
                 System.out.println(body);
-                fcmService.sendMessageTo(token, title, body, TableType.UnivPost, univPost.getId());
+                fcmService.sendMessageTo(token, title, body, TableType.UnivPost,  CategoryType.valueOf(univPost.getCategory().getName()), univPost.getId());
                 //알림 저장
                 UnivNotification univNotification = UnivNotification.saveUnivNotification(univPost, member, comment);
                 memberRepository.saveUnivNotification(univNotification);
