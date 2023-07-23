@@ -691,7 +691,7 @@ public class PostService {
         } else if (recentPost.contains(totalpost)) {
             String title = "전체 게시글";
             String body = "인기 게시물로 지정되었어요";
-            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.TotalPost,  CategoryType.valueOf(totalpost.getCategory().getName()), totalpost.getId());
+            fcmService.sendMessageTo(postMember.getFcmToken(), title, body, TableType.TotalPost, CategoryType.valueOf(totalpost.getCategory().getName()), totalpost.getId());
         }
     }
 
@@ -1101,7 +1101,7 @@ public class PostService {
         postRepository.saveReportNotification(reportNotification);
         String title = "광장 게시글 차단";
         String body = "다른 사용자들의 신고에 의해 글이 삭제되었습니다.";
-        fcmService.sendMessageTo(totalPost.getMember().getFcmToken(), title, body, TableType.TotalPost,  CategoryType.valueOf(totalPost.getCategory().getName()), totalPost.getId());
+        fcmService.sendMessageTo(totalPost.getMember().getFcmToken(), title, body, TableType.TotalPost, CategoryType.valueOf(totalPost.getCategory().getName()), totalPost.getId());
     }
 
     @Transactional
@@ -1166,19 +1166,12 @@ public class PostService {
     public List<PostListDTO> findUnitePostWithMemberLikeCount(Long totalPostId, Long univPostId, Long memberId) throws BaseException {
         Member member = postRepository.findMemberbyId(memberId);
         List<TotalPost> totalPosts = postRepository.findTotalPostWithMemberLikeComment(totalPostId, member);
-        if (totalPosts.size() == 0) {
-            throw new BaseException(EMPTY_BEST_POSTS);
-        }
+
         List<PostListDTO> totalPostDtos = totalPosts.stream()
                 .map(m -> new PostListDTO(m, memberId))
                 .collect(Collectors.toList());
-        if (member == null) {
-            throw new BaseException(DATABASE_ERROR); //무조건 찾아야하는데 못찾을경우 (이미 jwt 에서 검증이 되기때문)
-        }
         List<UnivPost> univPosts = postRepository.findAllWithMemberLikeCommentCount(member, univPostId);
-        if (univPosts.size() == 0) {
-            throw new BaseException(EMPTY_BEST_POSTS);
-        }
+
         List<PostListDTO> univPostDtos = univPosts.stream()
                 .map(p -> new PostListDTO(p, memberId))
                 .collect(Collectors.toList());
@@ -1186,7 +1179,5 @@ public class PostService {
                 .sorted(Comparator.comparing(PostListDTO::getCreatedAtDateTime)
                         .reversed())
                 .collect(Collectors.toList());
-
-
     }
 }

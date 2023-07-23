@@ -760,6 +760,7 @@ public class PostController {
             PostListResponse bestTotalPostListResponse = new PostListResponse(postListDtos);
             return new BaseResponse<>(bestTotalPostListResponse);
         } catch (BaseException exception) {
+            exception.printStackTrace();
             return new BaseResponse<>(exception.getStatus());
         }
     }
