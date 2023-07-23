@@ -1,6 +1,7 @@
 package community.mingle.app.src.domain.Total;
 
 import community.mingle.app.src.domain.Category;
+import community.mingle.app.src.domain.CategoryType;
 import community.mingle.app.src.domain.Member;
 import community.mingle.app.src.domain.PostStatus;
 
@@ -144,6 +145,11 @@ public class TotalPost {
         }
 
     }
+
+    public void changeCategory(Category category) {
+        this.category = category;
+    }
+
 
 
 }
