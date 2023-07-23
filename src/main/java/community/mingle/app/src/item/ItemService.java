@@ -2,6 +2,7 @@ package community.mingle.app.src.item;
 
 import community.mingle.app.config.BaseException;
 import community.mingle.app.src.comment.CommentRepository;
+import community.mingle.app.src.domain.Currency;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.firebase.FirebaseCloudMessageService;
 import community.mingle.app.src.item.model.*;
@@ -488,5 +489,11 @@ public class ItemService {
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public List<Currency> getCurrencyList(Long memberId) {
+        Member member = memberRepository.findMember(memberId);
+        Country country = member.getUniv().getCountry();
+        return Arrays.stream(Currency.values()).filter(it -> it.getCountires().contains(country.getCountryName())).collect(Collectors.toList());
     }
 }

@@ -610,4 +610,16 @@ public class PostRepository {
                 .setMaxResults(50)
                 .getResultList();
     }
+
+    public List<TotalPost> findAllTotalPostsByCategory(String categoryName) {
+        return em.createQuery("select p from TotalPost p where p.category.name = :categoryName", TotalPost.class)
+                .setParameter("categoryName", categoryName)
+                .getResultList();
+    }
+
+    public List<UnivPost> findAllUnivPostsByCategory(String categoryName) {
+        return em.createQuery("select p from UnivPost p where p.category.name = :categoryName", UnivPost.class)
+                .setParameter("categoryName", categoryName)
+                .getResultList();
+    }
 }
