@@ -43,7 +43,7 @@ public class PostRepository {
                 .setParameter("memberIdByJwt", member.getId())
                 .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setParameter("postId", postId)
-                .setMaxResults(50) //수정 필요
+                .setMaxResults(10) //수정 필요
                 .getResultList();
         return recentTotalPosts;
     }
@@ -73,7 +73,7 @@ public class PostRepository {
                 .setParameter("univId", member.getUniv().getId()) //어디 학교인지
                 .setParameter("memberIdByJwt", member.getId())
                 .setParameter("postId", postId)
-                .setMaxResults(50)
+                .setMaxResults(10)
                 .getResultList();
     }
 
