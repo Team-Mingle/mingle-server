@@ -1,5 +1,7 @@
 package community.mingle.app.src.member.model;
 
+import community.mingle.app.src.domain.BoardType;
+import community.mingle.app.src.domain.CategoryType;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalPost;
@@ -30,6 +32,9 @@ public class MyPagePostDTO {
     private final int commentCount;
     private final String createdAt;
     private final boolean isAdmin;
+
+    private final BoardType boardType;
+    private final CategoryType categoryType;
 
     public MyPagePostDTO(TotalPost totalPost, Long memberId) {
         this.postId = totalPost.getId();
@@ -62,6 +67,8 @@ public class MyPagePostDTO {
             this.contents = "";
         }
         this.isAdmin = totalPost.getMember().getRole().equals(UserRole.ADMIN);
+        this.boardType = BoardType.광장;
+        this.categoryType = CategoryType.valueOf(totalPost.getCategory().getName());
     }
 
     public MyPagePostDTO(UnivPost p, Long memberId) {
@@ -91,6 +98,8 @@ public class MyPagePostDTO {
             this.contents = "";
         }
         this.isAdmin = p.getMember().getRole().equals(UserRole.ADMIN);
+        this.boardType = BoardType.잔디밭;
+        this.categoryType = CategoryType.valueOf(p.getCategory().getName());
     }
 
 }
