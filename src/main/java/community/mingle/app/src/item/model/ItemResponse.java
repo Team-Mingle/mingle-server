@@ -12,32 +12,31 @@ import static community.mingle.app.config.DateTimeConverter.convertToDateAndTime
 @Getter
 public class ItemResponse {
 
-    private Long itemId;
+    private final int viewCount;
+    private final Long itemId;
     private String title;
     private String content;
-
     //중고거래 추가
     private Long price;
+    private Currency currency;
     private String location;
     private String chatUrl;
-
-    private String nickname;
-    private boolean isFileAttached;
-    private int likeCount;
-//    private int scrapCount; 없음
+    private final String nickname;
+    private final boolean isFileAttached;
+    private final int likeCount;
+    //    private int scrapCount; 없음
     private int commentCount;
-    private boolean isMyPost;
-    private boolean isLiked;
-//    private boolean isScraped; 없음
-    private boolean isBlinded;
-    private boolean isReported;
-    private String createdAt;
-    private final int viewCount;
-    private List<String> postImgUrl = new ArrayList<>();
-    private boolean isAdmin;
-    private ItemStatus status;
+    private final boolean isMyPost;
+    private final boolean isLiked;
+    //    private boolean isScraped; 없음
+    private final boolean isBlinded;
+    private final boolean isReported;
+    private final String createdAt;
+    private final List<String> postImgUrl = new ArrayList<>();
+    private final boolean isAdmin;
+    private final ItemStatus status;
 
-    private boolean isAnonymous;
+    private final boolean isAnonymous;
 
 
     /**
@@ -49,6 +48,7 @@ public class ItemResponse {
         this.content = item.getContent();
 
         this.price = item.getPrice();
+        this.currency = item.getCurrency();
         this.location = item.getLocation();
         this.chatUrl = item.getChatUrl();
 
@@ -82,7 +82,7 @@ public class ItemResponse {
     /**
      * 신고된 게시물 REPORTED / DELETED
      */
-    public ItemResponse (Item item, boolean isMyPost, boolean isLiked, boolean isBlinded, String reportedReason) {
+    public ItemResponse(Item item, boolean isMyPost, boolean isLiked, boolean isBlinded, String reportedReason) {
         this.itemId = item.getId();
         if (item.getIsAnonymous()) {
             this.nickname = "익명";
