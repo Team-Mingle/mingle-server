@@ -35,7 +35,12 @@ public class Item {
     private Long price;
 
     @NotNull
-    @Column(columnDefinition = "TEXT",name = "content", nullable = false)
+    @Column(name = "currency", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
+
+    @NotNull
+    @Column(columnDefinition = "TEXT", name = "content", nullable = false)
     private String content;
 
     @Size(max = 100)
@@ -97,6 +102,7 @@ public class Item {
         item.setUpdatedAt(LocalDateTime.now());
         item.setStatus(ItemStatus.SELLING);
         item.setMember(member);
+        item.setCurrency(createItemRequest.getCurrency());
         return item;
     }
 
@@ -113,6 +119,7 @@ public class Item {
         this.setContent(request.getContent());
         this.setChatUrl(request.getChatUrl());
         this.setPrice(request.getPrice());
+        this.setCurrency(request.getCurrency());
         this.setLocation(request.getLocation());
         this.updatedAt = LocalDateTime.now();
         this.isAnonymous = request.isAnonymous();
@@ -125,13 +132,13 @@ public class Item {
 
     public void modifyItemStatus(String itemStatus) throws BaseException {
         switch (itemStatus) {
-            case "SELLING" :
+            case "SELLING":
                 this.status = ItemStatus.SELLING;
                 break;
-            case "RESERVED" :
+            case "RESERVED":
                 this.status = ItemStatus.RESERVED;
                 break;
-            case "SOLDOUT" :
+            case "SOLDOUT":
                 this.status = ItemStatus.SOLDOUT;
                 break;
             default:

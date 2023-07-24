@@ -169,7 +169,7 @@ public class ItemService {
     }
 
     @Transactional
-    void createItemImage(ModifyItemPostRequest request, Item item) throws BaseException {
+    public void createItemImage(ModifyItemPostRequest request, Item item) throws BaseException {
         try {
             List<String> fileNameList = s3Service.uploadFile(request.getItemImagesToAdd(), "item");
             for (String fileName : fileNameList) {
