@@ -617,7 +617,8 @@ public class PostController {
     public BaseResponse<PostListResponse> searchUnivPost(@RequestParam(value="keyword") String keyword) {
         try {
             Long memberId = jwtService.getUserIdx();
-            List<UnivPost> univPosts = postService.findUnivSearch(keyword, memberId);
+            UnivName univ = postService.findUniv();
+            List<UnivPost> univPosts = postService.findUnivSearch(univ.getId(), keyword, memberId);
             List<PostListDTO> result = univPosts.stream()
                     .map(up -> new PostListDTO(up, memberId))
                     .collect(Collectors.toList());

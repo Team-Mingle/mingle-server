@@ -962,8 +962,8 @@ public class PostService {
      * 학교 게시판 검색 기능
      */
     @Transactional
-    public List<UnivPost> findUnivSearch(String keyword, Long memberId)  throws BaseException {
-        List<UnivPost> searchUnivPostLists = postRepository.searchUnivPostWithKeyword(keyword, memberId);
+    public List<UnivPost> findUnivSearch(int univId, String keyword, Long memberId)  throws BaseException {
+        List<UnivPost> searchUnivPostLists = postRepository.searchUnivPostWithKeyword(univId, keyword, memberId);
         if (searchUnivPostLists.size() == 0) {
             throw new BaseException(POST_NOT_EXIST);
         }
