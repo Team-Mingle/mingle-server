@@ -23,9 +23,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
 import static community.mingle.app.utils.ValidationRegex.isRegexEmail;
@@ -521,5 +523,51 @@ public class AuthController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @PostMapping("signup")
+    public BaseResponse<PostSignupResponse> createMemberQa() {
+        List<PostSignupRequest> postSignupRequests = Stream.of(Qaqa.values())
+                .flatMap(qaqa -> Stream.of(Qaers.values())
+                        .map(qaer -> new PostSignupRequest(qaqa.getUnivId(),
+                                "test-" + qaer.getInitial() + "-" + qaqa.getInitial() + "@mingle.com",
+                                qaer.getInitial() + "123",
+                                qaqa.getUnivKoreanName() + qaer.getKoreanName())))
+                .collect(Collectors.toList());
+
+        for (PostSignupRequest postSignupRequest: postSignupRequests) {
+            if (postSignupRequest.getEmail().isEmpty()) {
+                return new BaseResponse<>(EMAIL_EMPTY_ERROR);
+            }
+            //이메일 형식(정규식) 검증 (new)
+            if (!isRegexEmail(postSignupRequest.getEmail())) {
+                return new BaseResponse<>(EMAIL_FORMAT_ERROR);
+            }
+            // 비밀번호 빔
+            if (postSignupRequest.getPwd().isEmpty()) {
+                return new BaseResponse<>(PASSWORD_EMPTY_ERROR);
+            }
+            //비밀번호 길이
+            if (postSignupRequest.getPwd().length() < 6) {
+                return new BaseResponse<>(PASSWORD_LENGTH_ERROR);
+            }
+            //비밀번호 정규표현
+            if (!isRegexPassword(postSignupRequest.getPwd())) {
+                return new BaseResponse<>(PASSWORD_FORMAT_ERROR);
+            }
+            try {
+                PostSignupResponse postSignupResponse = authService.createMember(postSignupRequest);
+                return new BaseResponse<>(postSignupResponse);
+
+            } catch (BaseException exception) {
+                return new BaseResponse<>(exception.getStatus());
+            }
+        }
+        return new BaseResponse<>(EMAIL_FORMAT_ERROR);
+
+        //이메일 빔
+
+    }
+
+
 }
 
