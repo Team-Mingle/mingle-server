@@ -1175,9 +1175,13 @@ public class PostService {
         List<PostListDTO> univPostDtos = univPosts.stream()
                 .map(p -> new PostListDTO(p, memberId))
                 .collect(Collectors.toList());
-        return Stream.concat(totalPostDtos.stream(), univPostDtos.stream())
+        List<PostListDTO> postListDtos = Stream.concat(totalPostDtos.stream(), univPostDtos.stream())
                 .sorted(Comparator.comparing(PostListDTO::getCreatedAtDateTime)
                         .reversed())
                 .collect(Collectors.toList());
+        if (postListDtos.size() == 0) {
+            throw new BaseException(EMPTY_POSTS_LIST);
+        }
+        return postListDtos;
     }
 }
