@@ -452,9 +452,10 @@ public class PostRepository {
      * @param keyword
      * @return totalPosts
      */
-    public List<UnivPost> searchUnivPostWithKeyword(String keyword, Long memberIdByJwt) {
-        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE (up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%')) AND up.status = :status and up.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by up.createdAt desc", UnivPost.class)
+    public List<UnivPost> searchUnivPostWithKeyword(int univId, String keyword, Long memberIdByJwt) {
+        List<UnivPost> univPosts = em.createQuery("SELECT up FROM UnivPost up WHERE (up.title LIKE CONCAT('%',:keyword,'%') OR up.content LIKE CONCAT('%',:keyword,'%')) AND up.status = :status and up.univName.id = :univId and up.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by up.createdAt desc", UnivPost.class)
                 .setParameter("keyword", keyword)
+                .setParameter("univId", univId)
                 .setParameter("status", PostStatus.ACTIVE)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();

@@ -949,8 +949,9 @@ public class PostService {
      * 학교 게시판 검색 기능
      */
     @Transactional
-    public List<UnivPost> findUnivSearch(String keyword, Long memberId) throws BaseException {
-        List<UnivPost> searchUnivPostLists = postRepository.searchUnivPostWithKeyword(keyword, memberId);
+    public List<UnivPost> findUnivSearch(int univId, String keyword, Long memberId) throws BaseException {
+        List<UnivPost> searchUnivPostLists = postRepository.searchUnivPostWithKeyword(univId, keyword, memberId);
+
         if (searchUnivPostLists.size() == 0) {
             throw new BaseException(POST_NOT_EXIST);
         }
@@ -1175,9 +1176,13 @@ public class PostService {
         List<PostListDTO> univPostDtos = univPosts.stream()
                 .map(p -> new PostListDTO(p, memberId))
                 .collect(Collectors.toList());
-        return Stream.concat(totalPostDtos.stream(), univPostDtos.stream())
+        List<PostListDTO> postListDtos = Stream.concat(totalPostDtos.stream(), univPostDtos.stream())
                 .sorted(Comparator.comparing(PostListDTO::getCreatedAtDateTime)
                         .reversed())
                 .collect(Collectors.toList());
+        if (postListDtos.size() == 0) {
+            throw new BaseException(EMPTY_POSTS_LIST);
+        }
+        return postListDtos;
     }
 }

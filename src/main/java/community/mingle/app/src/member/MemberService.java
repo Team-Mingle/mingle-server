@@ -628,6 +628,20 @@ public class MemberService {
         }
     }
 
+    public void sendPushNotificationByUniv(SendPushNotificationRequest request) throws BaseException {
+        UnivPost univPost = postRepository.findUnivPostById(request.getPostId());
+        List<String> fcmTokenByUnivId = memberRepository.findMemberByUnivId(univPost.getUnivName().getId())
+                .stream().map(Member::getFcmToken)
+                .collect(Collectors.toList());
+        try {
+            for (String fcmToken : fcmTokenByUnivId) {
+                fcmService.sendMessageTo(fcmToken, request.getTitle(), request.getBody(), TableType.UnivPost,  CategoryType.valueOf(univPost.getCategory().getName()), request.getPostId());
+            }
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     public ItemListResponse findLikeItems(Long itemId, Long memberId) throws BaseException {
         List<Item> likedItems = memberRepository.findLikedItems(itemId, memberId);
         if (likedItems.size() == 0) throw new BaseException(EMPTY_MYPOST_LIST);
