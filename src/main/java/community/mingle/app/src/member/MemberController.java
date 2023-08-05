@@ -423,7 +423,7 @@ public class MemberController {
 
 
     /**
-     * 2.15 밍글소식 푸시알림 API
+     * 2.15.1 광장 게시물 보내기 푸시알림 API
      */
     @PostMapping("/send-notification")
     public BaseResponse<String> sendPushNotificationToAll( @RequestBody SendPushNotificationRequest request) {
@@ -434,6 +434,21 @@ public class MemberController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 2.15.2 잔디밭 게시물 보내기 푸시알림 API
+     */
+    @PostMapping("/send-notification/univ")
+    public BaseResponse<String> sendPushNotificationByUnivId( @RequestBody SendPushNotificationRequest request) {
+        try {
+            memberService.sendPushNotificationByUniv(request);
+            return new BaseResponse<>("푸시알림 보내기 완료");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
 
 
     /**

@@ -37,12 +37,13 @@ public class PostRepository {
     /**
      * 2.2 전체 베스트 게시판 api +
      */
-    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Long memberIdByJwt) {
-        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
+    public List<TotalPost> findTotalPostWithMemberLikeComment(Long postId, Member member) {
+        List<TotalPost> recentTotalPosts = em.createQuery("select p from TotalPost p join fetch p.member m where p.status = :status and p.member.univ.country.id = :memberCountry and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId and p.totalPostLikes.size > 9 order by p.createdAt desc", TotalPost.class)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setParameter("postId", postId)
-                .setMaxResults(50) //수정 필요
+                .setMaxResults(10) //수정 필요
                 .getResultList();
         return recentTotalPosts;
     }
@@ -72,7 +73,7 @@ public class PostRepository {
                 .setParameter("univId", member.getUniv().getId()) //어디 학교인지
                 .setParameter("memberIdByJwt", member.getId())
                 .setParameter("postId", postId)
-                .setMaxResults(50)
+                .setMaxResults(10)
                 .getResultList();
     }
 
@@ -96,11 +97,12 @@ public class PostRepository {
     /**
      * 2.4 광장 게시판 api +
      */
-    public List<TotalPost> findTotalPost(int category, Long postId, Long memberIdByJwt) {
-        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+    public List<TotalPost> findTotalPost(int category, Long postId, Member member) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and c.id = :categoryId and p.member.univ.country.id = :memberCountry and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
                 .setParameter("status", PostStatus.INACTIVE)
                 .setParameter("categoryId", category)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .setParameter("postId", postId)
                 .setMaxResults(50)
                 .getResultList();
@@ -311,11 +313,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (totalPostLikeList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return totalPostLikeList.size() != 0;
     }
 
 
@@ -325,11 +323,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (totalPostLikeList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return totalPostLikeList.size() != 0;
     }
 
     public boolean checkTotalIsScraped(Long postId, Long memberId) {
@@ -337,11 +331,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (totalPostScrapList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return totalPostScrapList.size() != 0;
     }
 
     /**
@@ -370,11 +360,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (univPostLikeList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return univPostLikeList.size() != 0;
     }
 
 
@@ -383,11 +369,7 @@ public class PostRepository {
                 .setParameter("postId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (univPostScrapList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return univPostScrapList.size() != 0;
     }
 
 
@@ -433,11 +415,7 @@ public class PostRepository {
                 .setParameter("commentId", commentId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (univCommentLikes.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return univCommentLikes.size() != 0;
     }
 
 
@@ -455,12 +433,13 @@ public class PostRepository {
      * @param keyword
      * @return totalPosts
      */
-    public List<TotalPost> searchTotalPostWithKeyword(String keyword, Long memberIdByJwt) {
+    public List<TotalPost> searchTotalPostWithKeyword(String keyword, Member member) {
 
-        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc", TotalPost.class)
+        List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.univ.country.id = :memberCountry and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc", TotalPost.class)
                 .setParameter("keyword", keyword)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("memberIdByJwt", member)
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .getResultList();
         return totalPosts;
 
@@ -510,11 +489,7 @@ public class PostRepository {
                 .setParameter("totalPostId", totalPostId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return resultList.size() != 0;
     }
 
     public boolean checkUnivPostIsBlinded(Long postId, Long memberId) throws BaseException {
@@ -522,11 +497,7 @@ public class PostRepository {
                 .setParameter("univPostId", postId)
                 .setParameter("memberId", memberId)
                 .getResultList();
-        if (resultList.size() != 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return resultList.size() != 0;
     }
 
 
@@ -585,10 +556,10 @@ public class PostRepository {
     }
 
 
-    public List<TotalPost> getReportedTotalPostList(){
-    return em.createQuery("select tp from TotalPost tp where tp.status = :status", TotalPost.class)
-            .setParameter("status", PostStatus.NOTIFIED)
-            .getResultList();
+    public List<TotalPost> getReportedTotalPostList() {
+        return em.createQuery("select tp from TotalPost tp where tp.status = :status", TotalPost.class)
+                .setParameter("status", PostStatus.NOTIFIED)
+                .getResultList();
     }
 
     public List<UnivPost> getReportedUnivPostList() {
@@ -619,5 +590,37 @@ public class PostRepository {
 
     public void saveReportNotification(ReportNotification reportNotification) {
         em.persist(reportNotification);
+    }
+
+    public List<TotalPost> findTotalPostsByIdAndMember(Long postId, Member member) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and p.member.univ.country.id = :memberCountry and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("memberCountry", member.getUniv().getCountry().getId())
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
+    }
+
+    public List<UnivPost> findUnivPostsByIdAndMemberId(Long postId, int univId, Long memberIdByJwt) {
+        return em.createQuery("select p from UnivPost p join p.category as c join fetch p.member as m where p.status <> :status and p.univName.id = :univId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc", UnivPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
+                .setParameter("univId", univId)
+                .setParameter("memberIdByJwt", memberIdByJwt)
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
+    }
+
+    public List<TotalPost> findAllTotalPostsByCategory(String categoryName) {
+        return em.createQuery("select p from TotalPost p where p.category.name = :categoryName", TotalPost.class)
+                .setParameter("categoryName", categoryName)
+                .getResultList();
+    }
+
+    public List<UnivPost> findAllUnivPostsByCategory(String categoryName) {
+        return em.createQuery("select p from UnivPost p where p.category.name = :categoryName", UnivPost.class)
+                .setParameter("categoryName", categoryName)
+                .getResultList();
     }
 }

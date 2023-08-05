@@ -411,5 +411,11 @@ public class MemberRepository {
 //        return resultList;
 //    }
 
+    public List<Member> findMemberByUnivId(int univId) {
+        return em.createQuery("select m from Member m where m.univ.id = :univId", Member.class)
+                .setParameter("univId", univId)
+                .getResultList();
+    }
+
 
 }

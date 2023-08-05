@@ -1,9 +1,6 @@
 package community.mingle.app.src.auth;
 
-import community.mingle.app.src.domain.Member;
-import community.mingle.app.src.domain.Policy;
-import community.mingle.app.src.domain.UnivEmail;
-import community.mingle.app.src.domain.UnivName;
+import community.mingle.app.src.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -80,23 +77,19 @@ public class AuthRepository {
     }
 
 
-    public boolean findNickname (String nickname) {
-        List<Member> duplicatedNickname= em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)
+    public boolean findNickname(String nickname) {
+        List<Member> duplicatedNickname = em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)
                 .setParameter("nickname", nickname)
                 .getResultList();
-        if (duplicatedNickname.size() == 0){
-            return false;
-        } else {
-            return true;
-        }
+        return duplicatedNickname.size() != 0;
 //        if (duplicatedNickname.size() != 0) {
 //            return true;
 //        }
 //        else return false;
     }
 
-    public boolean findEmail (String email) {
-        List<Member> duplicatedEmail= em.createQuery("select m from Member m where m.email = :email", Member.class)
+    public boolean findEmail(String email) {
+        List<Member> duplicatedEmail = em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
                 .getResultList();
         return duplicatedEmail.size() != 0;
@@ -113,7 +106,6 @@ public class AuthRepository {
     }
 
 
-
 //    public List<Member> findByName(String nickname) {
 //        return em.createQuery("select m from Member m where m.nickname = :nickname", Member.class)
 //                .setParameter("nickname", nickname)
@@ -126,5 +118,15 @@ public class AuthRepository {
 //                .getResultList();
 //    }
 
+    public List<Country> findAllCountry() {
+        return em.createQuery("select c from Country c", Country.class)
+                .getResultList();
+    }
 
+
+    public List<UnivName> findUnivByCountryId(int countryId) {
+        return em.createQuery("select u from UnivName u where u.country.id = :countryId", UnivName.class)
+                .setParameter("countryId", countryId)
+                .getResultList();
+    }
 }

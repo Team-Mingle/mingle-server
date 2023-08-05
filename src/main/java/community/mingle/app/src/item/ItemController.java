@@ -3,10 +3,10 @@ package community.mingle.app.src.item;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.config.BaseResponseStatus;
-import community.mingle.app.src.comment.model.PostCommentLikesTotalResponse;
+import community.mingle.app.src.domain.Currency;
 import community.mingle.app.src.domain.Item;
 import community.mingle.app.src.item.model.*;
-import community.mingle.app.src.post.model.*;
+import community.mingle.app.src.post.model.CommentResponse;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -243,7 +243,8 @@ public class ItemController {
 
     /**
      * 6.11 거래 댓글 삭제 api
-//     */
+     * //
+     */
     @PatchMapping("comment/{itemCommentId}")
     @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(implementation = String.class)))
     @Operation(summary = "6.11 comment delete API", description = "6.11 거래 댓글 삭제")
@@ -285,7 +286,7 @@ public class ItemController {
             @ApiResponse(responseCode = "3035", description = "게시물이 존재하지 않습니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3036", description = "삭제되거나 신고된 게시물 입니다.", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "3060", description = "이미 게시물을 가렸어요.", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
     })
     @PostMapping("/blind")
     public BaseResponse<String> blindItem(@RequestParam Long itemId) {
@@ -301,7 +302,7 @@ public class ItemController {
      */
     @Operation(summary = "6.14 unBlindItem API", description = "6.14 중고장터 게시물 가리기 취소 api")
     @ApiResponses({
-            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
     })
     @DeleteMapping("deleteblind")
     public BaseResponse<String> unblindItem(@RequestParam Long itemId) {
@@ -316,11 +317,11 @@ public class ItemController {
     /**
      * 6.15 거래 게시물 댓글 좋아요 api
      */
-    @Operation(summary = "6.15 likeItemComment API", description =  "6.15 중고장터 게시물 댓글 좋아요 API")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "4035", description = "댓글이 존재하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4050", description = "삭제되거나 신고된 댓글 입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content (schema = @Schema(hidden = true))),
+    @Operation(summary = "6.15 likeItemComment API", description = "6.15 중고장터 게시물 댓글 좋아요 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "4035", description = "댓글이 존재하지 않습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4050", description = "삭제되거나 신고된 댓글 입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3060", description = "이미 좋아요를 눌렀어요.", content = @Content(schema = @Schema(hidden = true))),
     })
     @PostMapping("comment/like")
     public BaseResponse<ItemCommentLikeResponse> likeItemComment(@RequestParam Long commentId) {
@@ -334,9 +335,9 @@ public class ItemController {
     /**
      * 6.16 거래 게시물 댓글 좋아요 취소 api
      */
-    @Operation(summary = "6.16 unlikeItemComment API", description =  "6.16 중고장터 게시물 댓글 좋아요 취소 API")
+    @Operation(summary = "6.16 unlikeItemComment API", description = "6.16 중고장터 게시물 댓글 좋아요 취소 API")
     @DeleteMapping("comment/like/unlike")
-    public BaseResponse<String> unlikeItemComment (@RequestParam Long commentId) throws BaseException {
+    public BaseResponse<String> unlikeItemComment(@RequestParam Long commentId) throws BaseException {
         try {
             itemService.unlikeItemComment(commentId);
             String result = "좋아요가 취소되었습니다.";
@@ -344,5 +345,16 @@ public class ItemController {
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
+    }
+
+    /**
+     * 6.17 유저별 currency option api
+     */
+    @Operation(summary = "6.17 유저별 currency option api", description = "6.17 유저별 currency option api")
+    @GetMapping("currency")
+    public BaseResponse<List<Currency>> getCurrency() throws BaseException {
+        Long memberId = jwtService.getUserIdx();
+        List<Currency> currencyList = itemService.getCurrencyList(memberId);
+        return new BaseResponse<>(currencyList);
     }
 }

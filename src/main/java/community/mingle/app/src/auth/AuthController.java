@@ -3,14 +3,14 @@ package community.mingle.app.src.auth;
 import community.mingle.app.config.BaseException;
 import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.model.*;
-import community.mingle.app.src.domain.Member;
+import community.mingle.app.src.domain.Country;
 import community.mingle.app.src.domain.Policy;
 import community.mingle.app.src.domain.UnivEmail;
 import community.mingle.app.src.domain.UnivName;
 import community.mingle.app.src.post.PostService;
+import community.mingle.app.utils.JwtService;
 import community.mingle.app.utils.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
-import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -38,9 +38,9 @@ import static community.mingle.app.utils.ValidationRegex.isRegexPassword;
 @RestController
 @RequestMapping("/auth")
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content (schema = @Schema(hidden = true))),
-        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-        @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+        @ApiResponse(responseCode = "403", description = "토큰을 입력해주세요.(앞에 'Bearer ' 포함)./  토큰을 입력해주세요. / 잘못된 토큰입니다. / 토큰이 만료되었습니다.", content = @Content(schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "4000", description = "데이터베이스 연결에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
 })
 @RequiredArgsConstructor
 public class AuthController {
@@ -58,6 +58,7 @@ public class AuthController {
     /**
      * 1.1 학교 리스트 전송 API
      */
+    @Deprecated(since = "다국가 서비스에 따라서 1.15 학교 리스트 전송 api로 변경")
     @Operation(summary = "1.1 get univ list API", description = "1.1 대학교 리스트 가져오기")
     @GetMapping("/univlist")
     public BaseResponse<List<GetUnivListResponse>> univName() {
@@ -72,6 +73,7 @@ public class AuthController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
     /**
      * 1.2 학교별 도메인 리스트 전송 API
      */
@@ -99,11 +101,11 @@ public class AuthController {
 
     @Operation(summary = "1.3 email duplicate check API", description = "1.3 이메일 입력 & 중복검사 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
     })
     @ResponseBody
     @PostMapping("checkemail")
@@ -131,10 +133,10 @@ public class AuthController {
      */
     @Operation(summary = "1.4 email verification code send API", description = "1.4 이메일 인증코드 전송 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4013", description = "인증번호 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4014", description = "인증번호 전송에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4013", description = "인증번호 생성에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4014", description = "인증번호 전송에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
     })
     @PostMapping("sendcode")
     public BaseResponse<String> sendCode(@RequestBody PostEmailRequest req) {
@@ -165,11 +167,11 @@ public class AuthController {
      */
     @Operation(summary = "1.5 email verification code check API", description = "1.5 이메일 인증코드 검사 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2013", description = "인증번호가 일치하지 않습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2019", description = "인증번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3015", description = "인증번호 입력시간이 초과되었습니다" , content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2013", description = "인증번호가 일치하지 않습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2019", description = "인증번호를 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3015", description = "인증번호 입력시간이 초과되었습니다", content = @Content(schema = @Schema(hidden = true))),
     })
     @ResponseBody
     @PostMapping("checkcode")
@@ -249,24 +251,23 @@ public class AuthController {
     }
 
 
-
     /**
      * 1.8 회원가입 API + JWT
      */
     @Operation(summary = "1.8 sign up API", description = "1.8 회원가입 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2017", description = "이미 존재하는 닉네임입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2018", description = "존재하지 않는 학교 id 입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3010", description = "회원가입에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2012", description = "이미 존재하는 이메일 주소입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2017", description = "이미 존재하는 닉네임입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2018", description = "존재하지 않는 학교 id 입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3010", description = "회원가입에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
     })
     @ResponseBody
     @PostMapping("signup")
@@ -306,14 +307,14 @@ public class AuthController {
      */
     @Operation(summary = "1.9 login API", description = "1.9 로그인 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3011", description = "존재하지 않는 이메일이거나 비밀번호가 틀렸습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3012", description = "JWT 발급에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3018", description = "신고된 사용자입니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3011", description = "존재하지 않는 이메일이거나 비밀번호가 틀렸습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3012", description = "JWT 발급에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3017", description = "탈퇴한 사용자입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3018", description = "신고된 사용자입니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
     })
     @PostMapping("login")
     public BaseResponse<PostLoginResponse> logIn(@RequestBody PostLoginRequest postLoginRequest) {
@@ -338,13 +339,13 @@ public class AuthController {
      */
     @Operation(summary = "1.10 resetPwd API", description = "1.10 비밀번호 초기화 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "3013", description = "비밀번호 변경에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true)))
+            @ApiResponse(responseCode = "2014", description = "비밀번호를 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2015", description = "비밀번호가 너무 짧습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2016", description = "비밀번호는 영문,숫자를 포함해야 합니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "3013", description = "비밀번호 변경에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4011", description = "비밀번호 암호화에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4012", description = "이메일 암호화에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true)))
     })
     @PatchMapping("pwd")
     public BaseResponse<String> resetPwd(@RequestBody PatchUpdatePwdRequest patchUpdatePwdRequest) {
@@ -371,19 +372,18 @@ public class AuthController {
     }
 
 
-
     /**
      * 1.11 비밀번호 재설정용 인증번호 보내기
      */
     @Operation(summary = "1.11 sendCodeForPwdReset api", description = "1.11 비밀번호 재설정 인증번호 보내기 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content (schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "4014", description = "인증번호 전송에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2010", description = "이메일을 입력해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2011", description = "이메일 형식을 확인해주세요.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "2020", description = "회원 정보를 찾을 수 없습니다.", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "4014", description = "인증번호 전송에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
     })
     @PostMapping("sendcode/pwd")
-    public BaseResponse<String> sendCodeForPwdReset (@RequestBody PostEmailRequest req) {
+    public BaseResponse<String> sendCodeForPwdReset(@RequestBody PostEmailRequest req) {
         if (req.getEmail().isEmpty()) {
             return new BaseResponse<>(EMAIL_EMPTY_ERROR);
         }
@@ -406,7 +406,7 @@ public class AuthController {
     @Operation(summary = "1.12 reissueAccessToken api", description = "1.12 AccessToken, RefreshToken 재발급 API")
     @PostMapping("refresh-token")
     @Parameter(name = "Authorization", required = true, description = "RefreshToken", in = ParameterIn.HEADER)
-    public BaseResponse<ReissueAccessTokenDTO> reissueAccessToken(@RequestHeader(value = "Authorization") String refreshToken, @RequestBody TokenReIssueDTO tokenReIssueDTO ) {
+    public BaseResponse<ReissueAccessTokenDTO> reissueAccessToken(@RequestHeader(value = "Authorization") String refreshToken, @RequestBody TokenReIssueDTO tokenReIssueDTO) {
         try {
             return new BaseResponse<>(authService.reissueAccessToken(refreshToken, tokenReIssueDTO.getEmail()));
         } catch (BaseException e) {
@@ -468,7 +468,58 @@ public class AuthController {
 
     }
 
+    /**
+     * 1.14 국가 리스트 api
+     */
+    @Operation(summary = "1.14 국가 리스트 api", description = "1.14 국가 리스트 api")
+    @GetMapping("/country-list")
+    public BaseResponse<List<GetCountryListResponse>> countryName() {
+        try {
+            List<Country> countries = authService.findCountries();
+            List<GetCountryListResponse> result = countries.stream()
+                    .map(m -> new GetCountryListResponse(m))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
 
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
+    /**
+     * 1.15 학교 리스트 전송 API
+     */
+    @Operation(summary = "1.15 학교 리스트 전송 API", description = "1.15 학교 리스트 전송 API")
+    @GetMapping("/univlist/{countryId}")
+    public BaseResponse<List<GetUnivListResponse>> univNameByCountryId(@PathVariable int countryId) {
+        try {
+            List<UnivName> findUnivNames = authService.findUnivByCountryId(countryId);
+            List<GetUnivListResponse> result = findUnivNames.stream()
+                    .map(m -> new GetUnivListResponse(m))
+                    .collect(Collectors.toList());
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 1.16 유저별 학교 이메일 api
+     */
+    @Operation(summary = "1.16 유저별 학교 이메일 api", description = "1.16 유저별 학교 이메일 api")
+    @ResponseBody
+    @GetMapping("/member/domain")
+    public BaseResponse<GetUnivDomainResponse> getMemberEmailDomain() {
+        try {
+            Long userIdx = jwtService.getUserIdx();
+            UnivEmail emailDomainByMember = authService.findEmailDomainByMember(userIdx);
+            GetUnivDomainResponse getUnivDomainResponse = new GetUnivDomainResponse(emailDomainByMember.getId(), emailDomainByMember.getDomain());
+            return new BaseResponse<>(getUnivDomainResponse);
+        } catch (BaseException exception) {
+            exception.printStackTrace();
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
 

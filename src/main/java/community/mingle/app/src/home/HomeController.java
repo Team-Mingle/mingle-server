@@ -5,9 +5,10 @@ import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.Banner;
 import community.mingle.app.src.domain.Total.TotalPost;
 import community.mingle.app.src.domain.Univ.UnivPost;
-import community.mingle.app.src.home.model.*;
-import community.mingle.app.src.post.model.CreatePostRequest;
-import community.mingle.app.src.post.model.CreatePostResponse;
+import community.mingle.app.src.home.model.BannerResponse;
+import community.mingle.app.src.home.model.CreateBannerRequest;
+import community.mingle.app.src.home.model.CreateBannerResponse;
+import community.mingle.app.src.home.model.HomePostResponse;
 import community.mingle.app.utils.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,15 +60,16 @@ public class HomeController {
      */
     @Operation(summary = "5.00 uploadBannerImage API", description = "5.00 배너 업로드 API")
     @PostMapping("/banner/image")
-    @ApiResponses ({
-            @ApiResponse(responseCode = "3033", description = "배너 생성에 실패하였습니다.", content = @Content (schema = @Schema(hidden = true))),
+    @ApiResponses({
+            @ApiResponse(responseCode = "3033", description = "배너 생성에 실패하였습니다.", content = @Content(schema = @Schema(hidden = true))),
     })
-    public BaseResponse<CreateBannerResponse> createBanner (@ModelAttribute CreateBannerRequest createBannerRequest){
-        try{
+    public BaseResponse<CreateBannerResponse> createBanner(@ModelAttribute CreateBannerRequest createBannerRequest) {
+        try {
             return new BaseResponse<>(homeService.createBanner(createBannerRequest));
-        }catch (BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
-        } }
+        }
+    }
 
 
     /**
@@ -81,7 +83,7 @@ public class HomeController {
     public BaseResponse<List<HomePostResponse>> getTotalBest() {
         try { //JWT로 해당 유저인지 확인 필요
             Long memberId = jwtService.getUserIdx();
-            List<TotalPost> totalPosts = homeService.findTotalPostWithMemberLikeComment();
+            List<TotalPost> totalPosts = homeService.findAllTotalPostsWithMemberLikeComment();
             List<HomePostResponse> result = totalPosts.stream()
                     .map(m -> new HomePostResponse(m, memberId))
                     .collect(Collectors.toList());
@@ -104,7 +106,7 @@ public class HomeController {
     public BaseResponse<List<HomePostResponse>> getUnivBest() {
         try {
             Long memberId = jwtService.getUserIdx();
-            List<UnivPost> univPosts = homeService.findAllWithMemberLikeCommentCount();
+            List<UnivPost> univPosts = homeService.findAllUnivPostsWithMemberLikeCommentCount();
             List<HomePostResponse> result = univPosts.stream()
                     .map(p -> new HomePostResponse(p, memberId))
                     .collect(Collectors.toList());
@@ -152,6 +154,25 @@ public class HomeController {
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 5.6 홈 광장, 잔디밭 통합 베스트 게시판 API
+     */
+    @GetMapping("/unite/best")
+    @Operation(summary = "5.6 홈 광장, 잔디밭 통합 베스트 게시판 API", description = "5.6 홈 광장, 잔디밭 통합 베스트 게시판 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "3030", description = "인기 게시물이 없어요.", content = @Content(schema = @Schema(hidden = true))),
+    })
+    public BaseResponse<List<HomePostResponse>> getUniteBest() {
+        try {
+            Long memberId = jwtService.getUserIdx();
+            List<HomePostResponse> unitedBestPosts = homeService.findAllUnitedPostsWithMemberLikeCommentCount(memberId);
+            return new BaseResponse<>(unitedBestPosts);
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
