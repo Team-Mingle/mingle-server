@@ -52,7 +52,7 @@ public class ItemService {
         List<ItemListDTO> itemListDTOList = items.stream()
                 .map(item -> new ItemListDTO(item, memberId))
                 .collect(Collectors.toList());
-        return new ItemListResponse(itemListDTOList, "거래게시판");
+        return new ItemListResponse(itemListDTOList, "장터");
     }
 
     /**
