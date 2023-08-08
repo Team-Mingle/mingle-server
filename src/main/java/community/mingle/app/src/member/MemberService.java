@@ -1,7 +1,6 @@
 package community.mingle.app.src.member;
 
 import community.mingle.app.config.BaseException;
-import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.auth.AuthRepository;
 import community.mingle.app.src.auth.RedisUtil;
 import community.mingle.app.src.comment.CommentRepository;
@@ -33,7 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static community.mingle.app.config.BaseResponseStatus.*;
-import static community.mingle.app.src.domain.BoardType.밍끼마켓;
+import static community.mingle.app.src.domain.BoardType.장터;
 
 @Service
 @RequiredArgsConstructor
@@ -579,7 +578,7 @@ public class MemberService {
             else if (notificationRequest.getBoardType().equals(BoardType.잔디밭)) {
                 UnivNotification univNotification = memberRepository.findUnivNotification(notificationRequest.getNotificationId());
                univNotification.readNotification();
-            } else if (notificationRequest.getBoardType().equals(밍끼마켓)) {
+            } else if (notificationRequest.getBoardType().equals(장터)) {
                 ItemNotification itemNotification = memberRepository.findItemNotification(notificationRequest.getNotificationId());
                 itemNotification.readNotification();
             }

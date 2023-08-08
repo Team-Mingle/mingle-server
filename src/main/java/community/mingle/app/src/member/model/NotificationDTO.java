@@ -81,7 +81,7 @@ public class NotificationDTO { //noti //univnoti //totalnoti
         this.notificationId = r.getId();
         this.item = r.getItem();
         this.memberId = r.getMember().getId();
-        this.boardType = BoardType.밍끼마켓;
+        this.boardType = BoardType.장터;
         this.category = null;
         this.itemComment = Optional.ofNullable(r.getItemComment());
         this.notificationType = r.getNotificationType(); //거래
