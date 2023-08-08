@@ -57,7 +57,7 @@ public class NotificationDTOResult {
                     this.content = t.getUnivPost().getTitle();   //인기게시물
                 }
             }
-        } else if (t.getBoardType().equals(BoardType.밍끼마켓)) {
+        } else if (t.getBoardType().equals(BoardType.장터)) {
             this.postId = t.getItem().getId();
             if (t.getItemComment().isPresent()) {
                 this.content = t.getItemComment().get().getContent();
