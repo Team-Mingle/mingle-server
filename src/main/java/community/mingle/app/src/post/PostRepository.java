@@ -438,7 +438,7 @@ public class PostRepository {
         List<TotalPost> totalPosts = em.createQuery("SELECT tp FROM TotalPost tp WHERE (tp.title LIKE CONCAT('%',:keyword,'%') OR tp.content LIKE CONCAT('%',:keyword,'%')) AND tp.status = :status and tp.member.univ.country.id = :memberCountry and tp.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) order by tp.createdAt desc", TotalPost.class)
                 .setParameter("keyword", keyword)
                 .setParameter("status", PostStatus.ACTIVE)
-                .setParameter("memberIdByJwt", member)
+                .setParameter("memberIdByJwt", member.getId())
                 .setParameter("memberCountry", member.getUniv().getCountry().getId())
                 .getResultList();
         return totalPosts;
