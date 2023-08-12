@@ -69,7 +69,7 @@ public class ItemService {
             Item item = Item.createItemPost(member, createItemRequest);
             Long id = itemRepository.save(item);
             List<String> fileNameList;
-            if (createItemRequest.getMultipartFile() == null || createItemRequest.getMultipartFile().isEmpty()) {
+            if (createItemRequest.getMultipartFile() == null || createItemRequest.getMultipartFile().isEmpty() || createItemRequest.getMultipartFile().get(0).getSize() == 0) {
                 throw new BaseException(IMG_UPLOAD_REQUIRED);
             } else {
                 try {
@@ -85,6 +85,7 @@ public class ItemService {
             }
             return new CreateItemResponse(id);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
