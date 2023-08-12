@@ -269,7 +269,7 @@ public class ItemController {
             List<ItemListDTO> result = items.stream()
                     .map(i -> new ItemListDTO(i, memberId))
                     .collect(Collectors.toList());
-            ItemListResponse searchItemResponse = new ItemListResponse(result, "거래 게시판");
+            ItemListResponse searchItemResponse = new ItemListResponse(result, "장터");
             return new BaseResponse<>(searchItemResponse);
 
         } catch (BaseException e) {
