@@ -1,5 +1,6 @@
 package community.mingle.app.src.item.model;
 
+import community.mingle.app.src.domain.Currency;
 import community.mingle.app.src.domain.Item;
 import community.mingle.app.src.domain.ItemImg;
 import community.mingle.app.src.domain.PostStatus;
@@ -28,6 +29,8 @@ public class ItemListDTO {
     private final String chatUrl;
     private final boolean isLiked;
     private String nickName;
+    private final Currency currency;
+
 
     public ItemListDTO(Item item, Long memberId) {
         this.id = item.getId();
@@ -59,5 +62,7 @@ public class ItemListDTO {
         }
         this.isLiked = item.getItemLikeList().stream()
                 .anyMatch(itemLike -> Objects.equals(itemLike.getMember().getId(), memberId));
+        this.currency = item.getCurrency();
+
     }
 }
