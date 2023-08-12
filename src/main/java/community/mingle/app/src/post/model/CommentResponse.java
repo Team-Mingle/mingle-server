@@ -1,6 +1,7 @@
 package community.mingle.app.src.post.model;
 
 import community.mingle.app.src.domain.ItemComment;
+import community.mingle.app.src.domain.ItemCommentLike;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
@@ -19,16 +20,16 @@ public class CommentResponse {
 
     private Long commentId;
     private String nickname;
-    private String content;
-    private int likeCount;
+    private final String content;
+    private final int likeCount;
     private boolean isLiked;
     private boolean isMyComment;
-    private boolean isCommentFromAuthor;
-    private boolean isCommentDeleted;
-    private boolean isCommentReported;
-    private String createdAt;
-    private List<CoCommentDTO> coCommentsList;
-    private boolean isAdmin;
+    private final boolean isCommentFromAuthor;
+    private final boolean isCommentDeleted;
+    private final boolean isCommentReported;
+    private final String createdAt;
+    private final List<CoCommentDTO> coCommentsList;
+    private final boolean isAdmin;
 
 
     //total
@@ -37,13 +38,13 @@ public class CommentResponse {
         Long commentWriter = totalComment.getMember().getId();
 
         this.commentId = totalComment.getId();
-        if (totalComment.isAnonymous() == false && !(Objects.equals(commentWriter, authorId))) {
+        if (!totalComment.isAnonymous() && !(Objects.equals(commentWriter, authorId))) {
             this.nickname = totalComment.getMember().getNickname();
-        } else if (totalComment.isAnonymous() && totalComment.getAnonymousId() != 0L){
+        } else if (totalComment.isAnonymous() && totalComment.getAnonymousId() != 0L) {
             this.nickname = "익명 " + totalComment.getAnonymousId();
-        } else if (totalComment.isAnonymous() == false && Objects.equals(commentWriter, authorId)) {
+        } else if (!totalComment.isAnonymous() && Objects.equals(commentWriter, authorId)) {
             this.nickname = totalComment.getMember().getNickname() + "(글쓴이)";
-        } else if ((totalComment.isAnonymous() && Objects.equals(commentWriter, authorId))){
+        } else if ((totalComment.isAnonymous() && Objects.equals(commentWriter, authorId))) {
             this.nickname = "익명(글쓴이)";
         }
         if (totalComment.getMember().getRole() == UserRole.FRESHMAN) {
@@ -58,7 +59,7 @@ public class CommentResponse {
         } else if (totalComment.getStatus() == PostStatus.DELETED) {
             content = "운영규칙 위반에 따라 삭제된 글입니다.";
             nickname = "(비공개됨)";
-        }else {
+        } else {
             content = totalComment.getContent();
         }
         likeCount = totalComment.getTotalCommentLikes().size();
@@ -73,21 +74,9 @@ public class CommentResponse {
         if (Objects.equals(commentWriter, memberId)) {
             isMyComment = true;
         }
-        if (Objects.equals(commentWriter, authorId)){
-            isCommentFromAuthor = true;
-        } else {
-            isCommentFromAuthor = false;
-        }
-        if (totalComment.getStatus() == PostStatus.INACTIVE) {
-            isCommentDeleted = true;
-        } else {
-            isCommentDeleted = false;
-        }
-        if (totalComment.getStatus() == PostStatus.REPORTED) {
-            isCommentReported = true;
-        } else {
-            isCommentReported = false;
-        }
+        isCommentFromAuthor = Objects.equals(commentWriter, authorId);
+        isCommentDeleted = totalComment.getStatus() == PostStatus.INACTIVE;
+        isCommentReported = totalComment.getStatus() == PostStatus.REPORTED;
 
         createdAt = convertToDateAndTime(totalComment.getCreatedAt());
         coCommentsList = totalCoCommentDTOList;
@@ -101,9 +90,9 @@ public class CommentResponse {
         commentId = c.getId();
 
         this.commentId = c.getId();
-        if (c.isAnonymous() == false && !(Objects.equals(commentWriter, authorId))) {
+        if (!c.isAnonymous() && !(Objects.equals(commentWriter, authorId))) {
             this.nickname = c.getMember().getNickname();
-        } else if (c.isAnonymous() && c.getAnonymousId() != 0L){
+        } else if (c.isAnonymous() && c.getAnonymousId() != 0L) {
             this.nickname = "익명 " + c.getAnonymousId();
         } else if (!c.isAnonymous() && Objects.equals(commentWriter, authorId)) {
             this.nickname = c.getMember().getNickname() + "(글쓴이)";
@@ -120,8 +109,7 @@ public class CommentResponse {
         } else if (c.getStatus() == PostStatus.INACTIVE) {
             content = "삭제된 댓글입니다.";
             nickname = "(비공개됨)";
-        }
-        else if (c.getStatus() == PostStatus.DELETED) {
+        } else if (c.getStatus() == PostStatus.DELETED) {
             content = "운영규칙 위반에 따라 삭제된 글입니다.";
             nickname = "(비공개됨)";
         } else {
@@ -144,23 +132,11 @@ public class CommentResponse {
         if (Objects.equals(commentWriter, memberId)) {
             isMyComment = true;
         }
-        if (Objects.equals(commentWriter, authorId)){
-            isCommentFromAuthor = true;
-        } else {
-            isCommentFromAuthor = false;
-        }
+        isCommentFromAuthor = Objects.equals(commentWriter, authorId);
 
-        if (c.getStatus() == PostStatus.INACTIVE) {
-            isCommentDeleted = true;
-        } else {
-            isCommentDeleted = false;
-        }
+        isCommentDeleted = c.getStatus() == PostStatus.INACTIVE;
 
-        if (c.getStatus() == PostStatus.REPORTED) {
-            isCommentReported = true;
-        } else {
-            isCommentReported = false;
-        }
+        isCommentReported = c.getStatus() == PostStatus.REPORTED;
         createdAt = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;
         isAdmin = c.getMember().getRole().equals(UserRole.ADMIN);
@@ -171,9 +147,9 @@ public class CommentResponse {
         commentId = c.getId();
 
         this.commentId = c.getId();
-        if (c.isAnonymous() == false && !(Objects.equals(commentWriter, authorId))) {
+        if (!c.isAnonymous() && !(Objects.equals(commentWriter, authorId))) {
             this.nickname = c.getMember().getNickname();
-        } else if (c.isAnonymous() && c.getAnonymousId() != 0L){
+        } else if (c.isAnonymous() && c.getAnonymousId() != 0L) {
             this.nickname = "익명 " + c.getAnonymousId();
         } else if (!c.isAnonymous() && Objects.equals(commentWriter, authorId)) {
             this.nickname = c.getMember().getNickname() + "(글쓴이)";
@@ -187,47 +163,34 @@ public class CommentResponse {
         } else if (c.getStatus() == PostStatus.INACTIVE) {
             content = "삭제된 댓글입니다.";
             nickname = "(비공개됨)";
-        }
-        else if (c.getStatus() == PostStatus.DELETED) {
+        } else if (c.getStatus() == PostStatus.DELETED) {
             content = "운영규칙 위반에 따라 삭제된 글입니다.";
             nickname = "(비공개됨)";
         } else {
             content = c.getContent();
         }
 
-//        likeCount = c.getUnivCommentLikes().size();
-//
-//        for (UnivCommentLike ucl : c.getUnivCommentLikes()) { //영속성
-//            if (Objects.equals(ucl.getMember().getId(), memberId)) { //배치사이즈?
-//                isLiked = true;
-//                break;
-//            } else {
-//                isLiked = false;
-//            }
-//        }
+        likeCount = c.getItemCommentLikes().size();
+
+        for (ItemCommentLike icl : c.getItemCommentLikes()) { //영속성
+            if (Objects.equals(icl.getMember().getId(), memberId)) { //배치사이즈?
+                isLiked = true;
+                break;
+            } else {
+                isLiked = false;
+            }
+        }
         if (Objects.equals(commentWriter, memberId)) {
             isMyComment = true;
         }
         if (Objects.equals(commentWriter, memberId)) {
             isMyComment = true;
         }
-        if (Objects.equals(commentWriter, authorId)){
-            isCommentFromAuthor = true;
-        } else {
-            isCommentFromAuthor = false;
-        }
+        isCommentFromAuthor = Objects.equals(commentWriter, authorId);
 
-        if (c.getStatus() == PostStatus.INACTIVE) {
-            isCommentDeleted = true;
-        } else {
-            isCommentDeleted = false;
-        }
+        isCommentDeleted = c.getStatus() == PostStatus.INACTIVE;
 
-        if (c.getStatus() == PostStatus.REPORTED) {
-            isCommentReported = true;
-        } else {
-            isCommentReported = false;
-        }
+        isCommentReported = c.getStatus() == PostStatus.REPORTED;
         createdAt = convertToDateAndTime(c.getCreatedAt());
         coCommentsList = cc;
         isAdmin = c.getMember().getRole().equals(UserRole.ADMIN);
