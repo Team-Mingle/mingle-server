@@ -13,10 +13,10 @@ public enum Currency {
     SGD(List.of("싱가포르")),
     GBP(List.of("영국"));
 
-    private final List<String> countires;
+    private final List<String> countries;
 
     Currency(List<String> countries) {
-        this.countires = countries;
+        this.countries = countries;
 
 
     }
