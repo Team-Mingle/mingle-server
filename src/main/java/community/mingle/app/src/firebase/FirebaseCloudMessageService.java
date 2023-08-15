@@ -17,8 +17,8 @@ import java.util.List;
 public class FirebaseCloudMessageService {
 
     //***자리에 프로젝트 이름-프로젝트 ID 형태를 받아와야됨
-//    private final String API_URL = "https://fcm.googleapis.com/v1/projects/mingl-871e5/messages:send"; //prod
-    private final String API_URL = "https://fcm.googleapis.com/v1/projects/test-mingle/messages:send"; //prod
+    private final String API_URL = "https://fcm.googleapis.com/v1/projects/mingl-871e5/messages:send"; //prod
+//    private final String API_URL = "https://fcm.googleapis.com/v1/projects/test-mingle/messages:send"; //dev
 
 
     private final ObjectMapper objectMapper;
@@ -108,8 +108,8 @@ public class FirebaseCloudMessageService {
 
     private String getAcccessToken() throws IOException {
         //이 위치에 키를 비공개 키 집어넣어야됨
-//        String firebaseConfigPath = "firebase/mingl-871e5-firebase-adminsdk-tuqz6-91d17a5e99.json"; // prod
-        String firebaseConfigPath = "firebase/test-mingle-firebase-adminsdk-cjyk7-1dcf09ad07.json"; //dev
+        String firebaseConfigPath = "firebase/mingl-871e5-firebase-adminsdk-tuqz6-91d17a5e99.json"; // prod
+//        String firebaseConfigPath = "firebase/test-mingle-firebase-adminsdk-cjyk7-1dcf09ad07.json"; //dev
         GoogleCredentials googleCredentials = GoogleCredentials.fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
                 .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
         googleCredentials.refreshIfExpired();
