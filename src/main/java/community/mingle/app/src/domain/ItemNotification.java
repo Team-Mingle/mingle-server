@@ -49,7 +49,7 @@ public class ItemNotification {
         itemNotification.setItemComment(comment);
         itemNotification.isRead = false;
         itemNotification.createdAt = LocalDateTime.now();
-        itemNotification.notificationType = NotificationType.거래;
+        itemNotification.notificationType = NotificationType.장터;
         return itemNotification;
     }
 
