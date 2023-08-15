@@ -311,7 +311,7 @@ public class ItemService {
     @Transactional
     public void sendItemPush(Item item, PostItemCommentRequest postItemCommentRequest, Member creatorMember, ItemComment comment) throws IOException {
         Member itemMember = item.getMember();
-        String messageTitle = "거래게시판";
+        String messageTitle = "장터";
         if (postItemCommentRequest.getParentCommentId() == null) {
             if (Objects.equals(itemMember.getId(), creatorMember.getId())) {
             } else {
