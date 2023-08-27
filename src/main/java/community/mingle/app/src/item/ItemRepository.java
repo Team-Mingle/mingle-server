@@ -157,13 +157,13 @@ public class ItemRepository {
     }
 
     public List<ItemComment> findItemCoComments(Long itemId, Long memberIdByJwt) {
-        List<ItemComment> univCoCommentList = em.createQuery("select ic from ItemComment ic join ic.item as i " +
+        List<ItemComment> itemCoCommntLikeList = em.createQuery("select ic from ItemComment ic join ic.item as i " +
                         " where i.id = :itemId and ic.parentCommentId is not null and ic.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) " +
                         " order by ic.createdAt asc", ItemComment.class)
                 .setParameter("itemId", itemId)
                 .setParameter("memberIdByJwt", memberIdByJwt)
                 .getResultList();
-        return univCoCommentList;
+        return itemCoCommntLikeList;
     }
 
 
