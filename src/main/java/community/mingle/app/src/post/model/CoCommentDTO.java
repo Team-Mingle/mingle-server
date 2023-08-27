@@ -1,6 +1,7 @@
 package community.mingle.app.src.post.model;
 
 import community.mingle.app.src.domain.ItemComment;
+import community.mingle.app.src.domain.ItemCommentLike;
 import community.mingle.app.src.domain.PostStatus;
 import community.mingle.app.src.domain.Total.TotalComment;
 import community.mingle.app.src.domain.Total.TotalCommentLike;
@@ -229,16 +230,9 @@ public class CoCommentDTO {
             this.content = coComment.getContent();
         }
 
-//        this.likeCount = coComment.getUnivCommentLikes().size();
-//
-//        for (UnivCommentLike ucl : coComment.getUnivCommentLikes()) { //영속성
-//            if (Objects.equals(ucl.getMember().getId(), memberId)) { //배치사이즈?
-//                isLiked = true;
-//                break;
-//            } else {
-//                isLiked = false;
-//            }
-//        }
+        likeCount = coComment.getItemCommentLikes().size();
+        isLiked = coComment.getItemCommentLikes().stream()
+                .anyMatch(icl -> Objects.equals(icl.getMember().getId(), memberId));
 
         if (Objects.equals(coComment.getMember().getId(), memberId)) {
             isMyComment = true;
