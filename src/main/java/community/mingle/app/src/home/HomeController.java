@@ -45,7 +45,8 @@ public class HomeController {
     @Operation(summary = "5.1 getBanner API", description = "5.1 홈 화면 배너 리스트 API")
     public BaseResponse<List<BannerResponse>> getBanner() {
         try {
-            List<Banner> banner = homeService.findBanner();
+            Long memberId = jwtService.getUserIdx();
+            List<Banner> banner = homeService.findBanner(memberId);
             List<BannerResponse> result = banner.stream()
                     .map(m -> new BannerResponse(m))
                     .collect(Collectors.toList());

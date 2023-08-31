@@ -22,8 +22,9 @@ public class HomeRepository {
     /**
      * 5.1 광고 배너 API
      */
-    public List<Banner> findBanner() {
-        return em.createQuery("select b from Banner b", Banner.class)
+    public List<Banner> findBanner(int univId) {
+        return em.createQuery("select b from Banner b where b.univId = :univId", Banner.class)
+                .setParameter("univId", univId)
                 .getResultList();
     }
 

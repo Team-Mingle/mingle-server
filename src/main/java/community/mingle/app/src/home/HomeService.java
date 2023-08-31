@@ -34,10 +34,12 @@ public class HomeService {
     /**
      * 5.1 광고 배너 API
      */
-    public List<Banner> findBanner() throws BaseException {
+    public List<Banner> findBanner(
+            Long memberId
+    ) throws BaseException {
         try {
-            List<Banner> banner = homeRepository.findBanner();
-            return banner;
+            Member member = memberRepository.findMember(memberId);
+            return homeRepository.findBanner(member.getUniv().getId());
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
