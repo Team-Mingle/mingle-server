@@ -108,6 +108,16 @@ public class PostRepository {
                 .getResultList();
     }
 
+    public List<TotalPost> findAdminTotalPosts(int category, Long postId, Member member) {
+        return em.createQuery("select p from TotalPost p join p.category as c join fetch p.member as m where p.status <> :status and c.id = :categoryId and p.member.id not in (select bm.blockedMember.id from BlockMember bm where bm.blockerMember.id = :memberIdByJwt) and p.id < :postId order by p.createdAt desc ", TotalPost.class)
+                .setParameter("status", PostStatus.INACTIVE)
+                .setParameter("categoryId", category)
+                .setParameter("memberIdByJwt", member.getId())
+                .setParameter("postId", postId)
+                .setMaxResults(50)
+                .getResultList();
+    }
+
 
     /**
      * 2.5 학교 게시판 api +
