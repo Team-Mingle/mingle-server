@@ -49,7 +49,7 @@ public class PostController {
             Long memberId = jwtService.getUserIdx();
             List<UnivPost> univPosts = postService.findPosts(category, postId, memberId);
             List<PostListDTO> result = univPosts.stream()
-                    .map(u -> new PostListDTO(u, memberId))
+                    .map(u -> new PostListDTO("전체 학교글", u, memberId))
                     .collect(Collectors.toList());
             PostListResponse univPostListResponse = new PostListResponse("학교 전체", result);
             return new BaseResponse<>(univPostListResponse);
@@ -131,14 +131,9 @@ public class PostController {
     public BaseResponse<PostListResponse> getTotalPosts(@RequestParam int category, @RequestParam Long postId) {
         try {
             Long memberId = jwtService.getUserIdx();
-            List<TotalPost> totalPosts = postService.findTotalPost(category, postId, memberId);
-            List<PostListDTO> result = totalPosts.stream()
-                    .map(p -> new PostListDTO(p, memberId))
-                    .collect(Collectors.toList());
-            PostListResponse totalPostListResponse = new PostListResponse(result);
+            PostListResponse totalPostListResponse = postService.findTotalPost(category, postId, memberId);
             return new BaseResponse<>(totalPostListResponse);
         } catch (BaseException e) {
-            e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
     }
