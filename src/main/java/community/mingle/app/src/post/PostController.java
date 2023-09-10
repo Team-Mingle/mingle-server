@@ -49,7 +49,7 @@ public class PostController {
             Long memberId = jwtService.getUserIdx();
             List<UnivPost> univPosts = postService.findPosts(category, postId, memberId);
             List<PostListDTO> result = univPosts.stream()
-                    .map(u -> new PostListDTO(u, memberId))
+                    .map(u -> new PostListDTO("전체 학교글", u, memberId))
                     .collect(Collectors.toList());
             PostListResponse univPostListResponse = new PostListResponse("학교 전체", result);
             return new BaseResponse<>(univPostListResponse);
