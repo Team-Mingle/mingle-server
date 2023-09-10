@@ -131,14 +131,9 @@ public class PostController {
     public BaseResponse<PostListResponse> getTotalPosts(@RequestParam int category, @RequestParam Long postId) {
         try {
             Long memberId = jwtService.getUserIdx();
-            List<TotalPost> totalPosts = postService.findTotalPost(category, postId, memberId);
-            List<PostListDTO> result = totalPosts.stream()
-                    .map(p -> new PostListDTO(p, memberId))
-                    .collect(Collectors.toList());
-            PostListResponse totalPostListResponse = new PostListResponse(result);
+            PostListResponse totalPostListResponse = postService.findTotalPost(category, postId, memberId);
             return new BaseResponse<>(totalPostListResponse);
         } catch (BaseException e) {
-            e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
     }

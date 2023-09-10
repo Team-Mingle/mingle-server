@@ -1,6 +1,7 @@
 package community.mingle.app.src.post;
 
 import community.mingle.app.config.BaseException;
+import community.mingle.app.config.BaseResponse;
 import community.mingle.app.src.domain.*;
 import community.mingle.app.src.domain.Total.*;
 import community.mingle.app.src.domain.Univ.*;
@@ -140,13 +141,22 @@ public class PostService {
     /**
      * 3.4 광장 게시판 리스트 API
      */
-    public List<TotalPost> findTotalPost(int category, Long postId, Long memberId) throws BaseException {
+    public PostListResponse findTotalPost(int category, Long postId, Long memberId) throws BaseException {
         Member member = memberRepository.findMember(memberId);
-        List<TotalPost> totalPostList = postRepository.findTotalPost(category, postId, member);
-        if (totalPostList.size() == 0) {
-            throw new BaseException(EMPTY_POSTS_LIST);
-        }
-        return totalPostList;
+        boolean isAdmin = member.getRole().equals(UserRole.ADMIN);
+
+        List<TotalPost> postList = isAdmin
+                ? postRepository.findAdminTotalPosts(category, postId, member)
+                : postRepository.findTotalPost(category, postId, member);
+        if (postList.isEmpty()) throw new BaseException(EMPTY_POSTS_LIST);
+
+        List<PostListDTO> result = postList.stream()
+                .map(p -> isAdmin
+                        ? new PostListDTO(p.getMember().getUniv().getCountry(), p, memberId)
+                        : new PostListDTO(p, memberId))
+                .collect(Collectors.toList());
+
+        return new PostListResponse(result);
     }
 
 
