@@ -1,4 +1,3 @@
-
 package community.mingle.app.config.security;
 
 import community.mingle.app.config.CustomAuthenticationEntryPoint;
@@ -40,6 +39,7 @@ public class SecurityConfig {
 //    private final JwtHandler jwtHandler;
 
     private final TokenHelper tokenHelper;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 //form login 비활성화
                 .formLogin().disable()
+                .cors().disable()
                 //csrf 관련 정책 비활성화
                 .csrf().disable()
                 //세션 관리정책 설정, 세션을 유지하지 않도록 설정
