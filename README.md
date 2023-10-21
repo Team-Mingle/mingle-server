@@ -34,4 +34,4 @@
 
 📚 **Course Evaluation**: A course rating platform where students can post reviews and insights about their university courses.
 
-📱 UI/UX Improvement for a more intuitive user experience.
+📱 **UI/UX Improvement** for a more intuitive user experience.
