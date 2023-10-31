@@ -1,5 +1,8 @@
 # Project-Mingle
 
+Currently refactoring! See the new repository 
+https://github.com/Team-Mingle/mingle-api
+
 ## 💫 Introduction
 #### Go-to community app for over 80% of the 1,000+ Korean university students in Hong Kong,   currently expanding to Singapore and the UK
 
