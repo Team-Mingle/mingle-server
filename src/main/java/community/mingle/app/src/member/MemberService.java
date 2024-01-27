@@ -540,7 +540,7 @@ public class MemberService {
         }
 
         @Transactional
-        void deleteNotification(List<NotificationDTO> notificationDTO) {
+        public void deleteNotification(List<NotificationDTO> notificationDTO) {
         notificationDTO.forEach(n -> {
             if (n.getItem() != null) {
                 itemRepository.deleteItemNotification(n.getNotificationId());
