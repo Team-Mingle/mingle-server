@@ -78,32 +78,12 @@ public class PostService {
      */
     public String findReportedPostReason(Long postId, TableType tableType) {
         List<Report> reportedPostReason = postRepository.findReportedPostReason(postId, tableType);
-        int mode = 0;
-        int maxCount = 0;
 
-        ArrayList<Integer> reportedTypeList = new ArrayList<>();
-        if (reportedPostReason == null) {
-            return null;
-        } else {
-            reportedPostReason.forEach(report -> reportedTypeList.add(report.getType()));
-//            for (Report r : reportedPostReason) {
-//                    reportedTypeList.add(report.getType());
-//            }
-            for (int type : reportedTypeList) {
-                int count = Collections.frequency(reportedTypeList, type);
-                if (count > maxCount) {
-                    mode = type;
-                    maxCount = count;
-                }
-            }
-            List<ReportType> reportedTypeReason = postRepository.findReportedTypeReason(mode); //null 체크 추가
-            if (reportedTypeReason == null) {
+        Map<Integer, List<Report>> collect = reportedPostReason.stream().collect(Collectors.groupingBy(Report::getType));
+        Integer maxType = Collections.max(collect.keySet());
 
-            }
-            String reason = (reportedTypeReason == null) ? reportedTypeReason.get(0).getType() : "욕설/인신공격/혐오/비하"; //null check
-            return reason;
-//            return reportedTypeReason.get(0).getType();
-        }
+        List<ReportType> reportedTypeReason = postRepository.findReportedTypeReason(maxType); //null 체크 추가
+        return (reportedTypeReason == null) ? reportedTypeReason.get(0).getType() : "욕설/인신공격/혐오/비하";
     }
 
 
