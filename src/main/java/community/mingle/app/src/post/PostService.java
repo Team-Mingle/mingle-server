@@ -92,7 +92,7 @@ public class PostService {
         }
 
         List<ReportType> reportedTypeReason = postRepository.findReportedTypeReason(mostCommonType); //null 체크 추가
-        return (reportedTypeReason == null) ? reportedTypeReason.get(0).getType() : "욕설/인신공격/혐오/비하";
+        return (reportedTypeReason != null) ? reportedTypeReason.get(0).getType() : "욕설/인신공격/혐오/비하";
     }
 
 
